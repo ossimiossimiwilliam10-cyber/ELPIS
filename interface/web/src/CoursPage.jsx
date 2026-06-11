@@ -105,6 +105,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
           newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.push(...data.exercises);
         }
         updateConfig(newConf);
+        onSave(newConf); // SAUVEGARDE AUTOMATIQUE
         alert(`${data.exercises.length} exercices trouvés et ajoutés !`);
       }
     } catch(err) {

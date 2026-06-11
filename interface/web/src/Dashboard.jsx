@@ -198,7 +198,7 @@ function Dashboard({ coursConfig, onSaveCours }) {
               variants={containerVariants}
               initial="hidden"
               animate="show"
-              style={{display:'flex', flexDirection:'column', gap:'0.8rem', marginTop:'1.5rem'}}
+              style={{display:'flex', flexDirection:'column', gap:'0.8rem', marginTop:'1.5rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem'}}
             >
               <AnimatePresence>
                 {tachesDuJour.map((t, i) => (
