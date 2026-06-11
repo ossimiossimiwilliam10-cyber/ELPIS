@@ -80,7 +80,7 @@ void testOrchestrateur() {
     assert(rapport["tachesDuJour"].size() == 1);
     assert(rapport["tachesDuJour"][0]["type"] == "CM");
     assert(rapport["tachesDuJour"][0]["titre"] == "CM1 Espaces Vectoriels");
-    assert(rapport["tachesDuJour"][0]["dureeMin"] == 120);
+    assert(rapport["tachesDuJour"][0]["dureeMinutes"] == 120);
 
     // Nettoyage
     std::remove(testConfigPath.c_str());
