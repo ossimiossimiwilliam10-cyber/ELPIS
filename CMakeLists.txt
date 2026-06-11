@@ -8,6 +8,6 @@ include_directories(lib)
 
 # Créer l'exécutable de test pour le Cerveau Configuration
 add_executable(test_config 
-    moteur/cerveaux_secondaires/configuration/CerveauConfig.cpp 
-    moteur/cerveaux_secondaires/configuration/test_cerveau_config.cpp
+    moteur/moteur_menu_configuration/CerveauConfig.cpp 
+    moteur/moteur_menu_configuration/test_cerveau_config.cpp
 )
