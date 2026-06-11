@@ -138,7 +138,7 @@ bool CerveauConfig::saveConfig() {
     if (!file.good()) {
         std::cerr << "Erreur d'ecriture sur le disque (disque plein ?)" << std::endl;
         file.close();
-        std::filesystem::remove(tempFilePath);
+        std::remove(tempFilePath.c_str());
         return false;
     }
     file.close();
