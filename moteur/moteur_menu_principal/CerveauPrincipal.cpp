@@ -1,6 +1,5 @@
 #include "CerveauPrincipal.h"
 #include "../../lib/json.hpp"
-#include <iostream>
 #include <algorithm>
 #include <ctime>
 #include <iomanip>
@@ -30,7 +29,7 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
     CerveauConfig configBrain(configPath);
     if (!configBrain.loadConfig()) {
         rapport["error"] = "Impossible de charger la configuration (CerveauConfig).";
-        return rapport;
+        return rapport.dump();
     }
 
     CerveauCours coursBrain(coursPath);
@@ -43,23 +42,26 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
     const CoursConfig& crs = coursBrain.getConfig();
 
     // 1. Calcul du temps libre de base
-    int heuresTravailJour = std::max(1, cfg.maxStudyHoursPerDay); // eviter zero
-    int tempsLibreMin = heuresTravailJour * 60; // Temps moyen par jour
+    int heuresTravailJour = std::max(1, cfg.maxStudyHoursPerDay);
+    int tempsLibreMin = heuresTravailJour * 60;
 
     // Soustraction des Fixed Commitments du jour
     std::string todayDayOfWeek = getDayOfWeekString();
     for (const auto& fc : cfg.fixedCommitments) {
         if (fc.dayOfWeek == todayDayOfWeek || fc.dayOfWeek == "Tous les jours") {
-            // Calcul basique de durée (ex: "08:00" à "10:00")
             int startH = 0, startM = 0, endH = 0, endM = 0;
             if (fc.startTime.length() >= 5 && fc.endTime.length() >= 5) {
-                startH = std::stoi(fc.startTime.substr(0, 2));
-                startM = std::stoi(fc.startTime.substr(3, 2));
-                endH = std::stoi(fc.endTime.substr(0, 2));
-                endM = std::stoi(fc.endTime.substr(3, 2));
-                int duration = (endH * 60 + endM) - (startH * 60 + startM);
-                if (duration > 0) {
-                    tempsLibreMin -= duration;
+                try {
+                    startH = std::stoi(fc.startTime.substr(0, 2));
+                    startM = std::stoi(fc.startTime.substr(3, 2));
+                    endH = std::stoi(fc.endTime.substr(0, 2));
+                    endM = std::stoi(fc.endTime.substr(3, 2));
+                    int duration = (endH * 60 + endM) - (startH * 60 + startM);
+                    if (duration > 0) {
+                        tempsLibreMin -= duration;
+                    }
+                } catch (...) {
+                    // Ignore format invalide
                 }
             }
         }
@@ -77,12 +79,16 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
         for (const auto& ue : s.ues) {
             for (const auto& m : ue.matieres) {
                 
-                // Logique CM
+                // --- Logique Cours Magistraux (CM) ---
                 for (const auto& cm : m.listeCM) {
                     bool doitReviser = false;
-                    if (cm.derniereRevision.empty()) doitReviser = true;
-                    else if (cm.derniereRevision != todayStr) {
-                        doitReviser = true; // Pour l'instant on force la révision (simplification v0.1)
+                    if (cm.derniereRevision.empty()) {
+                        doitReviser = true;
+                    } else if (cm.derniereRevision != todayStr) {
+                        // Méthode de répétition espacée basique
+                        // Dans un cas réel, on calculerait diff Jours. 
+                        // Ici on simplifie: on déclenche si la date est différente
+                        doitReviser = true;
                     }
 
                     if (doitReviser) {
@@ -90,13 +96,13 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                         t["matiere"] = m.nom;
                         t["type"] = "CM";
                         t["titre"] = cm.titre;
-                        t["dureeMinutes"] = (cm.jActuel == 0) ? 120 : 30; // 2h si découverte, 30min sinon
+                        t["dureeMinutes"] = (cm.jActuel == 0) ? 120 : 30;
                         tachesJson.push_back(t);
                         tempsRequisMin += t["dureeMinutes"].get<int>();
                     }
                 }
 
-                // Logique Exercices (TD)
+                // --- Logique Exercices (TD) ---
                 std::vector<Exercice> tds;
                 for (const auto& ex : m.listeTD) {
                     if (ex.dernierePratique != todayStr) {
@@ -115,7 +121,7 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                     t["matiere"] = m.nom;
                     t["type"] = "TD";
                     t["titre"] = ex.titre;
-                    t["dureeMinutes"] = 20; // 20 min par TD
+                    t["dureeMinutes"] = 20;
                     t["pdfSource"] = ex.pdfSource;
                     t["page"] = ex.page;
                     tachesJson.push_back(t);
@@ -123,7 +129,7 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                     count++;
                 }
 
-                // Logique TP
+                // --- Logique TP ---
                 std::vector<Exercice> tps;
                 for (const auto& ex : m.listeTP) {
                     if (ex.dernierePratique != todayStr) {
@@ -136,12 +142,12 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                 });
                 
                 if (!tps.empty()) {
-                    const auto& ex = tps[0]; // On ne prend que le 1er (1 TP max)
+                    const auto& ex = tps[0];
                     nlohmann::json t;
                     t["matiere"] = m.nom;
                     t["type"] = "TP";
                     t["titre"] = ex.titre;
-                    t["dureeMinutes"] = 30; // 30 min par TP
+                    t["dureeMinutes"] = 30;
                     t["pdfSource"] = ex.pdfSource;
                     t["page"] = ex.page;
                     tachesJson.push_back(t);
