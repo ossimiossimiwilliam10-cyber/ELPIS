@@ -213,7 +213,7 @@ const REACT_BUILD_DIR = path.join(ROOT_DIR, 'interface', 'web', 'dist');
 app.use(express.static(REACT_BUILD_DIR));
 
 // Route de fallback pour l'application React (SPA)
-app.get('*', (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(REACT_BUILD_DIR, 'index.html'));
 });
 

@@ -2,8 +2,8 @@
 title ELPIS - Ton Assistant d'Etude Personnel
 echo ========================================================
 echo Démarrage du serveur ELPIS...
-echo ========================================================
-echo.
+echo Nettoyage des anciens processus en arriere-plan...
+taskkill /F /IM node.exe >nul 2>&1
 
 cd /d "%~dp0\interface\bridge"
 start /b node server.js
