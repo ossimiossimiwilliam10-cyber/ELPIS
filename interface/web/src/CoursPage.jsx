@@ -73,6 +73,44 @@ function CoursPage({ coursConfig, onSave, saving }) {
     updateConfig(newConf);
   };
 
+  const addTDManuel = (sIndex, uIndex, mIndex) => {
+    const newConf = { ...configLocal };
+    if (!newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD) newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD = [];
+    newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD.push({
+      titre: "Nouveau TD Manuel",
+      dernierePratique: "",
+      nombrePratiques: 0,
+      pdfSource: "",
+      page: 1
+    });
+    updateConfig(newConf);
+  };
+
+  const deleteTD = (sIndex, uIndex, mIndex, tdIndex) => {
+    const newConf = { ...configLocal };
+    newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD.splice(tdIndex, 1);
+    updateConfig(newConf);
+  };
+
+  const addTPManuel = (sIndex, uIndex, mIndex) => {
+    const newConf = { ...configLocal };
+    if (!newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP) newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP = [];
+    newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.push({
+      titre: "Nouveau TP Manuel",
+      dernierePratique: "",
+      nombrePratiques: 0,
+      pdfSource: "",
+      page: 1
+    });
+    updateConfig(newConf);
+  };
+
+  const deleteTP = (sIndex, uIndex, mIndex, tpIndex) => {
+    const newConf = { ...configLocal };
+    newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.splice(tpIndex, 1);
+    updateConfig(newConf);
+  };
+
   const updateNomMatiere = (sIndex, uIndex, mIndex, val) => {
     const newConf = { ...configLocal };
     newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].nom = val;
@@ -107,10 +145,34 @@ function CoursPage({ coursConfig, onSave, saving }) {
         updateConfig(newConf);
         onSave(newConf); // SAUVEGARDE AUTOMATIQUE
         alert(`${data.exercises.length} exercices trouvés et ajoutés !`);
+      } else {
+        alert("Erreur: Aucun exercice reconnu ou fichier invalide.");
       }
     } catch(err) {
-      alert("Erreur lors du scan du PDF.");
+      alert("Erreur lors de la communication avec le serveur Node.js.");
     }
+  };
+
+  // Validation au moment de la sauvegarde
+  const handleSave = () => {
+    // Vérifier les ECTS et les Noms vides
+    let isValid = true;
+    configLocal.semestres?.forEach(s => {
+      if (!s.nom || s.nom.trim() === '') isValid = false;
+      s.ues?.forEach(u => {
+        if (!u.nom || u.nom.trim() === '') isValid = false;
+        u.matieres?.forEach(m => {
+          if (!m.nom || m.nom.trim() === '') isValid = false;
+        });
+      });
+    });
+
+    if (!isValid) {
+      alert("Erreur: Veuillez remplir tous les noms de semestres, UEs et matières avant de sauvegarder.");
+      return;
+    }
+    
+    onSave(configLocal);
   };
 
   const itemVariants = {
@@ -128,7 +190,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
         </div>
         <div style={{display:'flex', gap:'1rem'}}>
           <button className="btn-secondary" onClick={addSemestre}>+ Ajouter un Semestre</button>
-          <button className="btn-primary" onClick={() => onSave(configLocal)} disabled={saving}>
+          <button className="btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Synchronisation...' : 'Sauvegarder'}
           </button>
         </div>
@@ -191,13 +253,15 @@ function CoursPage({ coursConfig, onSave, saving }) {
                             type="number" 
                             value={ue.creditsEcts || 0} 
                             onChange={(e) => {
+                              let val = parseInt(e.target.value) || 0;
+                              val = Math.min(60, Math.max(0, val)); // Validation ECTS
                               const newConf = {...configLocal};
-                              newConf.semestres[sIndex].ues[uIndex].creditsEcts = parseInt(e.target.value) || 0;
+                              newConf.semestres[sIndex].ues[uIndex].creditsEcts = val;
                               updateConfig(newConf);
                             }}
                             placeholder="ECTS"
                             style={{width:'80px'}}
-                            title="Crédits ECTS"
+                            title="Crédits ECTS (0-60)"
                           />
                         </div>
                         <button className="btn-secondary" style={{fontSize:'0.9rem'}} onClick={() => addMatiere(sIndex, uIndex)}>+ Ajouter une Matière</button>
@@ -225,15 +289,15 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                 />
                               </div>
                               
+                              {/* --- CM SECTION --- */}
                               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem'}}>
                                 <span style={{fontSize:'0.9rem', color:'var(--text-secondary)'}}>{matiere.listeCM?.length || 0} CM programmés</span>
                                 <button className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem'}} onClick={() => addCM(sIndex, uIndex, mIndex)}>+ CM</button>
                               </div>
-                              
                               <AnimatePresence>
                                 {matiere.listeCM?.map((cm, cmIndex) => (
                                   <motion.div 
-                                    key={cmIndex + (cm.titre || '')}
+                                    key={`cm-${cmIndex}`}
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: 10 }}
@@ -270,9 +334,11 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                 ))}
                               </AnimatePresence>
 
+                              {/* --- TD SECTION --- */}
                               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
-                                <span style={{fontSize:'0.9rem', color:'var(--success-color)'}}>{matiere.listeTD?.length || 0} TD scannés</span>
-                                <div>
+                                <span style={{fontSize:'0.9rem', color:'var(--success-color)'}}>{matiere.listeTD?.length || 0} TD créés/scannés</span>
+                                <div style={{display:'flex', gap:'0.5rem'}}>
+                                  <button onClick={() => addTDManuel(sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>+ Manuel</button>
                                   <input 
                                     type="file" 
                                     accept="application/pdf"
@@ -281,14 +347,40 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                     onChange={(e) => handleFileUpload(sIndex, uIndex, mIndex, e.target.files[0], 'TD')}
                                   />
                                   <label htmlFor={`td-upload-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor:'pointer', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>
-                                    Scanner PDF TD
+                                    Scanner PDF
                                   </label>
                                 </div>
                               </div>
+                              <AnimatePresence>
+                                {matiere.listeTD?.map((td, tdIndex) => (
+                                  <motion.div 
+                                    key={`td-${tdIndex}`}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 10 }}
+                                    style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.5rem', borderRadius:'4px'}}
+                                  >
+                                    <button onClick={() => deleteTD(sIndex, uIndex, mIndex, tdIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+                                    <input 
+                                      type="text" 
+                                      value={td.titre}
+                                      onChange={(e) => {
+                                        const newConf = {...configLocal};
+                                        newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD[tdIndex].titre = e.target.value;
+                                        updateConfig(newConf);
+                                      }}
+                                      placeholder="Nom de l'exercice"
+                                      style={{flex: 1, padding:'0.3rem', fontSize:'0.8rem'}}
+                                    />
+                                  </motion.div>
+                                ))}
+                              </AnimatePresence>
 
-                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                                <span style={{fontSize:'0.9rem', color:'var(--warning-color)'}}>{matiere.listeTP?.length || 0} TP scannés</span>
-                                <div>
+                              {/* --- TP SECTION --- */}
+                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
+                                <span style={{fontSize:'0.9rem', color:'var(--warning-color)'}}>{matiere.listeTP?.length || 0} TP créés/scannés</span>
+                                <div style={{display:'flex', gap:'0.5rem'}}>
+                                  <button onClick={() => addTPManuel(sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>+ Manuel</button>
                                   <input 
                                     type="file" 
                                     accept="application/pdf"
@@ -297,10 +389,34 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                     onChange={(e) => handleFileUpload(sIndex, uIndex, mIndex, e.target.files[0], 'TP')}
                                   />
                                   <label htmlFor={`tp-upload-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor:'pointer', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>
-                                    Scanner PDF TP
+                                    Scanner PDF
                                   </label>
                                 </div>
                               </div>
+                              <AnimatePresence>
+                                {matiere.listeTP?.map((tp, tpIndex) => (
+                                  <motion.div 
+                                    key={`tp-${tpIndex}`}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 10 }}
+                                    style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.5rem', borderRadius:'4px'}}
+                                  >
+                                    <button onClick={() => deleteTP(sIndex, uIndex, mIndex, tpIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+                                    <input 
+                                      type="text" 
+                                      value={tp.titre}
+                                      onChange={(e) => {
+                                        const newConf = {...configLocal};
+                                        newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP[tpIndex].titre = e.target.value;
+                                        updateConfig(newConf);
+                                      }}
+                                      placeholder="Nom de l'exercice"
+                                      style={{flex: 1, padding:'0.3rem', fontSize:'0.8rem'}}
+                                    />
+                                  </motion.div>
+                                ))}
+                              </AnimatePresence>
                               
                             </motion.div>
                           ))}

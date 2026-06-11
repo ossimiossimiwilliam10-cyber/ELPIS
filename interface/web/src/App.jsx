@@ -45,7 +45,48 @@ function App() {
       });
   }, []);
 
+  const addFixedCommitment = () => {
+    const newConf = { ...config };
+    if (!newConf.fixedCommitments) newConf.fixedCommitments = [];
+    newConf.fixedCommitments.push({
+      title: "Nouvel Engagement",
+      dayOfWeek: "Lundi",
+      startTime: "08:00",
+      endTime: "10:00"
+    });
+    setConfig(newConf);
+  };
+
+  const removeFixedCommitment = (index) => {
+    const newConf = { ...config };
+    newConf.fixedCommitments.splice(index, 1);
+    setConfig(newConf);
+  };
+
+  const updateFixedCommitment = (index, field, value) => {
+    const newConf = { ...config };
+    newConf.fixedCommitments[index][field] = value;
+    setConfig(newConf);
+  };
+
   const handleSaveConfig = () => {
+    // Validations
+    let isValid = true;
+    if (config.fixedCommitments) {
+      for (const fc of config.fixedCommitments) {
+        if (!fc.title || fc.title.trim() === '') isValid = false;
+        if (!fc.startTime || !fc.endTime) isValid = false;
+        if (fc.startTime && fc.endTime && fc.startTime >= fc.endTime) {
+          setError(`Erreur: L'heure de fin doit être après l'heure de début pour "${fc.title}".`);
+          return;
+        }
+      }
+    }
+    if (!isValid) {
+      setError("Erreur: Veuillez remplir tous les champs des engagements fixes correctement.");
+      return;
+    }
+
     setSaving(true);
     setSuccessMsg("");
     setError(null);
@@ -97,8 +138,8 @@ function App() {
       <Sidebar activeTab={activeTab} setActiveTab={(t) => { setActiveTab(t); setSuccessMsg(''); setError(''); }} />
 
       <main className="main-content">
-        {error && <div style={{background:'rgba(239, 68, 68, 0.1)', color:'var(--danger-color)', padding:'1rem', borderRadius:'8px', marginBottom:'1rem'}}>❌ {error}</div>}
-        {successMsg && <div style={{background:'rgba(16, 185, 129, 0.1)', color:'var(--success-color)', padding:'1rem', borderRadius:'8px', marginBottom:'1rem'}}>✅ {successMsg}</div>}
+        {error && <div style={{background:'rgba(239, 68, 68, 0.1)', color:'var(--danger-color)', border:'1px solid var(--danger-color)', padding:'1rem', borderRadius:'8px', marginBottom:'1rem'}}>❌ {error}</div>}
+        {successMsg && <div style={{background:'rgba(16, 185, 129, 0.1)', color:'var(--success-color)', border:'1px solid var(--success-color)', padding:'1rem', borderRadius:'8px', marginBottom:'1rem'}}>✅ {successMsg}</div>}
 
         <AnimatePresence mode="wait">
           {activeTab === 'dashboard' && (
@@ -117,7 +158,7 @@ function App() {
               <h2 style={{marginBottom:'2rem'}}>Préférences Générales</h2>
               
               <div style={{marginBottom:'1.5rem'}}>
-                <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heures d'étude par jour :</label>
+                <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heures d'étude maximum par jour :</label>
                 <input 
                   type="number" 
                   value={config.maxStudyHoursPerDay || 0}
@@ -131,7 +172,7 @@ function App() {
                 />
               </div>
               
-              <div style={{marginBottom:'2rem'}}>
+              <div style={{marginBottom:'3rem'}}>
                 <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heure de coucher :</label>
                 <input 
                   type="time" 
@@ -145,13 +186,74 @@ function App() {
                 />
               </div>
 
-              <button 
-                className="btn-primary"
-                onClick={handleSaveConfig}
-                disabled={saving}
-              >
-                {saving ? 'Synchronisation C++...' : 'Sauvegarder les objectifs'}
-              </button>
+              {/* Section Engagements Fixes */}
+              <h2 style={{marginBottom:'1rem', borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem'}}>⏰ Engagements Fixes (Emploi du temps)</h2>
+              <p style={{color:'var(--text-secondary)', marginBottom:'1.5rem'}}>
+                Ajoute tes horaires de cours, de travail ou d'activités régulières. Le système déduira automatiquement ce temps de ta disponibilité pour générer ton planning d'étude.
+              </p>
+              
+              <div style={{marginBottom:'2rem'}}>
+                <AnimatePresence>
+                  {config.fixedCommitments?.map((fc, index) => (
+                    <motion.div 
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      style={{display:'flex', gap:'1rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', marginBottom:'0.5rem', flexWrap:'wrap'}}
+                    >
+                      <button onClick={() => removeFixedCommitment(index)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--danger-color)', padding:0}} title="Supprimer">🗑️</button>
+                      <input 
+                        type="text" 
+                        value={fc.title}
+                        onChange={(e) => updateFixedCommitment(index, 'title', e.target.value)}
+                        placeholder="Titre (ex: CM Math)"
+                        style={{flex: '1 1 150px'}}
+                      />
+                      <select 
+                        value={fc.dayOfWeek}
+                        onChange={(e) => updateFixedCommitment(index, 'dayOfWeek', e.target.value)}
+                        style={{flex: '1 1 120px'}}
+                      >
+                        <option value="Lundi">Lundi</option>
+                        <option value="Mardi">Mardi</option>
+                        <option value="Mercredi">Mercredi</option>
+                        <option value="Jeudi">Jeudi</option>
+                        <option value="Vendredi">Vendredi</option>
+                        <option value="Samedi">Samedi</option>
+                        <option value="Dimanche">Dimanche</option>
+                        <option value="Tous les jours">Tous les jours</option>
+                      </select>
+                      <div style={{display:'flex', alignItems:'center', gap:'0.5rem', flex: '1 1 200px'}}>
+                        <input 
+                          type="time" 
+                          value={fc.startTime}
+                          onChange={(e) => updateFixedCommitment(index, 'startTime', e.target.value)}
+                          style={{width:'100px'}}
+                        />
+                        <span style={{color:'var(--text-secondary)'}}>à</span>
+                        <input 
+                          type="time" 
+                          value={fc.endTime}
+                          onChange={(e) => updateFixedCommitment(index, 'endTime', e.target.value)}
+                          style={{width:'100px'}}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                <button className="btn-secondary" style={{marginTop:'1rem'}} onClick={addFixedCommitment}>+ Ajouter un Engagement</button>
+              </div>
+
+              <div style={{borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem', textAlign:'right'}}>
+                <button 
+                  className="btn-primary"
+                  onClick={handleSaveConfig}
+                  disabled={saving}
+                >
+                  {saving ? 'Synchronisation C++...' : 'Sauvegarder la Configuration'}
+                </button>
+              </div>
             </motion.div>
           )}
 
