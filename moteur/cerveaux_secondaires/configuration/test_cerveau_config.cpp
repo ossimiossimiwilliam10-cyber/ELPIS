@@ -8,25 +8,27 @@ void test_sauvegarde_et_lecture() {
     std::string testFile = "test_config.json";
     CerveauConfig cerveau(testFile);
 
-    // 1. Modification des paramètres par défaut
-    AppConfig& config = cerveau.getConfig();
-    config.targetGrade = 18.5f; // On vise haut !
-    config.summerStudyHoursCompleted = 120; // Étudiant très sérieux cet été
-    config.theme = "light";
-
-    // Ajout d'une matière test avec les multiples dates d'examens demandées
+    // 1. Modification des paramètres (maintenant on passe par setConfig !)
+    AppConfig tempConfig = cerveau.getConfig();
+    tempConfig.targetGrade = 18.5f;
+    tempConfig.summerStudyHoursCompleted = 120;
+    tempConfig.theme = "light";
+    
     Subject maths;
     maths.name = "Mathematiques";
-    maths.color = "Bleu";
+    maths.color = "#FF0000";
     maths.examDates = {"15-10-2026", "20-12-2026", "10-05-2027"};
-    config.subjects.push_back(maths);
+    tempConfig.subjects.push_back(maths);
 
     FixedCommitment cmPhysique;
     cmPhysique.title = "CM Physique Appliquee";
     cmPhysique.dayOfWeek = "Lundi";
     cmPhysique.startTime = "08:00";
     cmPhysique.endTime = "10:00";
-    config.fixedCommitments.push_back(cmPhysique);
+    tempConfig.fixedCommitments.push_back(cmPhysique);
+
+    // On applique les modifications au cerveau
+    cerveau.setConfig(tempConfig);
 
     // 2. Sauvegarde (Écriture sur le disque dur)
     bool saved = cerveau.saveConfig();
@@ -45,7 +47,7 @@ void test_sauvegarde_et_lecture() {
     std::cout << "[OK] Configuration rechargee depuis le disque." << std::endl;
 
     // 4. On vérifie que les données lues sont exactement celles qu'on avait sauvegardées
-    AppConfig& loadedConfig = cerveauRedemarrage.getConfig();
+    const AppConfig& loadedConfig = cerveauRedemarrage.getConfig();
     
     assert(loadedConfig.targetGrade == 18.5f);
     assert(loadedConfig.summerStudyHoursCompleted == 120);

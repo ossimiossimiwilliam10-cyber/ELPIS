@@ -1,22 +1,16 @@
 #include "CerveauConfig.h"
 #include <fstream>
 #include <iostream>
-#include "json.hpp" // La librairie JSON que nous venons de télécharger
+#include <string>
+#include <algorithm> // Pour std::max et std::min
+#include <cstdio>    // Pour std::remove et std::rename
+#include "json.hpp"
 
 using json = nlohmann::json;
 
 CerveauConfig::CerveauConfig(const std::string& path) : configFilePath(path) {
-    // Initialisation avec des valeurs par défaut au cas où le fichier n'existe pas encore
-    currentConfig.studyStartDate = "07-09-2026";
-    currentConfig.bedtime = "23:00";
-    currentConfig.wakeUpTime = "07:00";
-    currentConfig.maxStudyHoursPerDay = 8;
-    currentConfig.targetGrade = 14.0f;
-    currentConfig.summerStudyHoursCompleted = 0;
-    currentConfig.maxSubjectsPerDay = 3;
-    currentConfig.studyBlockDurationMinutes = 50;
-    currentConfig.activeRecallMinutesPerDay = 60;
-    currentConfig.theme = "dark";
+    // Les valeurs par défaut sont désormais gérées directement dans AppConfig (CerveauConfig.h)
+    // Cela évite la duplication dénoncée par l'audit.
 }
 
 bool CerveauConfig::loadConfig() {
@@ -29,20 +23,32 @@ bool CerveauConfig::loadConfig() {
     json j;
     try {
         file >> j;
-        currentConfig.studyStartDate = j.value("studyStartDate", "07-09-2026");
-        currentConfig.bedtime = j.value("bedtime", "23:00");
-        currentConfig.wakeUpTime = j.value("wakeUpTime", "07:00");
-        currentConfig.maxStudyHoursPerDay = j.value("maxStudyHoursPerDay", 8);
-        currentConfig.targetGrade = j.value("targetGrade", 14.0f);
-        currentConfig.summerStudyHoursCompleted = j.value("summerStudyHoursCompleted", 0);
-        currentConfig.maxSubjectsPerDay = j.value("maxSubjectsPerDay", 3);
-        currentConfig.studyBlockDurationMinutes = j.value("studyBlockDurationMinutes", 50);
-        currentConfig.activeRecallMinutesPerDay = j.value("activeRecallMinutesPerDay", 60);
-        currentConfig.theme = j.value("theme", "dark");
+        
+        // Parsing sécurisé dans une structure temporaire pour éviter la corruption d'état
+        AppConfig tempConfig;
+        
+        tempConfig.studyStartDate = j.value("studyStartDate", "07-09-2026");
+        tempConfig.bedtime = j.value("bedtime", "23:00");
+        tempConfig.wakeUpTime = j.value("wakeUpTime", "07:00");
+        
+        // Validation basique des entiers et flottants (Garbage in, garbage out)
+        tempConfig.maxStudyHoursPerDay = std::max(0, std::min(24, j.value("maxStudyHoursPerDay", 8)));
+        tempConfig.targetGrade = std::max(0.0f, std::min(20.0f, j.value("targetGrade", 14.0f)));
+        tempConfig.summerStudyHoursCompleted = std::max(0, j.value("summerStudyHoursCompleted", 0));
+        tempConfig.maxSubjectsPerDay = std::max(1, j.value("maxSubjectsPerDay", 3));
+        tempConfig.studyBlockDurationMinutes = std::max(10, std::min(240, j.value("studyBlockDurationMinutes", 50)));
+        tempConfig.activeRecallMinutesPerDay = std::max(0, j.value("activeRecallMinutesPerDay", 60));
+        
+        // Validation basique du thème
+        std::string parsedTheme = j.value("theme", "dark");
+        if (parsedTheme == "dark" || parsedTheme == "light") {
+            tempConfig.theme = parsedTheme;
+        } else {
+            tempConfig.theme = "dark"; // Fallback de sécurité
+        }
         
         // Charger les matières
         if (j.contains("subjects")) {
-            currentConfig.subjects.clear();
             for (const auto& item : j["subjects"]) {
                 Subject s;
                 s.name = item.value("name", "");
@@ -52,24 +58,27 @@ bool CerveauConfig::loadConfig() {
                         s.examDates.push_back(date);
                     }
                 }
-                currentConfig.subjects.push_back(s);
+                tempConfig.subjects.push_back(s);
             }
         }
 
         // Charger les engagements fixes
         if (j.contains("fixedCommitments")) {
-            currentConfig.fixedCommitments.clear();
             for (const auto& item : j["fixedCommitments"]) {
                 FixedCommitment fc;
                 fc.title = item.value("title", "");
                 fc.dayOfWeek = item.value("dayOfWeek", "");
                 fc.startTime = item.value("startTime", "");
                 fc.endTime = item.value("endTime", "");
-                currentConfig.fixedCommitments.push_back(fc);
+                tempConfig.fixedCommitments.push_back(fc);
             }
         }
+        
+        // Tout s'est bien passé, on remplace la configuration actuelle de façon sûre
+        currentConfig = tempConfig;
+        
     } catch (const std::exception& e) {
-        std::cerr << "Erreur lors de la lecture du JSON : " << e.what() << std::endl;
+        std::cerr << "Erreur lors de la lecture du JSON (fichier corrompu ou mal formatté) : " << e.what() << std::endl;
         return false;
     }
 
@@ -114,20 +123,49 @@ bool CerveauConfig::saveConfig() {
     }
     j["fixedCommitments"] = commitmentsJson;
 
-    std::ofstream file(configFilePath);
+    // Écriture atomique avec fichier temporaire
+    std::string tempFilePath = configFilePath + ".tmp";
+    std::ofstream file(tempFilePath);
     if (!file.is_open()) {
-        std::cerr << "Impossible d'ecrire dans le fichier : " << configFilePath << std::endl;
+        std::cerr << "Impossible de creer le fichier temporaire : " << tempFilePath << std::endl;
         return false;
     }
 
-    file << j.dump(4); // L'argument 4 ajoute des indentations pour que le fichier texte soit beau à lire
+    file << j.dump(4);
+    
+    // Vérification que l'écriture a réussi (disque non plein)
+    if (!file.good()) {
+        std::cerr << "Erreur d'ecriture sur le disque (disque plein ?)" << std::endl;
+        file.close();
+        std::remove(tempFilePath.c_str());
+        return false;
+    }
+    file.close();
+
+    // Renommage atomique
+    std::remove(configFilePath.c_str()); // Nécessaire sur Windows si le fichier cible existe déjà
+    if (std::rename(tempFilePath.c_str(), configFilePath.c_str()) != 0) {
+        std::cerr << "Erreur lors du renommage du fichier temporaire vers : " << configFilePath << std::endl;
+        return false;
+    }
+
     return true;
 }
 
-AppConfig& CerveauConfig::getConfig() {
+const AppConfig& CerveauConfig::getConfig() const {
     return currentConfig;
 }
 
 void CerveauConfig::setConfig(const AppConfig& newConfig) {
     currentConfig = newConfig;
+    // On valide aussi la modification en mémoire
+    currentConfig.maxStudyHoursPerDay = std::max(0, std::min(24, currentConfig.maxStudyHoursPerDay));
+    currentConfig.targetGrade = std::max(0.0f, std::min(20.0f, currentConfig.targetGrade));
+    currentConfig.summerStudyHoursCompleted = std::max(0, currentConfig.summerStudyHoursCompleted);
+    currentConfig.maxSubjectsPerDay = std::max(1, currentConfig.maxSubjectsPerDay);
+    currentConfig.studyBlockDurationMinutes = std::max(10, std::min(240, currentConfig.studyBlockDurationMinutes));
+    currentConfig.activeRecallMinutesPerDay = std::max(0, currentConfig.activeRecallMinutesPerDay);
+    if (currentConfig.theme != "light" && currentConfig.theme != "dark") {
+        currentConfig.theme = "dark";
+    }
 }
