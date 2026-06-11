@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm> // Pour std::max et std::min
-#include <filesystem>
+#include <cstdio>
 #include "../../lib/json.hpp"
 
 using json = nlohmann::json;
@@ -143,13 +143,9 @@ bool CerveauConfig::saveConfig() {
     }
     file.close();
 
-    // Renommage atomique avec std::filesystem::rename
-    std::error_code ec;
-    std::filesystem::rename(tempFilePath, configFilePath, ec);
-    if (ec) {
-        // En cas d'erreur de renommage sur certains vieux OS Windows, on essaie une méthode plus bas niveau, ou on signale.
-        std::cerr << "Erreur lors du renommage atomique : " << ec.message() << std::endl;
-        // Optionnellement, on pourrait essayer un remove+rename en fallback, mais DeepSeek interdit std::remove.
+    // Renommage atomique avec std::rename (écrasement garanti sous MSYS2/MinGW)
+    if (std::rename(tempFilePath.c_str(), configFilePath.c_str()) != 0) {
+        std::cerr << "Erreur lors du renommage atomique vers " << configFilePath << std::endl;
         return false;
     }
 
