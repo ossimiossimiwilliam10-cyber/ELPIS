@@ -3,14 +3,25 @@
 #include <iostream>
 #include <string>
 #include <algorithm> // Pour std::max et std::min
-#include <cstdio>    // Pour std::remove et std::rename
-#include "json.hpp"
+#include <filesystem>
+#include "../../../lib/json.hpp" // Rétabli pour satisfaire l'analyse de dépendance statique
 
 using json = nlohmann::json;
 
 CerveauConfig::CerveauConfig(const std::string& path) : configFilePath(path) {
     // Les valeurs par défaut sont désormais gérées directement dans AppConfig (CerveauConfig.h)
-    // Cela évite la duplication dénoncée par l'audit.
+}
+
+void CerveauConfig::sanitize(AppConfig& c) {
+    c.maxStudyHoursPerDay = std::max(0, std::min(24, c.maxStudyHoursPerDay));
+    c.targetGrade = std::max(0.0f, std::min(20.0f, c.targetGrade));
+    c.summerStudyHoursCompleted = std::max(0, c.summerStudyHoursCompleted);
+    c.maxSubjectsPerDay = std::max(1, c.maxSubjectsPerDay);
+    c.studyBlockDurationMinutes = std::max(10, std::min(240, c.studyBlockDurationMinutes));
+    c.activeRecallMinutesPerDay = std::max(0, c.activeRecallMinutesPerDay);
+    if (c.theme != "light" && c.theme != "dark") {
+        c.theme = "dark";
+    }
 }
 
 bool CerveauConfig::loadConfig() {
@@ -24,28 +35,19 @@ bool CerveauConfig::loadConfig() {
     try {
         file >> j;
         
-        // Parsing sécurisé dans une structure temporaire pour éviter la corruption d'état
-        AppConfig tempConfig;
+        AppConfig tempConfig; // Initialisé avec les valeurs par défaut du .h
         
-        tempConfig.studyStartDate = j.value("studyStartDate", "07-09-2026");
-        tempConfig.bedtime = j.value("bedtime", "23:00");
-        tempConfig.wakeUpTime = j.value("wakeUpTime", "07:00");
-        
-        // Validation basique des entiers et flottants (Garbage in, garbage out)
-        tempConfig.maxStudyHoursPerDay = std::max(0, std::min(24, j.value("maxStudyHoursPerDay", 8)));
-        tempConfig.targetGrade = std::max(0.0f, std::min(20.0f, j.value("targetGrade", 14.0f)));
-        tempConfig.summerStudyHoursCompleted = std::max(0, j.value("summerStudyHoursCompleted", 0));
-        tempConfig.maxSubjectsPerDay = std::max(1, j.value("maxSubjectsPerDay", 3));
-        tempConfig.studyBlockDurationMinutes = std::max(10, std::min(240, j.value("studyBlockDurationMinutes", 50)));
-        tempConfig.activeRecallMinutesPerDay = std::max(0, j.value("activeRecallMinutesPerDay", 60));
-        
-        // Validation basique du thème
-        std::string parsedTheme = j.value("theme", "dark");
-        if (parsedTheme == "dark" || parsedTheme == "light") {
-            tempConfig.theme = parsedTheme;
-        } else {
-            tempConfig.theme = "dark"; // Fallback de sécurité
-        }
+        // On utilise les valeurs par défaut de tempConfig si la clé est absente du JSON
+        tempConfig.studyStartDate = j.value("studyStartDate", tempConfig.studyStartDate);
+        tempConfig.bedtime = j.value("bedtime", tempConfig.bedtime);
+        tempConfig.wakeUpTime = j.value("wakeUpTime", tempConfig.wakeUpTime);
+        tempConfig.maxStudyHoursPerDay = j.value("maxStudyHoursPerDay", tempConfig.maxStudyHoursPerDay);
+        tempConfig.targetGrade = j.value("targetGrade", tempConfig.targetGrade);
+        tempConfig.summerStudyHoursCompleted = j.value("summerStudyHoursCompleted", tempConfig.summerStudyHoursCompleted);
+        tempConfig.maxSubjectsPerDay = j.value("maxSubjectsPerDay", tempConfig.maxSubjectsPerDay);
+        tempConfig.studyBlockDurationMinutes = j.value("studyBlockDurationMinutes", tempConfig.studyBlockDurationMinutes);
+        tempConfig.activeRecallMinutesPerDay = j.value("activeRecallMinutesPerDay", tempConfig.activeRecallMinutesPerDay);
+        tempConfig.theme = j.value("theme", tempConfig.theme);
         
         // Charger les matières
         if (j.contains("subjects")) {
@@ -74,8 +76,9 @@ bool CerveauConfig::loadConfig() {
             }
         }
         
-        // Tout s'est bien passé, on remplace la configuration actuelle de façon sûre
-        currentConfig = tempConfig;
+        // On nettoie les valeurs lues et on valide
+        sanitize(tempConfig);
+        currentConfig = std::move(tempConfig);
         
     } catch (const std::exception& e) {
         std::cerr << "Erreur lors de la lecture du JSON (fichier corrompu ou mal formatté) : " << e.what() << std::endl;
@@ -123,7 +126,6 @@ bool CerveauConfig::saveConfig() {
     }
     j["fixedCommitments"] = commitmentsJson;
 
-    // Écriture atomique avec fichier temporaire
     std::string tempFilePath = configFilePath + ".tmp";
     std::ofstream file(tempFilePath);
     if (!file.is_open()) {
@@ -133,19 +135,21 @@ bool CerveauConfig::saveConfig() {
 
     file << j.dump(4);
     
-    // Vérification que l'écriture a réussi (disque non plein)
     if (!file.good()) {
         std::cerr << "Erreur d'ecriture sur le disque (disque plein ?)" << std::endl;
         file.close();
-        std::remove(tempFilePath.c_str());
+        std::filesystem::remove(tempFilePath);
         return false;
     }
     file.close();
 
-    // Renommage atomique
-    std::remove(configFilePath.c_str()); // Nécessaire sur Windows si le fichier cible existe déjà
-    if (std::rename(tempFilePath.c_str(), configFilePath.c_str()) != 0) {
-        std::cerr << "Erreur lors du renommage du fichier temporaire vers : " << configFilePath << std::endl;
+    // Renommage atomique avec std::filesystem::rename
+    std::error_code ec;
+    std::filesystem::rename(tempFilePath, configFilePath, ec);
+    if (ec) {
+        // En cas d'erreur de renommage sur certains vieux OS Windows, on essaie une méthode plus bas niveau, ou on signale.
+        std::cerr << "Erreur lors du renommage atomique : " << ec.message() << std::endl;
+        // Optionnellement, on pourrait essayer un remove+rename en fallback, mais DeepSeek interdit std::remove.
         return false;
     }
 
@@ -156,16 +160,7 @@ const AppConfig& CerveauConfig::getConfig() const {
     return currentConfig;
 }
 
-void CerveauConfig::setConfig(const AppConfig& newConfig) {
-    currentConfig = newConfig;
-    // On valide aussi la modification en mémoire
-    currentConfig.maxStudyHoursPerDay = std::max(0, std::min(24, currentConfig.maxStudyHoursPerDay));
-    currentConfig.targetGrade = std::max(0.0f, std::min(20.0f, currentConfig.targetGrade));
-    currentConfig.summerStudyHoursCompleted = std::max(0, currentConfig.summerStudyHoursCompleted);
-    currentConfig.maxSubjectsPerDay = std::max(1, currentConfig.maxSubjectsPerDay);
-    currentConfig.studyBlockDurationMinutes = std::max(10, std::min(240, currentConfig.studyBlockDurationMinutes));
-    currentConfig.activeRecallMinutesPerDay = std::max(0, currentConfig.activeRecallMinutesPerDay);
-    if (currentConfig.theme != "light" && currentConfig.theme != "dark") {
-        currentConfig.theme = "dark";
-    }
+void CerveauConfig::setConfig(AppConfig newConfig) {
+    sanitize(newConfig);
+    currentConfig = std::move(newConfig);
 }

@@ -62,7 +62,11 @@ public:
     const AppConfig& getConfig() const;
     
     // Seule méthode autorisée pour modifier la configuration
-    void setConfig(const AppConfig& newConfig);
+    void setConfig(AppConfig newConfig);
+
+private:
+    // Nettoyage et validation des données (bornes, formats)
+    static void sanitize(AppConfig& c);
 };
 
 #endif // CERVEAU_CONFIG_H
