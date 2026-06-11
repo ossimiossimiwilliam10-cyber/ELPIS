@@ -209,6 +209,15 @@ app.get('/api/orchestrateur', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Le Pont (Bridge) est démarré sur http://localhost:${PORT}`);
+const REACT_BUILD_DIR = path.join(ROOT_DIR, 'interface', 'web', 'dist');
+app.use(express.static(REACT_BUILD_DIR));
+
+// Route de fallback pour l'application React (SPA)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(REACT_BUILD_DIR, 'index.html'));
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Le Pont (Bridge) est démarré sur http://0.0.0.0:${PORT}`);
+    console.log(`L'interface est accessible depuis n'importe où !`);
 });
