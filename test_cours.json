@@ -1,0 +1,26 @@
+{
+    "semestres": [
+        {
+            "nom": "Semestre 1",
+            "ues": [
+                {
+                    "matieres": [
+                        {
+                            "listeCM": [
+                                {
+                                    "derniereRevision": "",
+                                    "jActuel": 0,
+                                    "titre": "CM1 Espaces Vectoriels"
+                                }
+                            ],
+                            "listeTD": [],
+                            "listeTP": [],
+                            "nom": "Algèbre"
+                        }
+                    ],
+                    "nom": "UE1 Math"
+                }
+            ]
+        }
+    ]
+}
