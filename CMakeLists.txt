@@ -23,5 +23,7 @@ target_include_directories(moteur_cours PRIVATE lib)
 add_executable(moteur_principal
     moteur/moteur_menu_principal/main_principal.cpp
     moteur/moteur_menu_principal/CerveauPrincipal.cpp
+    moteur/moteur_menu_configuration/CerveauConfig.cpp
+    moteur/moteur_menu_cours/CerveauCours.cpp
 )
 target_include_directories(moteur_principal PRIVATE lib)

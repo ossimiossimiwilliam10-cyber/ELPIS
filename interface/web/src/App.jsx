@@ -137,33 +137,16 @@ function App() {
             <h2 style={{marginBottom:'2rem'}}>Préférences Générales</h2>
             
             <div style={{marginBottom:'1.5rem'}}>
-              <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heures de sommeil (par nuit) :</label>
+              <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heures d'étude par jour :</label>
               <input 
                 type="number" 
-                value={config.objectif?.heuresSommeil || 0}
+                value={config.maxStudyHoursPerDay || 0}
                 onChange={e => {
                   const newConf = {...config};
-                  if(!newConf.objectif) newConf.objectif = {};
-                  newConf.objectif.heuresSommeil = parseInt(e.target.value) || 0;
+                  newConf.maxStudyHoursPerDay = parseInt(e.target.value) || 0;
                   setConfig(newConf);
                 }}
                 min="0" max="24"
-                style={{width:'100%', maxWidth:'200px'}}
-              />
-            </div>
-            
-            <div style={{marginBottom:'2rem'}}>
-              <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heures de travail (par semaine) :</label>
-              <input 
-                type="number" 
-                value={config.objectif?.heuresTravailPersonnel || 0}
-                onChange={e => {
-                  const newConf = {...config};
-                  if(!newConf.objectif) newConf.objectif = {};
-                  newConf.objectif.heuresTravailPersonnel = parseInt(e.target.value) || 0;
-                  setConfig(newConf);
-                }}
-                min="0" max="168"
                 style={{width:'100%', maxWidth:'200px'}}
               />
             </div>

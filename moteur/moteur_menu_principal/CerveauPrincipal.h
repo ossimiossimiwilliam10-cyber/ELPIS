@@ -2,15 +2,9 @@
 #define CERVEAU_PRINCIPAL_H
 
 #include <string>
-#include <vector>
 #include "../../lib/json.hpp"
-
-struct TacheDuJour {
-    std::string matiere;
-    std::string type; // "CM", "TD", "TP"
-    std::string titre;
-    int dureeMinutes = 0;
-};
+#include "../moteur_menu_configuration/CerveauConfig.h"
+#include "../moteur_menu_cours/CerveauCours.h"
 
 class CerveauPrincipal {
 public:
@@ -20,11 +14,8 @@ public:
 private:
     std::string configPath;
     std::string coursPath;
-    nlohmann::json configJson;
-    nlohmann::json coursJson;
 
-    bool loadData();
-    std::string getTodayString();
+    std::string getTodayString() const;
 };
 
 #endif
