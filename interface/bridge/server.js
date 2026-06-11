@@ -159,20 +159,27 @@ app.post('/api/scan-pdf', upload.single('pdfFile'), async (req, res) => {
 
         let exercises = [];
         pagesText.forEach((pageText, index) => {
-            const regex = /(?:exercice|ex|probl[èe]me)\s*([0-9]+)/gi;
-            let match;
-            while ((match = regex.exec(pageText)) !== null) {
-                // Éviter les doublons sur la même page
-                if (!exercises.find(e => e.titre.toLowerCase() === match[0].toLowerCase() && e.page === index + 1)) {
-                    exercises.push({
-                        titre: match[0],
-                        page: index + 1,
-                        pdfSource: fileUrl,
-                        dernierePratique: "",
-                        nombrePratiques: 0
-                    });
+            const patterns = [
+                /(?:exercice|exercise|ex|exo)\s*(?:n°|#)?\s*(\d+(?:\.\d+)?)/gi,
+                /(?:question|q|qu)\s*(?:n°|#)?\s*(\d+(?:\.\d+)?)/gi,
+                /(?:problem|problème|prob|pb)\s*(?:set)?\s*(\d+(?:\.\d+)?)/gi
+            ];
+            
+            patterns.forEach(regex => {
+                let match;
+                while ((match = regex.exec(pageText)) !== null) {
+                    // Éviter les doublons sur la même page
+                    if (!exercises.find(e => e.titre.toLowerCase() === match[0].toLowerCase() && e.page === index + 1)) {
+                        exercises.push({
+                            titre: match[0].trim(),
+                            page: index + 1,
+                            pdfSource: fileUrl,
+                            dernierePratique: "",
+                            nombrePratiques: 0
+                        });
+                    }
                 }
-            }
+            });
         });
 
         res.json({ success: true, url: fileUrl, exercises });

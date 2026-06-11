@@ -128,6 +128,14 @@ function Dashboard({ coursConfig, onSaveCours }) {
           <h1>Tableau de Bord</h1>
           <p style={{color:'var(--text-secondary)', marginTop:'-1.5rem', fontSize:'1.1rem'}}>Vue d'ensemble de ton énergie et de tes objectifs.</p>
         </div>
+        <button 
+          className="btn-secondary" 
+          onClick={() => window.print()} 
+          style={{padding: '0.8rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem'}}
+          title="Imprimer ou sauvegarder le planning en PDF"
+        >
+          📄 Exporter PDF
+        </button>
       </div>
 
       <div className="dashboard-grid">

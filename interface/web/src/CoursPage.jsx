@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 function CoursPage({ coursConfig, onSave, saving }) {
   const [configLocal, setConfigLocal] = useState(coursConfig || { semestres: [] });
+  const [isScanning, setIsScanning] = useState(false);
 
   const updateConfig = (newConf) => {
     setConfigLocal(newConf);
@@ -68,9 +69,11 @@ function CoursPage({ coursConfig, onSave, saving }) {
   };
 
   const deleteCM = (sIndex, uIndex, mIndex, cmIndex) => {
-    const newConf = { ...configLocal };
-    newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM.splice(cmIndex, 1);
-    updateConfig(newConf);
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce CM ?")) {
+      const newConf = { ...configLocal };
+      newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM.splice(cmIndex, 1);
+      updateConfig(newConf);
+    }
   };
 
   const addTDManuel = (sIndex, uIndex, mIndex) => {
@@ -87,9 +90,11 @@ function CoursPage({ coursConfig, onSave, saving }) {
   };
 
   const deleteTD = (sIndex, uIndex, mIndex, tdIndex) => {
-    const newConf = { ...configLocal };
-    newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD.splice(tdIndex, 1);
-    updateConfig(newConf);
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce TD ?")) {
+      const newConf = { ...configLocal };
+      newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD.splice(tdIndex, 1);
+      updateConfig(newConf);
+    }
   };
 
   const addTPManuel = (sIndex, uIndex, mIndex) => {
@@ -106,9 +111,11 @@ function CoursPage({ coursConfig, onSave, saving }) {
   };
 
   const deleteTP = (sIndex, uIndex, mIndex, tpIndex) => {
-    const newConf = { ...configLocal };
-    newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.splice(tpIndex, 1);
-    updateConfig(newConf);
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce TP ?")) {
+      const newConf = { ...configLocal };
+      newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.splice(tpIndex, 1);
+      updateConfig(newConf);
+    }
   };
 
   const updateNomMatiere = (sIndex, uIndex, mIndex, val) => {
@@ -125,6 +132,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
 
   const handleFileUpload = async (sIndex, uIndex, mIndex, file, type) => {
     if (!file) return;
+    setIsScanning(true);
     const formData = new FormData();
     formData.append('pdfFile', file);
     try {
@@ -150,6 +158,8 @@ function CoursPage({ coursConfig, onSave, saving }) {
       }
     } catch(err) {
       alert("Erreur lors de la communication avec le serveur Node.js.");
+    } finally {
+      setIsScanning(false);
     }
   };
 
@@ -345,9 +355,10 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                     id={`td-upload-${sIndex}-${uIndex}-${mIndex}`}
                                     style={{display:'none'}}
                                     onChange={(e) => handleFileUpload(sIndex, uIndex, mIndex, e.target.files[0], 'TD')}
+                                    disabled={isScanning}
                                   />
-                                  <label htmlFor={`td-upload-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor:'pointer', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>
-                                    Scanner PDF
+                                  <label htmlFor={`td-upload-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--success-color)', border:'1px solid var(--success-glow)', opacity: isScanning ? 0.5 : 1}}>
+                                    {isScanning ? 'Scan en cours ⏳...' : 'Scanner PDF'}
                                   </label>
                                 </div>
                               </div>
@@ -387,9 +398,10 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                     id={`tp-upload-${sIndex}-${uIndex}-${mIndex}`}
                                     style={{display:'none'}}
                                     onChange={(e) => handleFileUpload(sIndex, uIndex, mIndex, e.target.files[0], 'TP')}
+                                    disabled={isScanning}
                                   />
-                                  <label htmlFor={`tp-upload-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor:'pointer', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>
-                                    Scanner PDF
+                                  <label htmlFor={`tp-upload-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)', opacity: isScanning ? 0.5 : 1}}>
+                                    {isScanning ? 'Scan en cours ⏳...' : 'Scanner PDF'}
                                   </label>
                                 </div>
                               </div>

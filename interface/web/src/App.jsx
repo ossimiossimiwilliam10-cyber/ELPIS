@@ -58,9 +58,21 @@ function App() {
   };
 
   const removeFixedCommitment = (index) => {
-    const newConf = { ...config };
-    newConf.fixedCommitments.splice(index, 1);
-    setConfig(newConf);
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet engagement ?")) {
+      const newConf = { ...config };
+      newConf.fixedCommitments.splice(index, 1);
+      setConfig(newConf);
+    }
+  };
+
+  const downloadBackup = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(coursConfig, null, 4));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "espoir_cours_backup.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
   };
 
   const updateFixedCommitment = (index, field, value) => {
@@ -245,7 +257,14 @@ function App() {
                 <button className="btn-secondary" style={{marginTop:'1rem'}} onClick={addFixedCommitment}>+ Ajouter un Engagement</button>
               </div>
 
-              <div style={{borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem', textAlign:'right'}}>
+              <div style={{borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <button 
+                  className="btn-secondary"
+                  onClick={downloadBackup}
+                  title="Télécharger une sauvegarde locale de vos cours et exercices"
+                >
+                  💾 Exporter Backup (JSON)
+                </button>
                 <button 
                   className="btn-primary"
                   onClick={handleSaveConfig}

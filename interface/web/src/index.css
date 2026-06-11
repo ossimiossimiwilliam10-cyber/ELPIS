@@ -377,3 +377,13 @@ input:focus, select:focus {
   height: 100%;
   transition: width 0.5s ease-out, background-color 0.3s ease;
 }
+
+@media print {
+  .sidebar { display: none !important; }
+  .btn-primary, .btn-secondary, button { display: none !important; }
+  .app-layout { grid-template-columns: 1fr !important; }
+  .main-content { padding: 0 !important; overflow: visible !important; max-height: none !important; }
+  body { background: white !important; color: black !important; }
+  .card, .glass-panel { box-shadow: none !important; border: 1px solid #ccc !important; background: white !important; color: black !important; }
+  * { color: black !important; }
+}
