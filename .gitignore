@@ -9,3 +9,7 @@ build/
 # Dépendances Node (pour la future interface)
 node_modules/
 .env
+
+# Données personnelles (PDFs et suivi)
+fiches_revision/
+espoir_cours.json

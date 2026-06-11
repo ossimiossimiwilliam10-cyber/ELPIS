@@ -6,8 +6,6 @@
 #include <cstdio>
 #include "../../lib/json.hpp"
 
-using json = nlohmann::json;
-
 CerveauConfig::CerveauConfig(const std::string& path) : configFilePath(path) {
     // Les valeurs par défaut sont désormais gérées directement dans AppConfig (CerveauConfig.h)
 }
@@ -31,7 +29,7 @@ bool CerveauConfig::loadConfig() {
         return false;
     }
 
-    json j;
+    nlohmann::json j;
     try {
         file >> j;
         
@@ -89,7 +87,7 @@ bool CerveauConfig::loadConfig() {
 }
 
 bool CerveauConfig::saveConfig() {
-    json j;
+    nlohmann::json j;
     j["studyStartDate"] = currentConfig.studyStartDate;
     j["bedtime"] = currentConfig.bedtime;
     j["wakeUpTime"] = currentConfig.wakeUpTime;
@@ -101,12 +99,12 @@ bool CerveauConfig::saveConfig() {
     j["activeRecallMinutesPerDay"] = currentConfig.activeRecallMinutesPerDay;
     j["theme"] = currentConfig.theme;
 
-    json subjectsJson = json::array();
+    nlohmann::json subjectsJson = nlohmann::json::array();
     for (const auto& s : currentConfig.subjects) {
-        json subj;
+        nlohmann::json subj;
         subj["name"] = s.name;
         subj["color"] = s.color;
-        json dates = json::array();
+        nlohmann::json dates = nlohmann::json::array();
         for (const auto& d : s.examDates) {
             dates.push_back(d);
         }
@@ -115,9 +113,9 @@ bool CerveauConfig::saveConfig() {
     }
     j["subjects"] = subjectsJson;
 
-    json commitmentsJson = json::array();
+    nlohmann::json commitmentsJson = nlohmann::json::array();
     for (const auto& fc : currentConfig.fixedCommitments) {
-        json commit;
+        nlohmann::json commit;
         commit["title"] = fc.title;
         commit["dayOfWeek"] = fc.dayOfWeek;
         commit["startTime"] = fc.startTime;
@@ -143,7 +141,8 @@ bool CerveauConfig::saveConfig() {
     }
     file.close();
 
-    // Renommage atomique avec std::rename (écrasement garanti sous MSYS2/MinGW)
+    // Renommage (Windows C Runtime nécessite que la cible n'existe pas pour std::rename)
+    std::remove(configFilePath.c_str());
     if (std::rename(tempFilePath.c_str(), configFilePath.c_str()) != 0) {
         std::cerr << "Erreur lors du renommage atomique vers " << configFilePath << std::endl;
         return false;
