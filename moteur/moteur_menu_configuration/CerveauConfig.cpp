@@ -4,7 +4,7 @@
 #include <string>
 #include <algorithm> // Pour std::max et std::min
 #include <filesystem>
-#include "../../../lib/json.hpp" // Rétabli pour satisfaire l'analyse de dépendance statique
+#include "../../lib/json.hpp"
 
 using json = nlohmann::json;
 
