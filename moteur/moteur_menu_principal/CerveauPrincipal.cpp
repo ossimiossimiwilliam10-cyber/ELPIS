@@ -1,4 +1,5 @@
 #include "CerveauPrincipal.h"
+#include "../../lib/json.hpp"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -16,7 +17,14 @@ std::string CerveauPrincipal::getTodayString() const {
     return oss.str();
 }
 
-nlohmann::json CerveauPrincipal::genererRapportQuotidien() {
+std::string CerveauPrincipal::getDayOfWeekString() const {
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+    const char* days[] = {"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"};
+    return days[tm.tm_wday];
+}
+
+std::string CerveauPrincipal::genererRapportQuotidien() {
     nlohmann::json rapport;
 
     CerveauConfig configBrain(configPath);
@@ -28,15 +36,36 @@ nlohmann::json CerveauPrincipal::genererRapportQuotidien() {
     CerveauCours coursBrain(coursPath);
     if (!coursBrain.loadConfig()) {
         rapport["error"] = "Impossible de charger les cours (CerveauCours).";
-        return rapport;
+        return rapport.dump();
     }
 
     const AppConfig& cfg = configBrain.getConfig();
     const CoursConfig& crs = coursBrain.getConfig();
 
-    // 1. Calcul du temps libre
+    // 1. Calcul du temps libre de base
     int heuresTravailJour = std::max(1, cfg.maxStudyHoursPerDay); // eviter zero
     int tempsLibreMin = heuresTravailJour * 60; // Temps moyen par jour
+
+    // Soustraction des Fixed Commitments du jour
+    std::string todayDayOfWeek = getDayOfWeekString();
+    for (const auto& fc : cfg.fixedCommitments) {
+        if (fc.dayOfWeek == todayDayOfWeek || fc.dayOfWeek == "Tous les jours") {
+            // Calcul basique de durée (ex: "08:00" à "10:00")
+            int startH = 0, startM = 0, endH = 0, endM = 0;
+            if (fc.startTime.length() >= 5 && fc.endTime.length() >= 5) {
+                startH = std::stoi(fc.startTime.substr(0, 2));
+                startM = std::stoi(fc.startTime.substr(3, 2));
+                endH = std::stoi(fc.endTime.substr(0, 2));
+                endM = std::stoi(fc.endTime.substr(3, 2));
+                int duration = (endH * 60 + endM) - (startH * 60 + startM);
+                if (duration > 0) {
+                    tempsLibreMin -= duration;
+                }
+            }
+        }
+    }
+    if (tempsLibreMin < 0) tempsLibreMin = 0;
+
     rapport["tempsDispoMin"] = tempsLibreMin;
 
     std::vector<nlohmann::json> tachesJson;
@@ -126,5 +155,5 @@ nlohmann::json CerveauPrincipal::genererRapportQuotidien() {
     rapport["tachesDuJour"] = tachesJson;
     rapport["statut"] = (tempsRequisMin > tempsLibreMin) ? "SURCHARGE" : "OK";
 
-    return rapport;
+    return rapport.dump();
 }

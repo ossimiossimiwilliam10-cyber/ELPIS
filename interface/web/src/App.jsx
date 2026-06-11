@@ -3,6 +3,7 @@ import './index.css';
 import CoursPage from './CoursPage';
 import EntrainementPage from './EntrainementPage';
 import Dashboard from './Dashboard';
+import Sidebar from './Sidebar';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -20,7 +21,6 @@ function App() {
   const [savingCours, setSavingCours] = useState(false);
 
   useEffect(() => {
-    // Charger la Config
     fetch('http://localhost:3001/api/config')
       .then(res => res.json())
       .then(data => {
@@ -32,7 +32,6 @@ function App() {
         setLoading(false);
       });
 
-    // Charger les Cours
     fetch('http://localhost:3001/api/cours')
       .then(res => res.json())
       .then(data => {
@@ -93,40 +92,10 @@ function App() {
   if (loading || loadingCours) return <div style={{textAlign:'center', marginTop:'5rem'}}>Initialisation des Cerveaux...</div>;
 
   return (
-    <div className="app-container">
-      <header style={{textAlign:'center', marginBottom:'3rem'}}>
-        <h1 style={{marginBottom:'0.5rem'}}>ELPIS</h1>
-        <p style={{color:'var(--text-secondary)', fontSize:'1.2rem', marginTop:0}}>Compagnon d'Étude Intelligent</p>
-      </header>
+    <div className="app-layout">
+      <Sidebar activeTab={activeTab} setActiveTab={(t) => { setActiveTab(t); setSuccessMsg(''); setError(''); }} />
 
-      <nav className="nav-tabs">
-        <button 
-          className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('dashboard'); setSuccessMsg(''); setError(''); }}
-        >
-          🏠 Accueil
-        </button>
-        <button 
-          className={`nav-tab ${activeTab === 'entrainement' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('entrainement'); setSuccessMsg(''); setError(''); }}
-        >
-          🏋️ Entraînement
-        </button>
-        <button 
-          className={`nav-tab ${activeTab === 'cours' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('cours'); setSuccessMsg(''); setError(''); }}
-        >
-          📚 Mes Cours
-        </button>
-        <button 
-          className={`nav-tab ${activeTab === 'config' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('config'); setSuccessMsg(''); setError(''); }}
-        >
-          ⚙️ Configuration
-        </button>
-      </nav>
-
-      <main>
+      <main className="main-content">
         {error && <div style={{background:'rgba(239, 68, 68, 0.1)', color:'var(--danger-color)', padding:'1rem', borderRadius:'8px', marginBottom:'1rem'}}>❌ {error}</div>}
         {successMsg && <div style={{background:'rgba(16, 185, 129, 0.1)', color:'var(--success-color)', padding:'1rem', borderRadius:'8px', marginBottom:'1rem'}}>✅ {successMsg}</div>}
 
@@ -147,6 +116,20 @@ function App() {
                   setConfig(newConf);
                 }}
                 min="0" max="24"
+                style={{width:'100%', maxWidth:'200px'}}
+              />
+            </div>
+            
+            <div style={{marginBottom:'2rem'}}>
+              <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heure de coucher :</label>
+              <input 
+                type="time" 
+                value={config.bedtime || "23:00"}
+                onChange={e => {
+                  const newConf = {...config};
+                  newConf.bedtime = e.target.value;
+                  setConfig(newConf);
+                }}
                 style={{width:'100%', maxWidth:'200px'}}
               />
             </div>

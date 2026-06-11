@@ -9,10 +9,9 @@ int main(int argc, char* argv[]) {
     }
 
     CerveauPrincipal cerveau(argv[1], argv[2]);
-    nlohmann::json rapport = cerveau.genererRapportQuotidien();
+    std::string rapport = cerveau.genererRapportQuotidien();
     
-    std::cout << "SUCCESS_PRINCIPAL\n";
-    std::cout << rapport.dump() << std::endl;
+    std::cout << rapport << std::endl;
 
     return 0;
 }
