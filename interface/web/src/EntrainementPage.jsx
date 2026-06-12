@@ -1,9 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
 function EntrainementPage({ coursConfig, onSave, saving }) {
   const [configLocal, setConfigLocal] = useState(coursConfig || { semestres: [] });
+
+  // Resynchroniser le state local quand le parent change (ex: import backup)
+  useEffect(() => {
+    if (coursConfig) {
+      setConfigLocal(JSON.parse(JSON.stringify(coursConfig)));
+    }
+  }, [coursConfig]);
 
   // Récupération des exercices du jour
   const exercicesDuJour = useMemo(() => {

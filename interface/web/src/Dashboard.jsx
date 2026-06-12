@@ -184,7 +184,7 @@ function Dashboard({ coursConfig, onSaveCours }) {
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'2rem'}}>
         <div>
           <h1>Tableau de Bord</h1>
-          <p style={{color:'var(--text-secondary)', marginTop:'-1.5rem', fontSize:'1.1rem'}}>Vue d'ensemble de ton énergie et de tes objectifs.</p>
+          <p style={{color:'var(--text-secondary)', marginTop:'0.25rem', fontSize:'1.1rem'}}>Vue d'ensemble de ton énergie et de tes objectifs.</p>
         </div>
         <button 
           className="btn-secondary" 
