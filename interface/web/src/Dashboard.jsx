@@ -111,6 +111,32 @@ function Dashboard({ coursConfig, onSaveCours }) {
     }
   };
 
+  const getStats = () => {
+    if (!coursConfig) return { total: 0, done: 0, perMatiere: [] };
+    let total = 0;
+    let done = 0;
+    let perMatiere = [];
+
+    coursConfig.semestres?.forEach(s => {
+      s.ues?.forEach(u => {
+        u.matieres?.forEach(m => {
+          let mTotal = 0;
+          let mDone = 0;
+          if (m.listeCM) { mTotal += m.listeCM.length; mDone += m.listeCM.filter(cm => cm.jActuel > 0).length; }
+          if (m.listeTD) { mTotal += m.listeTD.length; mDone += m.listeTD.filter(td => td.nombrePratiques > 0).length; }
+          if (m.listeTP) { mTotal += m.listeTP.length; mDone += m.listeTP.filter(tp => tp.nombrePratiques > 0).length; }
+          total += mTotal;
+          done += mDone;
+          if (mTotal > 0) perMatiere.push({ nom: m.nom, total: mTotal, done: mDone, percent: Math.round((mDone/mTotal)*100) });
+        });
+      });
+    });
+    return { total, done, perMatiere };
+  };
+
+  const stats = getStats();
+  const globalPercent = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
+
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
     show: { opacity: 1, x: 0 }
@@ -255,6 +281,45 @@ function Dashboard({ coursConfig, onSaveCours }) {
           )}
         </motion.div>
       </div>
+
+      <motion.div 
+        className="card glass-panel"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        style={{ marginTop: '2rem' }}
+      >
+        <h2>📈 Statistiques de Progression</h2>
+        <div style={{display:'flex', gap:'2rem', alignItems:'center', marginBottom:'1.5rem', flexWrap: 'wrap'}}>
+          <div style={{width:'100px', height:'100px', borderRadius:'50%', background:`conic-gradient(var(--success-color) ${globalPercent}%, var(--bg-tertiary) 0)`, display:'flex', alignItems:'center', justifyContent:'center', position:'relative'}}>
+            <div style={{width:'80px', height:'80px', borderRadius:'50%', background:'var(--bg-secondary)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.2rem', fontWeight:'bold', color:'var(--text-primary)'}}>
+              {globalPercent}%
+            </div>
+          </div>
+          <div>
+            <h3 style={{marginTop:0}}>Progression Globale</h3>
+            <p style={{color:'var(--text-secondary)'}}>{stats.done} objectifs (CM/TD/TP) réalisés sur {stats.total} programmés au total.</p>
+          </div>
+        </div>
+
+        {stats.perMatiere.length > 0 ? (
+          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px, 1fr))', gap:'1rem'}}>
+            {stats.perMatiere.map(m => (
+              <div key={m.nom} style={{background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', border:'1px solid var(--bg-tertiary)'}}>
+                <div style={{display:'flex', justifyContent:'space-between', marginBottom:'0.5rem'}}>
+                  <strong style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}} title={m.nom}>{m.nom}</strong>
+                  <span style={{color:'var(--success-color)', fontWeight:'bold'}}>{m.percent}%</span>
+                </div>
+                <div className="progress-bar-container" style={{height:'6px', marginTop:0}}>
+                  <div className="progress-bar-fill" style={{width:`${m.percent}%`, background:'var(--success-color)'}}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{color:'var(--text-secondary)'}}>Aucune donnée disponible. Ajoute des cours pour voir tes statistiques.</p>
+        )}
+      </motion.div>
     </motion.div>
   );
 }

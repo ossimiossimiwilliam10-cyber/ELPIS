@@ -8,6 +8,16 @@ import Sidebar from './Sidebar';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+  }, [theme]);
   
   // States pour la Config
   const [config, setConfig] = useState(null);
@@ -147,7 +157,12 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar activeTab={activeTab} setActiveTab={(t) => { setActiveTab(t); setSuccessMsg(''); setError(''); }} />
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={(t) => { setActiveTab(t); setSuccessMsg(''); setError(''); }} 
+        theme={theme}
+        setTheme={setTheme}
+      />
 
       <main className="main-content">
         {error && <div style={{background:'rgba(239, 68, 68, 0.1)', color:'var(--danger-color)', border:'1px solid var(--danger-color)', padding:'1rem', borderRadius:'8px', marginBottom:'1rem'}}>❌ {error}</div>}
