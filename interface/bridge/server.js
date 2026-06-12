@@ -160,17 +160,12 @@ app.post('/api/scan-pdf', upload.single('pdfFile'), async (req, res) => {
         let exercises = [];
         pagesText.forEach((pageText, index) => {
             const patterns = [
-                // Français : Exercice 1, Ex. 2, Exo n°3, etc.
+                // Exercices classiques
                 /(?:exercice|exercise|ex\.?|exo)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
-                // Question / Problème
-                /(?:question|qu?\.)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+                // Problèmes
                 /(?:probl[eè]me|problem|prob|pb)[\s.:]*(?:set)?\s*(\d+(?:[.\-]\d+)?)/gi,
-                // Série / Partie / Chapitre
-                /(?:s[ée]rie|partie|chapitre|chap\.?)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
-                // Activité / Application / Travail
-                /(?:activit[ée]|application|travail|tp|td)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
-                // Numéros romains seuls en début de section : I., II., III., IV.
-                /(?:^|\n)\s*((?:I{1,3}|IV|VI{0,3}|IX|XI{0,3}|XIV|XV))\s*[.):\-]/gm,
+                // Questions isolées
+                /(?:question)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi
             ];
             
             patterns.forEach(regex => {

@@ -84,11 +84,34 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                     bool doitReviser = false;
                     if (cm.derniereRevision.empty()) {
                         doitReviser = true;
-                    } else if (cm.derniereRevision != todayStr) {
-                        // Méthode de répétition espacée basique
-                        // Dans un cas réel, on calculerait diff Jours. 
-                        // Ici on simplifie: on déclenche si la date est différente
-                        doitReviser = true;
+                    } else {
+                        // Implémentation réelle de la méthode des J
+                        std::tm tmRev = {};
+                        std::istringstream ss(cm.derniereRevision);
+                        ss >> std::get_time(&tmRev, "%Y-%m-%d");
+                        
+                        if (!ss.fail()) {
+                            // Normalisation à minuit pour comparer en jours pleins
+                            tmRev.tm_hour = 0; tmRev.tm_min = 0; tmRev.tm_sec = 0;
+                            std::time_t tRev = std::mktime(&tmRev);
+                            
+                            std::time_t tNow = std::time(nullptr);
+                            std::tm* tmNow = std::localtime(&tNow);
+                            tmNow->tm_hour = 0; tmNow->tm_min = 0; tmNow->tm_sec = 0;
+                            tNow = std::mktime(tmNow);
+                            
+                            double seconds = std::difftime(tNow, tRev);
+                            int joursEcoules = static_cast<int>(seconds / (60 * 60 * 24));
+                            
+                            if (joursEcoules >= cm.jActuel && cm.jActuel > 0) {
+                                doitReviser = true;
+                            } else if (cm.jActuel == 0 && joursEcoules > 0) {
+                                // J0 doit être revu s'il n'a pas été revu aujourd'hui
+                                doitReviser = true;
+                            }
+                        } else {
+                            doitReviser = true; // Date corrompue
+                        }
                     }
 
                     if (doitReviser) {

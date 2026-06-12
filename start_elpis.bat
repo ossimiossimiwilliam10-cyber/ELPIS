@@ -1,22 +1,35 @@
 @echo off
+color 0B
 title ELPIS - Ton Assistant d'Etude Personnel
+
 echo ========================================================
-echo Démarrage du serveur ELPIS...
-echo Nettoyage des anciens processus en arriere-plan...
-taskkill /F /IM node.exe >nul 2>&1
+echo.
+echo      [ ELPIS - ASSISTANT D'ETUDE INTELLIGENT ]
+echo.
+echo ========================================================
+echo.
+echo [*] Demarrage du systeme...
 
-cd /d "%~dp0\interface\bridge"
-start /b node server.js
+:: Liberer le port 3001 proprement sans tuer tous les processus Node
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":3001" ^| find "LISTENING"') do taskkill /F /PID %%a >nul 2>&1
 
-echo Le serveur est lance en arriere-plan.
-echo Lancement de l'interface dans ton navigateur...
+cd /d "%~dp0interface\bridge"
+start "ELPIS Server" /b node server.js
+
+echo [*] Serveur demarre en arriere-plan.
+echo [*] Lancement de l'interface web dans le navigateur...
 timeout /t 2 >nul
 start http://localhost:3001
 
 echo.
 echo ========================================================
-echo ELPIS est en cours d'execution !
-echo Tu peux fermer cette fenetre noire quand tu as fini.
-echo Pour eteindre completement ELPIS, ferme cette fenetre.
+echo [OK] ELPIS est en ligne !
+echo.
+echo Instructions :
+echo - L'application est disponible sur http://localhost:3001
+echo - Garde cette fenetre ouverte pendant ton utilisation.
+echo - Pour eteindre ELPIS, ferme simplement cette fenetre.
 echo ========================================================
+echo.
+
 pause >nul
