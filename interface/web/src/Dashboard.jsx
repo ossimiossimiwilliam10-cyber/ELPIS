@@ -69,7 +69,13 @@ function Dashboard({ coursConfig, onSaveCours }) {
               matiere.listeCM.forEach(cm => {
                 if (cm.titre === tache.titre) {
                   cm.derniereRevision = today;
-                  cm.jActuel = (cm.jActuel || 0) + 1;
+                  const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
+                  const currentIndex = J_SEQUENCE.indexOf(cm.jActuel || 0);
+                  if (currentIndex >= 0 && currentIndex < J_SEQUENCE.length - 1) {
+                    cm.jActuel = J_SEQUENCE[currentIndex + 1];
+                  } else if (currentIndex === -1) {
+                    cm.jActuel = 1;
+                  }
                   taskFound = true;
                 }
               });

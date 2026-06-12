@@ -229,6 +229,19 @@ function CoursPage({ coursConfig, onSave, saving }) {
     });
   };
 
+  const getNextReviewDate = (cm) => {
+    if (!cm.derniereRevision) return "Aujourd'hui";
+    if (cm.jActuel === 0) return "Aujourd'hui";
+    const date = new Date(cm.derniereRevision);
+    date.setDate(date.getDate() + cm.jActuel);
+    const diffTime = date.getTime() - new Date().getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 0) return "Aujourd'hui";
+    if (diffDays === 1) return "Demain";
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+  };
+
   const handleFileUpload = async (sIndex, uIndex, mIndex, file, type) => {
     if (!file) return;
     setIsScanning(true);
@@ -396,15 +409,20 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                 placeholder="Notes ou mémos..."
                               />
                             </div>
-                            <select 
-                              value={cm.jActuel}
-                              onChange={(e) => updateJActuel(sIndex, uIndex, mIndex, cmIndex, parseInt(e.target.value) || 0)}
-                              style={{padding:'0.3rem', fontSize:'0.8rem'}}
-                            >
-                              {J_SEQUENCE.map(j => (
-                                <option key={j} value={j}>J{j}</option>
-                              ))}
-                            </select>
+                            <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'0.2rem'}}>
+                              <select 
+                                value={cm.jActuel}
+                                onChange={(e) => updateJActuel(sIndex, uIndex, mIndex, cmIndex, parseInt(e.target.value) || 0)}
+                                style={{padding:'0.3rem', fontSize:'0.8rem'}}
+                              >
+                                {J_SEQUENCE.map(j => (
+                                  <option key={j} value={j}>J{j}</option>
+                                ))}
+                              </select>
+                              <span style={{fontSize:'0.65rem', color:'var(--text-secondary)'}}>
+                                {getNextReviewDate(cm)}
+                              </span>
+                            </div>
                           </div>
                         ))}
 
