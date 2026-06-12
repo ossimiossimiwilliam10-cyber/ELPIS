@@ -31,11 +31,45 @@ function App() {
   const [loadingCours, setLoadingCours] = useState(true);
   const [savingCours, setSavingCours] = useState(false);
 
+  const calculateStreak = (configData) => {
+    const today = new Date().toISOString().split('T')[0];
+    let streak = configData.currentStreak || 0;
+    let lastActive = configData.lastActiveDate || "";
+
+    if (lastActive !== today) {
+      if (lastActive) {
+        const lastDate = new Date(lastActive);
+        const todayDate = new Date(today);
+        const diffTime = Math.abs(todayDate - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays === 1) {
+          streak += 1;
+        } else {
+          streak = 1;
+        }
+      } else {
+        streak = 1;
+      }
+      
+      const newConfig = { ...configData, lastActiveDate: today, currentStreak: streak };
+      setConfig(newConfig);
+      
+      // Quiet save
+      fetch('http://localhost:3001/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newConfig)
+      }).catch(err => console.error("Streak save failed", err));
+    } else {
+      setConfig(configData);
+    }
+  };
+
   useEffect(() => {
     fetch('http://localhost:3001/api/config')
       .then(res => res.json())
       .then(data => {
-        setConfig(data);
+        calculateStreak(data);
         setLoading(false);
       })
       .catch(err => {
@@ -216,6 +250,7 @@ function App() {
         setActiveTab={(t) => { setActiveTab(t); setSuccessMsg(''); setError(''); }} 
         theme={theme}
         setTheme={setTheme}
+        streak={config?.currentStreak || 0}
       />
 
       <main className="main-content">

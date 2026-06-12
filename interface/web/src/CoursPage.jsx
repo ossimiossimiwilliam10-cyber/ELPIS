@@ -4,6 +4,30 @@ import { motion, AnimatePresence } from 'framer-motion';
 function CoursPage({ coursConfig, onSave, saving }) {
   const [configLocal, setConfigLocal] = useState(coursConfig || { semestres: [] });
   const [isScanning, setIsScanning] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const matchesSearch = (str) => {
+    if (!searchTerm.trim()) return true;
+    return str?.toLowerCase().includes(searchTerm.toLowerCase());
+  };
+
+  const ueMatchesSearch = (ue) => {
+    if (matchesSearch(ue.nom)) return true;
+    return ue.matieres?.some(m => matiereMatchesSearch(m));
+  };
+
+  const matiereMatchesSearch = (m) => {
+    if (matchesSearch(m.nom)) return true;
+    if (m.listeCM?.some(cm => matchesSearch(cm.titre) || matchesSearch(cm.notes))) return true;
+    if (m.listeTD?.some(td => matchesSearch(td.titre) || matchesSearch(td.notes))) return true;
+    if (m.listeTP?.some(tp => matchesSearch(tp.titre) || matchesSearch(tp.notes))) return true;
+    return false;
+  };
+
+  const semestreMatchesSearch = (semestre) => {
+    if (matchesSearch(semestre.nom)) return true;
+    return semestre.ues?.some(ue => ueMatchesSearch(ue));
+  };
 
   const updateConfig = (newConf) => {
     setConfigLocal(newConf);
@@ -198,7 +222,14 @@ function CoursPage({ coursConfig, onSave, saving }) {
           <h2 style={{margin:0}}>Architecture des Cours</h2>
           <p style={{color:'var(--text-secondary)', marginTop:'0.5rem'}}>Gère tes Semestres, Unités d'Enseignement et Matières.</p>
         </div>
-        <div style={{display:'flex', gap:'1rem'}}>
+        <div style={{display:'flex', gap:'1rem', alignItems: 'center'}}>
+          <input 
+            type="text"
+            placeholder="🔍 Rechercher (Matière, CM, Notes...)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--bg-tertiary)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', width: '250px'}}
+          />
           <button className="btn-secondary" onClick={addSemestre}>+ Ajouter un Semestre</button>
           <button className="btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Synchronisation...' : 'Sauvegarder'}
@@ -208,7 +239,9 @@ function CoursPage({ coursConfig, onSave, saving }) {
 
       <div style={{display:'flex', flexDirection:'column', gap:'2rem'}}>
         <AnimatePresence>
-          {configLocal.semestres?.map((semestre, sIndex) => (
+          {configLocal.semestres?.map((semestre, sIndex) => {
+            if (!semestreMatchesSearch(semestre)) return null;
+            return (
             <motion.div 
               key={sIndex + (semestre.nom || '')} 
               variants={itemVariants}
@@ -239,7 +272,9 @@ function CoursPage({ coursConfig, onSave, saving }) {
 
               <div style={{display:'flex', flexDirection:'column', gap:'1.5rem', marginLeft:'1rem'}}>
                 <AnimatePresence>
-                  {semestre.ues?.map((ue, uIndex) => (
+                  {semestre.ues?.map((ue, uIndex) => {
+                    if (!ueMatchesSearch(ue)) return null;
+                    return (
                     <motion.div 
                       key={uIndex + (ue.nom || '')} 
                       variants={itemVariants}
@@ -278,9 +313,11 @@ function CoursPage({ coursConfig, onSave, saving }) {
                       </div>
 
                       <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(350px, 1fr))', gap:'1rem'}}>
-                        <AnimatePresence>
-                          {ue.matieres?.map((matiere, mIndex) => (
-                            <motion.div 
+                          <AnimatePresence>
+                            {ue.matieres?.map((matiere, mIndex) => {
+                              if (!matiereMatchesSearch(matiere)) return null;
+                              return (
+                              <motion.div 
                               key={mIndex + (matiere.nom || '')}
                               variants={itemVariants}
                               initial="hidden"
@@ -314,17 +351,30 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                     style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'0.5rem', borderRadius:'4px'}}
                                   >
                                     <button onClick={() => deleteCM(sIndex, uIndex, mIndex, cmIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}} title="Supprimer ce CM">❌</button>
-                                    <input 
-                                      type="text" 
-                                      value={cm.titre}
-                                      onChange={(e) => {
-                                        const newConf = {...configLocal};
-                                        newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex].titre = e.target.value;
-                                        updateConfig(newConf);
-                                      }}
-                                      placeholder="ex: CM1"
-                                      style={{flex: 1, padding:'0.3rem', fontSize:'0.8rem'}}
-                                    />
+                                    <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                                      <input 
+                                        type="text" 
+                                        value={cm.titre}
+                                        onChange={(e) => {
+                                          const newConf = {...configLocal};
+                                          newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex].titre = e.target.value;
+                                          updateConfig(newConf);
+                                        }}
+                                        placeholder="ex: CM1"
+                                        style={{padding:'0.3rem', fontSize:'0.8rem'}}
+                                      />
+                                      <input 
+                                        type="text"
+                                        value={cm.notes || ''}
+                                        onChange={(e) => {
+                                          const newConf = {...configLocal};
+                                          newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex].notes = e.target.value;
+                                          updateConfig(newConf);
+                                        }}
+                                        placeholder="Notes ou mémos..."
+                                        style={{padding:'0.3rem', fontSize:'0.75rem', background: 'transparent', border: '1px dashed rgba(255,255,255,0.1)', color: 'var(--text-secondary)'}}
+                                      />
+                                    </div>
                                     <select 
                                       value={cm.jActuel}
                                       onChange={(e) => {
@@ -372,17 +422,30 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                     style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.5rem', borderRadius:'4px'}}
                                   >
                                     <button onClick={() => deleteTD(sIndex, uIndex, mIndex, tdIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-                                    <input 
-                                      type="text" 
-                                      value={td.titre}
-                                      onChange={(e) => {
-                                        const newConf = {...configLocal};
-                                        newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD[tdIndex].titre = e.target.value;
-                                        updateConfig(newConf);
-                                      }}
-                                      placeholder="Nom de l'exercice"
-                                      style={{flex: 1, padding:'0.3rem', fontSize:'0.8rem'}}
-                                    />
+                                    <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                                      <input 
+                                        type="text" 
+                                        value={td.titre}
+                                        onChange={(e) => {
+                                          const newConf = {...configLocal};
+                                          newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD[tdIndex].titre = e.target.value;
+                                          updateConfig(newConf);
+                                        }}
+                                        placeholder="Nom de l'exercice"
+                                        style={{padding:'0.3rem', fontSize:'0.8rem'}}
+                                      />
+                                      <input 
+                                        type="text"
+                                        value={td.notes || ''}
+                                        onChange={(e) => {
+                                          const newConf = {...configLocal};
+                                          newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD[tdIndex].notes = e.target.value;
+                                          updateConfig(newConf);
+                                        }}
+                                        placeholder="Notes ou mémos..."
+                                        style={{padding:'0.3rem', fontSize:'0.75rem', background: 'transparent', border: '1px dashed rgba(52, 211, 153, 0.2)', color: 'var(--text-secondary)'}}
+                                      />
+                                    </div>
                                   </motion.div>
                                 ))}
                               </AnimatePresence>
@@ -415,33 +478,49 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                     style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.5rem', borderRadius:'4px'}}
                                   >
                                     <button onClick={() => deleteTP(sIndex, uIndex, mIndex, tpIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-                                    <input 
-                                      type="text" 
-                                      value={tp.titre}
-                                      onChange={(e) => {
-                                        const newConf = {...configLocal};
-                                        newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP[tpIndex].titre = e.target.value;
-                                        updateConfig(newConf);
-                                      }}
-                                      placeholder="Nom de l'exercice"
-                                      style={{flex: 1, padding:'0.3rem', fontSize:'0.8rem'}}
-                                    />
+                                    <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                                      <input 
+                                        type="text" 
+                                        value={tp.titre}
+                                        onChange={(e) => {
+                                          const newConf = {...configLocal};
+                                          newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP[tpIndex].titre = e.target.value;
+                                          updateConfig(newConf);
+                                        }}
+                                        placeholder="Nom de l'exercice"
+                                        style={{padding:'0.3rem', fontSize:'0.8rem'}}
+                                      />
+                                      <input 
+                                        type="text"
+                                        value={tp.notes || ''}
+                                        onChange={(e) => {
+                                          const newConf = {...configLocal};
+                                          newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP[tpIndex].notes = e.target.value;
+                                          updateConfig(newConf);
+                                        }}
+                                        placeholder="Notes ou mémos..."
+                                        style={{padding:'0.3rem', fontSize:'0.75rem', background: 'transparent', border: '1px dashed rgba(245, 158, 11, 0.2)', color: 'var(--text-secondary)'}}
+                                      />
+                                    </div>
                                   </motion.div>
                                 ))}
                               </AnimatePresence>
                               
                             </motion.div>
-                          ))}
+                            )
+                          })}
                         </AnimatePresence>
                       </div>
 
                     </motion.div>
-                  ))}
+                    )
+                  })}
                 </AnimatePresence>
               </div>
 
             </motion.div>
-          ))}
+            )
+          })}
         </AnimatePresence>
       </div>
     </div>

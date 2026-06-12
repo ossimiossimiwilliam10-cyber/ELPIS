@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Sidebar({ activeTab, setActiveTab, theme, setTheme }) {
+function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak }) {
   const tabs = [
     { id: 'dashboard', label: 'Accueil', icon: '🏠' },
     { id: 'entrainement', label: 'Entraînement', icon: '🏋️' },
@@ -29,6 +29,11 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme }) {
       </nav>
 
       <div className="sidebar-footer">
+        <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center'}}>
+          <div style={{background: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', padding: '0.5rem 1rem', borderRadius: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+            🔥 Streak : {streak} {streak > 1 ? 'Jours' : 'Jour'}
+          </div>
+        </div>
         <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center'}} className="theme-toggle">
           <button 
             className="btn-secondary" 
