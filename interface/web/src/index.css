@@ -51,12 +51,15 @@
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  justify-content: center;
   background: radial-gradient(circle at top, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
 .app-layout {
