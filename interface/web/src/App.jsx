@@ -153,6 +153,38 @@ function App() {
     });
   };
 
+  const handleFactoryReset = async () => {
+    if (window.confirm("⚠️ ATTENTION : Êtes-vous sûr de vouloir tout effacer (cours, configuration, progression) ? Cette action est IRRÉVERSIBLE.")) {
+      if (window.confirm("Dernière chance ! Confirmez-vous la suppression totale ?")) {
+        try {
+          setSaving(true);
+          
+          // Reset Config
+          const emptyConfig = { maxStudyHoursPerDay: 8, heuresSommeilMin: 8, fixedCommitments: [] };
+          await fetch('http://localhost:3001/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(emptyConfig)
+          });
+
+          // Reset Cours
+          const emptyCours = { semestres: [] };
+          await fetch('http://localhost:3001/api/cours', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(emptyCours)
+          });
+
+          alert("Réinitialisation complète terminée. L'application va se recharger.");
+          window.location.reload();
+        } catch (err) {
+          setError("Erreur lors de la réinitialisation : " + err.message);
+          setSaving(false);
+        }
+      }
+    }
+  };
+
   if (loading || loadingCours) return <div style={{textAlign:'center', marginTop:'5rem'}}>Initialisation des Cerveaux...</div>;
 
   return (
@@ -273,13 +305,22 @@ function App() {
               </div>
 
               <div style={{borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <button 
-                  className="btn-secondary"
-                  onClick={downloadBackup}
-                  title="Télécharger une sauvegarde locale de vos cours et exercices"
-                >
-                  💾 Exporter Backup (JSON)
-                </button>
+                <div style={{display: 'flex', gap: '1rem'}}>
+                  <button 
+                    className="btn-danger"
+                    onClick={handleFactoryReset}
+                    title="Effacer TOUTES les données de l'application"
+                  >
+                    ⚠️ Réinitialiser l'App
+                  </button>
+                  <button 
+                    className="btn-secondary"
+                    onClick={downloadBackup}
+                    title="Télécharger une sauvegarde locale de vos cours et exercices"
+                  >
+                    💾 Exporter Backup (JSON)
+                  </button>
+                </div>
                 <button 
                   className="btn-primary"
                   onClick={handleSaveConfig}
