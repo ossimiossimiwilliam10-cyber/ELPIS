@@ -214,6 +214,21 @@ function CoursPage({ coursConfig, onSave, saving }) {
     }
   };
 
+  const updateJActuel = (sIndex, uIndex, mIndex, cmIndex, val) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      const cm = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
+      cm.jActuel = val;
+      if (val > 0) {
+        // Le compteur démarre aujourd'hui pour le nouveau J
+        cm.derniereRevision = new Date().toISOString().split('T')[0];
+      } else {
+        cm.derniereRevision = "";
+      }
+      return newConf;
+    });
+  };
+
   const handleFileUpload = async (sIndex, uIndex, mIndex, file, type) => {
     if (!file) return;
     setIsScanning(true);
@@ -383,7 +398,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
                             </div>
                             <select 
                               value={cm.jActuel}
-                              onChange={(e) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'jActuel'], parseInt(e.target.value) || 0)}
+                              onChange={(e) => updateJActuel(sIndex, uIndex, mIndex, cmIndex, parseInt(e.target.value) || 0)}
                               style={{padding:'0.3rem', fontSize:'0.8rem'}}
                             >
                               {J_SEQUENCE.map(j => (
