@@ -394,7 +394,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
                           <button className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem'}} onClick={() => addCM(sIndex, uIndex, mIndex)}>+ CM</button>
                         </div>
                         {matiere.listeCM?.map((cm, cmIndex) => (
-                          <div key={`cm-${cmIndex}`} style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'0.4rem', borderRadius:'4px'}}>
+                          <div key={`cm-${cmIndex}`} className="cm-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'0.4rem', borderRadius:'4px'}}>
                             <button onClick={() => deleteCM(sIndex, uIndex, mIndex, cmIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
                             <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
                               <EditableLabel
@@ -438,7 +438,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
                           </div>
                         </div>
                         {matiere.listeTD?.map((td, tdIndex) => (
-                          <div key={`td-${tdIndex}`} style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
+                          <div key={`td-${tdIndex}`} className="td-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
                             <button onClick={() => deleteTD(sIndex, uIndex, mIndex, tdIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
                             <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
                               <EditableLabel
@@ -468,7 +468,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
                           </div>
                         </div>
                         {matiere.listeTP?.map((tp, tpIndex) => (
-                          <div key={`tp-${tpIndex}`} style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
+                          <div key={`tp-${tpIndex}`} className="tp-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
                             <button onClick={() => deleteTP(sIndex, uIndex, mIndex, tpIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
                             <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
                               <EditableLabel

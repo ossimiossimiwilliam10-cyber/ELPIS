@@ -330,9 +330,9 @@ function Dashboard({ coursConfig, onSaveCours }) {
                       boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                     }}
                   >
-                    <div>
-                      <div style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>{t.matiere}</div>
-                      <div style={{fontWeight:'bold'}}>{t.type} : {t.titre}</div>
+                    <div style={{overflow:'hidden'}}>
+                      <div style={{fontSize:'0.8rem', color:'var(--text-secondary)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{t.matiere}</div>
+                      <div style={{fontWeight:'bold', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}} title={`${t.type} : ${t.titre}`}>{t.type} : {t.titre}</div>
                     </div>
                     <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
                       <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.85rem'}}>
@@ -348,7 +348,9 @@ function Dashboard({ coursConfig, onSaveCours }) {
                           borderRadius: '6px',
                           cursor: 'pointer',
                           fontWeight: 'bold',
-                          transition: 'all 0.2s'
+                          transition: 'all 0.2s',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0
                         }}
                         onMouseEnter={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.4)'}
                         onMouseLeave={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}

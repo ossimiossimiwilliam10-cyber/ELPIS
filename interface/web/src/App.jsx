@@ -361,8 +361,8 @@ function App() {
                 <button className="btn-secondary" style={{marginTop:'1rem'}} onClick={addFixedCommitment}>+ Ajouter un Engagement</button>
               </div>
 
-              <div style={{borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <div style={{display: 'flex', gap: '1rem'}}>
+              <div className="config-actions">
+                <div className="config-actions-left">
                   <button 
                     className="btn-danger"
                     onClick={handleFactoryReset}
