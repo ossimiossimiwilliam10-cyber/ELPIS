@@ -155,23 +155,32 @@ app.post('/api/scan-pdf', upload.single('pdfFile'), async (req, res) => {
             return text;
         };
 
-        await pdfParse(pdfBuffer, { pagerender: render_page });
+        const pdfData = await pdfParse(pdfBuffer, { pagerender: render_page });
 
         let exercises = [];
         pagesText.forEach((pageText, index) => {
             const patterns = [
-                /(?:exercice|exercise|ex|exo)\s*(?:n°|#)?\s*(\d+(?:\.\d+)?)/gi,
-                /(?:question|q|qu)\s*(?:n°|#)?\s*(\d+(?:\.\d+)?)/gi,
-                /(?:problem|problème|prob|pb)\s*(?:set)?\s*(\d+(?:\.\d+)?)/gi
+                // Français : Exercice 1, Ex. 2, Exo n°3, etc.
+                /(?:exercice|exercise|ex\.?|exo)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+                // Question / Problème
+                /(?:question|qu?\.)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+                /(?:probl[eè]me|problem|prob|pb)[\s.:]*(?:set)?\s*(\d+(?:[.\-]\d+)?)/gi,
+                // Série / Partie / Chapitre
+                /(?:s[ée]rie|partie|chapitre|chap\.?)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+                // Activité / Application / Travail
+                /(?:activit[ée]|application|travail|tp|td)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+                // Numéros romains seuls en début de section : I., II., III., IV.
+                /(?:^|\n)\s*((?:I{1,3}|IV|VI{0,3}|IX|XI{0,3}|XIV|XV))\s*[.):\-]/gm,
             ];
             
             patterns.forEach(regex => {
                 let match;
                 while ((match = regex.exec(pageText)) !== null) {
+                    const titre = match[0].trim().replace(/[\s.:]+$/, ''); // Nettoyer les fins
                     // Éviter les doublons sur la même page
-                    if (!exercises.find(e => e.titre.toLowerCase() === match[0].toLowerCase() && e.page === index + 1)) {
+                    if (!exercises.find(e => e.titre.toLowerCase() === titre.toLowerCase() && e.page === index + 1)) {
                         exercises.push({
-                            titre: match[0].trim(),
+                            titre: titre,
                             page: index + 1,
                             pdfSource: fileUrl,
                             dernierePratique: "",
@@ -182,10 +191,24 @@ app.post('/api/scan-pdf', upload.single('pdfFile'), async (req, res) => {
             });
         });
 
-        res.json({ success: true, url: fileUrl, exercises });
+        // FALLBACK : Si aucun exercice trouvé par les regex, créer un exercice par page
+        if (exercises.length === 0 && pagesText.length > 0) {
+            const pdfName = req.file.originalname.replace(/\.pdf$/i, '');
+            for (let i = 0; i < pagesText.length; i++) {
+                exercises.push({
+                    titre: `${pdfName} - Page ${i + 1}`,
+                    page: i + 1,
+                    pdfSource: fileUrl,
+                    dernierePratique: "",
+                    nombrePratiques: 0
+                });
+            }
+        }
+
+        res.json({ success: true, url: fileUrl, exercises, totalPages: pdfData.numpages || pagesText.length });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Erreur lors du scan du PDF." });
+        console.error("Erreur scan PDF:", err);
+        res.status(500).json({ error: "Erreur lors du scan du PDF: " + err.message });
     }
 });
 
