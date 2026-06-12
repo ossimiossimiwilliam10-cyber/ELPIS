@@ -85,6 +85,28 @@ function App() {
     downloadAnchorNode.remove();
   };
 
+  const handleImportBackup = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        if (json.semestres) {
+          handleSaveCours(json);
+          setCoursConfig(json);
+          alert("Backup des cours importé avec succès !");
+        } else {
+          setError("Le fichier sélectionné ne semble pas être une sauvegarde valide des cours d'ELPIS.");
+        }
+      } catch (err) {
+        setError("Impossible de lire le fichier de sauvegarde (JSON invalide).");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = null; // Reset input
+  };
+
   const updateFixedCommitment = (index, field, value) => {
     const newConf = { ...config };
     newConf.fixedCommitments[index][field] = value;
@@ -318,8 +340,25 @@ function App() {
                     onClick={downloadBackup}
                     title="Télécharger une sauvegarde locale de vos cours et exercices"
                   >
-                    💾 Exporter Backup (JSON)
+                    💾 Exporter Backup
                   </button>
+                  <div>
+                    <input 
+                      type="file" 
+                      accept=".json"
+                      id="import-backup"
+                      style={{display:'none'}}
+                      onChange={handleImportBackup}
+                    />
+                    <label 
+                      htmlFor="import-backup" 
+                      className="btn-secondary" 
+                      style={{display: 'inline-block', cursor:'pointer'}}
+                      title="Importer une ancienne sauvegarde"
+                    >
+                      📂 Importer Backup
+                    </label>
+                  </div>
                 </div>
                 <button 
                   className="btn-primary"

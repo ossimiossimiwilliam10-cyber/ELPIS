@@ -6,6 +6,38 @@ function Dashboard({ coursConfig, onSaveCours }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // States Pomodoro
+  const [pomoState, setPomoState] = useState('WORK'); // WORK | BREAK
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    let interval = null;
+    if (isActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft(t => t - 1);
+      }, 1000);
+    } else if (isActive && timeLeft === 0) {
+      const nextMode = pomoState === 'WORK' ? 'BREAK' : 'WORK';
+      setPomoState(nextMode);
+      setTimeLeft(nextMode === 'WORK' ? 25 * 60 : 5 * 60);
+      setIsActive(false);
+      alert(nextMode === 'WORK' ? "La pause est finie, au travail !" : "Travail terminé, prends une pause de 5 minutes !");
+    }
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft, pomoState]);
+
+  const togglePomo = () => setIsActive(!isActive);
+  const resetPomo = () => {
+    setIsActive(false);
+    setTimeLeft(pomoState === 'WORK' ? 25 * 60 : 5 * 60);
+  };
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   const fetchDashboard = () => {
     fetch('http://localhost:3001/api/orchestrateur')
       .then(res => res.json())
@@ -165,6 +197,50 @@ function Dashboard({ coursConfig, onSaveCours }) {
       </div>
 
       <div className="dashboard-grid">
+        {/* Panneau Minuteur Pomodoro */}
+        <motion.div 
+          className="card glass-panel"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1.5rem', background: pomoState === 'WORK' ? 'rgba(59, 130, 246, 0.05)' : 'rgba(16, 185, 129, 0.05)' }}
+        >
+          <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
+            <h2 style={{margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+              ⏱️ Minuteur {pomoState === 'WORK' ? 'Focus' : 'Pause'}
+            </h2>
+            <div style={{display: 'flex', gap: '0.5rem'}}>
+              <button 
+                onClick={() => { setPomoState('WORK'); setTimeLeft(25 * 60); setIsActive(false); }}
+                className={`btn-secondary ${pomoState === 'WORK' ? 'active' : ''}`}
+                style={{padding: '0.4rem 0.8rem', fontSize: '0.9rem', background: pomoState === 'WORK' ? 'var(--accent-primary)' : '', color: pomoState === 'WORK' ? 'white' : ''}}
+              >
+                Travail (25m)
+              </button>
+              <button 
+                onClick={() => { setPomoState('BREAK'); setTimeLeft(5 * 60); setIsActive(false); }}
+                className={`btn-secondary ${pomoState === 'BREAK' ? 'active' : ''}`}
+                style={{padding: '0.4rem 0.8rem', fontSize: '0.9rem', background: pomoState === 'BREAK' ? 'var(--success-color)' : '', color: pomoState === 'BREAK' ? 'white' : ''}}
+              >
+                Pause (5m)
+              </button>
+            </div>
+          </div>
+          
+          <div style={{ fontSize: '4rem', fontWeight: 'bold', fontFamily: 'monospace', margin: '1rem 0', color: pomoState === 'WORK' ? 'var(--accent-primary)' : 'var(--success-color)' }}>
+            {formatTime(timeLeft)}
+          </div>
+          
+          <div style={{display: 'flex', gap: '1rem'}}>
+            <button className="btn-primary" onClick={togglePomo} style={{width: '120px'}}>
+              {isActive ? '⏸️ Pause' : '▶️ Démarrer'}
+            </button>
+            <button className="btn-secondary" onClick={resetPomo} style={{width: '120px'}}>
+              🔄 Reset
+            </button>
+          </div>
+        </motion.div>
+
         {/* Panneau Énergie */}
         <motion.div 
           className="card glass-panel"
