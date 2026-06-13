@@ -17,8 +17,8 @@ function EditableLabel({ value, onRename, placeholder, style }) {
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', ...style }}>
-      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, ...style }}>
+      <span title={value} style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
         {value || <em style={{color:'var(--text-secondary)'}}>{placeholder}</em>}
       </span>
       <button 
@@ -425,10 +425,10 @@ function CoursPage({ coursConfig, onSave, saving }) {
                     {ue.matieres?.map((matiere, mIndex) => {
                       if (!matiereMatchesSearch(matiere)) return null;
                       return (
-                      <div key={`m-${sIndex}-${uIndex}-${mIndex}`} style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)'}}>
+                      <div key={`m-${sIndex}-${uIndex}-${mIndex}`} style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0}}>
                         
                         {/* MATIERE HEADER */}
-                        <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'1rem'}}>
+                        <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'1rem', minWidth: 0}}>
                           <button onClick={() => deleteMatiere(sIndex, uIndex, mIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', padding:0}} title="Supprimer">🗑️</button>
                           <EditableLabel
                             value={matiere.nom}

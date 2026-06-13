@@ -120,7 +120,7 @@ body {
   .main-content {
     margin-left: 0;
     padding: 1.5rem;
-    padding-bottom: 6rem;
+    padding-bottom: 8rem; /* Increased to prevent overlap with bottom nav */
     height: auto;
     min-height: calc(100vh - 60px);
   }
@@ -894,4 +894,17 @@ input:focus, select:focus {
 
 .pomo-setting input {
   width: 100px;
+}
+
+/* === OVERFLOW FIXES (Graphical Collisions) === */
+.cm-item > div, 
+.td-item > div, 
+.tp-item > div {
+  min-width: 0 !important;
+}
+
+.todo-list, 
+.todo-list > div,
+.todo-list > div > div:first-child {
+  min-width: 0 !important;
 }
