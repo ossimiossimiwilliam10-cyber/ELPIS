@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import useStore from './store';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
+function Dashboard() {
+  const { config, coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
+  const pomoWork = config?.pomoWork || 25;
+  const pomoBreak = config?.pomoBreak || 5;
   const [data, setData] = useState(null);
+  const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // States Pomodoro
@@ -25,6 +31,14 @@ function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
         setTimeLeft(t => t - 1);
       }, 1000);
     } else if (isActive && timeLeft === 0) {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification("Pomodoro Terminé", {
+          body: pomoState === 'WORK' ? "Temps de pause !" : "Au travail !",
+          icon: "/pwa-192x192.png"
+        });
+      }
+      
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
       const nextMode = pomoState === 'WORK' ? 'BREAK' : 'WORK';
       setPomoState(nextMode);
       setTimeLeft(nextMode === 'WORK' ? pomoWork * 60 : pomoBreak * 60);
@@ -58,6 +72,9 @@ function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
       .then(res => res.json())
       .then(d => {
         setData(d);
+        if (d.tachesDuJour) {
+          setOrderedTaches(d.tachesDuJour);
+        }
         setLoading(false);
       })
       .catch(err => {
@@ -69,6 +86,14 @@ function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
   useEffect(() => {
     fetchDashboard();
   }, [coursConfig]);
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    const items = Array.from(orderedTaches);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    setOrderedTaches(items);
+  };
 
   const handleTaskComplete = (tache) => {
     if (!coursConfig) return;
@@ -123,7 +148,13 @@ function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
         origin: { y: 0.6 },
         colors: ['#818CF8', '#34D399', '#FBBF24']
       });
-      onSaveCours(newConfig);
+      setCoursConfig(newConfig);
+      addHistoriqueEntry({ 
+        type: tache.type, 
+        titre: tache.titre, 
+        matiere: tache.matiere,
+        action: 'Terminé'
+      });
     }
   };
 
@@ -207,14 +238,14 @@ function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
         <div>
           <h2>{greeting} ! 👋</h2>
           <p>
-            {tachesDuJour.length > 0 
-              ? `Tu as ${tachesDuJour.length} objectif${tachesDuJour.length > 1 ? 's' : ''} à accomplir aujourd'hui.`
+            {orderedTaches.length > 0 
+              ? `Tu as ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} à accomplir aujourd'hui.`
               : "Tu as tout terminé pour aujourd'hui. Bravo !"}
           </p>
         </div>
         <div className="welcome-stats">
           <div className="welcome-stat">
-            <div className="welcome-stat-value">{tachesDuJour.length}</div>
+            <div className="welcome-stat-value">{orderedTaches.length}</div>
             <div className="welcome-stat-label">Tâches</div>
           </div>
           <div className="welcome-stat">
@@ -249,7 +280,7 @@ function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
         >
           <h2>🎯 Objectifs du Jour</h2>
           
-          {tachesDuJour.length === 0 ? (
+          {orderedTaches.length === 0 ? (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -259,59 +290,69 @@ function Dashboard({ coursConfig, onSaveCours, pomoWork = 25, pomoBreak = 5 }) {
               <p style={{color:'var(--text-secondary)'}}>Tu as accompli toutes tes tâches. Repose-toi bien !</p>
             </motion.div>
           ) : (
-            <motion.div 
-              className="todo-list"
-              variants={containerVariants}
-              initial="hidden"
-              animate="show"
-              style={{display:'flex', flexDirection:'column', gap:'0.8rem', marginTop:'1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem'}}
-            >
-              <AnimatePresence>
-                {tachesDuJour.map((t, i) => (
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="taches">
+                {(provided) => (
                   <motion.div 
-                    key={t.matiere + t.titre + i}
-                    variants={itemVariants}
-                    exit={{ opacity: 0, x: 50, scale: 0.9 }}
-                    whileHover={{ scale: 1.02 }}
-                    style={{
-                      display:'flex', justifyContent:'space-between', alignItems:'center',
-                      background:'rgba(255,255,255,0.03)', padding:'0.8rem 1rem', borderRadius:'8px',
-                      borderLeft: t.type === 'CM' ? '3px solid #818CF8' : t.type === 'TD' ? '3px solid #34D399' : '3px solid #FBBF24',
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                    }}
+                    className="todo-list"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    style={{display:'flex', flexDirection:'column', gap:'0.8rem', marginTop:'1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem'}}
                   >
-                    <div style={{overflow:'hidden', flex: 1, minWidth: 0}}>
-                      <div style={{fontSize:'0.8rem', color:'var(--text-secondary)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{t.matiere}</div>
-                      <div style={{fontWeight:'bold', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}} title={`${t.type} : ${t.titre}`}>{t.type} : {t.titre}</div>
-                    </div>
-                    <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flexShrink: 0}}>
-                      <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.8rem'}}>
-                        ~{t.dureeMinutes || t.dureeMin} min
-                      </div>
-                      <button 
-                        onClick={() => handleTaskComplete(t)}
-                        style={{
-                          background: 'rgba(16, 185, 129, 0.2)',
-                          color: 'var(--success-color)',
-                          border: 'none',
-                          padding: '0.4rem 0.8rem',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontWeight: 'bold',
-                          transition: 'all 0.2s',
-                          whiteSpace: 'nowrap',
-                          flexShrink: 0
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.4)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
-                      >
-                        Fait
-                      </button>
-                    </div>
+                    <AnimatePresence>
+                      {orderedTaches.map((t, index) => {
+                        const dragId = t.matiere + t.titre + index;
+                        return (
+                          <Draggable key={dragId} draggableId={dragId} index={index}>
+                            {(provided) => (
+                            <motion.div 
+                              variants={itemVariants}
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="todo-item"
+                            >
+                              <div style={{flex: 1}}>
+                                <div style={{fontWeight: 'bold'}}>{t.titre}</div>
+                                <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{t.matiere} • {t.type}</div>
+                              </div>
+                              <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flexShrink: 0}}>
+                                <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.8rem'}}>
+                                  ~{t.dureeMinutes || t.dureeMin} min
+                                </div>
+                                <button 
+                                  onClick={() => handleTaskComplete(t)}
+                                  style={{
+                                    background: 'rgba(16, 185, 129, 0.2)',
+                                    color: 'var(--success-color)',
+                                    border: 'none',
+                                    padding: '0.4rem 0.8rem',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontWeight: 'bold',
+                                    transition: 'all 0.2s',
+                                    whiteSpace: 'nowrap',
+                                    flexShrink: 0
+                                  }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.4)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
+                                >
+                                  Fait
+                                </button>
+                              </div>
+                            </motion.div>
+                          )}
+                        </Draggable>
+                      );})}
+                    </AnimatePresence>
+                    {provided.placeholder}
                   </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
+                )}
+              </Droppable>
+            </DragDropContext>
           )}
         </motion.div>
 

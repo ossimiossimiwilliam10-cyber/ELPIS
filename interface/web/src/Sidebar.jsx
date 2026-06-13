@@ -3,8 +3,10 @@ import React from 'react';
 function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount }) {
   const tabs = [
     { id: 'dashboard', label: 'Accueil', icon: '🏠', badge: pendingTasksCount },
+    { id: 'calendrier', label: 'Calendrier', icon: '📅' },
     { id: 'entrainement', label: 'Entraînement', icon: '🏋️' },
     { id: 'cours', label: 'Mes Cours', icon: '📚' },
+    { id: 'statistiques', label: 'Statistiques', icon: '📈' },
     { id: 'config', label: 'Configuration', icon: '⚙️' },
   ];
 

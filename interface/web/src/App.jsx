@@ -5,13 +5,19 @@ import CoursPage from './CoursPage';
 import EntrainementPage from './EntrainementPage';
 import Dashboard from './Dashboard';
 import Sidebar from './Sidebar';
+import StatistiquesPage from './StatistiquesPage';
+import CalendrierPage from './CalendrierPage';
+import GlobalSearchModal from './GlobalSearchModal';
 import { ToastProvider, useToast } from './ToastProvider';
+import useStore from './store';
 
 function AppInner() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const { addToast } = useToast();
   
+  const { config, coursConfig, loading, error, initData, setConfig } = useStore();
+
   useEffect(() => {
     localStorage.setItem('theme', theme);
     if (theme === 'light') {
@@ -19,17 +25,20 @@ function AppInner() {
     } else {
       document.documentElement.classList.remove('light');
     }
+    
+    // Demander la permission pour les notifications (Service Worker)
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, [theme]);
   
-  // States pour la Config
-  const [config, setConfig] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    initData();
+  }, [initData]);
 
-  // States pour les Cours
-  const [coursConfig, setCoursConfig] = useState(null);
-  const [loadingCours, setLoadingCours] = useState(true);
-  const [savingCours, setSavingCours] = useState(false);
+  useEffect(() => {
+    if (error) addToast(error, 'error');
+  }, [error, addToast]);
 
   // Pending tasks count for sidebar badge
   const pendingTasksCount = useMemo(() => {
@@ -77,63 +86,7 @@ function AppInner() {
     return { semestres: coursConfig.semestres?.length || 0, ues, matieres, cm, td, tp };
   }, [coursConfig]);
 
-  const calculateStreak = (configData) => {
-    const today = new Date().toISOString().split('T')[0];
-    let streak = configData.currentStreak || 0;
-    let lastActive = configData.lastActiveDate || "";
 
-    if (lastActive !== today) {
-      if (lastActive) {
-        const lastDate = new Date(lastActive);
-        const todayDate = new Date(today);
-        const diffTime = Math.abs(todayDate - lastDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays === 1) {
-          streak += 1;
-        } else {
-          streak = 1;
-        }
-      } else {
-        streak = 1;
-      }
-      
-      const newConfig = { ...configData, lastActiveDate: today, currentStreak: streak };
-      setConfig(newConfig);
-      
-      // Quiet save
-      fetch('http://localhost:3001/api/config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newConfig)
-      }).catch(err => console.error("Streak save failed", err));
-    } else {
-      setConfig(configData);
-    }
-  };
-
-  useEffect(() => {
-    fetch('http://localhost:3001/api/config')
-      .then(res => res.json())
-      .then(data => {
-        calculateStreak(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        addToast("Impossible de contacter le serveur (Config)", 'error');
-        setLoading(false);
-      });
-
-    fetch('http://localhost:3001/api/cours')
-      .then(res => res.json())
-      .then(data => {
-        setCoursConfig(data);
-        setLoadingCours(false);
-      })
-      .catch(err => {
-        addToast("Impossible de contacter le serveur (Cours)", 'error');
-        setLoadingCours(false);
-      });
-  }, []);
 
   const addFixedCommitment = () => {
     const newConf = { ...config };
@@ -174,9 +127,8 @@ function AppInner() {
       try {
         const json = JSON.parse(e.target.result);
         if (json.semestres) {
-          handleSaveCours(json);
-          setCoursConfig(json);
-          addToast("Backup importé avec succès !", 'success');
+          useStore.getState().setCoursConfig(json);
+          addToast("Backup importé avec succès ! Auto-sauvegarde en cours...", 'success');
         } else {
           addToast("Fichier invalide : pas de données de cours détectées.", 'error');
         }
@@ -194,91 +146,25 @@ function AppInner() {
     setConfig(newConf);
   };
 
-  const handleSaveConfig = () => {
-    let isValid = true;
-    if (config.fixedCommitments) {
-      for (const fc of config.fixedCommitments) {
-        if (!fc.title || fc.title.trim() === '') isValid = false;
-        if (!fc.startTime || !fc.endTime) isValid = false;
-        if (fc.startTime && fc.endTime && fc.startTime >= fc.endTime) {
-          addToast(`L'heure de fin doit être après l'heure de début pour "${fc.title}".`, 'error');
-          return;
-        }
-      }
-    }
-    if (!isValid) {
-      addToast("Veuillez remplir tous les champs correctement.", 'error');
-      return;
-    }
-
-    setSaving(true);
-    fetch('http://localhost:3001/api/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    })
-    .then(async res => {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur de sauvegarde");
-      addToast("Configuration sauvegardée !", 'success');
-    })
-    .catch(err => {
-      addToast(err.message, 'error');
-    })
-    .finally(() => {
-      setSaving(false);
-    });
-  };
-
-  const handleSaveCours = (newCoursConfig) => {
-    setSavingCours(true);
-    fetch('http://localhost:3001/api/cours', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newCoursConfig)
-    })
-    .then(async res => {
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur de sauvegarde");
-      addToast("Cours sauvegardés !", 'success');
-      setCoursConfig(newCoursConfig);
-    })
-    .catch(err => {
-      addToast(err.message, 'error');
-    })
-    .finally(() => {
-      setSavingCours(false);
-    });
-  };
-
   const handleFactoryReset = async () => {
     if (window.confirm("ATTENTION : Supprimer toutes les données ? Cette action est IRREVERSIBLE.")) {
       if (window.confirm("Derniere chance ! Confirmez la suppression totale ?")) {
         try {
           setSaving(true);
           const emptyConfig = { maxStudyHoursPerDay: 8, heuresSommeilMin: 8, fixedCommitments: [], pomoWork: 25, pomoBreak: 5 };
-          await fetch('http://localhost:3001/api/config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(emptyConfig)
-          });
+          useStore.getState().setConfig(emptyConfig);
           const emptyCours = { semestres: [] };
-          await fetch('http://localhost:3001/api/cours', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(emptyCours)
-          });
+          useStore.getState().setCoursConfig(emptyCours);
           addToast("Reinitialisation terminee. Rechargement...", 'info');
           setTimeout(() => window.location.reload(), 1500);
         } catch (err) {
           addToast("Erreur lors de la reinitialisation : " + err.message, 'error');
-          setSaving(false);
         }
       }
     }
   };
 
-  if (loading || loadingCours) return <div style={{textAlign:'center', marginTop:'5rem'}}>Initialisation des Cerveaux...</div>;
+  if (loading) return <div style={{textAlign:'center', marginTop:'5rem'}}>Initialisation des Cerveaux...</div>;
 
   return (
     <div className="app-layout">
@@ -294,13 +180,31 @@ function AppInner() {
       <main className="main-content">
         <AnimatePresence mode="wait">
           {activeTab === 'dashboard' && (
-            <Dashboard 
-              key="dash" 
-              coursConfig={coursConfig} 
-              onSaveCours={handleSaveCours}
-              pomoWork={config?.pomoWork || 25}
-              pomoBreak={config?.pomoBreak || 5}
-            />
+            <Dashboard key="dash" />
+          )}
+
+          {activeTab === 'calendrier' && (
+            <motion.div 
+              key="calendrier"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CalendrierPage />
+            </motion.div>
+          )}
+
+          {activeTab === 'statistiques' && (
+            <motion.div 
+              key="statistiques"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <StatistiquesPage />
+            </motion.div>
           )}
 
           {activeTab === 'config' && (
@@ -495,13 +399,9 @@ function AppInner() {
                       </label>
                     </div>
                   </div>
-                  <button 
-                    className="btn-primary"
-                    onClick={handleSaveConfig}
-                    disabled={saving}
-                  >
-                    {saving ? 'Synchronisation...' : 'Sauvegarder la Configuration'}
-                  </button>
+                  <div style={{color:'var(--text-secondary)', fontSize:'0.9rem', fontStyle:'italic'}}>
+                    Sauvegarde automatique activée
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -515,11 +415,7 @@ function AppInner() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <CoursPage 
-                coursConfig={coursConfig} 
-                onSave={handleSaveCours} 
-                saving={savingCours} 
-              />
+              <CoursPage />
             </motion.div>
           )}
 
@@ -531,15 +427,13 @@ function AppInner() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <EntrainementPage 
-                coursConfig={coursConfig} 
-                onSave={handleSaveCours} 
-                saving={savingCours} 
-              />
+              <EntrainementPage />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
+      
+      <GlobalSearchModal />
     </div>
   );
 }

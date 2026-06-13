@@ -22,6 +22,8 @@ const COURS_FILE = path.join(ROOT_DIR, 'espoir_cours.json');
 const INCOMING_COURS_FILE = path.join(__dirname, 'incoming_cours.json');
 const COURS_EXECUTABLE = path.join(ROOT_DIR, 'build', 'moteur_cours.exe');
 
+const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
+
 const ORCHESTRATEUR_EXECUTABLE = path.join(ROOT_DIR, 'build', 'moteur_principal.exe');
 
 const FICHES_DIR = path.join(ROOT_DIR, 'fiches_revision');
@@ -121,6 +123,30 @@ app.post('/api/cours', (req, res) => {
 
     } catch (err) {
         res.status(500).json({ error: "Erreur serveur lors de la mise à jour des cours." });
+    }
+});
+
+// Route GET : Lire l'historique
+app.get('/api/historique', (req, res) => {
+    try {
+        if (fs.existsSync(HISTORIQUE_FILE)) {
+            const data = fs.readFileSync(HISTORIQUE_FILE, 'utf8');
+            res.json(JSON.parse(data));
+        } else {
+            res.json([]);
+        }
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de la lecture de l'historique." });
+    }
+});
+
+// Route POST : Mettre à jour l'historique
+app.post('/api/historique', (req, res) => {
+    try {
+        fs.writeFileSync(HISTORIQUE_FILE, JSON.stringify(req.body, null, 4));
+        res.json({ success: true, message: "Historique mis à jour." });
+    } catch (err) {
+        res.status(500).json({ error: "Erreur lors de l'écriture de l'historique." });
     }
 });
 

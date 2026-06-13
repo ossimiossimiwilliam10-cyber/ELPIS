@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import useStore from './store';
+import MarkdownModal from './MarkdownModal';
 
 // Séquence complète de la méthode des J sur 6 ans
 const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
@@ -33,17 +35,10 @@ function EditableLabel({ value, onRename, placeholder, style }) {
 }
 
 // Composant utilitaire : Affiche un texte éditable (notes/mémos) avec bouton
-function EditableNote({ value, onEdit, placeholder }) {
-  const handleEdit = () => {
-    const newVal = window.prompt("Modifier :", value || '');
-    if (newVal !== null) {
-      onEdit(newVal);
-    }
-  };
-
+function EditableNote({ value, onClick, placeholder }) {
   return (
     <div 
-      onClick={handleEdit}
+      onClick={onClick}
       style={{
         padding:'0.3rem', fontSize:'0.75rem', 
         background: 'transparent', border: '1px dashed rgba(255,255,255,0.1)', 
@@ -57,12 +52,14 @@ function EditableNote({ value, onEdit, placeholder }) {
   );
 }
 
-function CoursPage({ coursConfig, onSave, saving }) {
+function CoursPage() {
+  const { coursConfig, setCoursConfig } = useStore();
   const [configLocal, setConfigLocal] = useState(() => deepClone(coursConfig || { semestres: [] }));
   const [isScanning, setIsScanning] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSemestreIndex, setActiveSemestreIndex] = useState(0);
   const [collapsedUEs, setCollapsedUEs] = useState({});
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', initialValue: '', onSave: null });
 
   const toggleUE = (sIndex, uIndex) => {
     const key = `${sIndex}-${uIndex}`;
@@ -100,6 +97,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
         target = target[path[i]];
       }
       target[path[path.length - 1]] = value;
+      setCoursConfig(newConf); // Auto-save via Zustand debounce
       return newConf;
     });
   };
@@ -143,6 +141,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
       setConfigLocal(prev => {
         const newConf = deepClone(prev);
         newConf.semestres[sIndex].ues.splice(uIndex, 1);
+        setCoursConfig(newConf);
         return newConf;
       });
     }
@@ -151,8 +150,10 @@ function CoursPage({ coursConfig, onSave, saving }) {
   const addMatiere = (sIndex, uIndex) => {
     setConfigLocal(prev => {
       const newConf = deepClone(prev);
-      if (!newConf.semestres[sIndex].ues[uIndex].matieres) newConf.semestres[sIndex].ues[uIndex].matieres = [];
-      newConf.semestres[sIndex].ues[uIndex].matieres.push({ nom: "Nouvelle Matière", listeCM: [], listeTD: [], listeTP: [] });
+      const newMatiere = { nom: "Nouvelle Matière", listeCM: [], listeTD: [], listeTP: [] };
+      if(!newConf.semestres[sIndex].ues[uIndex].matieres) newConf.semestres[sIndex].ues[uIndex].matieres = [];
+      newConf.semestres[sIndex].ues[uIndex].matieres.push(newMatiere);
+      setCoursConfig(newConf);
       return newConf;
     });
   };
@@ -162,6 +163,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
       setConfigLocal(prev => {
         const newConf = deepClone(prev);
         newConf.semestres[sIndex].ues[uIndex].matieres.splice(mIndex, 1);
+        setCoursConfig(newConf);
         return newConf;
       });
     }
@@ -172,7 +174,9 @@ function CoursPage({ coursConfig, onSave, saving }) {
       const newConf = deepClone(prev);
       const mat = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex];
       if (!mat.listeCM) mat.listeCM = [];
-      mat.listeCM.push({ titre: "Nouveau CM", jActuel: 0, derniereRevision: "" });
+      const newCM = { titre: "Nouveau CM", jActuel: 0, derniereRevision: "" };
+      mat.listeCM.push(newCM);
+      setCoursConfig(newConf);
       return newConf;
     });
   };
@@ -182,6 +186,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
       setConfigLocal(prev => {
         const newConf = deepClone(prev);
         newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM.splice(cmIndex, 1);
+        setCoursConfig(newConf);
         return newConf;
       });
     }
@@ -190,9 +195,10 @@ function CoursPage({ coursConfig, onSave, saving }) {
   const addTDManuel = (sIndex, uIndex, mIndex) => {
     setConfigLocal(prev => {
       const newConf = deepClone(prev);
-      const mat = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex];
-      if (!mat.listeTD) mat.listeTD = [];
-      mat.listeTD.push({ titre: "Nouveau TD Manuel", dernierePratique: "", nombrePratiques: 0, pdfSource: "", page: 1 });
+      const m = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex];
+      if(!m.listeTD) m.listeTD = [];
+      m.listeTD.push({ titre: "Nouveau TD Manuel", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      setCoursConfig(newConf);
       return newConf;
     });
   };
@@ -202,6 +208,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
       setConfigLocal(prev => {
         const newConf = deepClone(prev);
         newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD.splice(tdIndex, 1);
+        setCoursConfig(newConf);
         return newConf;
       });
     }
@@ -210,9 +217,10 @@ function CoursPage({ coursConfig, onSave, saving }) {
   const addTPManuel = (sIndex, uIndex, mIndex) => {
     setConfigLocal(prev => {
       const newConf = deepClone(prev);
-      const mat = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex];
-      if (!mat.listeTP) mat.listeTP = [];
-      mat.listeTP.push({ titre: "Nouveau TP Manuel", dernierePratique: "", nombrePratiques: 0, pdfSource: "", page: 1 });
+      const m = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex];
+      if(!m.listeTP) m.listeTP = [];
+      m.listeTP.push({ titre: "Nouveau TP Manuel", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      setCoursConfig(newConf);
       return newConf;
     });
   };
@@ -222,22 +230,28 @@ function CoursPage({ coursConfig, onSave, saving }) {
       setConfigLocal(prev => {
         const newConf = deepClone(prev);
         newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.splice(tpIndex, 1);
+        setCoursConfig(newConf);
         return newConf;
       });
     }
   };
 
-  const updateJActuel = (sIndex, uIndex, mIndex, cmIndex, val) => {
+  const updateJActuel = (sIndex, uIndex, mIndex, cmIndex, newJ) => {
     setConfigLocal(prev => {
       const newConf = deepClone(prev);
+      newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex].jActuel = newJ;
+      
+      // Update derniereRevision logic
       const cm = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
-      cm.jActuel = val;
-      if (val > 0) {
-        // Le compteur démarre aujourd'hui pour le nouveau J
-        cm.derniereRevision = new Date().toISOString().split('T')[0];
-      } else {
+      const today = new Date().toISOString().split('T')[0];
+      if (newJ === 0) {
         cm.derniereRevision = "";
+      } else {
+        if (!cm.derniereRevision) {
+          cm.derniereRevision = today;
+        }
       }
+      setCoursConfig(newConf);
       return newConf;
     });
   };
@@ -266,44 +280,27 @@ function CoursPage({ coursConfig, onSave, saving }) {
       if (data.success && data.exercises) {
         setConfigLocal(prev => {
           const newConf = deepClone(prev);
-          const mat = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex];
+          const m = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex];
           if (type === 'TD') {
-            if (!mat.listeTD) mat.listeTD = [];
-            mat.listeTD.push(...data.exercises);
-          } else {
-            if (!mat.listeTP) mat.listeTP = [];
-            mat.listeTP.push(...data.exercises);
+            if (!m.listeTD) m.listeTD = [];
+            m.listeTD.push(...data.exercises);
+          } else if (type === 'TP') {
+            if (!m.listeTP) m.listeTP = [];
+            m.listeTP.push(...data.exercises);
           }
-          onSave(newConf);
+          
+          setCoursConfig(newConf);
           return newConf;
         });
         alert(`${data.exercises.length} exercices trouvés et ajoutés !`);
       } else {
-        alert("Erreur: Aucun exercice reconnu ou fichier invalide.");
+        alert("Erreur serveur : " + data.error);
       }
     } catch(err) {
-      alert("Erreur lors de la communication avec le serveur Node.js.");
+      alert("Erreur lors de l'upload : " + err.message);
     } finally {
       setIsScanning(false);
     }
-  };
-
-  const handleSave = () => {
-    let isValid = true;
-    configLocal.semestres?.forEach(s => {
-      if (!s.nom || s.nom.trim() === '') isValid = false;
-      s.ues?.forEach(u => {
-        if (!u.nom || u.nom.trim() === '') isValid = false;
-        u.matieres?.forEach(m => {
-          if (!m.nom || m.nom.trim() === '') isValid = false;
-        });
-      });
-    });
-    if (!isValid) {
-      alert("Erreur: Veuillez remplir tous les noms de semestres, UEs et matières avant de sauvegarder.");
-      return;
-    }
-    onSave(configLocal);
   };
 
   return (
@@ -321,13 +318,15 @@ function CoursPage({ coursConfig, onSave, saving }) {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--bg-tertiary)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', width: '220px'}}
           />
-          <button className="btn-primary" onClick={handleSave} disabled={saving}>
-            {saving ? 'Synchronisation...' : 'Sauvegarder'}
-          </button>
+          <button onClick={addSemestre} className="btn-secondary" style={{padding:'0.4rem 0.8rem'}}>+ Semestre</button>
         </div>
       </div>
 
-      <div className="semestre-tabs">
+      <div style={{color:'var(--text-secondary)', fontSize:'0.9rem', fontStyle:'italic', marginTop:'1rem', textAlign:'right'}}>
+        Sauvegarde automatique activée
+      </div>
+
+      <div className="semestre-tabs" style={{display:'flex', gap:'1.5rem'}}>
         {configLocal.semestres?.map((semestre, sIndex) => (
           <button 
             key={`tab-${sIndex}`} 
@@ -453,10 +452,15 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                 placeholder="Titre du CM"
                                 style={{fontSize:'0.85rem'}}
                               />
-                              <EditableNote
-                                value={cm.notes}
-                                onEdit={(v) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'notes'], v)}
-                                placeholder="Notes ou mémos..."
+                              <EditableNote 
+                                value={cm.notes} 
+                                onClick={() => setModalConfig({
+                                  isOpen: true,
+                                  title: `Notes CM : ${cm.titre}`,
+                                  initialValue: cm.notes,
+                                  onSave: (v) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'notes'], v)
+                                })} 
+                                placeholder="+ Ajouter une note (markdown supporté)" 
                               />
                             </div>
                             <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'0.2rem'}}>
@@ -497,10 +501,15 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                 placeholder="Nom de l'exercice"
                                 style={{fontSize:'0.85rem'}}
                               />
-                              <EditableNote
-                                value={td.notes}
-                                onEdit={(v) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'notes'], v)}
-                                placeholder="Notes ou mémos..."
+                              <EditableNote 
+                                value={td.notes} 
+                                onClick={() => setModalConfig({
+                                  isOpen: true,
+                                  title: `Notes TD : ${td.titre}`,
+                                  initialValue: td.notes,
+                                  onSave: (v) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'notes'], v)
+                                })}
+                                placeholder="+ Ajouter une note (markdown supporté)" 
                               />
                             </div>
                           </div>
@@ -527,10 +536,15 @@ function CoursPage({ coursConfig, onSave, saving }) {
                                 placeholder="Nom de l'exercice"
                                 style={{fontSize:'0.85rem'}}
                               />
-                              <EditableNote
-                                value={tp.notes}
-                                onEdit={(v) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'notes'], v)}
-                                placeholder="Notes ou mémos..."
+                              <EditableNote 
+                                value={tp.notes} 
+                                onClick={() => setModalConfig({
+                                  isOpen: true,
+                                  title: `Notes TP : ${tp.titre}`,
+                                  initialValue: tp.notes,
+                                  onSave: (v) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'notes'], v)
+                                })}
+                                placeholder="+ Ajouter une note (markdown supporté)" 
                               />
                             </div>
                           </div>
@@ -551,6 +565,14 @@ function CoursPage({ coursConfig, onSave, saving }) {
           )
         })()}
       </div>
+      
+      <MarkdownModal 
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        initialValue={modalConfig.initialValue}
+        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+        onSave={modalConfig.onSave}
+      />
     </div>
   );
 }

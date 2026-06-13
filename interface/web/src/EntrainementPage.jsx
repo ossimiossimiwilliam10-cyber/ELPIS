@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import useStore from './store';
 
-function EntrainementPage({ coursConfig, onSave, saving }) {
+function EntrainementPage() {
+  const { coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
   const [configLocal, setConfigLocal] = useState(coursConfig || { semestres: [] });
   const [filterMatiere, setFilterMatiere] = useState('all');
   const [completedToday, setCompletedToday] = useState(0);
@@ -96,7 +98,13 @@ function EntrainementPage({ coursConfig, onSave, saving }) {
 
     setCompletedToday(prev => prev + 1);
     setConfigLocal(newConf);
-    onSave(newConf);
+    setCoursConfig(newConf);
+    addHistoriqueEntry({
+      type: exo.type,
+      titre: targetList[exo.exIndex].titre,
+      matiere: exo.matiereNom,
+      action: 'Terminé'
+    });
   };
 
   const doneCount = totalExercisesToday - allExercicesDuJour.length + completedToday;
