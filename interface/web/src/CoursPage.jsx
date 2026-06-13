@@ -61,6 +61,13 @@ function CoursPage({ coursConfig, onSave, saving }) {
   const [configLocal, setConfigLocal] = useState(() => deepClone(coursConfig || { semestres: [] }));
   const [isScanning, setIsScanning] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeSemestreIndex, setActiveSemestreIndex] = useState(0);
+  const [collapsedUEs, setCollapsedUEs] = useState({});
+
+  const toggleUE = (sIndex, uIndex) => {
+    const key = `${sIndex}-${uIndex}`;
+    setCollapsedUEs(prev => ({...prev, [key]: !prev[key]}));
+  };
 
   // Resynchroniser le state local quand le parent change (ex: import backup)
   useEffect(() => {
@@ -104,6 +111,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
       newConf.semestres.push({ nom: `Semestre ${newConf.semestres.length + 1}`, ues: [] });
       return newConf;
     });
+    setActiveSemestreIndex(configLocal.semestres ? configLocal.semestres.length : 0);
   };
 
   const deleteSemestre = (sIndex) => {
@@ -113,6 +121,11 @@ function CoursPage({ coursConfig, onSave, saving }) {
         newConf.semestres.splice(sIndex, 1);
         return newConf;
       });
+      if (activeSemestreIndex === sIndex) {
+        setActiveSemestreIndex(Math.max(0, sIndex - 1));
+      } else if (activeSemestreIndex > sIndex) {
+        setActiveSemestreIndex(activeSemestreIndex - 1);
+      }
     }
   };
 
@@ -308,15 +321,29 @@ function CoursPage({ coursConfig, onSave, saving }) {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--bg-tertiary)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', width: '220px'}}
           />
-          <button className="btn-secondary" onClick={addSemestre}>+ Semestre</button>
           <button className="btn-primary" onClick={handleSave} disabled={saving}>
             {saving ? 'Synchronisation...' : 'Sauvegarder'}
           </button>
         </div>
       </div>
 
+      <div className="semestre-tabs">
+        {configLocal.semestres?.map((semestre, sIndex) => (
+          <button 
+            key={`tab-${sIndex}`} 
+            className={`tab-btn ${activeSemestreIndex === sIndex ? 'active' : ''}`}
+            onClick={() => setActiveSemestreIndex(sIndex)}
+          >
+            {semestre.nom}
+          </button>
+        ))}
+        <button className="tab-btn" onClick={addSemestre} style={{color:'var(--accent-primary)'}}>+ Semestre</button>
+      </div>
+
       <div style={{display:'flex', flexDirection:'column', gap:'2rem'}}>
-        {configLocal.semestres?.map((semestre, sIndex) => {
+        {configLocal.semestres && configLocal.semestres[activeSemestreIndex] && (() => {
+          const sIndex = activeSemestreIndex;
+          const semestre = configLocal.semestres[sIndex];
           if (!semestreMatchesSearch(semestre)) return null;
           return (
           <div key={`s-${sIndex}`} className="card glass-panel" style={{borderLeft:'4px solid var(--accent-primary)'}}>
@@ -339,12 +366,26 @@ function CoursPage({ coursConfig, onSave, saving }) {
             <div style={{display:'flex', flexDirection:'column', gap:'1.5rem', marginLeft:'1rem'}}>
               {semestre.ues?.map((ue, uIndex) => {
                 if (!ueMatchesSearch(ue)) return null;
+                const isCollapsed = collapsedUEs[`${sIndex}-${uIndex}`];
+                
+                let ueTotalExos = 0;
+                ue.matieres?.forEach(m => {
+                  ueTotalExos += (m.listeCM?.length || 0) + (m.listeTD?.length || 0) + (m.listeTP?.length || 0);
+                });
+
                 return (
                 <div key={`u-${sIndex}-${uIndex}`} style={{background:'rgba(255,255,255,0.02)', padding:'1.5rem', borderRadius:'12px', border:'1px solid var(--bg-tertiary)'}}>
                   
                   {/* UE HEADER */}
-                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem'}}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: isCollapsed ? '0' : '1rem'}}>
                     <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flex: 1}}>
+                      <button 
+                        className={`ue-accordion-btn ${!isCollapsed ? 'open' : ''}`} 
+                        onClick={() => toggleUE(sIndex, uIndex)}
+                        title={isCollapsed ? "Développer" : "Réduire"}
+                      >
+                        🔽
+                      </button>
                       <button onClick={() => deleteUE(sIndex, uIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1.1rem'}} title="Supprimer l'UE">🗑️</button>
                       <EditableLabel 
                         value={ue.nom}
@@ -367,11 +408,20 @@ function CoursPage({ coursConfig, onSave, saving }) {
                         />
                       </div>
                     </div>
-                    <button className="btn-secondary" style={{fontSize:'0.9rem', marginLeft:'0.75rem'}} onClick={() => addMatiere(sIndex, uIndex)}>+ Matière</button>
+                    
+                    <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
+                      {isCollapsed && (
+                        <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>
+                          {ue.matieres?.length || 0} Matière(s) • {ueTotalExos} Exercice(s)
+                        </span>
+                      )}
+                      <button className="btn-secondary" style={{fontSize:'0.9rem'}} onClick={() => { if(isCollapsed) toggleUE(sIndex, uIndex); addMatiere(sIndex, uIndex); }}>+ Matière</button>
+                    </div>
                   </div>
 
-                  {/* MATIERES GRID */}
-                  <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(350px, 1fr))', gap:'1rem'}}>
+                  {/* MATIERES GRID (Accordion Content) */}
+                  <div className={`ue-accordion-content ${isCollapsed ? 'closed' : 'open'}`}>
+                    <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(350px, 1fr))', gap:'1rem'}}>
                     {ue.matieres?.map((matiere, mIndex) => {
                       if (!matiereMatchesSearch(matiere)) return null;
                       return (
@@ -489,6 +539,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
                       </div>
                       )
                     })}
+                    </div>
                   </div>
 
                 </div>
@@ -498,7 +549,7 @@ function CoursPage({ coursConfig, onSave, saving }) {
 
           </div>
           )
-        })}
+        })()}
       </div>
     </div>
   );

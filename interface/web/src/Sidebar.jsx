@@ -1,8 +1,8 @@
 import React from 'react';
 
-function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak }) {
+function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount }) {
   const tabs = [
-    { id: 'dashboard', label: 'Accueil', icon: '🏠' },
+    { id: 'dashboard', label: 'Accueil', icon: '🏠', badge: pendingTasksCount },
     { id: 'entrainement', label: 'Entraînement', icon: '🏋️' },
     { id: 'cours', label: 'Mes Cours', icon: '📚' },
     { id: 'config', label: 'Configuration', icon: '⚙️' },
@@ -24,6 +24,9 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak }) {
           >
             <span className="sidebar-icon">{tab.icon}</span>
             {tab.label}
+            {tab.badge > 0 && (
+              <span className="sidebar-badge">{tab.badge}</span>
+            )}
           </button>
         ))}
       </nav>
