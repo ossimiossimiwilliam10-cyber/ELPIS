@@ -275,7 +275,7 @@ function CoursPage() {
     const formData = new FormData();
     formData.append('pdfFile', file);
     try {
-      const res = await fetch('http://localhost:3001/api/scan-pdf', { method: 'POST', body: formData });
+      const res = await fetch('/api/scan-pdf', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success && data.exercises) {
         setConfigLocal(prev => {
@@ -396,11 +396,11 @@ function CoursPage() {
                         <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>ECTS:</span>
                         <input 
                           type="number" 
-                          value={ue.creditsEcts || 0} 
+                          value={ue.ects || 0} 
                           onChange={(e) => {
                             let val = parseInt(e.target.value) || 0;
                             val = Math.min(60, Math.max(0, val));
-                            updateField(['semestres', sIndex, 'ues', uIndex, 'creditsEcts'], val);
+                            updateField(['semestres', sIndex, 'ues', uIndex, 'ects'], val);
                           }}
                           style={{width:'60px', padding:'0.3rem'}}
                           title="Crédits ECTS (0-60)"

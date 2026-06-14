@@ -10,6 +10,7 @@ struct CoursMagistral {
     int jActuel = 0; // 0 = nouveau (J0), 1 = J1, 3 = J3, etc.
     std::string derniereRevision = ""; // Format YYYY-MM-DD
     std::string fichePdfPath = ""; // Chemin web vers la fiche PDF
+    std::string notes = ""; // Notes markdown
 };
 
 struct Exercice {
@@ -18,6 +19,8 @@ struct Exercice {
     std::string pdfSource = "";
     std::string dernierePratique = ""; // "YYYY-MM-DD"
     int nombrePratiques = 0;
+    std::string notes = ""; // Notes markdown
+    std::string difficulte = ""; // "" (pas noté), "tres_facile", "facile", "moyen", "assez_difficile", "difficile"
 };
 
 struct Matiere {

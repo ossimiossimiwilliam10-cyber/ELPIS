@@ -29,6 +29,12 @@ add_executable(moteur_principal
 target_include_directories(moteur_principal PRIVATE lib)
 
 # Tests
+add_executable(test_config
+    moteur/moteur_menu_configuration/test_cerveau_config.cpp
+    moteur/moteur_menu_configuration/CerveauConfig.cpp
+)
+target_include_directories(test_config PRIVATE lib)
+
 add_executable(test_principal
     moteur/moteur_menu_principal/test_principal.cpp
     moteur/moteur_menu_principal/CerveauPrincipal.cpp

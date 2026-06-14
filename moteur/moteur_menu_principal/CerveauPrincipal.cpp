@@ -105,9 +105,10 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                             
                             if (joursEcoules >= cm.jActuel && cm.jActuel > 0) {
                                 doitReviser = true;
-                            } else if (cm.jActuel == 0 && joursEcoules > 0) {
+                            } else if (cm.jActuel == 0 && joursEcoules >= 0) {
                                 // J0 doit être revu s'il n'a pas été revu aujourd'hui
-                                doitReviser = true;
+                                // Si joursEcoules == 0 (même jour), ne pas reproposer
+                                doitReviser = (joursEcoules > 0);
                             }
                         } else {
                             doitReviser = true; // Date corrompue
@@ -127,19 +128,35 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
 
                 // --- Logique Exercices (TD) ---
                 std::vector<Exercice> tds;
+                int doneTDToday = 0;
                 for (const auto& ex : m.listeTD) {
-                    if (ex.dernierePratique != todayStr) {
+                    if (ex.dernierePratique == todayStr) {
+                        doneTDToday++;
+                    } else {
                         tds.push_back(ex);
                     }
                 }
                 std::sort(tds.begin(), tds.end(), [](const Exercice& a, const Exercice& b) {
-                    if (a.nombrePratiques != b.nombrePratiques) return a.nombrePratiques < b.nombrePratiques;
-                    return a.dernierePratique < b.dernierePratique;
+                    // Score de priorité combiné : pratiques + ancienneté + difficulté
+                    auto getPrio = [](const Exercice& ex) -> double {
+                        double base = 1.0 / (ex.nombrePratiques + 1.0); // Moins pratiqué = plus urgent
+                        if (ex.difficulte == "difficile") base *= 2.0;
+                        else if (ex.difficulte == "assez_difficile") base *= 1.5;
+                        else if (ex.difficulte == "facile") base *= 0.7;
+                        else if (ex.difficulte == "tres_facile") base *= 0.5;
+                        // "moyen" ou "" (pas noté) : neutre (= 1.0)
+                        return base;
+                    };
+                    double pa = getPrio(a);
+                    double pb = getPrio(b);
+                    if (std::abs(pa - pb) > 0.0001) return pa > pb; // Priorité décroissante
+                    return a.dernierePratique < b.dernierePratique; // Plus ancien d'abord
                 });
                 
-                int count = 0;
+                int tdLimit = std::max(0, 2 - doneTDToday);
+                int tdCount = 0;
                 for (const auto& ex : tds) {
-                    if (count >= 2) break;
+                    if (tdCount >= tdLimit) break;
                     nlohmann::json t;
                     t["matiere"] = m.nom;
                     t["type"] = "TD";
@@ -147,25 +164,41 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                     t["dureeMinutes"] = 20;
                     t["pdfSource"] = ex.pdfSource;
                     t["page"] = ex.page;
+                    t["difficulte"] = ex.difficulte;
                     tachesJson.push_back(t);
                     tempsRequisMin += 20;
-                    count++;
+                    tdCount++;
                 }
 
                 // --- Logique TP ---
                 std::vector<Exercice> tps;
+                int doneTPToday = 0;
                 for (const auto& ex : m.listeTP) {
-                    if (ex.dernierePratique != todayStr) {
+                    if (ex.dernierePratique == todayStr) {
+                        doneTPToday++;
+                    } else {
                         tps.push_back(ex);
                     }
                 }
                 std::sort(tps.begin(), tps.end(), [](const Exercice& a, const Exercice& b) {
-                    if (a.nombrePratiques != b.nombrePratiques) return a.nombrePratiques < b.nombrePratiques;
+                    auto getPrio = [](const Exercice& ex) -> double {
+                        double base = 1.0 / (ex.nombrePratiques + 1.0);
+                        if (ex.difficulte == "difficile") base *= 2.0;
+                        else if (ex.difficulte == "assez_difficile") base *= 1.5;
+                        else if (ex.difficulte == "facile") base *= 0.7;
+                        else if (ex.difficulte == "tres_facile") base *= 0.5;
+                        return base;
+                    };
+                    double pa = getPrio(a);
+                    double pb = getPrio(b);
+                    if (std::abs(pa - pb) > 0.0001) return pa > pb;
                     return a.dernierePratique < b.dernierePratique;
                 });
                 
-                if (!tps.empty()) {
-                    const auto& ex = tps[0];
+                int tpLimit = std::max(0, 1 - doneTPToday);
+                int tpCount = 0;
+                for (const auto& ex : tps) {
+                    if (tpCount >= tpLimit) break;
                     nlohmann::json t;
                     t["matiere"] = m.nom;
                     t["type"] = "TP";
@@ -173,8 +206,10 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                     t["dureeMinutes"] = 30;
                     t["pdfSource"] = ex.pdfSource;
                     t["page"] = ex.page;
+                    t["difficulte"] = ex.difficulte;
                     tachesJson.push_back(t);
                     tempsRequisMin += 30;
+                    tpCount++;
                 }
             }
         }

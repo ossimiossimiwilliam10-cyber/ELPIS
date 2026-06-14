@@ -49,18 +49,34 @@ function AppInner() {
       s.ues?.forEach(u => {
         u.matieres?.forEach(m => {
           m.listeCM?.forEach(cm => {
-            if (cm.jActuel > 0 && cm.derniereRevision) {
+            if (!cm.derniereRevision) {
+              count++; // J0 : jamais révisé = en attente
+            } else if (cm.jActuel > 0) {
               const nextDate = new Date(cm.derniereRevision);
-              nextDate.setDate(nextDate.getDate() + (cm.jActuel || 0));
+              nextDate.setDate(nextDate.getDate() + cm.jActuel);
               if (nextDate.toISOString().split('T')[0] <= today) count++;
+            } else {
+              // J0 déjà révisé au moins une fois : compter si pas aujourd'hui
+              if (cm.derniereRevision !== today) count++;
             }
           });
           m.listeTD?.forEach(td => {
-            if (td.dernierePratique !== today) count++;
+            // Compter dans la limite du quota journalier : max 2 TD/matière/jour
           });
+          // Respecter le quota : max 2 TD - déjà faits aujourd'hui
+          if (m.listeTD) {
+            const doneTDToday = m.listeTD.filter(td => td.dernierePratique === today).length;
+            const tdQuota = Math.min(2, m.listeTD.length);
+            count += Math.max(0, tdQuota - doneTDToday);
+          }
           m.listeTP?.forEach(tp => {
-            if (tp.dernierePratique !== today) count++;
+            // Compter dans la limite du quota journalier : max 1 TP/matière/jour
           });
+          if (m.listeTP) {
+            const doneTPToday = m.listeTP.filter(tp => tp.dernierePratique === today).length;
+            const tpQuota = Math.min(1, m.listeTP.length);
+            count += Math.max(0, tpQuota - doneTPToday);
+          }
         });
       });
     });
@@ -150,8 +166,7 @@ function AppInner() {
     if (window.confirm("ATTENTION : Supprimer toutes les données ? Cette action est IRREVERSIBLE.")) {
       if (window.confirm("Derniere chance ! Confirmez la suppression totale ?")) {
         try {
-          setSaving(true);
-          const emptyConfig = { maxStudyHoursPerDay: 8, heuresSommeilMin: 8, fixedCommitments: [], pomoWork: 25, pomoBreak: 5 };
+          const emptyConfig = { maxStudyHoursPerDay: 8, fixedCommitments: [], pomoWork: 25, pomoBreak: 5 };
           useStore.getState().setConfig(emptyConfig);
           const emptyCours = { semestres: [] };
           useStore.getState().setCoursConfig(emptyCours);

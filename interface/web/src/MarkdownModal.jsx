@@ -11,10 +11,9 @@ function MarkdownModal({ isOpen, onClose, initialValue, onSave, title }) {
     setMode('edit');
   }, [isOpen, initialValue]);
 
-  if (!isOpen) return null;
-
   return (
     <AnimatePresence>
+      {isOpen && (
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
@@ -78,6 +77,7 @@ function MarkdownModal({ isOpen, onClose, initialValue, onSave, title }) {
           </div>
         </motion.div>
       </motion.div>
+      )}
     </AnimatePresence>
   );
 }

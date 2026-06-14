@@ -12,6 +12,8 @@ static Exercice parseExercice(const nlohmann::json& itemEx) {
     ex.pdfSource = itemEx.value("pdfSource", "");
     ex.dernierePratique = itemEx.value("dernierePratique", "");
     ex.nombrePratiques = itemEx.value("nombrePratiques", 0);
+    ex.notes = itemEx.value("notes", "");
+    ex.difficulte = itemEx.value("difficulte", "");
     return ex;
 }
 
@@ -22,6 +24,8 @@ static nlohmann::json serializeExercice(const Exercice& ex) {
     exJson["pdfSource"] = ex.pdfSource;
     exJson["dernierePratique"] = ex.dernierePratique;
     exJson["nombrePratiques"] = ex.nombrePratiques;
+    exJson["notes"] = ex.notes;
+    exJson["difficulte"] = ex.difficulte;
     return exJson;
 }
 
@@ -89,6 +93,7 @@ bool CerveauCours::loadConfig() {
                                         cm.jActuel = itemCM.value("jActuel", 0);
                                         cm.derniereRevision = itemCM.value("derniereRevision", "");
                                         cm.fichePdfPath = itemCM.value("fichePdfPath", "");
+                                        cm.notes = itemCM.value("notes", "");
                                         m.listeCM.push_back(cm);
                                     }
                                 }
@@ -154,6 +159,7 @@ bool CerveauCours::saveConfig() {
                     cmJson["jActuel"] = cm.jActuel;
                     cmJson["derniereRevision"] = cm.derniereRevision;
                     cmJson["fichePdfPath"] = cm.fichePdfPath;
+                    cmJson["notes"] = cm.notes;
                     listeCMJson.push_back(cmJson);
                 }
                 mJson["listeCM"] = listeCMJson;

@@ -908,3 +908,54 @@ input:focus, select:focus {
 .todo-list > div > div:first-child {
   min-width: 0 !important;
 }
+
+/* === OVERFLOW & TEXT FIXES === */
+.todo-item { word-break: break-word; overflow-wrap: break-word; }
+.todo-item > div:first-child { min-width: 0; overflow: hidden; }
+.todo-item > div:first-child > div:first-child { 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+/* Config panel responsiveness */
+.config-panel input[type="text"],
+.config-panel input[type="time"],
+.config-panel select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.config-actions { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  flex-wrap: wrap; 
+  gap: 1rem;
+}
+.config-actions-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Calendar grid responsiveness */
+.calendar-grid { min-width: 0; }
+.calendar-grid > div { min-width: 0; overflow: hidden; }
+
+/* Dashboard grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* Semester tabs responsiveness */
+.semestre-tabs {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 0.5rem;
+}

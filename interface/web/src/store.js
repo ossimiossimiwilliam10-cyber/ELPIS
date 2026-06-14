@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import debounce from 'lodash/debounce';
 
 // API base URL
-const API_URL = 'http://localhost:3001/api';
+const API_URL = '/api';
 
 // Auto-save functions using debounce
 const debouncedSaveConfig = debounce(async (config) => {

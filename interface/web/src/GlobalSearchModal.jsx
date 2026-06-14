@@ -68,10 +68,9 @@ function GlobalSearchModal() {
     }, 100);
   };
 
-  if (!isOpen) return null;
-
   return (
     <AnimatePresence>
+      {isOpen && (
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
@@ -145,6 +144,7 @@ function GlobalSearchModal() {
           )}
         </motion.div>
       </motion.div>
+      )}
     </AnimatePresence>
   );
 }

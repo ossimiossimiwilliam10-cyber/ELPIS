@@ -17,6 +17,14 @@ function Dashboard() {
   const [timeLeft, setTimeLeft] = useState(pomoWork * 60);
   const [isActive, setIsActive] = useState(false);
 
+  const DIFFICULTY_LEVELS = [
+    { key: 'difficile', label: '🔴', title: 'Difficile' },
+    { key: 'assez_difficile', label: '🟠', title: 'Assez difficile' },
+    { key: 'moyen', label: '🟡', title: 'Moyen' },
+    { key: 'facile', label: '🟢', title: 'Facile' },
+    { key: 'tres_facile', label: '🔵', title: 'Très facile' },
+  ];
+
   // Sync pomo durations with config
   useEffect(() => {
     if (!isActive) {
@@ -31,22 +39,17 @@ function Dashboard() {
         setTimeLeft(t => t - 1);
       }, 1000);
     } else if (isActive && timeLeft === 0) {
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification("Pomodoro Terminé", {
-          body: pomoState === 'WORK' ? "Temps de pause !" : "Au travail !",
-          icon: "/pwa-192x192.png"
-        });
-      }
+      const nextMode = pomoState === 'WORK' ? 'BREAK' : 'WORK';
       
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-      const nextMode = pomoState === 'WORK' ? 'BREAK' : 'WORK';
+      
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(nextMode === 'WORK' ? "Pause terminée ! Au travail !" : "Bien joué ! Prends une pause !");
+      }
+      
       setPomoState(nextMode);
       setTimeLeft(nextMode === 'WORK' ? pomoWork * 60 : pomoBreak * 60);
       setIsActive(false);
-      // Browser notification
-      if (Notification.permission === 'granted') {
-        new Notification(nextMode === 'WORK' ? "Pause terminée ! Au travail !" : "Bien joué ! Prends une pause !");
-      }
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft, pomoState, pomoWork, pomoBreak]);
@@ -68,7 +71,7 @@ function Dashboard() {
   };
 
   const fetchDashboard = () => {
-    fetch('http://localhost:3001/api/orchestrateur')
+    fetch('/api/orchestrateur')
       .then(res => res.json())
       .then(d => {
         setData(d);
@@ -95,7 +98,7 @@ function Dashboard() {
     setOrderedTaches(items);
   };
 
-  const handleTaskComplete = (tache) => {
+  const handleTaskComplete = (tache, difficulte = "") => {
     if (!coursConfig) return;
     const newConfig = JSON.parse(JSON.stringify(coursConfig));
     const today = new Date().toISOString().split('T')[0];
@@ -124,6 +127,7 @@ function Dashboard() {
                 if (td.titre === tache.titre) {
                   td.dernierePratique = today;
                   td.nombrePratiques = (td.nombrePratiques || 0) + 1;
+                  if (difficulte) td.difficulte = difficulte;
                   taskFound = true;
                 }
               });
@@ -132,6 +136,7 @@ function Dashboard() {
                 if (tp.titre === tache.titre) {
                   tp.dernierePratique = today;
                   tp.nombrePratiques = (tp.nombrePratiques || 0) + 1;
+                  if (difficulte) tp.difficulte = difficulte;
                   taskFound = true;
                 }
               });
@@ -342,6 +347,27 @@ function Dashboard() {
                                 >
                                   Fait
                                 </button>
+                                {t.type !== 'CM' && DIFFICULTY_LEVELS.map(dl => (
+                                  <button
+                                    key={dl.key}
+                                    onClick={() => handleTaskComplete(t, dl.key)}
+                                    title={dl.title}
+                                    style={{
+                                      background: 'transparent',
+                                      border: 'none',
+                                      cursor: 'pointer',
+                                      fontSize: '0.85rem',
+                                      padding: '0.1rem',
+                                      flexShrink: 0,
+                                      opacity: 0.7,
+                                      transition: 'opacity 0.2s',
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                                    onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+                                  >
+                                    {dl.label}
+                                  </button>
+                                ))}
                               </div>
                             </motion.div>
                           )}
