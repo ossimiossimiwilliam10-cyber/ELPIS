@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
 
+const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
+
 function EntrainementPage() {
   const { coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
   const [configLocal, setConfigLocal] = useState(() => {
@@ -51,6 +53,23 @@ function EntrainementPage() {
           const tds = extractExos(m.listeTD, 'TD');
           const tps = extractExos(m.listeTP, 'TP');
 
+          const extractCMs = (listeExos) => {
+            if (!listeExos) return [];
+            return listeExos
+              .map((ex, exIndex) => ({
+                ...ex, sIndex, uIndex, mIndex, exIndex, type: 'CM', matiereNom: m.nom
+              }))
+              .filter(cm => {
+                 if (!cm.derniereRevision) return true;
+                 if (cm.jActuel === 0) return cm.derniereRevision !== todayStr;
+                 const nextDate = new Date(cm.derniereRevision);
+                 nextDate.setDate(nextDate.getDate() + cm.jActuel);
+                 return nextDate.toISOString().split('T')[0] <= todayStr;
+              });
+          };
+          const cms = extractCMs(m.listeCM);
+          exosToReview.push(...cms);
+
           // Compter combien ont déjà été faits aujourd'hui (pour respecter le quota de 2 TD / 1 TP par matière)
           const doneTDToday = (m.listeTD || []).filter(ex => ex.dernierePratique === todayStr).length;
           const doneTPToday = (m.listeTP || []).filter(ex => ex.dernierePratique === todayStr).length;
@@ -86,11 +105,61 @@ function EntrainementPage() {
         u.matieres?.forEach(m => {
           if (m.listeTD) total += Math.min(2, m.listeTD.length);
           if (m.listeTP) total += Math.min(1, m.listeTP.length);
+          if (m.listeCM) {
+             m.listeCM.forEach(cm => {
+                if (cm.derniereRevision === todayStr) total++;
+                else {
+                  if (!cm.derniereRevision) total++;
+                  else if (cm.jActuel === 0) {
+                     if (cm.derniereRevision !== todayStr) total++;
+                  } else {
+                     const nextDate = new Date(cm.derniereRevision);
+                     nextDate.setDate(nextDate.getDate() + cm.jActuel);
+                     if (nextDate.toISOString().split('T')[0] <= todayStr) total++;
+                  }
+                }
+             });
+          }
         });
       });
     });
     return total;
   }, [configLocal]);
+
+  const evaluateCM = (exo, score) => {
+    const newConf = JSON.parse(JSON.stringify(configLocal));
+    const cm = newConf.semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
+    
+    let currentIndex = J_SEQUENCE.indexOf(cm.jActuel);
+    if (currentIndex === -1) currentIndex = 0;
+
+    if (score === 1 || score === 2) {
+      currentIndex = Math.max(0, currentIndex - 1);
+    } else {
+      currentIndex = Math.min(J_SEQUENCE.length - 1, currentIndex + 1);
+    }
+
+    cm.jActuel = J_SEQUENCE[currentIndex];
+    
+    const today = new Date().toISOString().split('T')[0];
+    cm.derniereRevision = today;
+    
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#3b82f6', '#ffffff']
+    });
+
+    setConfigLocal(newConf);
+    setCoursConfig(newConf);
+    addHistoriqueEntry({
+      type: 'CM',
+      titre: cm.titre,
+      matiere: exo.matiereNom,
+      action: `Révisé (J${cm.jActuel})`
+    });
+  };
 
   const markAsDone = (exo, difficulte = "") => {
     const todayStr = new Date().toISOString().split('T')[0];
@@ -135,7 +204,7 @@ function EntrainementPage() {
   return (
     <div className="entrainement-page">
       <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
-        <h2>Entraînement Quotidien</h2>
+        <h2>Session du Jour</h2>
         <span style={{color:'var(--text-secondary)'}}>{exercicesDuJour.length} exercice{exercicesDuJour.length > 1 ? 's' : ''} restant{exercicesDuJour.length > 1 ? 's' : ''}</span>
       </div>
 
@@ -234,51 +303,63 @@ function EntrainementPage() {
                       {exo.matiereNom} ({exo.type})
                     </span>
                     <span style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>
-                      Pratiqué {exo.nombrePratiques || 0} fois
+                      {exo.type === 'CM' ? `Niveau J${exo.jActuel || 0}` : `Pratiqué ${exo.nombrePratiques || 0} fois`}
                     </span>
                   </div>
                   
                   <h3 style={{margin:'0 0 1rem 0', overflow:'hidden', textOverflow:'ellipsis', display:'-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient:'vertical'}} title={exo.titre}>{exo.titre}</h3>
                   
                   <div style={{display:'flex', gap:'1rem'}}>
-                    <a 
-                      href={`${exo.pdfSource}#page=${exo.page}`} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="btn-primary"
-                      style={{flex:1, textAlign:'center', textDecoration:'none', padding:'0.6rem'}}
-                    >
-                      Ouvrir Page {exo.page}
-                    </a>
-                    
-                    <button 
-                      onClick={() => markAsDone(exo)}
-                      className="btn-secondary"
-                      style={{background:'#10B981', color:'white', border:'none'}}
-                    >
-                      Fait
-                    </button>
-                    {DIFFICULTY_LEVELS.map(dl => (
-                      <button
-                        key={dl.key}
-                        onClick={() => markAsDone(exo, dl.key)}
-                        title={dl.title}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                          fontSize: '0.7rem',
-                          padding: '0.05rem',
-                          flexShrink: 0,
-                          opacity: 0.7,
-                          transition: 'opacity 0.2s',
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                        onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
-                      >
-                        {dl.label}
-                      </button>
-                    ))}
+                    {exo.type === 'CM' ? (
+                       <>
+                         <button onClick={() => evaluateCM(exo, 1)} style={{flex:1, background:'#ef4444', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Échec">À revoir (1)</button>
+                         <button onClick={() => evaluateCM(exo, 2)} style={{flex:1, background:'#f97316', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Difficile">Difficile (2)</button>
+                         <button onClick={() => evaluateCM(exo, 3)} style={{flex:1, background:'#3b82f6', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Bien">Bien (3)</button>
+                         <button onClick={() => evaluateCM(exo, 4)} style={{flex:1, background:'#22c55e', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Parfait">Parfait (4)</button>
+                       </>
+                    ) : (
+                       <>
+                         {exo.pdfSource && (
+                           <a 
+                             href={`${exo.pdfSource}#page=${exo.page}`} 
+                             target="_blank" 
+                             rel="noreferrer"
+                             className="btn-primary"
+                             style={{flex:1, textAlign:'center', textDecoration:'none', padding:'0.6rem'}}
+                           >
+                             Ouvrir Page {exo.page}
+                           </a>
+                         )}
+                         <button 
+                           onClick={() => markAsDone(exo)}
+                           className="btn-secondary"
+                           style={{background:'#10B981', color:'white', border:'none'}}
+                         >
+                           Fait
+                         </button>
+                         {DIFFICULTY_LEVELS.map(dl => (
+                           <button
+                             key={dl.key}
+                             onClick={() => markAsDone(exo, dl.key)}
+                             title={dl.title}
+                             style={{
+                               background: 'transparent',
+                               border: 'none',
+                               cursor: 'pointer',
+                               fontSize: '0.7rem',
+                               padding: '0.05rem',
+                               flexShrink: 0,
+                               opacity: 0.7,
+                               transition: 'opacity 0.2s',
+                             }}
+                             onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                             onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+                           >
+                             {dl.label}
+                           </button>
+                         ))}
+                       </>
+                    )}
                   </div>
                 </motion.div>
               ))}

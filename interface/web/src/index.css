@@ -926,32 +926,9 @@ input:focus, select:focus {
   box-sizing: border-box;
 }
 
-.config-actions { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  flex-wrap: wrap; 
-  gap: 1rem;
-}
-.config-actions-left {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
 /* Calendar grid responsiveness */
 .calendar-grid { min-width: 0; }
 .calendar-grid > div { min-width: 0; overflow: hidden; }
-
-/* Dashboard grid */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
-@media (max-width: 1024px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
-}
 
 /* Semester tabs responsiveness */
 .semestre-tabs {

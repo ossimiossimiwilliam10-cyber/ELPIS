@@ -74,8 +74,13 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
     int tempsRequisMin = 0;
     std::string todayStr = getTodayString();
 
+    auto tNowForParity = std::time(nullptr);
+    auto tmNowForParity = *std::localtime(&tNowForParity);
+    int parityJour = tmNowForParity.tm_yday % 2;
+
     // 2. Scan des cours pour générer la To-Do List du jour
     for (const auto& s : crs.semestres) {
+        int matiereIndexDansSemestre = 0;
         for (const auto& ue : s.ues) {
             for (const auto& m : ue.matieres) {
                 
@@ -124,6 +129,13 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                         tachesJson.push_back(t);
                         tempsRequisMin += t["dureeMinutes"].get<int>();
                     }
+                }
+
+                bool activePourExercices = ((matiereIndexDansSemestre % 2) == parityJour);
+                matiereIndexDansSemestre++;
+
+                if (!activePourExercices) {
+                    continue;
                 }
 
                 // --- Logique Exercices (TD) ---

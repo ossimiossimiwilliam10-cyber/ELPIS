@@ -6,7 +6,9 @@ const HOURS = Array.from({length: 16}, (_, i) => i + 8); // 8h to 23h
 const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
 function getFrenchDayOfWeek() {
-  return DAYS[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]; // JS getDay: 0=Sun, we want Mon=0
+  const jsDay = new Date().getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const frenchIndex = jsDay === 0 ? 6 : jsDay - 1; // Mon=0, ..., Sun=6
+  return DAYS[frenchIndex];
 }
 
 function CalendrierPage() {

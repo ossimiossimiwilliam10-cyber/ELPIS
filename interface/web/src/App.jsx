@@ -166,7 +166,7 @@ function AppInner() {
     if (window.confirm("ATTENTION : Supprimer toutes les données ? Cette action est IRREVERSIBLE.")) {
       if (window.confirm("Derniere chance ! Confirmez la suppression totale ?")) {
         try {
-          const emptyConfig = { maxStudyHoursPerDay: 8, fixedCommitments: [], pomoWork: 25, pomoBreak: 5 };
+          const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", maxStudyHoursPerDay: 8, targetGrade: 14.0, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0 };
           useStore.getState().setConfig(emptyConfig);
           const emptyCours = { semestres: [] };
           useStore.getState().setCoursConfig(emptyCours);
@@ -179,7 +179,13 @@ function AppInner() {
     }
   };
 
-  if (loading) return <div style={{textAlign:'center', marginTop:'5rem'}}>Initialisation des Cerveaux...</div>;
+  if (loading) return (
+    <div style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100vh', gap:'1rem', color: 'var(--text-primary)'}}>
+      <div className="spinner" style={{width:'40px', height:'40px', border:'4px solid var(--bg-tertiary)', borderTop:'4px solid var(--accent-primary)', borderRadius:'50%', animation:'spin 1s linear infinite'}}></div>
+      <div style={{fontSize: '1.2rem', fontWeight: 'bold'}}>Initialisation des Cerveaux...</div>
+      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
   return (
     <div className="app-layout">
@@ -280,6 +286,7 @@ function AppInner() {
                   <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heure de coucher :</label>
                   <input 
                     type="time" 
+                    step="60"
                     value={config.bedtime || "23:00"}
                     onChange={e => {
                       const newConf = {...config};
@@ -288,6 +295,7 @@ function AppInner() {
                     }}
                     style={{width:'100%', maxWidth:'200px'}}
                   />
+                  <small style={{display:'block', color:'var(--text-secondary)', marginTop:'0.5rem', fontSize:'0.8rem'}}>Format 24h enregistré en base (l'affichage dépend de votre système).</small>
                 </div>
 
                 {/* Pomodoro Settings */}

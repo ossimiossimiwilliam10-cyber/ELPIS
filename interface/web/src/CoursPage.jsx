@@ -236,25 +236,7 @@ function CoursPage() {
     }
   };
 
-  const updateJActuel = (sIndex, uIndex, mIndex, cmIndex, newJ) => {
-    setConfigLocal(prev => {
-      const newConf = deepClone(prev);
-      newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex].jActuel = newJ;
-      
-      // Update derniereRevision logic
-      const cm = newConf.semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
-      const today = new Date().toISOString().split('T')[0];
-      if (newJ === 0) {
-        cm.derniereRevision = "";
-      } else {
-        if (!cm.derniereRevision) {
-          cm.derniereRevision = today;
-        }
-      }
-      setCoursConfig(newConf);
-      return newConf;
-    });
-  };
+
 
   const getNextReviewDate = (cm) => {
     if (!cm.derniereRevision) return "Aujourd'hui";
@@ -307,8 +289,8 @@ function CoursPage() {
     <div className="cours-page">
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'2rem', flexWrap:'wrap', gap:'1rem'}}>
         <div>
-          <h2 style={{margin:0}}>Architecture des Cours</h2>
-          <p style={{color:'var(--text-secondary)', marginTop:'0.5rem'}}>Gère tes Semestres, Unités d'Enseignement et Matières.</p>
+          <h2 style={{margin:0}}>Bibliothèque de Cours</h2>
+          <p style={{color:'var(--text-secondary)', marginTop:'0.5rem'}}>Configure ton année scolaire : Semestres, UEs, et Matières.</p>
         </div>
         <div style={{display:'flex', gap:'1rem', alignItems: 'center', flexWrap:'wrap'}}>
           <input 
@@ -427,7 +409,7 @@ function CoursPage() {
                       <div key={`m-${sIndex}-${uIndex}-${mIndex}`} style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0}}>
                         
                         {/* MATIERE HEADER */}
-                        <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'1rem', minWidth: 0}}>
+                        <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.5rem', minWidth: 0}}>
                           <button onClick={() => deleteMatiere(sIndex, uIndex, mIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', padding:0}} title="Supprimer">🗑️</button>
                           <EditableLabel
                             value={matiere.nom}
@@ -435,6 +417,44 @@ function CoursPage() {
                             placeholder="Nom de la matière"
                             style={{flex:1, borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.3rem'}}
                           />
+                        </div>
+                        
+                        {/* HUB LINKS */}
+                        <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
+                          <div style={{display:'flex', gap:'0.5rem'}}>
+                            <input 
+                              type="text" 
+                              placeholder="Lien NotebookLM..." 
+                              value={matiere.notebookLMLink || ''}
+                              onChange={(e) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'notebookLMLink'], e.target.value)}
+                              style={{flex:1, padding:'0.3rem', fontSize:'0.75rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
+                            />
+                          </div>
+                          <div style={{display:'flex', gap:'0.5rem'}}>
+                            <button 
+                              className="btn-secondary" 
+                              style={{flex:1, padding:'0.3rem', fontSize:'0.8rem'}}
+                              onClick={() => {
+                                if (matiere.notebookLMLink) window.open(matiere.notebookLMLink, '_blank');
+                                else alert("Veuillez d'abord ajouter un lien NotebookLM.");
+                              }}
+                            >
+                              📖 Ouvrir NotebookLM
+                            </button>
+                            <button 
+                              className="btn-secondary" 
+                              style={{flex:1, padding:'0.3rem', fontSize:'0.8rem', background:'rgba(2, 132, 199, 0.2)', color:'#38bdf8', borderColor:'#0ea5e9'}}
+                              onClick={async () => {
+                                try {
+                                  await fetch('/api/open/anki', { method: 'POST' });
+                                } catch(e) {
+                                  alert("Erreur lancement Anki");
+                                }
+                              }}
+                            >
+                              🗂️ Lancer Anki
+                            </button>
+                          </div>
                         </div>
                         
                         {/* --- CM --- */}
@@ -463,18 +483,9 @@ function CoursPage() {
                                 placeholder="+ Ajouter une note (markdown supporté)" 
                               />
                             </div>
-                            <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'0.2rem'}}>
-                              <select 
-                                value={cm.jActuel}
-                                onChange={(e) => updateJActuel(sIndex, uIndex, mIndex, cmIndex, parseInt(e.target.value) || 0)}
-                                style={{padding:'0.3rem', fontSize:'0.8rem'}}
-                              >
-                                {J_SEQUENCE.map(j => (
-                                  <option key={j} value={j}>J{j}</option>
-                                ))}
-                              </select>
-                              <span style={{fontSize:'0.65rem', color:'var(--text-secondary)'}}>
-                                {getNextReviewDate(cm)}
+                            <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
+                              <span style={{fontSize:'0.75rem', color:'var(--text-secondary)'}}>
+                                Prochain : {getNextReviewDate(cm)} (Actuel: J{cm.jActuel})
                               </span>
                             </div>
                           </div>

@@ -33,7 +33,35 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + '-' + file.originalname);
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype !== 'application/pdf') {
+      const err = new Error('Seuls les fichiers PDF sont acceptés.');
+      err.code = 'INVALID_FILE_TYPE';
+      return cb(err, false);
+    }
+    cb(null, true);
+  }
+});
+
+const uploadPdf = (req, res, next) => {
+  upload.single('pdfFile')(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: "Fichier trop volumineux (limite 10 Mo)." });
+      }
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      if (err.code === 'INVALID_FILE_TYPE') {
+        return res.status(400).json({ error: "Type de fichier invalide. Seuls les PDF sont acceptés." });
+      }
+      return res.status(500).json({ error: err.message });
+    }
+    next();
+  });
+};
 
 // Serve uploaded files
 app.use('/fiches', express.static(FICHES_DIR));
@@ -110,8 +138,25 @@ app.post('/api/historique', (req, res) => {
   }
 });
 
+// POST open anki
+app.post('/api/open/anki', (req, res) => {
+  const { exec } = require('child_process');
+  // Use absolute path since it's known
+  const ankiPath = process.env.LOCALAPPDATA + '\\Programs\\Anki\\anki.exe';
+  exec(`"${ankiPath}"`, (err) => {
+    if (err) return res.status(500).json({ error: "Impossible de lancer Anki." });
+    res.json({ success: true });
+  });
+});
+
+// POST shutdown
+app.post('/api/shutdown', (req, res) => {
+  res.json({ success: true, message: "Arrêt du serveur." });
+  setTimeout(() => process.exit(0), 1000);
+});
+
 // POST upload PDF
-app.post('/api/upload-pdf', upload.single('pdfFile'), (req, res) => {
+app.post('/api/upload-pdf', uploadPdf, (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Aucun fichier uploadé." });
@@ -124,7 +169,7 @@ app.post('/api/upload-pdf', upload.single('pdfFile'), (req, res) => {
 });
 
 // POST scan PDF
-app.post('/api/scan-pdf', upload.single('pdfFile'), async (req, res) => {
+app.post('/api/scan-pdf', uploadPdf, async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "Aucun fichier uploadé." });
     
@@ -195,9 +240,9 @@ app.post('/api/scan-pdf', upload.single('pdfFile'), async (req, res) => {
 // GET orchestrator report
 app.get('/api/orchestrateur', (req, res) => {
   try {
-    const configPath = require('./moteur/config').CONFIG_PATH;
-    const coursPath = require('./moteur/cours').COURS_PATH;
-    const rapport = genererRapportQuotidien(configPath, coursPath);
+    const { CONFIG_PATH } = require('./moteur/config');
+    const { COURS_PATH } = require('./moteur/cours');
+    const rapport = genererRapportQuotidien(CONFIG_PATH, COURS_PATH);
     res.json(rapport);
   } catch (err) {
     console.error("Erreur orchestrateur:", err);

@@ -106,16 +106,21 @@ const useStore = create((set, get) => ({
     const config = get().config;
     if (!config) return;
 
-    const today = new Date().toISOString().split('T')[0];
+    // Use local date to avoid UTC timezone shift near midnight
+    const d = new Date();
+    const today = d.getFullYear() + '-' + 
+      String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(d.getDate()).padStart(2, '0');
     let streak = config.currentStreak || 0;
     let lastActive = config.lastActiveDate || "";
 
     if (lastActive !== today) {
       if (lastActive) {
-        const lastDate = new Date(lastActive);
-        const todayDate = new Date(today);
+        const [ly, lm, ld] = lastActive.split('-').map(Number);
+        const lastDate = new Date(ly, lm - 1, ld);
+        const todayDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
         const diffTime = Math.abs(todayDate - lastDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
         if (diffDays === 1) {
           streak += 1;
         } else {
