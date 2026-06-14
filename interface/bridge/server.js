@@ -140,13 +140,21 @@ app.post('/api/historique', (req, res) => {
 
 // POST open anki
 app.post('/api/open/anki', (req, res) => {
-  const { exec } = require('child_process');
+  const { spawn } = require('child_process');
   // Use absolute path since it's known
   const ankiPath = process.env.LOCALAPPDATA + '\\Programs\\Anki\\anki.exe';
-  exec(`"${ankiPath}"`, (err) => {
-    if (err) return res.status(500).json({ error: "Impossible de lancer Anki." });
-    res.json({ success: true });
-  });
+  
+  try {
+    const child = spawn(ankiPath, [], {
+      detached: true,
+      stdio: 'ignore'
+    });
+    
+    child.unref();
+    res.json({ success: true, message: "Anki lancé avec succès." });
+  } catch (err) {
+    res.status(500).json({ error: "Impossible de lancer Anki: " + err.message });
+  }
 });
 
 // POST shutdown

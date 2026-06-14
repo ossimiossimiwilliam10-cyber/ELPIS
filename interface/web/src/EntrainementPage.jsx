@@ -41,7 +41,7 @@ function EntrainementPage() {
             if (!listeExos) return [];
             return listeExos
               .map((ex, exIndex) => ({
-                ...ex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom
+                ...ex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
               }))
               .filter(ex => ex.dernierePratique !== todayStr)
               .sort((a, b) => {
@@ -57,7 +57,7 @@ function EntrainementPage() {
             if (!listeExos) return [];
             return listeExos
               .map((ex, exIndex) => ({
-                ...ex, sIndex, uIndex, mIndex, exIndex, type: 'CM', matiereNom: m.nom
+                ...ex, sIndex, uIndex, mIndex, exIndex, type: 'CM', matiereNom: m.nom, notebookLMLink: m.notebookLMLink
               }))
               .filter(cm => {
                  if (!cm.derniereRevision) return true;
@@ -203,8 +203,23 @@ function EntrainementPage() {
 
   return (
     <div className="entrainement-page">
-      <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
-        <h2>Session du Jour</h2>
+      <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem', flexWrap:'wrap', gap:'1rem'}}>
+        <div style={{display:'flex', alignItems:'center', gap:'1.5rem'}}>
+          <h2 style={{margin:0}}>Session du Jour</h2>
+          <button 
+            className="btn-secondary" 
+            style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem', background:'rgba(2, 132, 199, 0.2)', color:'#38bdf8', borderColor:'#0ea5e9'}}
+            onClick={async () => {
+              try {
+                await fetch('/api/open/anki', { method: 'POST' });
+              } catch(e) {
+                console.error("Erreur réseau: " + e);
+              }
+            }}
+          >
+            🗂️ Lancer Anki
+          </button>
+        </div>
         <span style={{color:'var(--text-secondary)'}}>{exercicesDuJour.length} exercice{exercicesDuJour.length > 1 ? 's' : ''} restant{exercicesDuJour.length > 1 ? 's' : ''}</span>
       </div>
 
@@ -296,12 +311,27 @@ function EntrainementPage() {
                   exit="exit"
                   layout
                   className="card glass-panel" 
-                  style={{borderTop:`4px solid ${exo.type==='TD' ? '#34D399' : '#FBBF24'}`}}
+                  style={{borderTop:`4px solid ${exo.type==='TD' ? '#34D399' : exo.type==='CM' ? '#3b82f6' : '#FBBF24'}`}}
                 >
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem'}}>
-                    <span style={{background:'var(--bg-tertiary)', padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.8rem'}}>
-                      {exo.matiereNom} ({exo.type})
-                    </span>
+                    <div style={{display:'flex', gap:'0.5rem', alignItems:'center'}}>
+                      <span style={{background:'var(--bg-tertiary)', padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.8rem'}}>
+                        {exo.matiereNom} ({exo.type})
+                      </span>
+                      {exo.notebookLMLink && (
+                        <button 
+                          onClick={() => {
+                            let link = exo.notebookLMLink;
+                            if (link && !link.startsWith('http')) link = 'https://' + link;
+                            window.open(link, '_blank');
+                          }}
+                          style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', padding:0}}
+                          title="Ouvrir NotebookLM pour cette matière"
+                        >
+                          📖
+                        </button>
+                      )}
+                    </div>
                     <span style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>
                       {exo.type === 'CM' ? `Niveau J${exo.jActuel || 0}` : `Pratiqué ${exo.nombrePratiques || 0} fois`}
                     </span>

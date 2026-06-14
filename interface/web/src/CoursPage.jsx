@@ -419,41 +419,17 @@ function CoursPage() {
                           />
                         </div>
                         
-                        {/* HUB LINKS */}
+                        {/* CONFIG NOTEBOOK LM */}
                         <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
-                          <div style={{display:'flex', gap:'0.5rem'}}>
+                          <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
+                            <span style={{fontSize:'1rem'}} title="Lien NotebookLM">📖</span>
                             <input 
                               type="text" 
-                              placeholder="Lien NotebookLM..." 
+                              placeholder="Collez ici le lien NotebookLM pour cette matière..." 
                               value={matiere.notebookLMLink || ''}
                               onChange={(e) => updateField(['semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'notebookLMLink'], e.target.value)}
-                              style={{flex:1, padding:'0.3rem', fontSize:'0.75rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
+                              style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
                             />
-                          </div>
-                          <div style={{display:'flex', gap:'0.5rem'}}>
-                            <button 
-                              className="btn-secondary" 
-                              style={{flex:1, padding:'0.3rem', fontSize:'0.8rem'}}
-                              onClick={() => {
-                                if (matiere.notebookLMLink) window.open(matiere.notebookLMLink, '_blank');
-                                else alert("Veuillez d'abord ajouter un lien NotebookLM.");
-                              }}
-                            >
-                              📖 Ouvrir NotebookLM
-                            </button>
-                            <button 
-                              className="btn-secondary" 
-                              style={{flex:1, padding:'0.3rem', fontSize:'0.8rem', background:'rgba(2, 132, 199, 0.2)', color:'#38bdf8', borderColor:'#0ea5e9'}}
-                              onClick={async () => {
-                                try {
-                                  await fetch('/api/open/anki', { method: 'POST' });
-                                } catch(e) {
-                                  alert("Erreur lancement Anki");
-                                }
-                              }}
-                            >
-                              🗂️ Lancer Anki
-                            </button>
                           </div>
                         </div>
                         
