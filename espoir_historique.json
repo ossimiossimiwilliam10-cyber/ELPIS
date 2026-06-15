@@ -33,5 +33,12 @@
         "matiere": "Analyse",
         "action": "Terminé",
         "timestamp": "2026-06-15T09:48:32.962Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Terminé",
+        "timestamp": "2026-06-15T10:51:23.616Z"
     }
 ]
