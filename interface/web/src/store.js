@@ -16,7 +16,7 @@ const debouncedSaveConfig = debounce(async (config) => {
   } catch (e) {
     console.error('Failed to auto-save config', e);
   }
-}, 2000);
+}, 500);
 
 const debouncedSaveCours = debounce(async (coursConfig) => {
   try {
@@ -29,7 +29,7 @@ const debouncedSaveCours = debounce(async (coursConfig) => {
   } catch (e) {
     console.error('Failed to auto-save cours', e);
   }
-}, 2000);
+}, 500);
 
 const debouncedSaveHistorique = debounce(async (historique) => {
   try {
@@ -42,7 +42,7 @@ const debouncedSaveHistorique = debounce(async (historique) => {
   } catch (e) {
     console.error('Failed to auto-save historique', e);
   }
-}, 2000);
+}, 500);
 
 
 const useStore = create((set, get) => ({
@@ -84,8 +84,10 @@ const useStore = create((set, get) => ({
 
   // Update config state and trigger auto-save
   setConfig: (newConfig) => {
-    set({ config: newConfig });
-    debouncedSaveConfig(newConfig);
+    // Merge with current state to never lose streak/lastActiveDate
+    const merged = { ...get().config, ...newConfig };
+    set({ config: merged });
+    debouncedSaveConfig(merged);
   },
 
   // Update cours state and trigger auto-save
@@ -99,6 +101,8 @@ const useStore = create((set, get) => ({
     const newHist = [...get().historique, { ...entry, timestamp: new Date().toISOString() }];
     set({ historique: newHist });
     debouncedSaveHistorique(newHist);
+    // Update streak on every completed task
+    get().checkStreak();
   },
 
   // Check and update streak logic

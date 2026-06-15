@@ -12,11 +12,10 @@ import { ToastProvider, useToast } from './ToastProvider';
 import useStore from './store';
 
 function AppInner() {
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const { addToast } = useToast();
   
-  const { config, coursConfig, loading, error, initData, setConfig } = useStore();
+  const { config, coursConfig, loading, error, initData, setConfig, activeTab, setActiveTab } = useStore();
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -45,38 +44,40 @@ function AppInner() {
     if (!coursConfig) return 0;
     let count = 0;
     const today = new Date().toISOString().split('T')[0];
-    coursConfig.semestres?.forEach(s => {
-      s.ues?.forEach(u => {
-        u.matieres?.forEach(m => {
-          m.listeCM?.forEach(cm => {
-            if (!cm.derniereRevision) {
-              count++; // J0 : jamais révisé = en attente
-            } else if (cm.jActuel > 0) {
-              const nextDate = new Date(cm.derniereRevision);
-              nextDate.setDate(nextDate.getDate() + cm.jActuel);
-              if (nextDate.toISOString().split('T')[0] <= today) count++;
-            } else {
-              // J0 déjà révisé au moins une fois : compter si pas aujourd'hui
-              if (cm.derniereRevision !== today) count++;
+    coursConfig.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(u => {
+          u.matieres?.forEach(m => {
+            m.listeCM?.forEach(cm => {
+              if (!cm.derniereRevision) {
+                count++; // J0 : jamais révisé = en attente
+              } else if (cm.jActuel > 0) {
+                const nextDate = new Date(cm.derniereRevision);
+                nextDate.setDate(nextDate.getDate() + cm.jActuel);
+                if (nextDate.toISOString().split('T')[0] <= today) count++;
+              } else {
+                // J0 déjà révisé au moins une fois : compter si pas aujourd'hui
+                if (cm.derniereRevision !== today) count++;
+              }
+            });
+            m.listeTD?.forEach(td => {
+              // Compter dans la limite du quota journalier : max 2 TD/matière/jour
+            });
+            // Respecter le quota : max 2 TD - déjà faits aujourd'hui
+            if (m.listeTD) {
+              const doneTDToday = m.listeTD.filter(td => td.dernierePratique === today).length;
+              const tdQuota = Math.min(2, m.listeTD.length);
+              count += Math.max(0, tdQuota - doneTDToday);
+            }
+            m.listeTP?.forEach(tp => {
+              // Compter dans la limite du quota journalier : max 1 TP/matière/jour
+            });
+            if (m.listeTP) {
+              const doneTPToday = m.listeTP.filter(tp => tp.dernierePratique === today).length;
+              const tpQuota = Math.min(1, m.listeTP.length);
+              count += Math.max(0, tpQuota - doneTPToday);
             }
           });
-          m.listeTD?.forEach(td => {
-            // Compter dans la limite du quota journalier : max 2 TD/matière/jour
-          });
-          // Respecter le quota : max 2 TD - déjà faits aujourd'hui
-          if (m.listeTD) {
-            const doneTDToday = m.listeTD.filter(td => td.dernierePratique === today).length;
-            const tdQuota = Math.min(2, m.listeTD.length);
-            count += Math.max(0, tdQuota - doneTDToday);
-          }
-          m.listeTP?.forEach(tp => {
-            // Compter dans la limite du quota journalier : max 1 TP/matière/jour
-          });
-          if (m.listeTP) {
-            const doneTPToday = m.listeTP.filter(tp => tp.dernierePratique === today).length;
-            const tpQuota = Math.min(1, m.listeTP.length);
-            count += Math.max(0, tpQuota - doneTPToday);
-          }
         });
       });
     });
@@ -88,18 +89,22 @@ function AppInner() {
   const profileSummary = useMemo(() => {
     if (!coursConfig) return { semestres: 0, ues: 0, matieres: 0, cm: 0, td: 0, tp: 0 };
     let ues = 0, matieres = 0, cm = 0, td = 0, tp = 0;
-    coursConfig.semestres?.forEach(s => {
-      s.ues?.forEach(u => {
-        ues++;
-        u.matieres?.forEach(m => {
-          matieres++;
-          cm += m.listeCM?.length || 0;
-          td += m.listeTD?.length || 0;
-          tp += m.listeTP?.length || 0;
+    let semestres = 0;
+    coursConfig.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        semestres++;
+        s.ues?.forEach(u => {
+          ues++;
+          u.matieres?.forEach(m => {
+            matieres++;
+            cm += m.listeCM?.length || 0;
+            td += m.listeTD?.length || 0;
+            tp += m.listeTP?.length || 0;
+          });
         });
       });
     });
-    return { semestres: coursConfig.semestres?.length || 0, ues, matieres, cm, td, tp };
+    return { semestres, ues, matieres, cm, td, tp };
   }, [coursConfig]);
 
 
@@ -142,7 +147,7 @@ function AppInner() {
     reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target.result);
-        if (json.semestres) {
+        if (json.licences || json.semestres) {
           useStore.getState().setCoursConfig(json);
           addToast("Backup importé avec succès ! Auto-sauvegarde en cours...", 'success');
         } else {
@@ -168,7 +173,7 @@ function AppInner() {
         try {
           const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", maxStudyHoursPerDay: 8, targetGrade: 14.0, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0 };
           useStore.getState().setConfig(emptyConfig);
-          const emptyCours = { semestres: [] };
+          const emptyCours = { licences: [] };
           useStore.getState().setCoursConfig(emptyCours);
           addToast("Reinitialisation terminee. Rechargement...", 'info');
           setTimeout(() => window.location.reload(), 1500);

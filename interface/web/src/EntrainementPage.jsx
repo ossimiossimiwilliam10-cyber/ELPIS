@@ -2,14 +2,16 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
+import { useToast } from './ToastProvider';
 
 const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
 
 function EntrainementPage() {
   const { coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
+  const { toast } = useToast();
   const [configLocal, setConfigLocal] = useState(() => {
-    if (coursConfig && coursConfig.semestres) return JSON.parse(JSON.stringify(coursConfig));
-    return { semestres: [] };
+    if (coursConfig && coursConfig.licences) return JSON.parse(JSON.stringify(coursConfig));
+    return { licences: [] };
   });
   const [filterMatiere, setFilterMatiere] = useState('all');
 
@@ -23,7 +25,7 @@ function EntrainementPage() {
 
   // Resynchroniser le state local quand le parent change
   useEffect(() => {
-    if (coursConfig && coursConfig.semestres) {
+    if (coursConfig && coursConfig.licences) {
       setConfigLocal(JSON.parse(JSON.stringify(coursConfig)));
     }
   }, [coursConfig]);
@@ -33,32 +35,33 @@ function EntrainementPage() {
     let exosToReview = [];
     const todayStr = new Date().toISOString().split('T')[0];
 
-    configLocal.semestres?.forEach((s, sIndex) => {
-      s.ues?.forEach((u, uIndex) => {
-        u.matieres?.forEach((m, mIndex) => {
-          
-          const extractExos = (listeExos, type) => {
-            if (!listeExos) return [];
-            return listeExos
-              .map((ex, exIndex) => ({
-                ...ex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
-              }))
-              .filter(ex => ex.dernierePratique !== todayStr)
-              .sort((a, b) => {
-                if (a.nombrePratiques !== b.nombrePratiques) return (a.nombrePratiques || 0) - (b.nombrePratiques || 0);
-                return (a.dernierePratique || "0000").localeCompare(b.dernierePratique || "0000");
-              });
-          };
+    configLocal.licences?.forEach((l, lIndex) => {
+      l.semestres?.forEach((s, sIndex) => {
+        s.ues?.forEach((u, uIndex) => {
+          u.matieres?.forEach((m, mIndex) => {
+            
+            const extractExos = (listeExos, type) => {
+              if (!listeExos) return [];
+              return listeExos
+                .map((ex, exIndex) => ({
+                  ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
+                }))
+                .filter(ex => ex.dernierePratique !== todayStr)
+                .sort((a, b) => {
+                  if (a.nombrePratiques !== b.nombrePratiques) return (a.nombrePratiques || 0) - (b.nombrePratiques || 0);
+                  return (a.dernierePratique || "0000").localeCompare(b.dernierePratique || "0000");
+                });
+            };
 
-          const tds = extractExos(m.listeTD, 'TD');
-          const tps = extractExos(m.listeTP, 'TP');
+            const tds = extractExos(m.listeTD, 'TD');
+            const tps = extractExos(m.listeTP, 'TP');
 
-          const extractCMs = (listeExos) => {
-            if (!listeExos) return [];
-            return listeExos
-              .map((ex, exIndex) => ({
-                ...ex, sIndex, uIndex, mIndex, exIndex, type: 'CM', matiereNom: m.nom, notebookLMLink: m.notebookLMLink
-              }))
+            const extractCMs = (listeExos) => {
+              if (!listeExos) return [];
+              return listeExos
+                .map((ex, exIndex) => ({
+                  ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type: 'CM', matiereNom: m.nom, notebookLMLink: m.notebookLMLink
+                }))
               .filter(cm => {
                  if (!cm.derniereRevision) return true;
                  if (cm.jActuel === 0) return cm.derniereRevision !== todayStr;
@@ -79,6 +82,7 @@ function EntrainementPage() {
         });
       });
     });
+  });
 
     return exosToReview;
   }, [configLocal]);
@@ -100,11 +104,12 @@ function EntrainementPage() {
   const totalExercisesToday = useMemo(() => {
     let total = 0;
     const todayStr = new Date().toISOString().split('T')[0];
-    configLocal.semestres?.forEach(s => {
-      s.ues?.forEach(u => {
-        u.matieres?.forEach(m => {
-          if (m.listeTD) total += Math.min(2, m.listeTD.length);
-          if (m.listeTP) total += Math.min(1, m.listeTP.length);
+    configLocal.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(u => {
+          u.matieres?.forEach(m => {
+            if (m.listeTD) total += Math.min(2, m.listeTD.length);
+            if (m.listeTP) total += Math.min(1, m.listeTP.length);
           if (m.listeCM) {
              m.listeCM.forEach(cm => {
                 if (cm.derniereRevision === todayStr) total++;
@@ -118,23 +123,28 @@ function EntrainementPage() {
                      if (nextDate.toISOString().split('T')[0] <= todayStr) total++;
                   }
                 }
-             });
+              });
           }
         });
       });
     });
+  });
     return total;
   }, [configLocal]);
 
   const evaluateCM = (exo, score) => {
     const newConf = JSON.parse(JSON.stringify(configLocal));
-    const cm = newConf.semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
+    const cm = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
     let currentIndex = J_SEQUENCE.indexOf(cm.jActuel);
     if (currentIndex === -1) currentIndex = 0;
 
-    if (score === 1 || score === 2) {
+    if (score === 1) {
+      // Échec : revenir en arrière dans la séquence J
       currentIndex = Math.max(0, currentIndex - 1);
+    } else if (score === 2) {
+      // Difficile mais réussi : rester au même niveau J
+      // (ne pas avancer)
     } else {
       currentIndex = Math.min(J_SEQUENCE.length - 1, currentIndex + 1);
     }
@@ -166,8 +176,8 @@ function EntrainementPage() {
     const newConf = JSON.parse(JSON.stringify(configLocal));
     
     const targetList = exo.type === 'TD' 
-        ? newConf.semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD 
-        : newConf.semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
+        ? newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD 
+        : newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
 
     targetList[exo.exIndex].dernierePratique = todayStr;
     targetList[exo.exIndex].nombrePratiques = (targetList[exo.exIndex].nombrePratiques || 0) + 1;
@@ -211,9 +221,15 @@ function EntrainementPage() {
             style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem', background:'rgba(2, 132, 199, 0.2)', color:'#38bdf8', borderColor:'#0ea5e9'}}
             onClick={async () => {
               try {
-                await fetch('/api/open/anki', { method: 'POST' });
+                const res = await fetch('/api/open/anki', { method: 'POST' });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                  toast.error(data.error || "Échec du lancement d'Anki.");
+                } else {
+                  toast.success("Anki lancé avec succès !");
+                }
               } catch(e) {
-                console.error("Erreur réseau: " + e);
+                toast.error("Impossible de contacter le serveur.");
               }
             }}
           >

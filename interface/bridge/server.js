@@ -141,20 +141,25 @@ app.post('/api/historique', (req, res) => {
 // POST open anki
 app.post('/api/open/anki', (req, res) => {
   const { spawn } = require('child_process');
-  // Use absolute path since it's known
-  const ankiPath = process.env.LOCALAPPDATA + '\\Programs\\Anki\\anki.exe';
+  const pathModule = require('path');
   
-  try {
-    const child = spawn(ankiPath, [], {
-      detached: true,
-      stdio: 'ignore'
-    });
-    
-    child.unref();
-    res.json({ success: true, message: "Anki lancé avec succès." });
-  } catch (err) {
-    res.status(500).json({ error: "Impossible de lancer Anki: " + err.message });
+  const ankiPath = pathModule.join(process.env.LOCALAPPDATA, 'Programs', 'Anki', 'anki.exe');
+  
+  if (!fs.existsSync(ankiPath)) {
+    return res.status(404).json({ error: "Anki n'est pas installé ou introuvable." });
   }
+  
+  const child = spawn(ankiPath, [], {
+    detached: true,
+    stdio: 'ignore',
+  });
+  
+  child.on('error', (err) => {
+    console.error("Erreur lancement Anki:", err.message);
+  });
+  
+  child.unref();
+  res.json({ success: true, message: "Anki lancé avec succès." });
 });
 
 // POST shutdown

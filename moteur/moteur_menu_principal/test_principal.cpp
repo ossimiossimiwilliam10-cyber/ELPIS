@@ -33,24 +33,29 @@ void testOrchestrateur() {
     };
 
     nlohmann::json mockCours = {
-        {"semestres", {
+        {"licences", {
             {
-                {"nom", "Semestre 1"},
-                {"ues", {
+                {"nom", "Licence 1"},
+                {"semestres", {
                     {
-                        {"nom", "UE1 Math"},
-                        {"matieres", {
+                        {"nom", "Semestre 1"},
+                        {"ues", {
                             {
-                                {"nom", "Algèbre"},
-                                {"listeCM", {
+                                {"nom", "UE1 Math"},
+                                {"matieres", {
                                     {
-                                        {"titre", "CM1 Espaces Vectoriels"},
-                                        {"jActuel", 0},
-                                        {"derniereRevision", ""} // Jamais révisé = doit ressortir
+                                        {"nom", "Algèbre"},
+                                        {"listeCM", {
+                                            {
+                                                {"titre", "CM1 Espaces Vectoriels"},
+                                                {"jActuel", 0},
+                                                {"derniereRevision", ""} // Jamais révisé = doit ressortir
+                                            }
+                                        }},
+                                        {"listeTD", nlohmann::json::array()},
+                                        {"listeTP", nlohmann::json::array()}
                                     }
-                                }},
-                                {"listeTD", nlohmann::json::array()},
-                                {"listeTP", nlohmann::json::array()}
+                                }}
                             }
                         }}
                     }

@@ -44,8 +44,13 @@ struct Semestre {
     std::vector<UE> ues;
 };
 
-struct CoursConfig {
+struct Licence {
+    std::string nom;
     std::vector<Semestre> semestres;
+};
+
+struct CoursConfig {
+    std::vector<Licence> licences;
 };
 
 class CerveauCours {

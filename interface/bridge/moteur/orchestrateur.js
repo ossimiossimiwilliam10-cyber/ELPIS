@@ -58,9 +58,15 @@ function genererRapportQuotidien(configPath, coursPath) {
   const todayStr = getTodayString();
 
   // 2. Scan courses for daily tasks
-  for (const s of (crs.semestres || [])) {
-    for (const ue of (s.ues || [])) {
-      for (const m of (ue.matieres || [])) {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1); // 1er janvier
+  const parityJour = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) % 2;
+
+  for (const l of (crs.licences || [])) {
+    for (const s of (l.semestres || [])) {
+      let matiereIndexDansSemestre = 0;
+      for (const ue of (s.ues || [])) {
+        for (const m of (ue.matieres || [])) {
 
         // --- CM logic (J-method) ---
         for (const cm of (m.listeCM || [])) {
@@ -69,13 +75,18 @@ function genererRapportQuotidien(configPath, coursPath) {
             doitReviser = true;
           } else {
             const revDate = new Date(cm.derniereRevision + 'T00:00:00');
-            const now = new Date(todayStr + 'T00:00:00');
-            const joursEcoules = Math.floor((now - revDate) / (1000 * 60 * 60 * 24));
+            const nowDate = new Date(todayStr + 'T00:00:00');
+            // Corrupted date → force revision
+            if (isNaN(revDate.getTime())) {
+              doitReviser = true;
+            } else {
+              const joursEcoules = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
 
-            if (cm.jActuel > 0 && joursEcoules >= cm.jActuel) {
-              doitReviser = true;
-            } else if (cm.jActuel === 0 && joursEcoules > 0) {
-              doitReviser = true;
+              if (cm.jActuel > 0 && joursEcoules >= cm.jActuel) {
+                doitReviser = true;
+              } else if (cm.jActuel === 0 && joursEcoules > 0) {
+                doitReviser = true;
+              }
             }
           }
 
@@ -89,6 +100,14 @@ function genererRapportQuotidien(configPath, coursPath) {
             });
             tempsRequisMin += (cm.jActuel === 0) ? 120 : 30;
           }
+        }
+
+        // Parity-based exercise activation (same as C++ logic)
+        const activePourExercices = ((matiereIndexDansSemestre % 2) === parityJour);
+        matiereIndexDansSemestre++;
+
+        if (!activePourExercices) {
+          continue; // Skip TD/TP for this subject today
         }
 
         // --- TD logic ---
@@ -146,6 +165,7 @@ function genererRapportQuotidien(configPath, coursPath) {
         }
       }
     }
+  }
   }
 
   rapport.tempsRequisMin = tempsRequisMin;

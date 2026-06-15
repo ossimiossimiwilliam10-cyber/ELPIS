@@ -79,10 +79,11 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
     int parityJour = tmNowForParity.tm_yday % 2;
 
     // 2. Scan des cours pour générer la To-Do List du jour
-    for (const auto& s : crs.semestres) {
-        int matiereIndexDansSemestre = 0;
-        for (const auto& ue : s.ues) {
-            for (const auto& m : ue.matieres) {
+    for (const auto& l : crs.licences) {
+        for (const auto& s : l.semestres) {
+            int matiereIndexDansSemestre = 0;
+            for (const auto& ue : s.ues) {
+                for (const auto& m : ue.matieres) {
                 
                 // --- Logique Cours Magistraux (CM) ---
                 for (const auto& cm : m.listeCM) {
@@ -225,6 +226,7 @@ std::string CerveauPrincipal::genererRapportQuotidien() {
                 }
             }
         }
+    }
     }
 
     rapport["tempsRequisMin"] = tempsRequisMin;

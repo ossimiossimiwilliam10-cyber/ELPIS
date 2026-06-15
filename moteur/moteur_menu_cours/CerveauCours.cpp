@@ -32,23 +32,25 @@ static nlohmann::json serializeExercice(const Exercice& ex) {
 CerveauCours::CerveauCours(const std::string& path) : configFilePath(path) {}
 
 void CerveauCours::sanitize(CoursConfig& c) {
-    for (auto& s : c.semestres) {
-        for (auto& ue : s.ues) {
-            ue.ects = std::max(0, std::min(180, ue.ects));
-            for (auto& m : ue.matieres) {
-                m.cm_h = std::max(0, std::min(500, m.cm_h));
-                m.td_h = std::max(0, std::min(500, m.td_h));
-                m.tp_h = std::max(0, std::min(500, m.tp_h));
-                for (auto& cm : m.listeCM) {
-                    cm.jActuel = std::max(0, std::min(3000, cm.jActuel));
-                }
-                for (auto& ex : m.listeTD) {
-                    ex.page = std::max(1, std::min(9999, ex.page));
-                    ex.nombrePratiques = std::max(0, std::min(10000, ex.nombrePratiques));
-                }
-                for (auto& ex : m.listeTP) {
-                    ex.page = std::max(1, std::min(9999, ex.page));
-                    ex.nombrePratiques = std::max(0, std::min(10000, ex.nombrePratiques));
+    for (auto& l : c.licences) {
+        for (auto& s : l.semestres) {
+            for (auto& ue : s.ues) {
+                ue.ects = std::max(0, std::min(180, ue.ects));
+                for (auto& m : ue.matieres) {
+                    m.cm_h = std::max(0, std::min(500, m.cm_h));
+                    m.td_h = std::max(0, std::min(500, m.td_h));
+                    m.tp_h = std::max(0, std::min(500, m.tp_h));
+                    for (auto& cm : m.listeCM) {
+                        cm.jActuel = std::max(0, std::min(3000, cm.jActuel));
+                    }
+                    for (auto& ex : m.listeTD) {
+                        ex.page = std::max(1, std::min(9999, ex.page));
+                        ex.nombrePratiques = std::max(0, std::min(10000, ex.nombrePratiques));
+                    }
+                    for (auto& ex : m.listeTP) {
+                        ex.page = std::max(1, std::min(9999, ex.page));
+                        ex.nombrePratiques = std::max(0, std::min(10000, ex.nombrePratiques));
+                    }
                 }
             }
         }
@@ -67,17 +69,76 @@ bool CerveauCours::loadConfig() {
         file >> j;
         CoursConfig tempConfig;
 
-        if (j.contains("semestres")) {
+        if (j.contains("licences")) {
+            for (const auto& itemL : j["licences"]) {
+                Licence l;
+                l.nom = itemL.value("nom", "");
+                
+                if (itemL.contains("semestres")) {
+                    for (const auto& itemS : itemL["semestres"]) {
+                        Semestre s;
+                        s.nom = itemS.value("nom", "");
+                        
+                        if (itemS.contains("ues")) {
+                            for (const auto& itemUE : itemS["ues"]) {
+                                UE ue;
+                                ue.nom = itemUE.value("nom", "");
+                                ue.ects = itemUE.value("ects", 0);
+                                
+                                if (itemUE.contains("matieres")) {
+                                    for (const auto& itemM : itemUE["matieres"]) {
+                                        Matiere m;
+                                        m.nom = itemM.value("nom", "");
+                                        m.cm_h = itemM.value("cm_h", 0);
+                                        m.td_h = itemM.value("td_h", 0);
+                                        m.tp_h = itemM.value("tp_h", 0);
+                                        
+                                        if (itemM.contains("listeCM")) {
+                                            for (const auto& itemCM : itemM["listeCM"]) {
+                                                CoursMagistral cm;
+                                                cm.titre = itemCM.value("titre", "");
+                                                cm.jActuel = itemCM.value("jActuel", 0);
+                                                cm.derniereRevision = itemCM.value("derniereRevision", "");
+                                                cm.fichePdfPath = itemCM.value("fichePdfPath", "");
+                                                cm.notes = itemCM.value("notes", "");
+                                                m.listeCM.push_back(cm);
+                                            }
+                                        }
+                                        
+                                        if (itemM.contains("listeTD")) {
+                                            for (const auto& itemEx : itemM["listeTD"]) {
+                                                m.listeTD.push_back(parseExercice(itemEx));
+                                            }
+                                        }
+                                        
+                                        if (itemM.contains("listeTP")) {
+                                            for (const auto& itemEx : itemM["listeTP"]) {
+                                                m.listeTP.push_back(parseExercice(itemEx));
+                                            }
+                                        }
+                                        ue.matieres.push_back(m);
+                                    }
+                                }
+                                s.ues.push_back(ue);
+                            }
+                        }
+                        l.semestres.push_back(s);
+                    }
+                }
+                tempConfig.licences.push_back(l);
+            }
+        } else if (j.contains("semestres")) {
+            // Retro-compatibility: Wrap existing semestres in a default Licence
+            Licence l;
+            l.nom = "Licence 1";
             for (const auto& itemS : j["semestres"]) {
                 Semestre s;
                 s.nom = itemS.value("nom", "");
-                
                 if (itemS.contains("ues")) {
                     for (const auto& itemUE : itemS["ues"]) {
                         UE ue;
                         ue.nom = itemUE.value("nom", "");
                         ue.ects = itemUE.value("ects", 0);
-                        
                         if (itemUE.contains("matieres")) {
                             for (const auto& itemM : itemUE["matieres"]) {
                                 Matiere m;
@@ -85,7 +146,6 @@ bool CerveauCours::loadConfig() {
                                 m.cm_h = itemM.value("cm_h", 0);
                                 m.td_h = itemM.value("td_h", 0);
                                 m.tp_h = itemM.value("tp_h", 0);
-                                
                                 if (itemM.contains("listeCM")) {
                                     for (const auto& itemCM : itemM["listeCM"]) {
                                         CoursMagistral cm;
@@ -97,13 +157,11 @@ bool CerveauCours::loadConfig() {
                                         m.listeCM.push_back(cm);
                                     }
                                 }
-                                
                                 if (itemM.contains("listeTD")) {
                                     for (const auto& itemEx : itemM["listeTD"]) {
                                         m.listeTD.push_back(parseExercice(itemEx));
                                     }
                                 }
-                                
                                 if (itemM.contains("listeTP")) {
                                     for (const auto& itemEx : itemM["listeTP"]) {
                                         m.listeTP.push_back(parseExercice(itemEx));
@@ -115,8 +173,9 @@ bool CerveauCours::loadConfig() {
                         s.ues.push_back(ue);
                     }
                 }
-                tempConfig.semestres.push_back(s);
+                l.semestres.push_back(s);
             }
+            tempConfig.licences.push_back(l);
         }
         
         sanitize(tempConfig);
@@ -133,58 +192,66 @@ bool CerveauCours::loadConfig() {
 bool CerveauCours::saveConfig() {
     nlohmann::json j;
     
-    nlohmann::json semestresJson = nlohmann::json::array();
-    for (const auto& s : currentConfig.semestres) {
-        nlohmann::json sJson;
-        sJson["nom"] = s.nom;
-        
-        nlohmann::json uesJson = nlohmann::json::array();
-        for (const auto& ue : s.ues) {
-            nlohmann::json ueJson;
-            ueJson["nom"] = ue.nom;
-            ueJson["ects"] = ue.ects;
+    nlohmann::json licencesJson = nlohmann::json::array();
+    for (const auto& l : currentConfig.licences) {
+        nlohmann::json lJson;
+        lJson["nom"] = l.nom;
+
+        nlohmann::json semestresJson = nlohmann::json::array();
+        for (const auto& s : l.semestres) {
+            nlohmann::json sJson;
+            sJson["nom"] = s.nom;
             
-            nlohmann::json matieresJson = nlohmann::json::array();
-            for (const auto& m : ue.matieres) {
-                nlohmann::json mJson;
-                mJson["nom"] = m.nom;
-                mJson["cm_h"] = m.cm_h;
-                mJson["td_h"] = m.td_h;
-                mJson["tp_h"] = m.tp_h;
+            nlohmann::json uesJson = nlohmann::json::array();
+            for (const auto& ue : s.ues) {
+                nlohmann::json ueJson;
+                ueJson["nom"] = ue.nom;
+                ueJson["ects"] = ue.ects;
                 
-                nlohmann::json listeCMJson = nlohmann::json::array();
-                for (const auto& cm : m.listeCM) {
-                    nlohmann::json cmJson;
-                    cmJson["titre"] = cm.titre;
-                    cmJson["jActuel"] = cm.jActuel;
-                    cmJson["derniereRevision"] = cm.derniereRevision;
-                    cmJson["fichePdfPath"] = cm.fichePdfPath;
-                    cmJson["notes"] = cm.notes;
-                    listeCMJson.push_back(cmJson);
-                }
-                mJson["listeCM"] = listeCMJson;
+                nlohmann::json matieresJson = nlohmann::json::array();
+                for (const auto& m : ue.matieres) {
+                    nlohmann::json mJson;
+                    mJson["nom"] = m.nom;
+                    mJson["cm_h"] = m.cm_h;
+                    mJson["td_h"] = m.td_h;
+                    mJson["tp_h"] = m.tp_h;
+                    
+                    nlohmann::json listeCMJson = nlohmann::json::array();
+                    for (const auto& cm : m.listeCM) {
+                        nlohmann::json cmJson;
+                        cmJson["titre"] = cm.titre;
+                        cmJson["jActuel"] = cm.jActuel;
+                        cmJson["derniereRevision"] = cm.derniereRevision;
+                        cmJson["fichePdfPath"] = cm.fichePdfPath;
+                        cmJson["notes"] = cm.notes;
+                        listeCMJson.push_back(cmJson);
+                    }
+                    mJson["listeCM"] = listeCMJson;
 
-                nlohmann::json listeTDJson = nlohmann::json::array();
-                for (const auto& ex : m.listeTD) {
-                    listeTDJson.push_back(serializeExercice(ex));
-                }
-                mJson["listeTD"] = listeTDJson;
+                    nlohmann::json listeTDJson = nlohmann::json::array();
+                    for (const auto& ex : m.listeTD) {
+                        listeTDJson.push_back(serializeExercice(ex));
+                    }
+                    mJson["listeTD"] = listeTDJson;
 
-                nlohmann::json listeTPJson = nlohmann::json::array();
-                for (const auto& ex : m.listeTP) {
-                    listeTPJson.push_back(serializeExercice(ex));
-                }
-                mJson["listeTP"] = listeTPJson;
+                    nlohmann::json listeTPJson = nlohmann::json::array();
+                    for (const auto& ex : m.listeTP) {
+                        listeTPJson.push_back(serializeExercice(ex));
+                    }
+                    mJson["listeTP"] = listeTPJson;
 
-                matieresJson.push_back(mJson);
+                    matieresJson.push_back(mJson);
+                }
+                ueJson["matieres"] = matieresJson;
+                uesJson.push_back(ueJson);
             }
-            ueJson["matieres"] = matieresJson;
-            uesJson.push_back(ueJson);
+            sJson["ues"] = uesJson;
+            semestresJson.push_back(sJson);
         }
-        sJson["ues"] = uesJson;
-        semestresJson.push_back(sJson);
+        lJson["semestres"] = semestresJson;
+        licencesJson.push_back(lJson);
     }
-    j["semestres"] = semestresJson;
+    j["licences"] = licencesJson;
 
     std::string tempFilePath = configFilePath + ".tmp";
     std::ofstream file(tempFilePath);

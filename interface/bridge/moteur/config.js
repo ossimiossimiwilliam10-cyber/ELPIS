@@ -20,12 +20,12 @@ const DEFAULT_CONFIG = {
 };
 
 function sanitize(c) {
-  c.maxStudyHoursPerDay = Math.max(0, Math.min(24, c.maxStudyHoursPerDay || 8));
-  c.targetGrade = Math.max(0, Math.min(20, c.targetGrade || 14));
-  c.summerStudyHoursCompleted = Math.max(0, c.summerStudyHoursCompleted || 0);
-  c.maxSubjectsPerDay = Math.max(1, c.maxSubjectsPerDay || 3);
-  c.studyBlockDurationMinutes = Math.max(10, Math.min(240, c.studyBlockDurationMinutes || 50));
-  c.activeRecallMinutesPerDay = Math.max(0, c.activeRecallMinutesPerDay || 30);
+  c.maxStudyHoursPerDay = Math.max(0, Math.min(24, c.maxStudyHoursPerDay ?? 8));
+  c.targetGrade = Math.max(0, Math.min(20, c.targetGrade ?? 14));
+  c.summerStudyHoursCompleted = Math.max(0, c.summerStudyHoursCompleted ?? 0);
+  c.maxSubjectsPerDay = Math.max(1, c.maxSubjectsPerDay ?? 3);
+  c.studyBlockDurationMinutes = Math.max(10, Math.min(240, c.studyBlockDurationMinutes ?? 50));
+  c.activeRecallMinutesPerDay = Math.max(0, c.activeRecallMinutesPerDay ?? 30);
   if (c.theme !== "light" && c.theme !== "dark") c.theme = "dark";
   
   // Ensure arrays
