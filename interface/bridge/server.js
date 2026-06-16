@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
@@ -10,8 +12,26 @@ const { genererRapportQuotidien } = require('./moteur/orchestrateur');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// Sécurité : HTTP headers
+app.use(helmet());
+
+// Sécurité : CORS restrictif (Vite dev server + soi-même)
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`],
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
+
 app.use(express.json());
+
+// Sécurité : Rate Limiting (100 requêtes max par IP toutes les 15 minutes)
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: "Trop de requêtes, veuillez réessayer plus tard." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', apiLimiter);
 
 const ROOT_DIR = path.join(__dirname, '..', '..');
 const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
@@ -139,6 +159,12 @@ app.use(express.static(REACT_BUILD_DIR));
 // SPA fallback
 app.use((req, res) => {
   res.sendFile(path.join(REACT_BUILD_DIR, 'index.html'));
+});
+
+// Sécurité / Robustesse : Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Erreur serveur non gérée:", err.stack);
+  res.status(500).json({ error: "Une erreur interne est survenue.", details: err.message });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
