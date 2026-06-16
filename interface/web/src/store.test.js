@@ -62,9 +62,9 @@ describe('SM-2 Spaced Repetition Algorithm', () => {
   });
 
   it('should boost interval for perfect score (4)', () => {
-    // EF=2.5, prevInterval=8 → 8 * 2.5 = 20 → 20 * 1.3 = 26
+    // EF=2.5+0.15=2.65, prevInterval=8 → 8*2.65=21 → 21*1.3=27
     const result = mockCalculateSM2(4, 8, 2.5, 3);
-    expect(result.interval).toBe(26);
+    expect(result.interval).toBe(27);
   });
 
   it('should decrease easeFactor on hard (score=2)', () => {

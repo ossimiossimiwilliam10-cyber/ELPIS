@@ -16,8 +16,8 @@ test.describe('ELPIS E2E Tests', () => {
   test('devrait naviguer vers la page des Cours', async ({ page }) => {
     await page.goto('/');
     
-    // Cliquer sur le lien de la sidebar
-    await page.click('nav a:has-text("Cours")');
+    // Cliquer sur le bouton Bibliothèque dans la sidebar
+    await page.click('nav button:has-text("Bibliothèque")');
     
     // Vérifier que la page des cours est chargée
     await expect(page.locator('h2', { hasText: 'Bibliothèque de Cours' })).toBeVisible();
@@ -26,7 +26,7 @@ test.describe('ELPIS E2E Tests', () => {
   test('devrait naviguer vers la page des Statistiques', async ({ page }) => {
     await page.goto('/');
     
-    await page.click('nav a:has-text("Statistiques")');
+    await page.click('nav button:has-text("Statistiques")');
     
     await expect(page.locator('h2', { hasText: 'Statistiques & Historique' })).toBeVisible();
   });
@@ -34,14 +34,14 @@ test.describe('ELPIS E2E Tests', () => {
   test('devrait naviguer vers la page de Configuration', async ({ page }) => {
     await page.goto('/');
     
-    await page.click('nav a:has-text("Configuration")');
+    await page.click('nav button:has-text("Configuration")');
     
     await expect(page.locator('h2', { hasText: 'Paramètres & Configuration' })).toBeVisible();
   });
 
   test('devrait pouvoir ajouter une licence depuis la page Cours', async ({ page }) => {
     await page.goto('/');
-    await page.click('nav a:has-text("Cours")');
+    await page.click('nav button:has-text("Bibliothèque")');
 
     // On clique sur le bouton "+ Licence"
     const addLicenceBtn = page.locator('button', { hasText: '+ Licence' });
@@ -49,7 +49,7 @@ test.describe('ELPIS E2E Tests', () => {
       await addLicenceBtn.click();
       
       // On vérifie l'apparition d'un onglet Licence X
-      await expect(page.locator('.tabs-header button', { hasText: /Licence \d+/ })).toBeVisible();
+      await expect(page.locator('.licence-tabs button', { hasText: /Licence \d+/ })).toBeVisible();
     }
   });
 

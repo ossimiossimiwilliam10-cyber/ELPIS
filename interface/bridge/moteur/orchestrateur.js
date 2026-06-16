@@ -153,8 +153,11 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
 
   const todayStr = getTodayString();
   const now = new Date();
-  const startOfYear = new Date(now.getFullYear(), 0, 1);
-  const parityJour = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) % 2;
+  // Base de parité : date de début d'étude (fallback au 1er janvier)
+  const studyStartRaw = cfg.studyStartDate ? cfg.studyStartDate.split('-').reverse().join('-') : null;
+  const studyStart = studyStartRaw ? new Date(studyStartRaw + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
+  const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
+  const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
 
   // Pools de tâches
   const poolCM = [];

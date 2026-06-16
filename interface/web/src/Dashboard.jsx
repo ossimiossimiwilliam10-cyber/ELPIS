@@ -140,7 +140,7 @@ function Dashboard() {
         className="card glass-panel" 
         style={{textAlign:'center', marginTop:'3rem'}}
       >
-        <h2>Bienvenue sur ELPIS</h2>
+        <h2>{greeting} ! Bienvenue sur ELPIS</h2>
         <p style={{color:'var(--text-secondary)'}}>Configure tes objectifs et tes cours pour activer l'Orchestrateur.</p>
       </motion.div>
     );

@@ -9,14 +9,18 @@ const DEFAULT_CONFIG = {
   bedtime: "23:00",
   wakeUpTime: "07:00",
   maxStudyHoursPerDay: 8,
-  targetGrade: 14.0,
+  targetGrade: 14,
   summerStudyHoursCompleted: 0,
   maxSubjectsPerDay: 3,
   studyBlockDurationMinutes: 50,
   activeRecallMinutesPerDay: 30,
   subjects: [],
   fixedCommitments: [],
-  theme: "dark"
+  theme: "dark",
+  pomoWork: 25,
+  pomoBreak: 5,
+  lastActiveDate: "",
+  currentStreak: 0
 };
 
 function sanitize(c) {

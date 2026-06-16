@@ -8,7 +8,7 @@ import { calculateSM2 } from './sm2';
 
 
 function EntrainementPage() {
-  const { coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config } = useStore();
   const { toast } = useToast();
   const [configLocal, setConfigLocal] = useState(() => {
     if (coursConfig && coursConfig.licences) return JSON.parse(JSON.stringify(coursConfig));
@@ -24,6 +24,15 @@ function EntrainementPage() {
     { key: 'tres_facile', label: '🔵', title: 'Très facile' },
   ];
 
+  // Helper : calcul du jour de parité basé sur studyStartDate
+  const getParityJour = () => {
+    const now = new Date();
+    const studyStartRaw = config?.studyStartDate ? config.studyStartDate.split('-').reverse().join('-') : null;
+    const studyStart = studyStartRaw ? new Date(studyStartRaw + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
+    const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
+    return Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
+  };
+
   // Resynchroniser le state local quand le parent change
   useEffect(() => {
     if (coursConfig && coursConfig.licences) {
@@ -35,9 +44,7 @@ function EntrainementPage() {
   const allExercicesDuJour = useMemo(() => {
     let exosToReview = [];
     const todayStr = new Date().toISOString().split('T')[0];
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const parityJour = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) % 2;
+    const parityJour = getParityJour();
 
     configLocal.licences?.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
@@ -114,9 +121,7 @@ function EntrainementPage() {
   const totalExercisesToday = useMemo(() => {
     let total = 0;
     const todayStr = new Date().toISOString().split('T')[0];
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    const parityJour = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) % 2;
+    const parityJour = getParityJour();
 
     configLocal.licences?.forEach(l => {
       l.semestres?.forEach(s => {

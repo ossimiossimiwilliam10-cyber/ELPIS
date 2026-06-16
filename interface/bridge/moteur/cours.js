@@ -10,6 +10,8 @@ function sanitizeCours(c) {
     delete c.semestres;
   }
   if (!c.licences) c.licences = [];
+  // Nettoyer le champ legacy "semestres" au niveau racine s'il persiste
+  if (c.semestres) delete c.semestres;
   
   for (const l of c.licences) {
     if (!l.nom) l.nom = "Nouvelle Licence";

@@ -214,7 +214,7 @@ function AppInner() {
     if (window.confirm("ATTENTION : Supprimer toutes les données ? Cette action est IRREVERSIBLE.")) {
       if (window.confirm("Derniere chance ! Confirmez la suppression totale ?")) {
         try {
-          const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", maxStudyHoursPerDay: 8, targetGrade: 14.0, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0 };
+          const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", maxStudyHoursPerDay: 8, targetGrade: 14, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0 };
           useStore.getState().setConfig(emptyConfig);
           const emptyCours = { licences: [] };
           useStore.getState().setCoursConfig(emptyCours);
