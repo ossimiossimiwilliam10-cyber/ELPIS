@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
 import { useToast } from './ToastProvider';
+import { calculateSM2 } from './sm2';
 
-const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
+
 
 function EntrainementPage() {
   const { coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
@@ -34,11 +35,18 @@ function EntrainementPage() {
   const allExercicesDuJour = useMemo(() => {
     let exosToReview = [];
     const todayStr = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const parityJour = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) % 2;
 
     configLocal.licences?.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
+        let matiereIndexDansSemestre = 0;
         s.ues?.forEach((u, uIndex) => {
           u.matieres?.forEach((m, mIndex) => {
+            const activePourExercices = ((matiereIndexDansSemestre % 2) === parityJour);
+            matiereIndexDansSemestre++;
+
             
             const extractExos = (listeExos, type) => {
               if (!listeExos) return [];
@@ -73,12 +81,14 @@ function EntrainementPage() {
           const cms = extractCMs(m.listeCM);
           exosToReview.push(...cms);
 
-          // Compter combien ont déjà été faits aujourd'hui (pour respecter le quota de 2 TD / 1 TP par matière)
-          const doneTDToday = (m.listeTD || []).filter(ex => ex.dernierePratique === todayStr).length;
-          const doneTPToday = (m.listeTP || []).filter(ex => ex.dernierePratique === todayStr).length;
+          if (activePourExercices) {
+            // Compter combien ont déjà été faits aujourd'hui (pour respecter le quota de 2 TD / 1 TP par matière)
+            const doneTDToday = (m.listeTD || []).filter(ex => ex.dernierePratique === todayStr).length;
+            const doneTPToday = (m.listeTP || []).filter(ex => ex.dernierePratique === todayStr).length;
 
-          exosToReview.push(...tds.slice(0, Math.max(0, 2 - doneTDToday)));
-          exosToReview.push(...tps.slice(0, Math.max(0, 1 - doneTPToday)));
+            exosToReview.push(...tds.slice(0, Math.max(0, 2 - doneTDToday)));
+            exosToReview.push(...tps.slice(0, Math.max(0, 1 - doneTPToday)));
+          }
         });
       });
     });
@@ -104,12 +114,22 @@ function EntrainementPage() {
   const totalExercisesToday = useMemo(() => {
     let total = 0;
     const todayStr = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const parityJour = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24)) % 2;
+
     configLocal.licences?.forEach(l => {
       l.semestres?.forEach(s => {
+        let matiereIndexDansSemestre = 0;
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {
-            if (m.listeTD) total += Math.min(2, m.listeTD.length);
-            if (m.listeTP) total += Math.min(1, m.listeTP.length);
+            const activePourExercices = ((matiereIndexDansSemestre % 2) === parityJour);
+            matiereIndexDansSemestre++;
+
+            if (activePourExercices) {
+              if (m.listeTD) total += Math.min(2, m.listeTD.length);
+              if (m.listeTP) total += Math.min(1, m.listeTP.length);
+            }
           if (m.listeCM) {
              m.listeCM.forEach(cm => {
                 if (cm.derniereRevision === todayStr) total++;
@@ -136,20 +156,17 @@ function EntrainementPage() {
     const newConf = JSON.parse(JSON.stringify(configLocal));
     const cm = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
-    let currentIndex = J_SEQUENCE.indexOf(cm.jActuel);
-    if (currentIndex === -1) currentIndex = 0;
+    const { interval, easeFactor, repetitions } = calculateSM2(
+      score,
+      cm.jActuel || 0,
+      cm.easeFactor || 2.5,
+      cm.repetitions || 0,
+      newConf
+    );
 
-    if (score === 1) {
-      // Échec : revenir en arrière dans la séquence J
-      currentIndex = Math.max(0, currentIndex - 1);
-    } else if (score === 2) {
-      // Difficile mais réussi : rester au même niveau J
-      // (ne pas avancer)
-    } else {
-      currentIndex = Math.min(J_SEQUENCE.length - 1, currentIndex + 1);
-    }
-
-    cm.jActuel = J_SEQUENCE[currentIndex];
+    cm.jActuel = interval;
+    cm.easeFactor = easeFactor;
+    cm.repetitions = repetitions;
     
     const today = new Date().toISOString().split('T')[0];
     cm.derniereRevision = today;
@@ -349,7 +366,7 @@ function EntrainementPage() {
                       )}
                     </div>
                     <span style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>
-                      {exo.type === 'CM' ? `Niveau J${exo.jActuel || 0}` : `Pratiqué ${exo.nombrePratiques || 0} fois`}
+                      {exo.type === 'CM' ? `Revu ${exo.repetitions || 0} fois (J${exo.jActuel || 0})` : `Pratiqué ${exo.nombrePratiques || 0} fois`}
                     </span>
                   </div>
                   

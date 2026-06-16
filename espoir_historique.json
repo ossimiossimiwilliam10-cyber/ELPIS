@@ -47,5 +47,33 @@
         "matiere": "Programmation",
         "action": "Terminé",
         "timestamp": "2026-06-15T11:29:07.768Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Rédiger un protocole d'essai technique (Experimental / Testing Procedures)",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Révisé (J3)",
+        "timestamp": "2026-06-16T07:49:15.147Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T08:42:40.610Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+        "matiere": "Analyse",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T09:12:40.036Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Révisé (J1)",
+        "timestamp": "2026-06-16T09:53:31.067Z"
     }
 ]

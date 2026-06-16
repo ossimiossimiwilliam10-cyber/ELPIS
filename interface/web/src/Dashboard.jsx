@@ -2,20 +2,15 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
+import { calculateSM2 } from './sm2';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 function Dashboard() {
   const { config, coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
-  const pomoWork = config?.pomoWork || 25;
-  const pomoBreak = config?.pomoBreak || 5;
   const [data, setData] = useState(null);
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // States Pomodoro
-  const [pomoState, setPomoState] = useState('WORK');
-  const [timeLeft, setTimeLeft] = useState(pomoWork * 60);
-  const [isActive, setIsActive] = useState(false);
+  const [extraTime, setExtraTime] = useState(0);
 
   const DIFFICULTY_LEVELS = [
     { key: 'difficile', label: '🔴', title: 'Difficile' },
@@ -25,53 +20,8 @@ function Dashboard() {
     { key: 'tres_facile', label: '🔵', title: 'Très facile' },
   ];
 
-  // Sync pomo durations with config
-  useEffect(() => {
-    if (!isActive) {
-      setTimeLeft(pomoState === 'WORK' ? pomoWork * 60 : pomoBreak * 60);
-    }
-  }, [pomoWork, pomoBreak]);
-
-  useEffect(() => {
-    let interval = null;
-    if (isActive && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(t => t - 1);
-      }, 1000);
-    } else if (isActive && timeLeft === 0) {
-      const nextMode = pomoState === 'WORK' ? 'BREAK' : 'WORK';
-      
-      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-      
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification(nextMode === 'WORK' ? "Pause terminée ! Au travail !" : "Bien joué ! Prends une pause !");
-      }
-      
-      setPomoState(nextMode);
-      setTimeLeft(nextMode === 'WORK' ? pomoWork * 60 : pomoBreak * 60);
-      setIsActive(false);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, timeLeft, pomoState, pomoWork, pomoBreak]);
-
-  const togglePomo = () => {
-    if (!isActive && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-    setIsActive(!isActive);
-  };
-  const resetPomo = () => {
-    setIsActive(false);
-    setTimeLeft(pomoState === 'WORK' ? pomoWork * 60 : pomoBreak * 60);
-  };
-  const formatTime = (seconds) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const fetchDashboard = () => {
-    fetch('/api/orchestrateur')
+  const fetchDashboard = (currentExtraTime = extraTime) => {
+    fetch(`/api/orchestrateur?extraTime=${currentExtraTime}`)
       .then(res => res.json())
       .then(d => {
         setData(d);
@@ -87,8 +37,13 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchDashboard();
-  }, [coursConfig]);
+    fetchDashboard(extraTime);
+  }, [coursConfig, extraTime]);
+
+  const handleAddExtraTime = () => {
+    const newTime = extraTime + 30;
+    setExtraTime(newTime);
+  };
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -112,14 +67,18 @@ function Dashboard() {
               if (tache.type === 'CM') {
                 matiere.listeCM.forEach(cm => {
                   if (cm.titre === tache.titre) {
+                    const { interval, easeFactor, repetitions } = calculateSM2(
+                      3, // Default to 'Good' when marking as done from dashboard
+                      cm.jActuel || 0,
+                      cm.easeFactor || 2.5,
+                      cm.repetitions || 0,
+                      newConfig
+                    );
+
+                    cm.jActuel = interval;
+                    cm.easeFactor = easeFactor;
+                    cm.repetitions = repetitions;
                     cm.derniereRevision = today;
-                    const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
-                    const currentIndex = J_SEQUENCE.indexOf(cm.jActuel || 0);
-                    if (currentIndex >= 0 && currentIndex < J_SEQUENCE.length - 1) {
-                      cm.jActuel = J_SEQUENCE[currentIndex + 1];
-                    } else if (currentIndex === -1) {
-                      cm.jActuel = 1;
-                    }
                     taskFound = true;
                   }
                 });
@@ -297,6 +256,17 @@ function Dashboard() {
             >
               <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem'}}>🎉 Tout est terminé !</h3>
               <p style={{color:'var(--text-secondary)'}}>Tu as accompli toutes tes tâches. Repose-toi bien !</p>
+              {surcharge && (
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleAddExtraTime}
+                  className="btn-primary" 
+                  style={{marginTop: '1.5rem', background: 'var(--accent-color)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
+                >
+                  🔥 J'ai encore de l'énergie (+30 min)
+                </motion.button>
+              )}
             </motion.div>
           ) : (
             <DragDropContext onDragEnd={onDragEnd}>
@@ -330,7 +300,7 @@ function Dashboard() {
                               </div>
                               <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flexShrink: 0}}>
                                 <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.8rem'}}>
-                                  ~{t.dureeMinutes || t.dureeMin} min
+                                  ~{t.dureeMinutes || 0} min
                                 </div>
                                 <button 
                                   onClick={() => handleTaskComplete(t)}
@@ -428,37 +398,7 @@ function Dashboard() {
             </div>
           )}
 
-          {/* === MINI POMODORO === */}
-          <div style={{marginTop:'1.5rem', paddingTop:'1.5rem', borderTop:'1px solid rgba(255,255,255,0.05)'}}>
-            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem'}}>
-              <h3 style={{margin:0, fontSize:'1rem'}}>Minuteur {pomoState === 'WORK' ? 'Focus' : 'Pause'}</h3>
-              <div style={{display:'flex', gap:'0.3rem'}}>
-                <button 
-                  onClick={() => { setPomoState('WORK'); setTimeLeft(pomoWork * 60); setIsActive(false); }}
-                  style={{padding: '0.25rem 0.6rem', fontSize: '0.75rem', borderRadius:'6px', border:'none', cursor:'pointer', background: pomoState === 'WORK' ? 'var(--accent-primary)' : 'var(--bg-tertiary)', color: pomoState === 'WORK' ? 'white' : 'var(--text-secondary)', fontWeight: 600}}
-                >
-                  Travail ({pomoWork}m)
-                </button>
-                <button 
-                  onClick={() => { setPomoState('BREAK'); setTimeLeft(pomoBreak * 60); setIsActive(false); }}
-                  style={{padding: '0.25rem 0.6rem', fontSize: '0.75rem', borderRadius:'6px', border:'none', cursor:'pointer', background: pomoState === 'BREAK' ? 'var(--success-color)' : 'var(--bg-tertiary)', color: pomoState === 'BREAK' ? 'white' : 'var(--text-secondary)', fontWeight: 600}}
-                >
-                  Pause ({pomoBreak}m)
-                </button>
-              </div>
-            </div>
-            <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
-              <div style={{ fontSize: '2.2rem', fontWeight: 'bold', fontFamily: 'monospace', color: pomoState === 'WORK' ? 'var(--accent-primary)' : 'var(--success-color)', minWidth: '110px' }}>
-                {formatTime(timeLeft)}
-              </div>
-              <button className="btn-primary" onClick={togglePomo} style={{padding:'0.4rem 1rem', fontSize:'0.85rem'}}>
-                {isActive ? 'Pause' : 'Go'}
-              </button>
-              <button className="btn-secondary" onClick={resetPomo} style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem'}}>
-                Reset
-              </button>
-            </div>
-          </div>
+
         </motion.div>
       </div>
 

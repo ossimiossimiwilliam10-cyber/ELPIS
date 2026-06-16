@@ -212,10 +212,12 @@ app.post('/api/scan-pdf', uploadPdf, async (req, res) => {
         /(?:question|q\.?)[\s.:\-]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
         // Numbered items at start of lines (likely exercises)
         /(?:^|\n)\s*(\d{1,3})\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm,
-        // French: "Série", "Application", "Entraînement", "TD"
-        /(?:s[eé]rie|application|entra[îi]nement|td|tp)[\s.:\-]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+        // French: "Série", "Application", "Entraînement", "TD", "TP", "Chapitre", "Partie", "Section"
+        /(?:s[eé]rie|application|entra[îi]nement|td|tp|chapitre|partie|section)[\s.:\-]*(?:n[°º]|#)?\s*([A-Za-z0-9]+(?:[.\-][A-Za-z0-9]+)?)/gi,
         // Roman numerals with text (I., II., etc.)
-        /(?:^|\n)\s*([IVX]{1,5})\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm
+        /(?:^|\n)\s*([IVX]{1,5})\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm,
+        // Alphabetic bullets at start of lines (A., B., etc.)
+        /(?:^|\n)\s*([A-Z])\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm
       ];
       
       patterns.forEach((regex, patIdx) => {
@@ -286,7 +288,8 @@ app.get('/api/orchestrateur', (req, res) => {
   try {
     const { CONFIG_PATH } = require('./moteur/config');
     const { COURS_PATH } = require('./moteur/cours');
-    const rapport = genererRapportQuotidien(CONFIG_PATH, COURS_PATH);
+    const extraTime = parseInt(req.query.extraTime) || 0;
+    const rapport = genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime);
     res.json(rapport);
   } catch (err) {
     console.error("Erreur orchestrateur:", err);

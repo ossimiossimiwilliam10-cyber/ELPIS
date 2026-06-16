@@ -873,28 +873,6 @@ input:focus, select:focus {
   margin-top: 0.25rem;
 }
 
-/* === POMODORO SETTINGS === */
-.pomo-settings {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-}
-
-.pomo-setting {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.pomo-setting label {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.pomo-setting input {
-  width: 100px;
-}
 
 /* === OVERFLOW FIXES (Graphical Collisions) === */
 .cm-item > div, 

@@ -2,55 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useStore from './store';
 import MarkdownModal from './MarkdownModal';
-
-// Séquence complète de la méthode des J sur 6 ans
-const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
+import EditableLabel from './components/cours/EditableLabel';
+import MatiereCard from './components/cours/MatiereCard';
 
 // Deep clone helper
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
-
-// Composant utilitaire : Affiche un nom + bouton renommer
-function EditableLabel({ value, onRename, placeholder, style }) {
-  const handleRename = () => {
-    const newName = window.prompt("Nouveau nom :", value || '');
-    if (newName !== null && newName.trim() !== '') {
-      onRename(newName.trim());
-    }
-  };
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, ...style }}>
-      <span title={value} style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
-        {value || <em style={{color:'var(--text-secondary)'}}>{placeholder}</em>}
-      </span>
-      <button 
-        onClick={handleRename} 
-        style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.9rem', padding:'0.2rem', flexShrink: 0}} 
-        title="Renommer"
-      >
-        ✏️
-      </button>
-    </div>
-  );
-}
-
-// Composant utilitaire : Affiche un texte éditable (notes/mémos) avec bouton
-function EditableNote({ value, onClick, placeholder }) {
-  return (
-    <div 
-      onClick={onClick}
-      style={{
-        padding:'0.3rem', fontSize:'0.75rem', 
-        background: 'transparent', border: '1px dashed rgba(255,255,255,0.1)', 
-        color: 'var(--text-secondary)', borderRadius: '4px', cursor: 'pointer',
-        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-      }}
-      title="Cliquer pour modifier"
-    >
-      {value || <em>{placeholder}</em>}
-    </div>
-  );
-}
 
 function CoursPage() {
   const { coursConfig, setCoursConfig } = useStore();
@@ -184,6 +140,7 @@ function CoursPage() {
       const newConf = deepClone(prev);
       if (!newConf.licences[lIndex].semestres[sIndex].ues) newConf.licences[lIndex].semestres[sIndex].ues = [];
       newConf.licences[lIndex].semestres[sIndex].ues.push({ nom: "Nouvelle UE", ects: 0, matieres: [] });
+      setCoursConfig(newConf);
       return newConf;
     });
   };
@@ -226,7 +183,7 @@ function CoursPage() {
       const newConf = deepClone(prev);
       const mat = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
       if (!mat.listeCM) mat.listeCM = [];
-      const newCM = { titre: "Nouveau CM", jActuel: 0, derniereRevision: "" };
+      const newCM = { titre: "Nouveau CM", jActuel: 0, derniereRevision: "", easeFactor: 2.5, repetitions: 0 };
       mat.listeCM.push(newCM);
       setCoursConfig(newConf);
       return newConf;
@@ -484,167 +441,30 @@ function CoursPage() {
                           {ue.matieres?.map((matiere, mIndex) => {
                             if (!matiereMatchesSearch(matiere)) return null;
                             return (
-                            <div key={`m-${sIndex}-${uIndex}-${mIndex}`} style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0}}>
-                              
-                              {/* MATIERE HEADER */}
-                              <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.5rem', minWidth: 0}}>
-                                <button onClick={() => deleteMatiere(lIndex, sIndex, uIndex, mIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', padding:0}} title="Supprimer">🗑️</button>
-                                <EditableLabel
-                                  value={matiere.nom}
-                                  onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'nom'], v)}
-                                  placeholder="Nom de la matière"
-                                  style={{flex:1, borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.3rem'}}
-                                />
-                              </div>
-                              
-                              {/* CONFIG NOTEBOOK LM */}
-                              <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
-                                <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
-                                  <span style={{fontSize:'1rem'}} title="Lien NotebookLM">📖</span>
-                                  <input 
-                                    type="text" 
-                                    placeholder="Collez ici le lien NotebookLM pour cette matière..." 
-                                    value={matiere.notebookLMLink || ''}
-                                    onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'notebookLMLink'], e.target.value)}
-                                    style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
-                                  />
-                                </div>
-                              </div>
-                              
-                              {/* --- CM --- */}
-                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem'}}>
-                                <span style={{fontSize:'0.9rem', color:'var(--text-secondary)'}}>{matiere.listeCM?.length || 0} CM</span>
-                                <button className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem'}} onClick={() => addCM(lIndex, sIndex, uIndex, mIndex)}>+ CM</button>
-                              </div>
-                              {matiere.listeCM?.map((cm, cmIndex) => (
-                                <div key={`cm-${cmIndex}`} className="cm-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'0.4rem', borderRadius:'4px'}}>
-                                  <button onClick={() => deleteCM(lIndex, sIndex, uIndex, mIndex, cmIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-                                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
-                                    <EditableLabel
-                                      value={cm.titre}
-                                      onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'titre'], v)}
-                                      placeholder="Titre du CM"
-                                      style={{fontSize:'0.85rem'}}
-                                    />
-                                    <EditableNote 
-                                      value={cm.notes} 
-                                      onClick={() => setModalConfig({
-                                        isOpen: true,
-                                        title: `Notes CM : ${cm.titre}`,
-                                        initialValue: cm.notes,
-                                        onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'notes'], v)
-                                      })} 
-                                      placeholder="+ Ajouter une note (markdown supporté)" 
-                                    />
-                                  </div>
-                                  <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
-                                    <span style={{fontSize:'0.75rem', color:'var(--text-secondary)'}}>
-                                      Prochain : {getNextReviewDate(cm)}
-                                    </span>
-                                    <div style={{display:'flex', alignItems:'center', gap:'0.3rem'}}>
-                                      <span style={{fontSize:'0.75rem', color:'var(--text-secondary)'}}>J actuel:</span>
-                                      <select 
-                                        value={cm.jActuel || 0}
-                                        onChange={(e) => {
-                                          const newJ = parseInt(e.target.value) || 0;
-                                          setConfigLocal(prev => {
-                                            const newConf = deepClone(prev);
-                                            const currentCM = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
-                                            currentCM.jActuel = newJ;
-                                            if (newJ > 0 && (!currentCM.derniereRevision || currentCM.derniereRevision === "")) {
-                                              currentCM.derniereRevision = new Date().toISOString().split('T')[0];
-                                            }
-                                            setCoursConfig(newConf);
-                                            return newConf;
-                                          });
-                                        }}
-                                        style={{padding:'0.2rem', borderRadius:'4px', background:'var(--bg-tertiary)', color:'white', border:'none', fontSize:'0.75rem'}}
-                                        title="Définir le J actuel (Méthode des J)"
-                                      >
-                                        <option value={0}>J0 (Nouveau)</option>
-                                        <option value={1}>J1</option>
-                                        <option value={3}>J3</option>
-                                        <option value={7}>J7</option>
-                                        <option value={14}>J14</option>
-                                        <option value={30}>J30</option>
-                                        <option value={60}>J60</option>
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-
-                              {/* --- TD --- */}
-                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
-                                <span style={{fontSize:'0.9rem', color:'var(--success-color)'}}>{matiere.listeTD?.length || 0} TD</span>
-                                <div style={{display:'flex', gap:'0.5rem'}}>
-                                  <button onClick={() => addTDManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>+ Manuel</button>
-                                  <input type="file" accept="application/pdf" id={`td-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} style={{display:'none'}} onChange={(e) => handleFileUpload(lIndex, sIndex, uIndex, mIndex, e.target.files[0], 'TD')} disabled={isScanning} />
-                                  <label htmlFor={`td-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--success-color)', border:'1px solid var(--success-glow)', opacity: isScanning ? 0.5 : 1}}>
-                                    {isScanning ? '⏳ Scan...' : 'Scanner PDF'}
-                                  </label>
-                                </div>
-                              </div>
-                              {matiere.listeTD?.map((td, tdIndex) => (
-                                <div key={`td-${tdIndex}`} className="td-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
-                                  <button onClick={() => deleteTD(lIndex, sIndex, uIndex, mIndex, tdIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-                                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
-                                    <EditableLabel
-                                      value={td.titre}
-                                      onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'titre'], v)}
-                                      placeholder="Nom de l'exercice"
-                                      style={{fontSize:'0.85rem'}}
-                                    />
-                                    <EditableNote 
-                                      value={td.notes} 
-                                      onClick={() => setModalConfig({
-                                        isOpen: true,
-                                        title: `Notes TD : ${td.titre}`,
-                                        initialValue: td.notes,
-                                        onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'notes'], v)
-                                      })}
-                                      placeholder="+ Ajouter une note (markdown supporté)" 
-                                    />
-                                  </div>
-                                </div>
-                              ))}
-
-                              {/* --- TP --- */}
-                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
-                                <span style={{fontSize:'0.9rem', color:'var(--warning-color)'}}>{matiere.listeTP?.length || 0} TP</span>
-                                <div style={{display:'flex', gap:'0.5rem'}}>
-                                  <button onClick={() => addTPManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>+ Manuel</button>
-                                  <input type="file" accept="application/pdf" id={`tp-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} style={{display:'none'}} onChange={(e) => handleFileUpload(lIndex, sIndex, uIndex, mIndex, e.target.files[0], 'TP')} disabled={isScanning} />
-                                  <label htmlFor={`tp-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)', opacity: isScanning ? 0.5 : 1}}>
-                                    {isScanning ? '⏳ Scan...' : 'Scanner PDF'}
-                                  </label>
-                                </div>
-                              </div>
-                              {matiere.listeTP?.map((tp, tpIndex) => (
-                                <div key={`tp-${tpIndex}`} className="tp-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
-                                  <button onClick={() => deleteTP(lIndex, sIndex, uIndex, mIndex, tpIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-                                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
-                                    <EditableLabel
-                                      value={tp.titre}
-                                      onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'titre'], v)}
-                                      placeholder="Nom de l'exercice"
-                                      style={{fontSize:'0.85rem'}}
-                                    />
-                                    <EditableNote 
-                                      value={tp.notes} 
-                                      onClick={() => setModalConfig({
-                                        isOpen: true,
-                                        title: `Notes TP : ${tp.titre}`,
-                                        initialValue: tp.notes,
-                                        onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'notes'], v)
-                                      })}
-                                      placeholder="+ Ajouter une note (markdown supporté)" 
-                                    />
-                                  </div>
-                                </div>
-                              ))}
-                              
-                            </div>
+                            <MatiereCard
+                              key={`m-${sIndex}-${uIndex}-${mIndex}`}
+                              matiere={matiere}
+                              lIndex={lIndex}
+                              sIndex={sIndex}
+                              uIndex={uIndex}
+                              mIndex={mIndex}
+                              isScanning={isScanning}
+                              actions={{
+                                deleteMatiere,
+                                updateField,
+                                addCM,
+                                deleteCM,
+                                addTDManuel,
+                                handleFileUpload,
+                                deleteTD,
+                                addTPManuel,
+                                deleteTP,
+                                setModalConfig,
+                                getNextReviewDate,
+                                setConfigLocal,
+                                setCoursConfig
+                              }}
+                            />
                             )
                           })}
                           </div>
