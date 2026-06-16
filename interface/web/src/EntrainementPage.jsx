@@ -4,6 +4,7 @@ import confetti from 'canvas-confetti';
 import useStore from './store';
 import { useToast } from './ToastProvider';
 import { calculateSM2 } from './sm2';
+import ExerciceCard from './components/cours/ExerciceCard';
 
 
 
@@ -157,7 +158,7 @@ function EntrainementPage() {
     return total;
   }, [configLocal]);
 
-  const evaluateCM = (exo, score) => {
+  const evaluateCM = (exo, score, elapsedMinutes = 0) => {
     const newConf = JSON.parse(JSON.stringify(configLocal));
     const cm = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
@@ -176,6 +177,14 @@ function EntrainementPage() {
     const today = new Date().toISOString().split('T')[0];
     cm.derniereRevision = today;
     
+    // Update tempsMoyen if a timer was used
+    if (elapsedMinutes > 0) {
+      const currentAvg = cm.tempsMoyen || 0;
+      const currentCount = cm.nombreRevisionsTemps || 0;
+      cm.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
+      cm.nombreRevisionsTemps = currentCount + 1;
+    }
+    
     confetti({
       particleCount: 100,
       spread: 70,
@@ -193,7 +202,7 @@ function EntrainementPage() {
     });
   };
 
-  const markAsDone = (exo, difficulte = "") => {
+  const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
     const todayStr = new Date().toISOString().split('T')[0];
     const newConf = JSON.parse(JSON.stringify(configLocal));
     
@@ -201,9 +210,17 @@ function EntrainementPage() {
         ? newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD 
         : newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
 
-    targetList[exo.exIndex].dernierePratique = todayStr;
-    targetList[exo.exIndex].nombrePratiques = (targetList[exo.exIndex].nombrePratiques || 0) + 1;
-    if (difficulte) targetList[exo.exIndex].difficulte = difficulte;
+    const currentExo = targetList[exo.exIndex];
+    currentExo.dernierePratique = todayStr;
+    currentExo.nombrePratiques = (currentExo.nombrePratiques || 0) + 1;
+    if (difficulte) currentExo.difficulte = difficulte;
+    
+    if (elapsedMinutes > 0) {
+      const currentAvg = currentExo.tempsMoyen || 0;
+      const currentCount = currentExo.nombreRevisionsTemps || 0;
+      currentExo.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
+      currentExo.nombreRevisionsTemps = currentCount + 1;
+    }
     
     confetti({
       particleCount: 100,
@@ -216,7 +233,7 @@ function EntrainementPage() {
     setCoursConfig(newConf);
     addHistoriqueEntry({
       type: exo.type,
-      titre: targetList[exo.exIndex].titre,
+      titre: currentExo.titre,
       matiere: exo.matiereNom,
       action: 'Terminé'
     });
@@ -341,95 +358,14 @@ function EntrainementPage() {
           >
             <AnimatePresence>
               {exercicesDuJour.map((exo) => (
-                <motion.div 
-                  key={exo.matiereNom + exo.titre + exo.type} 
-                  variants={itemVariants}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                  layout
-                  className="card glass-panel" 
-                  style={{borderTop:`4px solid ${exo.type==='TD' ? '#34D399' : exo.type==='CM' ? '#3b82f6' : '#FBBF24'}`}}
-                >
-                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem'}}>
-                    <div style={{display:'flex', gap:'0.5rem', alignItems:'center'}}>
-                      <span style={{background:'var(--bg-tertiary)', padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.8rem'}}>
-                        {exo.matiereNom} ({exo.type})
-                      </span>
-                      {exo.notebookLMLink && (
-                        <button 
-                          onClick={() => {
-                            let link = exo.notebookLMLink;
-                            if (link && !link.startsWith('http')) link = 'https://' + link;
-                            window.open(link, '_blank');
-                          }}
-                          style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', padding:0}}
-                          title="Ouvrir NotebookLM pour cette matière"
-                        >
-                          📖
-                        </button>
-                      )}
-                    </div>
-                    <span style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>
-                      {exo.type === 'CM' ? `Revu ${exo.repetitions || 0} fois (J${exo.jActuel || 0})` : `Pratiqué ${exo.nombrePratiques || 0} fois`}
-                    </span>
-                  </div>
-                  
-                  <h3 style={{margin:'0 0 1rem 0', overflow:'hidden', textOverflow:'ellipsis', display:'-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient:'vertical'}} title={exo.titre}>{exo.titre}</h3>
-                  
-                  <div style={{display:'flex', gap:'1rem'}}>
-                    {exo.type === 'CM' ? (
-                       <>
-                         <button onClick={() => evaluateCM(exo, 1)} style={{flex:1, background:'#ef4444', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Échec">À revoir (1)</button>
-                         <button onClick={() => evaluateCM(exo, 2)} style={{flex:1, background:'#f97316', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Difficile">Difficile (2)</button>
-                         <button onClick={() => evaluateCM(exo, 3)} style={{flex:1, background:'#3b82f6', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Bien">Bien (3)</button>
-                         <button onClick={() => evaluateCM(exo, 4)} style={{flex:1, background:'#22c55e', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Parfait">Parfait (4)</button>
-                       </>
-                    ) : (
-                       <>
-                         {exo.pdfSource && (
-                           <a 
-                             href={`${exo.pdfSource}#page=${exo.page}`} 
-                             target="_blank" 
-                             rel="noreferrer"
-                             className="btn-primary"
-                             style={{flex:1, textAlign:'center', textDecoration:'none', padding:'0.6rem'}}
-                           >
-                             Ouvrir Page {exo.page}
-                           </a>
-                         )}
-                         <button 
-                           onClick={() => markAsDone(exo)}
-                           className="btn-secondary"
-                           style={{background:'#10B981', color:'white', border:'none'}}
-                         >
-                           Fait
-                         </button>
-                         {DIFFICULTY_LEVELS.map(dl => (
-                           <button
-                             key={dl.key}
-                             onClick={() => markAsDone(exo, dl.key)}
-                             title={dl.title}
-                             style={{
-                               background: 'transparent',
-                               border: 'none',
-                               cursor: 'pointer',
-                               fontSize: '0.7rem',
-                               padding: '0.05rem',
-                               flexShrink: 0,
-                               opacity: 0.7,
-                               transition: 'opacity 0.2s',
-                             }}
-                             onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                             onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
-                           >
-                             {dl.label}
-                           </button>
-                         ))}
-                       </>
-                    )}
-                  </div>
-                </motion.div>
+                <ExerciceCard 
+                  key={exo.matiereNom + exo.titre + exo.type}
+                  exo={exo}
+                  onEvaluateCM={evaluateCM}
+                  onMarkAsDone={markAsDone}
+                  DIFFICULTY_LEVELS={DIFFICULTY_LEVELS}
+                  itemVariants={itemVariants}
+                />
               ))}
             </AnimatePresence>
           </motion.div>

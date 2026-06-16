@@ -151,17 +151,20 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
         for (const m of (ue.matieres || [])) {
           for (const cm of (m.listeCM || [])) {
             if (cm.derniereRevision === todayStr) {
-              tempsDejaTravailleMin += (cm.jActuel === 0) ? 120 : 30;
+              const dureeBase = (cm.jActuel === 0) ? (cfg.defaultDurationNewCM || 120) : (cfg.defaultDurationRevCM || 30);
+              tempsDejaTravailleMin += cm.tempsMoyen ? cm.tempsMoyen : dureeBase;
             }
           }
           for (const td of (m.listeTD || [])) {
             if (td.dernierePratique === todayStr) {
-              tempsDejaTravailleMin += 20;
+              const dureeBase = cfg.defaultDurationTD || 20;
+              tempsDejaTravailleMin += td.tempsMoyen ? td.tempsMoyen : (dureeBase * getDifficultyMultiplier(td.difficulte));
             }
           }
           for (const tp of (m.listeTP || [])) {
             if (tp.dernierePratique === todayStr) {
-              tempsDejaTravailleMin += 30;
+              const dureeBase = cfg.defaultDurationTP || 30;
+              tempsDejaTravailleMin += tp.tempsMoyen ? tp.tempsMoyen : (dureeBase * getDifficultyMultiplier(tp.difficulte));
             }
           }
         }
@@ -177,6 +180,17 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   const studyStart = studyStartRaw ? new Date(studyStartRaw + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
   const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
   const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
+
+  function getDifficultyMultiplier(difficulte) {
+    switch (difficulte) {
+      case 'difficile': return 1.5;
+      case 'assez_difficile': return 1.2;
+      case 'moyen': return 1.0;
+      case 'facile': return 0.8;
+      case 'tres_facile': return 0.5;
+      default: return 1.0;
+    }
+  }
 
   // Pools de tâches
   const poolCM = [];
@@ -220,11 +234,14 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
             if (doitReviser) {
               // Score CM = (retard) * (boost examen)
               const prioCM = (joursEnRetard + 1) * examBoost;
+              const dureeBase = (cm.jActuel === 0) ? (cfg.defaultDurationNewCM || 120) : (cfg.defaultDurationRevCM || 30);
+              const dureeEstimee = cm.tempsMoyen ? cm.tempsMoyen : dureeBase;
+
               poolCM.push({
                 matiere: m.nom,
                 type: "CM",
                 titre: cm.titre,
-                dureeMinutes: (cm.jActuel === 0) ? 120 : 30,
+                dureeMinutes: Math.round(dureeEstimee),
                 fichePdfPath: cm.fichePdfPath || "",
                 prio: prioCM
               });
@@ -244,11 +261,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
           // --- TD logic ---
           const tds = (m.listeTD || []).filter(ex => ex.dernierePratique !== todayStr);
           for (const ex of tds) {
+            const dureeBase = cfg.defaultDurationTD || 20;
+            const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             poolTD.push({
               matiere: m.nom,
               type: "TD",
               titre: ex.titre,
-              dureeMinutes: 20,
+              dureeMinutes: Math.round(dureeEstimee),
               pdfSource: ex.pdfSource || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
@@ -259,11 +278,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
           // --- TP logic ---
           const tps = (m.listeTP || []).filter(ex => ex.dernierePratique !== todayStr);
           for (const ex of tps) {
+            const dureeBase = cfg.defaultDurationTP || 30;
+            const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             poolTP.push({
               matiere: m.nom,
               type: "TP",
               titre: ex.titre,
-              dureeMinutes: 30,
+              dureeMinutes: Math.round(dureeEstimee),
               pdfSource: ex.pdfSource || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",

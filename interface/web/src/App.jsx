@@ -246,6 +246,40 @@ function AppInner() {
                   />
                   <small style={{display:'block', color:'var(--text-secondary)', marginTop:'0.5rem', fontSize:'0.8rem'}}>Le système déduira automatiquement le temps que tu as déjà passé à étudier aujourd'hui.</small>
                 </div>
+                <h2 style={{marginBottom:'1rem', borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem'}}>Estimation des Durées (Minutes)</h2>
+                <p style={{color:'var(--text-secondary)', marginBottom:'1.5rem'}}>
+                  Temps par défaut alloué par l'algorithme lorsqu'un exercice n'a pas encore de moyenne personnalisée.
+                </p>
+                <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'1rem', marginBottom:'2rem'}}>
+                  <div>
+                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>CM (Première fois) :</label>
+                    <input type="number" min="5" value={config.defaultDurationNewCM || 120} onChange={e => {
+                      const newConf = {...config, defaultDurationNewCM: parseInt(e.target.value) || 120};
+                      setConfig(newConf);
+                    }} style={{width:'100%'}}/>
+                  </div>
+                  <div>
+                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>CM (Révision) :</label>
+                    <input type="number" min="5" value={config.defaultDurationRevCM || 30} onChange={e => {
+                      const newConf = {...config, defaultDurationRevCM: parseInt(e.target.value) || 30};
+                      setConfig(newConf);
+                    }} style={{width:'100%'}}/>
+                  </div>
+                  <div>
+                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Travaux Dirigés (TD) :</label>
+                    <input type="number" min="5" value={config.defaultDurationTD || 20} onChange={e => {
+                      const newConf = {...config, defaultDurationTD: parseInt(e.target.value) || 20};
+                      setConfig(newConf);
+                    }} style={{width:'100%'}}/>
+                  </div>
+                  <div>
+                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Travaux Pratiques (TP) :</label>
+                    <input type="number" min="5" value={config.defaultDurationTP || 30} onChange={e => {
+                      const newConf = {...config, defaultDurationTP: parseInt(e.target.value) || 30};
+                      setConfig(newConf);
+                    }} style={{width:'100%'}}/>
+                  </div>
+                </div>
 
 
                 {/* Section Matières avec Dates d'Examen */}

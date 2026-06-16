@@ -20,7 +20,11 @@ const DEFAULT_CONFIG = {
   pomoWork: 25,
   pomoBreak: 5,
   lastActiveDate: "",
-  currentStreak: 0
+  currentStreak: 0,
+  defaultDurationNewCM: 120,
+  defaultDurationRevCM: 30,
+  defaultDurationTD: 20,
+  defaultDurationTP: 30
 };
 
 function sanitize(c) {
@@ -30,6 +34,12 @@ function sanitize(c) {
   c.maxSubjectsPerDay = Math.max(1, c.maxSubjectsPerDay ?? 3);
   c.studyBlockDurationMinutes = Math.max(10, Math.min(240, c.studyBlockDurationMinutes ?? 50));
   c.activeRecallMinutesPerDay = Math.max(0, c.activeRecallMinutesPerDay ?? 30);
+  
+  c.defaultDurationNewCM = Math.max(5, c.defaultDurationNewCM ?? 120);
+  c.defaultDurationRevCM = Math.max(5, c.defaultDurationRevCM ?? 30);
+  c.defaultDurationTD = Math.max(5, c.defaultDurationTD ?? 20);
+  c.defaultDurationTP = Math.max(5, c.defaultDurationTP ?? 30);
+  
   if (c.theme !== "light" && c.theme !== "dark") c.theme = "dark";
   
   // Ensure arrays
