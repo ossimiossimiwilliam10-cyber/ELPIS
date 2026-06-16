@@ -2,8 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer');
-const pdfParse = require('pdf-parse');
 
 const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
@@ -17,54 +15,6 @@ app.use(express.json());
 
 const ROOT_DIR = path.join(__dirname, '..', '..');
 const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
-const FICHES_DIR = path.join(ROOT_DIR, 'fiches_revision');
-
-if (!fs.existsSync(FICHES_DIR)) {
-  fs.mkdirSync(FICHES_DIR);
-}
-
-// Multer config for PDFs
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, FICHES_DIR);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
-  }
-});
-const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype !== 'application/pdf') {
-      const err = new Error('Seuls les fichiers PDF sont acceptés.');
-      err.code = 'INVALID_FILE_TYPE';
-      return cb(err, false);
-    }
-    cb(null, true);
-  }
-});
-
-const uploadPdf = (req, res, next) => {
-  upload.single('pdfFile')(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ error: "Fichier trop volumineux (limite 10 Mo)." });
-      }
-      return res.status(400).json({ error: err.message });
-    } else if (err) {
-      if (err.code === 'INVALID_FILE_TYPE') {
-        return res.status(400).json({ error: "Type de fichier invalide. Seuls les PDF sont acceptés." });
-      }
-      return res.status(500).json({ error: err.message });
-    }
-    next();
-  });
-};
-
-// Serve uploaded files
-app.use('/fiches', express.static(FICHES_DIR));
 
 // ===================== ROUTES =====================
 
@@ -166,121 +116,6 @@ app.post('/api/open/anki', (req, res) => {
 app.post('/api/shutdown', (req, res) => {
   res.json({ success: true, message: "Arrêt du serveur." });
   setTimeout(() => process.exit(0), 1000);
-});
-
-// POST upload PDF
-app.post('/api/upload-pdf', uploadPdf, (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: "Aucun fichier uploadé." });
-    }
-    const fileUrl = `/fiches/${req.file.filename}`;
-    res.json({ success: true, url: fileUrl });
-  } catch (err) {
-    res.status(500).json({ error: "Erreur upload." });
-  }
-});
-
-// POST scan PDF
-app.post('/api/scan-pdf', uploadPdf, async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: "Aucun fichier uploadé." });
-    
-    const fileUrl = `/fiches/${req.file.filename}`;
-    const pdfBuffer = fs.readFileSync(req.file.path);
-    
-    let pagesText = [];
-    const render_page = async function(pageData) {
-      let render_options = { normalizeWhitespace: false, disableCombineTextItems: false };
-      const textContent = await pageData.getTextContent(render_options);
-      const text = textContent.items.map(item => item.str).join(' ');
-      pagesText.push(text);
-      return text;
-    };
-
-    const pdfData = await pdfParse(pdfBuffer, { pagerender: render_page });
-
-    let exercises = [];
-    const pdfName = req.file.originalname.replace(/\.pdf$/i, '');
-    pagesText.forEach((pageText, index) => {
-      const patterns = [
-        // French/English exercise markers
-        /(?:exercice|exercise|ex\.?|exo)[\s.:\-]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
-        // Problems
-        /(?:probl[eè]me|problem|prob|pb)[\s.:\-]*(?:set)?\s*(\d+(?:[.\-]\d+)?)/gi,
-        // Questions
-        /(?:question|q\.?)[\s.:\-]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
-        // Numbered items at start of lines (likely exercises)
-        /(?:^|\n)\s*(\d{1,3})\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm,
-        // French: "Série", "Application", "Entraînement", "TD", "TP", "Chapitre", "Partie", "Section"
-        /(?:s[eé]rie|application|entra[îi]nement|td|tp|chapitre|partie|section)[\s.:\-]*(?:n[°º]|#)?\s*([A-Za-z0-9]+(?:[.\-][A-Za-z0-9]+)?)/gi,
-        // Roman numerals with text (I., II., etc.)
-        /(?:^|\n)\s*([IVX]{1,5})\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm,
-        // Alphabetic bullets at start of lines (A., B., etc.)
-        /(?:^|\n)\s*([A-Z])\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm
-      ];
-      
-      patterns.forEach((regex, patIdx) => {
-        let match;
-        while ((match = regex.exec(pageText)) !== null) {
-          // For roman numerals, skip if it's just "I" as a word
-          const titreRaw = match[0].trim().replace(/[\s.:\-]+$/, '');
-          const titre = patIdx === 5 ? `Partie ${titreRaw}` : titreRaw;
-          // Skip very short titles (just a number)
-          if (titre.length < 3) continue;
-          if (!exercises.find(e => e.titre.toLowerCase() === titre.toLowerCase() && e.page === index + 1)) {
-            exercises.push({
-              titre: titre,
-              page: index + 1,
-              pdfSource: fileUrl,
-              dernierePratique: "",
-              nombrePratiques: 0,
-              difficulte: "",
-              notes: ""
-            });
-          }
-        }
-      });
-    });
-
-    // Deduplicate: keep only the most descriptive title per page
-    const deduped = [];
-    const seen = new Set();
-    for (const ex of exercises) {
-      const key = `${ex.page}|${ex.titre.toLowerCase()}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        deduped.push(ex);
-      }
-    }
-    exercises = deduped;
-
-    // Fallback: one exercise per page
-    if (exercises.length === 0 && pagesText.length > 0) {
-      for (let i = 0; i < pagesText.length; i++) {
-        exercises.push({
-          titre: `${pdfName} - Page ${i + 1}`,
-          page: i + 1,
-          pdfSource: fileUrl,
-          dernierePratique: "",
-          nombrePratiques: 0,
-          difficulte: "",
-          notes: ""
-        });
-      }
-    }
-
-    // Build page previews (first 180 chars of each page)
-    const pages = pagesText.map((text, idx) => ({
-      page: idx + 1,
-      preview: text.substring(0, 180).trim()
-    }));
-
-    res.json({ success: true, url: fileUrl, exercises, pages, totalPages: pdfData.numpages || pagesText.length });
-  } catch (err) {
-    console.error("Erreur scan PDF:", err);
-    res.status(500).json({ error: "Erreur scan PDF: " + err.message });
-  }
 });
 
 // GET orchestrator report

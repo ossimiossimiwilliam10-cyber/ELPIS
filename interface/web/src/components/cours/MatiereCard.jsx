@@ -7,8 +7,7 @@ const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
 export default function MatiereCard({ 
   matiere, 
   lIndex, sIndex, uIndex, mIndex, 
-  actions, 
-  isScanning 
+  actions
 }) {
   const {
     deleteMatiere,
@@ -16,7 +15,6 @@ export default function MatiereCard({
     addCM,
     deleteCM,
     addTDManuel,
-    handleFileUpload,
     deleteTD,
     addTPManuel,
     deleteTP,
@@ -116,10 +114,6 @@ export default function MatiereCard({
         <span style={{fontSize:'0.9rem', color:'var(--success-color)'}}>{matiere.listeTD?.length || 0} TD</span>
         <div style={{display:'flex', gap:'0.5rem'}}>
           <button onClick={() => addTDManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>+ Manuel</button>
-          <input type="file" accept="application/pdf" id={`td-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} style={{display:'none'}} onChange={(e) => handleFileUpload(lIndex, sIndex, uIndex, mIndex, e.target.files[0], 'TD')} disabled={isScanning} />
-          <label htmlFor={`td-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--success-color)', border:'1px solid var(--success-glow)', opacity: isScanning ? 0.5 : 1}}>
-            {isScanning ? '⏳ Scan...' : 'Scanner PDF'}
-          </label>
         </div>
       </div>
       {matiere.listeTD?.map((td, tdIndex) => (
@@ -151,10 +145,6 @@ export default function MatiereCard({
         <span style={{fontSize:'0.9rem', color:'var(--warning-color)'}}>{matiere.listeTP?.length || 0} TP</span>
         <div style={{display:'flex', gap:'0.5rem'}}>
           <button onClick={() => addTPManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>+ Manuel</button>
-          <input type="file" accept="application/pdf" id={`tp-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} style={{display:'none'}} onChange={(e) => handleFileUpload(lIndex, sIndex, uIndex, mIndex, e.target.files[0], 'TP')} disabled={isScanning} />
-          <label htmlFor={`tp-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)', opacity: isScanning ? 0.5 : 1}}>
-            {isScanning ? '⏳ Scan...' : 'Scanner PDF'}
-          </label>
         </div>
       </div>
       {matiere.listeTP?.map((tp, tpIndex) => (
