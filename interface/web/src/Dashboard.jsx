@@ -100,6 +100,15 @@ function Dashboard() {
                     taskFound = true;
                   }
                 });
+              } else if (tache.type === 'ANNALE') {
+                matiere.listeAnnales?.forEach(annale => {
+                  if (annale.titre === tache.titre) {
+                    annale.dernierePratique = today;
+                    annale.nombrePratiques = (annale.nombrePratiques || 0) + 1;
+                    if (difficulte) annale.difficulte = difficulte;
+                    taskFound = true;
+                  }
+                });
               }
             }
           });
@@ -165,6 +174,7 @@ function Dashboard() {
             if (m.listeCM) { mTotal += m.listeCM.length; mDone += m.listeCM.filter(cm => cm.jActuel > 0).length; }
             if (m.listeTD) { mTotal += m.listeTD.length; mDone += m.listeTD.filter(td => td.nombrePratiques > 0).length; }
             if (m.listeTP) { mTotal += m.listeTP.length; mDone += m.listeTP.filter(tp => tp.nombrePratiques > 0).length; }
+            if (m.listeAnnales) { mTotal += m.listeAnnales.length; mDone += m.listeAnnales.filter(a => a.nombrePratiques > 0).length; }
             total += mTotal;
             done += mDone;
             if (mTotal > 0) perMatiere.push({ nom: m.nom, total: mTotal, done: mDone, percent: Math.round((mDone/mTotal)*100) });

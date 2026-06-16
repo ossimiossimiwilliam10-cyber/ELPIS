@@ -54,6 +54,11 @@ function GlobalSearchModal() {
                 res.push({ type: 'TP', titre: tp.titre, matiere: m.nom, lIndex, sIndex, uIndex, mIndex, itemIndex: tpIndex });
               }
             });
+            m.listeAnnales?.forEach((annale, aIndex) => {
+              if (annale.titre.toLowerCase().includes(lowerQ) || (annale.notes && annale.notes.toLowerCase().includes(lowerQ))) {
+                res.push({ type: 'ANNALE', titre: annale.titre, matiere: m.nom, lIndex, sIndex, uIndex, mIndex, itemIndex: aIndex });
+              }
+            });
           });
         });
       });

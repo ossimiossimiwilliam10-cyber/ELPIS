@@ -171,6 +171,37 @@ export default function MatiereCard({
         </div>
       ))}
       
+      {/* --- ANNALES --- */}
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
+        <span style={{fontSize:'0.9rem', color:'#ef4444'}}>{matiere.listeAnnales?.length || 0} Annales</span>
+        <div style={{display:'flex', gap:'0.5rem'}}>
+          <button onClick={() => actions.addAnnaleManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'#ef4444', border:'1px solid rgba(239, 68, 68, 0.4)'}}>+ Manuel</button>
+        </div>
+      </div>
+      {matiere.listeAnnales?.map((annale, aIndex) => (
+        <div key={`annale-${aIndex}`} className="annale-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(239, 68, 68, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
+          <button onClick={() => actions.deleteAnnale(lIndex, sIndex, uIndex, mIndex, aIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+            <EditableLabel
+              value={annale.titre}
+              onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'titre'], v)}
+              placeholder="Nom de l'annale"
+              style={{fontSize:'0.85rem'}}
+            />
+            <EditableNote 
+              value={annale.notes} 
+              onClick={() => setModalConfig({
+                isOpen: true,
+                title: `Notes Annale : ${annale.titre}`,
+                initialValue: annale.notes,
+                onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'notes'], v)
+              })}
+              placeholder="+ Ajouter une note (markdown supporté)" 
+            />
+          </div>
+        </div>
+      ))}
+      
     </div>
   );
 }

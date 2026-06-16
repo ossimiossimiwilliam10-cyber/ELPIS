@@ -279,6 +279,13 @@ function AppInner() {
                       setConfig(newConf);
                     }} style={{width:'100%'}}/>
                   </div>
+                  <div>
+                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Annales (Examens) :</label>
+                    <input type="number" min="5" value={config.defaultDurationAnnales || 60} onChange={e => {
+                      const newConf = {...config, defaultDurationAnnales: parseInt(e.target.value) || 60};
+                      setConfig(newConf);
+                    }} style={{width:'100%'}}/>
+                  </div>
                 </div>
 
 

@@ -20,42 +20,45 @@ function getDayOfWeekString() {
  * 15-30 days → 1.2x
  * >30 days  → 1.0x (no boost)
  */
-function buildExamUrgencyMap(subjects) {
+function buildExamUrgencyMap(crs) {
   const map = {};
-  if (!subjects || !Array.isArray(subjects)) return map;
+  if (!crs || !crs.licences) return map;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  for (const subj of subjects) {
-    if (!subj.name || !subj.examDates || subj.examDates.length === 0) continue;
+  for (const l of (crs.licences || [])) {
+    for (const s of (l.semestres || [])) {
+      for (const ue of (s.ues || [])) {
+        for (const subj of (ue.matieres || [])) {
+          if (!subj.nom || !subj.examDates || subj.examDates.length === 0) continue;
 
-    // Find the nearest upcoming exam date (format DD-MM-YYYY)
-    let minDays = Infinity;
-    for (const raw of subj.examDates) {
-      if (!raw) continue;
-      // Parse DD-MM-YYYY
-      const parts = raw.split('-');
-      if (parts.length !== 3) continue;
-      const examDate = new Date(parts[2], parts[1] - 1, parts[0]);
-      if (isNaN(examDate.getTime())) continue;
-      const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-      if (diffDays >= 0 && diffDays < minDays) {
-        minDays = diffDays;
+          let minDays = Infinity;
+          for (const raw of subj.examDates) {
+            if (!raw) continue;
+            const parts = raw.split('-');
+            if (parts.length !== 3) continue;
+            const examDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            if (isNaN(examDate.getTime())) continue;
+            const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+            if (diffDays >= 0 && diffDays < minDays) {
+              minDays = diffDays;
+            }
+          }
+
+          if (minDays === Infinity) continue;
+
+          let multiplier = 1.0;
+          if (minDays <= 3) multiplier = 3.0;
+          else if (minDays <= 7) multiplier = 2.0;
+          else if (minDays <= 14) multiplier = 1.5;
+          else if (minDays <= 30) multiplier = 1.2;
+
+          const key = subj.nom.toLowerCase().trim();
+          map[key] = { multiplier, daysToExam: minDays };
+        }
       }
     }
-
-    if (minDays === Infinity) continue;
-
-    let multiplier = 1.0;
-    if (minDays <= 3) multiplier = 3.0;
-    else if (minDays <= 7) multiplier = 2.0;
-    else if (minDays <= 14) multiplier = 1.5;
-    else if (minDays <= 30) multiplier = 1.2;
-
-    // Use lowercase key for fuzzy matching
-    const key = subj.name.toLowerCase().trim();
-    map[key] = multiplier;
   }
   return map;
 }
@@ -91,18 +94,22 @@ function getPrioScore(ex, examUrgencyMap, matiereNom) {
 }
 
 function getSubjectExamBoost(matiere, examUrgencyMap) {
-  if (!matiere || !matiere.nom) return 1.0;
+  if (!matiere || !matiere.nom) return { boost: 1.0, daysToExam: Infinity };
   
   const coeff = matiere.coefficient || 1.0;
   const matiereKey = matiere.nom.toLowerCase().trim();
   
   let baseBoost = 1.0;
+  let daysToExam = Infinity;
+
   if (examUrgencyMap[matiereKey] !== undefined) {
-    baseBoost = examUrgencyMap[matiereKey];
+    baseBoost = examUrgencyMap[matiereKey].multiplier;
+    daysToExam = examUrgencyMap[matiereKey].daysToExam;
   } else {
-    for (const [subjKey, mult] of Object.entries(examUrgencyMap)) {
+    for (const [subjKey, data] of Object.entries(examUrgencyMap)) {
       if (matiereKey.includes(subjKey) || subjKey.includes(matiereKey)) {
-        baseBoost = mult;
+        baseBoost = data.multiplier;
+        daysToExam = data.daysToExam;
         break;
       }
     }
@@ -115,7 +122,7 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
   }
   
   // Bonus basique proportionnel au coeff pour prioriser les gros coeff
-  return baseBoost * (1.0 + (coeff - 1) * 0.1);
+  return { boost: baseBoost * (1.0 + (coeff - 1) * 0.1), daysToExam };
 }
 
 function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
@@ -123,7 +130,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   const crs = loadCours(coursPath);
   const rapport = {};
 
-  const examUrgencyMap = buildExamUrgencyMap(cfg.subjects);
+  const examUrgencyMap = buildExamUrgencyMap(crs);
 
   // 1. Calculate available time
   const heuresTravailJour = Math.max(1, cfg.maxStudyHoursPerDay || 8);
@@ -167,6 +174,12 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
               tempsDejaTravailleMin += tp.tempsMoyen ? tp.tempsMoyen : (dureeBase * getDifficultyMultiplier(tp.difficulte));
             }
           }
+          for (const annale of (m.listeAnnales || [])) {
+            if (annale.dernierePratique === todayStr) {
+              const dureeBase = cfg.defaultDurationAnnales || 60;
+              tempsDejaTravailleMin += annale.tempsMoyen ? annale.tempsMoyen : (dureeBase * getDifficultyMultiplier(annale.difficulte));
+            }
+          }
         }
       }
     }
@@ -196,6 +209,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   const poolCM = [];
   const poolTD = [];
   const poolTP = [];
+  const poolAnnales = [];
 
   // 2. Scan courses and populate pools
   for (const l of (crs.licences || [])) {
@@ -203,7 +217,9 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
       let matiereIndexDansSemestre = 0;
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
-          const examBoost = getSubjectExamBoost(m, examUrgencyMap);
+          const examData = getSubjectExamBoost(m, examUrgencyMap);
+          const examBoost = examData.boost;
+          const daysToExam = examData.daysToExam;
 
           // --- CM logic ---
           for (const cm of (m.listeCM || [])) {
@@ -291,12 +307,32 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
               prio: getPrioScore(ex, examUrgencyMap, m.nom)
             });
           }
+
+          // --- Annales logic ---
+          if (daysToExam <= 28) {
+            const annales = (m.listeAnnales || []).filter(ex => ex.dernierePratique !== todayStr);
+            for (const ex of annales) {
+              const dureeBase = cfg.defaultDurationAnnales || 60;
+              const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+              poolAnnales.push({
+                matiere: m.nom,
+                type: "ANNALE",
+                titre: ex.titre,
+                dureeMinutes: Math.round(dureeEstimee),
+                pdfSource: ex.pdfSource || "",
+                page: ex.page || 1,
+                difficulte: ex.difficulte || "",
+                prio: 9999
+              });
+            }
+          }
         }
       }
     }
   }
 
   // 3. Trier par priorité décroissante
+  poolAnnales.sort((a, b) => b.prio - a.prio);
   poolCM.sort((a, b) => b.prio - a.prio);
   poolTD.sort((a, b) => b.prio - a.prio);
   poolTP.sort((a, b) => b.prio - a.prio);
@@ -304,14 +340,28 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   // 4. Ordonnancement Adaptatif
   const taches = [];
   let tempsRequisMin = 0;
-  let tempsPotentielTotal = poolCM.reduce((acc, t) => acc + t.dureeMinutes, 0) + 
+  let tempsPotentielTotal = poolAnnales.reduce((acc, t) => acc + t.dureeMinutes, 0) +
+                            poolCM.reduce((acc, t) => acc + t.dureeMinutes, 0) + 
                             poolTD.reduce((acc, t) => acc + t.dureeMinutes, 0) + 
                             poolTP.reduce((acc, t) => acc + t.dureeMinutes, 0);
 
+  const subjectAnnaleCount = {};
   const subjectTDCount = {};
   const subjectTPCount = {};
 
-  // Ajouter CMs d'abord (Priorité absolue)
+  // Ajouter Annales d'abord (Priorité super absolue)
+  for (const annale of poolAnnales) {
+    if (tempsRequisMin + annale.dureeMinutes <= tempsLibreMin) {
+      const count = subjectAnnaleCount[annale.matiere] || 0;
+      if (count < 1) { // 1 annale max par matière par jour
+        taches.push(annale);
+        tempsRequisMin += annale.dureeMinutes;
+        subjectAnnaleCount[annale.matiere] = count + 1;
+      }
+    }
+  }
+
+  // Ajouter CMs (Priorité absolue)
   for (const cm of poolCM) {
     if (tempsRequisMin + cm.dureeMinutes <= tempsLibreMin) {
       taches.push(cm);

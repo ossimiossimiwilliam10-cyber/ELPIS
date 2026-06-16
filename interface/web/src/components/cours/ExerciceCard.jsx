@@ -40,7 +40,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
       exit="exit"
       layout
       className="card glass-panel" 
-      style={{borderTop:`4px solid ${exo.type==='TD' ? '#34D399' : exo.type==='CM' ? '#3b82f6' : '#FBBF24'}`, position: 'relative'}}
+      style={{borderTop:`4px solid ${exo.type==='TD' ? '#34D399' : exo.type==='CM' ? '#3b82f6' : exo.type==='ANNALE' ? '#ef4444' : '#FBBF24'}`, position: 'relative'}}
     >
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem'}}>
         <div style={{display:'flex', gap:'0.5rem', alignItems:'center'}}>

@@ -58,6 +58,7 @@ function CoursPage() {
     if (m.listeCM?.some(cm => matchesSearch(cm.titre) || matchesSearch(cm.notes))) return true;
     if (m.listeTD?.some(td => matchesSearch(td.titre) || matchesSearch(td.notes))) return true;
     if (m.listeTP?.some(tp => matchesSearch(tp.titre) || matchesSearch(tp.notes))) return true;
+    if (m.listeAnnales?.some(annale => matchesSearch(annale.titre) || matchesSearch(annale.notes))) return true;
     return false;
   };
   const semestreMatchesSearch = (semestre) => matchesSearch(semestre.nom) || semestre.ues?.some(ue => ueMatchesSearch(ue));
@@ -157,7 +158,7 @@ function CoursPage() {
   const addMatiere = (lIndex, sIndex, uIndex) => {
     setConfigLocal(prev => {
       const newConf = deepClone(prev);
-      const newMatiere = { nom: "Nouvelle Matière", listeCM: [], listeTD: [], listeTP: [] };
+      const newMatiere = { nom: "Nouvelle Matière", listeCM: [], listeTD: [], listeTP: [], listeAnnales: [] };
       if(!newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres) newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres = [];
       newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres.push(newMatiere);
       setCoursConfig(newConf);
@@ -237,6 +238,28 @@ function CoursPage() {
       setConfigLocal(prev => {
         const newConf = deepClone(prev);
         newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.splice(tpIndex, 1);
+        setCoursConfig(newConf);
+        return newConf;
+      });
+    }
+  };
+
+  const addAnnaleManuel = (lIndex, sIndex, uIndex, mIndex) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      const m = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
+      if(!m.listeAnnales) m.listeAnnales = [];
+      m.listeAnnales.push({ titre: "Nouvelle Annale", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      setCoursConfig(newConf);
+      return newConf;
+    });
+  };
+
+  const deleteAnnale = (lIndex, sIndex, uIndex, mIndex, annaleIndex) => {
+    if (window.confirm("Supprimer cette Annale ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeAnnales.splice(annaleIndex, 1);
         setCoursConfig(newConf);
         return newConf;
       });
@@ -430,6 +453,8 @@ function CoursPage() {
                                 deleteTD,
                                 addTPManuel,
                                 deleteTP,
+                                addAnnaleManuel,
+                                deleteAnnale,
                                 setModalConfig,
                                 getNextReviewDate,
                                 setConfigLocal,

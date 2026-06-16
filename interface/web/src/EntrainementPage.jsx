@@ -206,9 +206,10 @@ function EntrainementPage() {
     const todayStr = new Date().toISOString().split('T')[0];
     const newConf = JSON.parse(JSON.stringify(configLocal));
     
-    const targetList = exo.type === 'TD' 
-        ? newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD 
-        : newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
+    let targetList;
+    if (exo.type === 'TD') targetList = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
+    else if (exo.type === 'TP') targetList = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
+    else if (exo.type === 'ANNALE') targetList = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeAnnales;
 
     const currentExo = targetList[exo.exIndex];
     currentExo.dernierePratique = todayStr;
@@ -226,7 +227,7 @@ function EntrainementPage() {
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: exo.type === 'TD' ? ['#34D399', '#ffffff'] : ['#FBBF24', '#ffffff']
+      colors: exo.type === 'TD' ? ['#34D399', '#ffffff'] : exo.type === 'TP' ? ['#FBBF24', '#ffffff'] : ['#ef4444', '#ffffff']
     });
 
     setConfigLocal(newConf);

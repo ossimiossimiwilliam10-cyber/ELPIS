@@ -24,7 +24,8 @@ const DEFAULT_CONFIG = {
   defaultDurationNewCM: 120,
   defaultDurationRevCM: 30,
   defaultDurationTD: 20,
-  defaultDurationTP: 30
+  defaultDurationTP: 30,
+  defaultDurationAnnales: 60
 };
 
 function sanitize(c) {
@@ -39,6 +40,7 @@ function sanitize(c) {
   c.defaultDurationRevCM = Math.max(5, c.defaultDurationRevCM ?? 30);
   c.defaultDurationTD = Math.max(5, c.defaultDurationTD ?? 20);
   c.defaultDurationTP = Math.max(5, c.defaultDurationTP ?? 30);
+  c.defaultDurationAnnales = Math.max(5, c.defaultDurationAnnales ?? 60);
   
   if (c.theme !== "light" && c.theme !== "dark") c.theme = "dark";
   
