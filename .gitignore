@@ -1,15 +1,21 @@
-# Fichiers de compilation
-build/
-*.exe
-*.o
-
-# Fichiers de configuration générés localement (pour ne pas écraser les données des autres en équipe)
-*config.json
-
-# Dépendances Node (pour la future interface)
+# Dépendances
 node_modules/
+
+# Environnement
 .env
 
-# Données personnelles (PDFs et suivi)
-fiches_revision/
+# Fichiers de données personnelles (générés localement)
 espoir_cours.json
+espoir_config.json
+espoir_historique.json
+
+# PDFs uploadés
+fiches_revision/
+
+# Archives de développement
+plans_historique/
+rapports_analyse/
+
+# Scripts de déploiement locaux
+start_elpis.bat
+Lancer ELPIS.vbs

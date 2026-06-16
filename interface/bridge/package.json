@@ -1,12 +1,13 @@
 {
-  "name": "bridge",
+  "name": "elpis-bridge",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "ELPIS — Bridge API entre le frontend React et le moteur d'étude",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "echo \"No tests yet\" && exit 0"
   },
-  "keywords": [],
+  "keywords": ["study", "spaced-repetition", "education"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

@@ -10,7 +10,7 @@ const { loadCours, saveCours } = require('./moteur/cours');
 const { genererRapportQuotidien } = require('./moteur/orchestrateur');
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -201,17 +201,31 @@ app.post('/api/scan-pdf', uploadPdf, async (req, res) => {
     const pdfData = await pdfParse(pdfBuffer, { pagerender: render_page });
 
     let exercises = [];
+    const pdfName = req.file.originalname.replace(/\.pdf$/i, '');
     pagesText.forEach((pageText, index) => {
       const patterns = [
-        /(?:exercice|exercise|ex\.?|exo)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
-        /(?:probl[eè]me|problem|prob|pb)[\s.:]*(?:set)?\s*(\d+(?:[.\-]\d+)?)/gi,
-        /(?:question)[\s.:]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi
+        // French/English exercise markers
+        /(?:exercice|exercise|ex\.?|exo)[\s.:\-]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+        // Problems
+        /(?:probl[eè]me|problem|prob|pb)[\s.:\-]*(?:set)?\s*(\d+(?:[.\-]\d+)?)/gi,
+        // Questions
+        /(?:question|q\.?)[\s.:\-]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+        // Numbered items at start of lines (likely exercises)
+        /(?:^|\n)\s*(\d{1,3})\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm,
+        // French: "Série", "Application", "Entraînement", "TD"
+        /(?:s[eé]rie|application|entra[îi]nement|td|tp)[\s.:\-]*(?:n[°º]|#)?\s*(\d+(?:[.\-]\d+)?)/gi,
+        // Roman numerals with text (I., II., etc.)
+        /(?:^|\n)\s*([IVX]{1,5})\s*[\.\-\)]\s+[A-ZÀ-Ú]/gm
       ];
       
-      patterns.forEach(regex => {
+      patterns.forEach((regex, patIdx) => {
         let match;
         while ((match = regex.exec(pageText)) !== null) {
-          const titre = match[0].trim().replace(/[\s.:]+$/, '');
+          // For roman numerals, skip if it's just "I" as a word
+          const titreRaw = match[0].trim().replace(/[\s.:\-]+$/, '');
+          const titre = patIdx === 5 ? `Partie ${titreRaw}` : titreRaw;
+          // Skip very short titles (just a number)
+          if (titre.length < 3) continue;
           if (!exercises.find(e => e.titre.toLowerCase() === titre.toLowerCase() && e.page === index + 1)) {
             exercises.push({
               titre: titre,
@@ -227,9 +241,20 @@ app.post('/api/scan-pdf', uploadPdf, async (req, res) => {
       });
     });
 
+    // Deduplicate: keep only the most descriptive title per page
+    const deduped = [];
+    const seen = new Set();
+    for (const ex of exercises) {
+      const key = `${ex.page}|${ex.titre.toLowerCase()}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        deduped.push(ex);
+      }
+    }
+    exercises = deduped;
+
     // Fallback: one exercise per page
     if (exercises.length === 0 && pagesText.length > 0) {
-      const pdfName = req.file.originalname.replace(/\.pdf$/i, '');
       for (let i = 0; i < pagesText.length; i++) {
         exercises.push({
           titre: `${pdfName} - Page ${i + 1}`,
@@ -243,7 +268,13 @@ app.post('/api/scan-pdf', uploadPdf, async (req, res) => {
       }
     }
 
-    res.json({ success: true, url: fileUrl, exercises, totalPages: pdfData.numpages || pagesText.length });
+    // Build page previews (first 180 chars of each page)
+    const pages = pagesText.map((text, idx) => ({
+      page: idx + 1,
+      preview: text.substring(0, 180).trim()
+    }));
+
+    res.json({ success: true, url: fileUrl, exercises, pages, totalPages: pdfData.numpages || pagesText.length });
   } catch (err) {
     console.error("Erreur scan PDF:", err);
     res.status(500).json({ error: "Erreur scan PDF: " + err.message });

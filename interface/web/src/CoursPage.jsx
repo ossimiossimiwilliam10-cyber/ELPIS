@@ -61,6 +61,7 @@ function CoursPage() {
   const [activeSemestreIndex, setActiveSemestreIndex] = useState(0);
   const [collapsedUEs, setCollapsedUEs] = useState({});
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', initialValue: '', onSave: null });
+  const [scanReview, setScanReview] = useState(null); // { exercises, pages, lIndex, sIndex, uIndex, mIndex, type }
 
   const toggleUE = (lIndex, sIndex, uIndex) => {
     const key = `${lIndex}-${sIndex}-${uIndex}`;
@@ -311,21 +312,13 @@ function CoursPage() {
       const res = await fetch('/api/scan-pdf', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success && data.exercises) {
-        setConfigLocal(prev => {
-          const newConf = deepClone(prev);
-          const m = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
-          if (type === 'TD') {
-            if (!m.listeTD) m.listeTD = [];
-            m.listeTD.push(...data.exercises);
-          } else if (type === 'TP') {
-            if (!m.listeTP) m.listeTP = [];
-            m.listeTP.push(...data.exercises);
-          }
-          
-          setCoursConfig(newConf);
-          return newConf;
+        // Open scan review modal instead of blindly adding
+        setScanReview({
+          exercises: data.exercises,
+          pages: data.pages || [],
+          lIndex, sIndex, uIndex, mIndex, type,
+          pdfName: file.name.replace(/\.pdf$/i, '')
         });
-        alert(`${data.exercises.length} exercices trouvés et ajoutés !`);
       } else {
         alert("Erreur serveur : " + data.error);
       }
@@ -678,6 +671,154 @@ function CoursPage() {
         onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
         onSave={modalConfig.onSave}
       />
+
+      {/* Scan Review Modal */}
+      <AnimatePresence>
+        {scanReview && (
+          <motion.div
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setScanReview(null)}
+            style={{position:'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000}}
+          >
+            <motion.div
+              className="modal-content glass-panel"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{maxWidth:'700px', width:'95%', maxHeight:'85vh', overflow:'auto', padding:'1.5rem', borderRadius:'12px'}}
+            >
+              <h2 style={{marginBottom:'0.5rem'}}>Exercices détectés — {scanReview.pdfName}</h2>
+              <p style={{color:'var(--text-secondary)', marginBottom:'1rem', fontSize:'0.9rem'}}>
+                {scanReview.exercises.length} exercice(s) trouvé(s). Vérifie, renomme ou supprime avant d'ajouter.
+              </p>
+
+              {/* Quick actions */}
+              <div style={{display:'flex', gap:'0.5rem', marginBottom:'1rem', flexWrap:'wrap'}}>
+                <button
+                  className="btn-secondary"
+                  onClick={() => {
+                    const newEx = [...scanReview.exercises];
+                    const lastPage = newEx.length > 0 ? Math.max(...newEx.map(e => e.page)) : 0;
+                    newEx.push({
+                      titre: `${scanReview.pdfName} - Page ${lastPage + 1}`,
+                      page: lastPage + 1,
+                      pdfSource: scanReview.exercises[0]?.pdfSource || '',
+                      dernierePratique: '',
+                      nombrePratiques: 0,
+                      difficulte: '',
+                      notes: ''
+                    });
+                    setScanReview({...scanReview, exercises: newEx});
+                  }}
+                  style={{fontSize:'0.8rem', padding:'0.35rem 0.8rem'}}
+                >+ Manuel</button>
+                <span style={{color:'var(--text-secondary)', fontSize:'0.75rem', display:'flex', alignItems:'center'}}>
+                  {scanReview.pages?.length || 0} page(s) scannée(s)
+                </span>
+              </div>
+
+              {/* Exercise list */}
+              <div style={{maxHeight:'50vh', overflowY:'auto', marginBottom:'1rem'}}>
+                {scanReview.exercises.map((ex, idx) => {
+                  const pagePreview = scanReview.pages?.find(p => p.page === ex.page);
+                  return (
+                    <div key={idx} style={{
+                      display:'flex', gap:'0.5rem', alignItems:'flex-start',
+                      background:'rgba(255,255,255,0.03)', padding:'0.6rem', borderRadius:'6px',
+                      marginBottom:'0.4rem', flexWrap:'wrap'
+                    }}>
+                      <span style={{color:'var(--text-secondary)', fontSize:'0.75rem', minWidth:'28px', paddingTop:'0.3rem'}}>
+                        p.{ex.page}
+                      </span>
+                      <input
+                        type="text"
+                        value={ex.titre}
+                        onChange={e => {
+                          const newEx = [...scanReview.exercises];
+                          newEx[idx] = {...newEx[idx], titre: e.target.value};
+                          setScanReview({...scanReview, exercises: newEx});
+                        }}
+                        style={{flex:1, minWidth:'120px', fontSize:'0.85rem'}}
+                      />
+                      <select
+                        value={ex.difficulte || ''}
+                        onChange={e => {
+                          const newEx = [...scanReview.exercises];
+                          newEx[idx] = {...newEx[idx], difficulte: e.target.value};
+                          setScanReview({...scanReview, exercises: newEx});
+                        }}
+                        style={{width:'100px', fontSize:'0.8rem'}}
+                      >
+                        <option value="">Difficulté</option>
+                        <option value="tres_facile">Très facile</option>
+                        <option value="facile">Facile</option>
+                        <option value="moyen">Moyen</option>
+                        <option value="assez_difficile">Assez difficile</option>
+                        <option value="difficile">Difficile</option>
+                      </select>
+                      <button
+                        onClick={() => {
+                          const newEx = scanReview.exercises.filter((_, i) => i !== idx);
+                          setScanReview({...scanReview, exercises: newEx});
+                        }}
+                        style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--danger-color)', padding:'0.3rem'}}
+                        title="Supprimer"
+                      >✕</button>
+                      {pagePreview && (
+                        <div style={{width:'100%', fontSize:'0.7rem', color:'var(--text-secondary)', background:'rgba(0,0,0,0.2)', padding:'0.3rem 0.5rem', borderRadius:'4px', marginTop:'0.2rem', fontStyle:'italic', maxHeight:'2.5em', overflow:'hidden'}}>
+                          {pagePreview.preview}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                {scanReview.exercises.length === 0 && (
+                  <div style={{textAlign:'center', color:'var(--text-secondary)', padding:'2rem'}}>
+                    Aucun exercice. Clique sur "+ Manuel" pour en ajouter, ou ferme.
+                  </div>
+                )}
+              </div>
+
+              {/* Buttons */}
+              <div style={{display:'flex', gap:'1rem', justifyContent:'flex-end', borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:'1rem'}}>
+                <button
+                  className="btn-secondary"
+                  onClick={() => setScanReview(null)}
+                >Annuler</button>
+                <button
+                  className="btn-primary"
+                  onClick={() => {
+                    const { exercises, lIndex, sIndex, uIndex, mIndex, type } = scanReview;
+                    if (exercises.length === 0) {
+                      setScanReview(null);
+                      return;
+                    }
+                    const newConf = deepClone(configLocal);
+                    const m = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
+                    if (type === 'TD') {
+                      if (!m.listeTD) m.listeTD = [];
+                      m.listeTD.push(...exercises);
+                    } else if (type === 'TP') {
+                      if (!m.listeTP) m.listeTP = [];
+                      m.listeTP.push(...exercises);
+                    }
+                    setConfigLocal(newConf);
+                    setCoursConfig(newConf);
+                    setScanReview(null);
+                  }}
+                  style={{background:'var(--accent-primary)', color:'white', border:'none', padding:'0.6rem 1.5rem', borderRadius:'8px', cursor:'pointer', fontWeight:'bold'}}
+                >
+                  Ajouter {scanReview.exercises.length} exercice(s)
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

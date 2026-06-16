@@ -40,5 +40,12 @@
         "matiere": "Architecture des systèmes d'exploitation",
         "action": "Terminé",
         "timestamp": "2026-06-15T10:51:23.616Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 1 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-15T11:29:07.768Z"
     }
 ]

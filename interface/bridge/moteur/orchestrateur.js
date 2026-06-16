@@ -13,15 +13,80 @@ function getDayOfWeekString() {
 }
 
 /**
- * Priority score for exercises: combines practice count + difficulty.
+ * Build a map of subject name → urgency multiplier based on exam proximity.
+ *  0-3 days  → 3.0x
+ *  4-7 days  → 2.0x
+ *  8-14 days → 1.5x
+ * 15-30 days → 1.2x
+ * >30 days  → 1.0x (no boost)
+ */
+function buildExamUrgencyMap(subjects) {
+  const map = {};
+  if (!subjects || !Array.isArray(subjects)) return map;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (const subj of subjects) {
+    if (!subj.name || !subj.examDates || subj.examDates.length === 0) continue;
+
+    // Find the nearest upcoming exam date (format DD-MM-YYYY)
+    let minDays = Infinity;
+    for (const raw of subj.examDates) {
+      if (!raw) continue;
+      // Parse DD-MM-YYYY
+      const parts = raw.split('-');
+      if (parts.length !== 3) continue;
+      const examDate = new Date(parts[2], parts[1] - 1, parts[0]);
+      if (isNaN(examDate.getTime())) continue;
+      const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+      if (diffDays >= 0 && diffDays < minDays) {
+        minDays = diffDays;
+      }
+    }
+
+    if (minDays === Infinity) continue;
+
+    let multiplier = 1.0;
+    if (minDays <= 3) multiplier = 3.0;
+    else if (minDays <= 7) multiplier = 2.0;
+    else if (minDays <= 14) multiplier = 1.5;
+    else if (minDays <= 30) multiplier = 1.2;
+
+    // Use lowercase key for fuzzy matching
+    const key = subj.name.toLowerCase().trim();
+    map[key] = multiplier;
+  }
+  return map;
+}
+
+/**
+ * Priority score for exercises: combines practice count + difficulty + exam urgency.
  * Higher score = more urgent.
  */
-function getPrioScore(ex) {
+function getPrioScore(ex, examUrgencyMap, matiereNom) {
   let base = 1.0 / ((ex.nombrePratiques || 0) + 1.0);
   if (ex.difficulte === 'difficile') base *= 2.0;
   else if (ex.difficulte === 'assez_difficile') base *= 1.5;
   else if (ex.difficulte === 'facile') base *= 0.7;
   else if (ex.difficulte === 'tres_facile') base *= 0.5;
+
+  // Exam urgency boost: match subject by fuzzy name
+  if (examUrgencyMap && matiereNom) {
+    const matiereKey = matiereNom.toLowerCase().trim();
+    // Try exact match first, then partial (subject name contained in matiere name or vice versa)
+    let boost = examUrgencyMap[matiereKey];
+    if (boost === undefined) {
+      for (const [subjKey, mult] of Object.entries(examUrgencyMap)) {
+        if (matiereKey.includes(subjKey) || subjKey.includes(matiereKey)) {
+          boost = mult;
+          break;
+        }
+      }
+    }
+    if (boost) base *= boost;
+  }
+
   return base;
 }
 
@@ -29,6 +94,9 @@ function genererRapportQuotidien(configPath, coursPath) {
   const cfg = loadConfig(configPath);
   const crs = loadCours(coursPath);
   const rapport = {};
+
+  // 0. Build exam urgency map from config subjects
+  const examUrgencyMap = buildExamUrgencyMap(cfg.subjects);
 
   // 1. Calculate available time
   const heuresTravailJour = Math.max(1, cfg.maxStudyHoursPerDay || 8);
@@ -114,7 +182,7 @@ function genererRapportQuotidien(configPath, coursPath) {
         const tds = (m.listeTD || [])
           .filter(ex => ex.dernierePratique !== todayStr)
           .sort((a, b) => {
-            const pa = getPrioScore(a), pb = getPrioScore(b);
+            const pa = getPrioScore(a, examUrgencyMap, m.nom), pb = getPrioScore(b, examUrgencyMap, m.nom);
             if (Math.abs(pa - pb) > 0.0001) return pb - pa; // descending priority
             return (a.dernierePratique || "0000").localeCompare(b.dernierePratique || "0000");
           });
@@ -141,7 +209,7 @@ function genererRapportQuotidien(configPath, coursPath) {
         const tps = (m.listeTP || [])
           .filter(ex => ex.dernierePratique !== todayStr)
           .sort((a, b) => {
-            const pa = getPrioScore(a), pb = getPrioScore(b);
+            const pa = getPrioScore(a, examUrgencyMap, m.nom), pb = getPrioScore(b, examUrgencyMap, m.nom);
             if (Math.abs(pa - pb) > 0.0001) return pb - pa;
             return (a.dernierePratique || "0000").localeCompare(b.dernierePratique || "0000");
           });

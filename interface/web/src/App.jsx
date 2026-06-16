@@ -109,6 +109,51 @@ function AppInner() {
 
 
 
+  // --- Subjects (Sujets à étudier avec dates d'examens) ---
+  const addSubject = () => {
+    const newConf = { ...config };
+    if (!newConf.subjects) newConf.subjects = [];
+    newConf.subjects.push({
+      name: "Nouvelle Matière",
+      color: "#3B82F6",
+      examDates: []
+    });
+    setConfig(newConf);
+  };
+
+  const removeSubject = (index) => {
+    if (window.confirm("Supprimer cette matière ?")) {
+      const newConf = { ...config };
+      newConf.subjects.splice(index, 1);
+      setConfig(newConf);
+    }
+  };
+
+  const updateSubject = (index, field, value) => {
+    const newConf = { ...config };
+    newConf.subjects[index][field] = value;
+    setConfig(newConf);
+  };
+
+  const addExamDate = (subjectIndex) => {
+    const newConf = { ...config };
+    if (!newConf.subjects[subjectIndex].examDates) newConf.subjects[subjectIndex].examDates = [];
+    newConf.subjects[subjectIndex].examDates.push("");
+    setConfig(newConf);
+  };
+
+  const updateExamDate = (subjectIndex, dateIndex, value) => {
+    const newConf = { ...config };
+    newConf.subjects[subjectIndex].examDates[dateIndex] = value;
+    setConfig(newConf);
+  };
+
+  const removeExamDate = (subjectIndex, dateIndex) => {
+    const newConf = { ...config };
+    newConf.subjects[subjectIndex].examDates.splice(dateIndex, 1);
+    setConfig(newConf);
+  };
+
   const addFixedCommitment = () => {
     const newConf = { ...config };
     if (!newConf.fixedCommitments) newConf.fixedCommitments = [];
@@ -332,6 +377,98 @@ function AppInner() {
                       min="1" max="60"
                     />
                   </div>
+                </div>
+
+                {/* Section Matières avec Dates d'Examen */}
+                <h2 style={{marginBottom:'1rem', borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem'}}>Matières & Dates d'Examens</h2>
+                <p style={{color:'var(--text-secondary)', marginBottom:'1.5rem'}}>
+                  Enregistre tes matières et leurs dates d'examens. L'orchestrateur augmentera automatiquement la priorité des matières dont l'examen approche.
+                </p>
+
+                <div style={{marginBottom:'2rem'}}>
+                  <AnimatePresence>
+                    {config.subjects?.map((subject, sIndex) => {
+                      // Countdown to nearest exam
+                      let countdown = null;
+                      if (subject.examDates && subject.examDates.length > 0) {
+                        const today = new Date(); today.setHours(0,0,0,0);
+                        const upcoming = subject.examDates
+                          .filter(d => d)
+                          .map(d => new Date(d.split('-').reverse().join('-') + 'T00:00:00'))
+                          .filter(d => !isNaN(d.getTime()) && d >= today)
+                          .sort((a,b) => a - b);
+                        if (upcoming.length > 0) {
+                          const diff = Math.ceil((upcoming[0] - today) / (1000 * 60 * 60 * 24));
+                          countdown = diff === 0 ? "Aujourd'hui !" : diff === 1 ? "Demain !" : `${diff} jours`;
+                        }
+                      }
+
+                      return (
+                        <motion.div
+                          key={sIndex}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          style={{display:'flex', gap:'0.75rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', marginBottom:'0.75rem', flexWrap:'wrap'}}
+                        >
+                          <button onClick={() => removeSubject(sIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--danger-color)', padding:0}} title="Supprimer">X</button>
+
+                          <input
+                            type="color"
+                            value={subject.color || '#3B82F6'}
+                            onChange={e => updateSubject(sIndex, 'color', e.target.value)}
+                            style={{width:'36px', height:'36px', border:'none', borderRadius:'50%', cursor:'pointer', padding:0, background:'transparent'}}
+                            title="Couleur de la matière"
+                          />
+
+                          <input
+                            type="text"
+                            value={subject.name}
+                            onChange={e => updateSubject(sIndex, 'name', e.target.value)}
+                            placeholder="Nom de la matière"
+                            style={{flex: '1 1 180px', fontWeight:'bold'}}
+                          />
+
+                          <div style={{display:'flex', flexDirection:'column', gap:'0.3rem', flex:'2 1 300px'}}>
+                            {(subject.examDates || []).map((date, dIndex) => (
+                              <div key={dIndex} style={{display:'flex', gap:'0.5rem', alignItems:'center'}}>
+                                <input
+                                  type="date"
+                                  value={date}
+                                  onChange={e => updateExamDate(sIndex, dIndex, e.target.value)}
+                                  style={{flex:1, fontSize:'0.85rem'}}
+                                />
+                                <button
+                                  onClick={() => removeExamDate(sIndex, dIndex)}
+                                  style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--danger-color)', fontSize:'0.8rem', padding:'2px 6px'}}
+                                  title="Supprimer cette date"
+                                >✕</button>
+                              </div>
+                            ))}
+                            <button
+                              onClick={() => addExamDate(sIndex)}
+                              style={{background:'transparent', border:'1px dashed var(--text-secondary)', color:'var(--text-secondary)', cursor:'pointer', fontSize:'0.75rem', padding:'4px 8px', borderRadius:'4px', alignSelf:'flex-start'}}
+                            >+ Ajouter une date d'examen</button>
+                          </div>
+
+                          {countdown && (
+                            <div style={{
+                              background: countdown.includes("Aujourd'hui") ? 'rgba(239,68,68,0.2)' : countdown === "Demain !" ? 'rgba(245,158,11,0.2)' : 'rgba(59,130,246,0.15)',
+                              color: countdown.includes("Aujourd'hui") ? '#ef4444' : countdown === "Demain !" ? '#F59E0B' : '#3B82F6',
+                              padding:'0.35rem 0.75rem',
+                              borderRadius:'20px',
+                              fontWeight:'bold',
+                              fontSize:'0.8rem',
+                              whiteSpace:'nowrap'
+                            }}>
+                              {countdown}
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                  <button className="btn-secondary" style={{marginTop:'0.5rem'}} onClick={addSubject}>+ Ajouter une Matière</button>
                 </div>
 
                 {/* Section Engagements Fixes */}
