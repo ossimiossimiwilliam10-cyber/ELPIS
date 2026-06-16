@@ -82,5 +82,33 @@
         "matiere": "Architecture des systèmes d'exploitation",
         "action": "Révisé (J1)",
         "timestamp": "2026-06-16T11:46:21.971Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 1 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T19:21:42.188Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 1 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T19:21:47.329Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 2 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+        "matiere": "Analyse",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T21:40:40.547Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 2 - page 2 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T21:54:24.250Z"
     }
 ]
