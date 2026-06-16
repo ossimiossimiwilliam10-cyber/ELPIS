@@ -232,7 +232,7 @@ function AppInner() {
                 <h2 style={{marginBottom:'2rem'}}>Preferences Generales</h2>
                 
                 <div style={{marginBottom:'1.5rem'}}>
-                  <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heures d'etude maximum par jour :</label>
+                  <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Objectif d'heures d'étude pour aujourd'hui :</label>
                   <input 
                     type="number" 
                     value={config.maxStudyHoursPerDay || 0}
@@ -244,22 +244,7 @@ function AppInner() {
                     min="0" max="24"
                     style={{width:'100%', maxWidth:'200px'}}
                   />
-                </div>
-                
-                <div style={{marginBottom:'1.5rem'}}>
-                  <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Heure de coucher :</label>
-                  <input 
-                    type="time" 
-                    step="60"
-                    value={config.bedtime || "23:00"}
-                    onChange={e => {
-                      const newConf = {...config};
-                      newConf.bedtime = e.target.value;
-                      setConfig(newConf);
-                    }}
-                    style={{width:'100%', maxWidth:'200px'}}
-                  />
-                  <small style={{display:'block', color:'var(--text-secondary)', marginTop:'0.5rem', fontSize:'0.8rem'}}>Format 24h enregistré en base (l'affichage dépend de votre système).</small>
+                  <small style={{display:'block', color:'var(--text-secondary)', marginTop:'0.5rem', fontSize:'0.8rem'}}>Le système déduira automatiquement le temps que tu as déjà passé à étudier aujourd'hui.</small>
                 </div>
 
 

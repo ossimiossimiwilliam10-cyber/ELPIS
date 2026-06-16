@@ -142,6 +142,36 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
 
   const todayStr = getTodayString();
   const now = new Date();
+
+  // 2. Calculer le temps déjà travaillé aujourd'hui
+  let tempsDejaTravailleMin = 0;
+  for (const l of (crs.licences || [])) {
+    for (const s of (l.semestres || [])) {
+      for (const ue of (s.ues || [])) {
+        for (const m of (ue.matieres || [])) {
+          for (const cm of (m.listeCM || [])) {
+            if (cm.derniereRevision === todayStr) {
+              tempsDejaTravailleMin += (cm.jActuel === 0) ? 120 : 30;
+            }
+          }
+          for (const td of (m.listeTD || [])) {
+            if (td.dernierePratique === todayStr) {
+              tempsDejaTravailleMin += 20;
+            }
+          }
+          for (const tp of (m.listeTP || [])) {
+            if (tp.dernierePratique === todayStr) {
+              tempsDejaTravailleMin += 30;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  tempsLibreMin -= tempsDejaTravailleMin;
+  if (tempsLibreMin < 0) tempsLibreMin = 0;
+
   // Base de parité : date de début d'étude (fallback au 1er janvier)
   const studyStartRaw = cfg.studyStartDate ? cfg.studyStartDate.split('-').reverse().join('-') : null;
   const studyStart = studyStartRaw ? new Date(studyStartRaw + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
