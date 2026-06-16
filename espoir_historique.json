@@ -75,5 +75,12 @@
         "matiere": "Architecture des systèmes d'exploitation",
         "action": "Révisé (J1)",
         "timestamp": "2026-06-16T09:53:31.067Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 2 : Codage de l'information et représentation des nombres",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Révisé (J1)",
+        "timestamp": "2026-06-16T11:46:21.971Z"
     }
 ]

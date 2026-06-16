@@ -53,9 +53,22 @@ const useStore = create((set, get) => ({
   loading: true,
   error: null,
   activeTab: 'dashboard',
+  pendingTasksCount: 0,
 
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
+
+  updatePendingTasksCount: async () => {
+    try {
+      const res = await fetch(`${API_URL}/orchestrateur?extraTime=0`);
+      if (res.ok) {
+        const data = await res.json();
+        set({ pendingTasksCount: data.tachesDuJour?.length || 0 });
+      }
+    } catch (e) {
+      console.error("Failed to update pending tasks count", e);
+    }
+  },
   
   // Fetch all initial data
   initData: async () => {
@@ -76,6 +89,8 @@ const useStore = create((set, get) => ({
 
       // Call streak check immediately after load
       get().checkStreak();
+      // Fetch accurate pending tasks count
+      get().updatePendingTasksCount();
 
     } catch (err) {
       set({ error: err.message, loading: false });
@@ -94,6 +109,8 @@ const useStore = create((set, get) => ({
   setCoursConfig: (newCours) => {
     set({ coursConfig: newCours });
     debouncedSaveCours(newCours);
+    // Refresh pending count since cours data changed
+    get().updatePendingTasksCount();
   },
 
   // Update history state and trigger auto-save

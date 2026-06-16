@@ -15,7 +15,7 @@ function AppInner() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const { addToast } = useToast();
   
-  const { config, coursConfig, loading, error, initData, setConfig, activeTab, setActiveTab } = useStore();
+  const { config, coursConfig, loading, error, initData, setConfig, activeTab, setActiveTab, pendingTasksCount } = useStore();
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -39,51 +39,6 @@ function AppInner() {
     if (error) addToast(error, 'error');
   }, [error, addToast]);
 
-  // Pending tasks count for sidebar badge
-  const pendingTasksCount = useMemo(() => {
-    if (!coursConfig) return 0;
-    let count = 0;
-    const today = new Date().toISOString().split('T')[0];
-    coursConfig.licences?.forEach(l => {
-      l.semestres?.forEach(s => {
-        s.ues?.forEach(u => {
-          u.matieres?.forEach(m => {
-            m.listeCM?.forEach(cm => {
-              if (!cm.derniereRevision) {
-                count++; // J0 : jamais révisé = en attente
-              } else if (cm.jActuel > 0) {
-                const nextDate = new Date(cm.derniereRevision);
-                nextDate.setDate(nextDate.getDate() + cm.jActuel);
-                if (nextDate.toISOString().split('T')[0] <= today) count++;
-              } else {
-                // J0 déjà révisé au moins une fois : compter si pas aujourd'hui
-                if (cm.derniereRevision !== today) count++;
-              }
-            });
-            m.listeTD?.forEach(td => {
-              // Compter dans la limite du quota journalier : max 2 TD/matière/jour
-            });
-            // Respecter le quota : max 2 TD - déjà faits aujourd'hui
-            if (m.listeTD) {
-              const doneTDToday = m.listeTD.filter(td => td.dernierePratique === today).length;
-              const tdQuota = Math.min(2, m.listeTD.length);
-              count += Math.max(0, tdQuota - doneTDToday);
-            }
-            m.listeTP?.forEach(tp => {
-              // Compter dans la limite du quota journalier : max 1 TP/matière/jour
-            });
-            if (m.listeTP) {
-              const doneTPToday = m.listeTP.filter(tp => tp.dernierePratique === today).length;
-              const tpQuota = Math.min(1, m.listeTP.length);
-              count += Math.max(0, tpQuota - doneTPToday);
-            }
-          });
-        });
-      });
-    });
-    // Cap at reasonable number
-    return Math.min(count, 99);
-  }, [coursConfig]);
 
   // Déclencher une notification Push si tâches en attente (1x par jour max)
   useEffect(() => {
