@@ -130,20 +130,9 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   let tempsLibreMin = heuresTravailJour * 60;
 
   const todayDayOfWeek = getDayOfWeekString();
-  for (const fc of (cfg.fixedCommitments || [])) {
-    if (fc.dayOfWeek === todayDayOfWeek || fc.dayOfWeek === "Tous les jours") {
-      if (fc.startTime && fc.endTime && fc.startTime.length >= 5 && fc.endTime.length >= 5) {
-        try {
-          const startH = parseInt(fc.startTime.substring(0, 2));
-          const startM = parseInt(fc.startTime.substring(3, 5));
-          const endH = parseInt(fc.endTime.substring(0, 2));
-          const endM = parseInt(fc.endTime.substring(3, 5));
-          const duration = (endH * 60 + endM) - (startH * 60 + startM);
-          if (duration > 0) tempsLibreMin -= duration;
-        } catch {}
-      }
-    }
-  }
+  
+  // Les engagements fixes ont été retirés pour prioriser ELPIS de façon absolue.
+  
   if (tempsLibreMin < 0) tempsLibreMin = 0;
   
   // Ajout de l'énergie supplémentaire (Réallocation Dynamique)

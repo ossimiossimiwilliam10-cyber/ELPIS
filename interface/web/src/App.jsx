@@ -6,7 +6,6 @@ import EntrainementPage from './EntrainementPage';
 import Dashboard from './Dashboard';
 import Sidebar from './Sidebar';
 import StatistiquesPage from './StatistiquesPage';
-import CalendrierPage from './CalendrierPage';
 import GlobalSearchModal from './GlobalSearchModal';
 import { ToastProvider, useToast } from './ToastProvider';
 import useStore from './store';
@@ -107,26 +106,6 @@ function AppInner() {
     useStore.getState().setCoursConfig(newCours);
   };
 
-  const addFixedCommitment = () => {
-    const newConf = { ...config };
-    if (!newConf.fixedCommitments) newConf.fixedCommitments = [];
-    newConf.fixedCommitments.push({
-      title: "Nouvel Engagement",
-      dayOfWeek: "Lundi",
-      startTime: "08:00",
-      endTime: "10:00"
-    });
-    setConfig(newConf);
-  };
-
-  const removeFixedCommitment = (index) => {
-    if (window.confirm("Supprimer cet engagement ?")) {
-      const newConf = { ...config };
-      newConf.fixedCommitments.splice(index, 1);
-      setConfig(newConf);
-    }
-  };
-
   const downloadBackup = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(coursConfig, null, 4));
     const downloadAnchorNode = document.createElement('a');
@@ -157,12 +136,6 @@ function AppInner() {
     };
     reader.readAsText(file);
     event.target.value = null;
-  };
-
-  const updateFixedCommitment = (index, field, value) => {
-    const newConf = { ...config };
-    newConf.fixedCommitments[index][field] = value;
-    setConfig(newConf);
   };
 
   const handleFactoryReset = async () => {
@@ -205,18 +178,6 @@ function AppInner() {
         <AnimatePresence mode="wait">
           {activeTab === 'dashboard' && (
             <Dashboard key="dash" />
-          )}
-
-          {activeTab === 'calendrier' && (
-            <motion.div 
-              key="calendrier"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <CalendrierPage />
-            </motion.div>
           )}
 
           {activeTab === 'statistiques' && (
@@ -410,65 +371,6 @@ function AppInner() {
                   <div style={{color:'var(--text-secondary)', fontSize:'0.85rem', fontStyle:'italic'}}>
                     Les matières sont gérées dans l'onglet "Cours". Tu peux ajouter des dates d'examen ici pour chacune d'entre elles.
                   </div>
-                </div>
-
-                {/* Section Engagements Fixes */}
-                <h2 style={{marginBottom:'1rem', borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem'}}>Engagements Fixes (Emploi du temps)</h2>
-                <p style={{color:'var(--text-secondary)', marginBottom:'1.5rem'}}>
-                  Ajoute tes horaires de cours, de travail ou d'activites regulieres. Le systeme deduira automatiquement ce temps de ta disponibilite pour generer ton planning d'etude.
-                </p>
-                
-                <div style={{marginBottom:'2rem'}}>
-                  <AnimatePresence>
-                    {config.fixedCommitments?.map((fc, index) => (
-                      <motion.div 
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        style={{display:'flex', gap:'1rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', marginBottom:'0.5rem', flexWrap:'wrap'}}
-                      >
-                        <button onClick={() => removeFixedCommitment(index)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', color:'var(--danger-color)', padding:0}} title="Supprimer">X</button>
-                        <input 
-                          type="text" 
-                          value={fc.title}
-                          onChange={(e) => updateFixedCommitment(index, 'title', e.target.value)}
-                          placeholder="Titre (ex: CM Math)"
-                          style={{flex: '1 1 150px'}}
-                        />
-                        <select 
-                          value={fc.dayOfWeek}
-                          onChange={(e) => updateFixedCommitment(index, 'dayOfWeek', e.target.value)}
-                          style={{flex: '1 1 120px'}}
-                        >
-                          <option value="Lundi">Lundi</option>
-                          <option value="Mardi">Mardi</option>
-                          <option value="Mercredi">Mercredi</option>
-                          <option value="Jeudi">Jeudi</option>
-                          <option value="Vendredi">Vendredi</option>
-                          <option value="Samedi">Samedi</option>
-                          <option value="Dimanche">Dimanche</option>
-                          <option value="Tous les jours">Tous les jours</option>
-                        </select>
-                        <div style={{display:'flex', alignItems:'center', gap:'0.5rem', flex: '1 1 200px'}}>
-                          <input 
-                            type="time" 
-                            value={fc.startTime}
-                            onChange={(e) => updateFixedCommitment(index, 'startTime', e.target.value)}
-                            style={{width:'100px'}}
-                          />
-                          <span style={{color:'var(--text-secondary)'}}>a</span>
-                          <input 
-                            type="time" 
-                            value={fc.endTime}
-                            onChange={(e) => updateFixedCommitment(index, 'endTime', e.target.value)}
-                            style={{width:'100px'}}
-                          />
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                  <button className="btn-secondary" style={{marginTop:'1rem'}} onClick={addFixedCommitment}>+ Ajouter un Engagement</button>
                 </div>
 
                 <div className="config-actions">
