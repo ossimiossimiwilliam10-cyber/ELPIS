@@ -4,6 +4,22 @@ import EditableNote from './EditableNote';
 
 const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
 
+const StarRating = ({ value, onChange, tooltip }) => {
+  return (
+    <div style={{display:'flex', gap:'2px'}} title={tooltip || "Difficulté (1 à 5 étoiles)"}>
+      {[1, 2, 3, 4, 5].map(v => (
+        <span 
+          key={v} 
+          onClick={() => onChange(v)} 
+          style={{cursor:'pointer', color: v <= (value || 1) ? '#fbbf24' : 'rgba(255,255,255,0.2)', fontSize:'0.9rem'}}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+};
+
 export default function MatiereCard({ 
   matiere, 
   lIndex, sIndex, uIndex, mIndex, 
@@ -198,6 +214,13 @@ export default function MatiereCard({
               placeholder="+ Ajouter une note (markdown supporté)" 
             />
           </div>
+          <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
+            <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>
+            <StarRating 
+              value={td.difficulteInitiale || 1} 
+              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'difficulteInitiale'], v)} 
+            />
+          </div>
         </div>
       ))}
 
@@ -242,6 +265,13 @@ export default function MatiereCard({
               placeholder="+ Ajouter une note (markdown supporté)" 
             />
           </div>
+          <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
+            <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>
+            <StarRating 
+              value={tp.difficulteInitiale || 1} 
+              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'difficulteInitiale'], v)} 
+            />
+          </div>
         </div>
       ))}
       
@@ -284,6 +314,14 @@ export default function MatiereCard({
                 onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'notes'], v)
               })}
               placeholder="+ Ajouter une note (markdown supporté)" 
+            />
+          </div>
+          <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
+            <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>
+            <StarRating 
+              value={annale.difficulteInitiale || 3} 
+              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'difficulteInitiale'], v)} 
+              tooltip="Difficulté de l'annale (par défaut: 3)"
             />
           </div>
         </div>

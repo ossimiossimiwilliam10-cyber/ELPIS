@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import useStore from './store';
 
 function StatistiquesPage() {
-  const { historique } = useStore();
+  const { historique, coursConfig } = useStore();
   const [period, setPeriod] = useState(30); // 7, 30, 365 (pour tout voir)
 
   const filteredHist = useMemo(() => {
@@ -61,6 +61,93 @@ function StatistiquesPage() {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5); // Garder le top 5
   }, [filteredHist]);
+
+  const predictiveModel = useMemo(() => {
+    if (!coursConfig || !historique) return null;
+    
+    const matieresStats = {};
+
+    // 1. Calcul de B (Rétention Théorique via CM)
+    historique.forEach(h => {
+      if (!matieresStats[h.matiere]) {
+        matieresStats[h.matiere] = { cmCount: 0, cmEaseTotal: 0, pratiques: [] };
+      }
+      if (h.type === 'CM' && h.easeFactor) {
+        matieresStats[h.matiere].cmCount++;
+        matieresStats[h.matiere].cmEaseTotal += h.easeFactor;
+      }
+    });
+
+    // 2. Calcul de A (Difficulté Pratique) via coursConfig
+    coursConfig.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(u => {
+          u.matieres?.forEach(m => {
+            if (!matieresStats[m.nom]) matieresStats[m.nom] = { cmCount: 0, cmEaseTotal: 0, pratiques: [] };
+            
+            const addPratiques = (liste, defaultDiff) => {
+              if (!liste) return;
+              liste.forEach(ex => {
+                if (ex.nombrePratiques > 0) {
+                  matieresStats[m.nom].pratiques.push(ex.difficulteInitiale || defaultDiff);
+                }
+              });
+            };
+            addPratiques(m.listeTD, 1);
+            addPratiques(m.listeTP, 1);
+            addPratiques(m.listeAnnales, 3);
+          });
+        });
+      });
+    });
+
+    // 3. Calcul de la note estimée G(A,B) par matière
+    const estimations = [];
+    Object.entries(matieresStats).forEach(([nom, stats]) => {
+      if (stats.cmCount === 0 && stats.pratiques.length === 0) return;
+
+      let B = 0.5;
+      if (stats.cmCount > 0) {
+        const avgEF = stats.cmEaseTotal / stats.cmCount;
+        B = Math.max(0, Math.min(1, (avgEF - 1.3) / (2.5 - 1.3))); 
+      }
+
+      let A = 1.5;
+      if (stats.pratiques.length > 0) {
+         A = stats.pratiques.reduce((sum, val) => sum + val, 0) / stats.pratiques.length;
+      }
+
+      const B_m = Math.max(0.3, B); // Plancher pour éviter 0
+      let G = 20 * Math.pow(A / 5, 0.85) * Math.pow(B_m, 1.2);
+      G = Math.min(20, Math.max(0, G)); 
+
+      let P = 1.0;
+      if (G >= 10) {
+        P = 0.70 / (1 + Math.pow((G - 10) / 1.7816, 2.3914));
+      } else {
+        P = 1.0 - (0.03 * G);
+      }
+      P = Math.max(0.01, P * 100); 
+
+      estimations.push({ matiere: nom, note: G, percentile: P });
+    });
+
+    if (estimations.length === 0) return null;
+
+    const avgNote = estimations.reduce((s, e) => s + e.note, 0) / estimations.length;
+    // La moyenne des percentiles n'est pas parfaite mathématiquement mais indicative
+    let avgPercentile = 100;
+    if (avgNote >= 10) {
+      avgPercentile = (0.70 / (1 + Math.pow((avgNote - 10) / 1.7816, 2.3914))) * 100;
+    } else {
+      avgPercentile = (1.0 - (0.03 * avgNote)) * 100;
+    }
+
+    return {
+      global: { note: avgNote, percentile: avgPercentile },
+      matieres: estimations.sort((a,b) => b.note - a.note)
+    };
+  }, [historique, coursConfig]);
 
   const COLORS_PIE = ['#34d399', '#60a5fa', '#f59e0b', '#a78bfa', '#ec4899'];
 
@@ -133,6 +220,57 @@ function StatistiquesPage() {
           </button>
         </div>
       </div>
+
+      {/* NEW: Diagnostic Académique L2 SPI */}
+      {predictiveModel && (
+        <div className="card glass-panel" style={{marginBottom: '2rem', borderLeft: '4px solid var(--accent-primary)', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(59, 130, 246, 0.05))'}}>
+          <div style={{display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap'}}>
+            <div style={{flex: '1 1 250px'}}>
+              <h3 style={{marginBottom: '1rem', color: 'var(--accent-primary)'}}>🎓 Diagnostic Académique (Estimation)</h3>
+              <p style={{color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem'}}>
+                Modèle prédictif croisant votre rétention (SM-2) et la difficulté des exercices accomplis, calibré sur les données de réussite en L2 SPI.
+              </p>
+              
+              <div style={{display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap'}}>
+                <div style={{background: 'rgba(0,0,0,0.3)', padding: '1rem 1.5rem', borderRadius: '12px', textAlign: 'center'}}>
+                  <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>Moyenne Générale Estimée</div>
+                  <div style={{fontSize: '2.5rem', fontWeight: 'bold', color: predictiveModel.global.note >= 16 ? '#a78bfa' : predictiveModel.global.note >= 14 ? 'var(--success-color)' : predictiveModel.global.note >= 10 ? 'var(--warning-color)' : 'var(--danger-color)'}}>
+                    {predictiveModel.global.note.toFixed(1)} <span style={{fontSize: '1.2rem', color: 'var(--text-secondary)'}}>/20</span>
+                  </div>
+                  <div style={{fontSize: '0.85rem', fontWeight: 'bold', marginTop: '0.2rem', color: 'var(--text-primary)'}}>
+                    {predictiveModel.global.note >= 16 ? 'Mention Très Bien' : predictiveModel.global.note >= 14 ? 'Mention Bien' : predictiveModel.global.note >= 12 ? 'Mention Assez Bien' : predictiveModel.global.note >= 10 ? 'Passable' : 'Échec / À travailler'}
+                  </div>
+                </div>
+
+                <div style={{background: 'rgba(0,0,0,0.3)', padding: '1rem 1.5rem', borderRadius: '12px', textAlign: 'center'}}>
+                  <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>Classement National Estimé</div>
+                  <div style={{fontSize: '2.5rem', fontWeight: 'bold', color: '#f59e0b'}}>
+                    Top {predictiveModel.global.percentile < 1 ? predictiveModel.global.percentile.toFixed(2) : predictiveModel.global.percentile.toFixed(1)}%
+                  </div>
+                  <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem'}}>
+                    {predictiveModel.global.percentile <= 5 ? "Excellence académique" : predictiveModel.global.percentile <= 20 ? "Dossier très solide" : predictiveModel.global.percentile <= 50 ? "Dans la moyenne post-écrémage" : "Moitié inférieure"}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{flex: '1 1 300px', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px'}}>
+              <h4 style={{marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)'}}>Détail par Matière</h4>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                {predictiveModel.matieres.slice(0, 4).map((m, i) => (
+                  <div key={i} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '6px'}}>
+                    <span style={{fontSize: '0.9rem', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m.matiere}</span>
+                    <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
+                      <span style={{fontWeight: 'bold', color: m.note >= 14 ? 'var(--success-color)' : m.note >= 10 ? 'var(--text-primary)' : 'var(--danger-color)'}}>{m.note.toFixed(1)}/20</span>
+                      <span style={{fontSize: '0.8rem', color: '#f59e0b', width: '60px', textAlign: 'right'}}>Top {m.percentile.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* KPIs Section */}
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem'}}>
