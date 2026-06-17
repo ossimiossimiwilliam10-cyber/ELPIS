@@ -4,6 +4,7 @@ import useStore from '../../store';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, itemVariants }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
+  const [note, setNote] = useState('');
   
   const exoId = exo.id || exo.titre;
   const isThisExoActive = globalChrono.exoId === exoId;
@@ -128,6 +129,29 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
                <button onClick={() => handleValidation(onEvaluateCM, 3)} style={{flex:1, background:'#3b82f6', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Bien">Bien (3)</button>
                <button onClick={() => handleValidation(onEvaluateCM, 4)} style={{flex:1, background:'#22c55e', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Parfait">Parfait (4)</button>
              </>
+          ) : exo.type === 'ANNALE' ? (
+             <div style={{display:'flex', width:'100%', gap:'0.5rem', alignItems: 'center'}}>
+               <input 
+                 type="number" 
+                 min="0" 
+                 max="20" 
+                 step="0.5" 
+                 placeholder="Note /20" 
+                 value={note}
+                 onChange={e => setNote(e.target.value)}
+                 style={{flex: 1, padding: '0.6rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'var(--bg-primary)', color: 'white', fontSize: '1rem'}}
+               />
+               <button 
+                 onClick={() => {
+                   if(note !== '') handleValidation(onMarkAsDone, note);
+                 }}
+                 className="btn-secondary"
+                 style={{background:'#ef4444', color:'white', border:'none', flex: 1, opacity: note === '' ? 0.5 : 1, cursor: note === '' ? 'not-allowed' : 'pointer'}}
+                 disabled={note === ''}
+               >
+                 Valider la note
+               </button>
+             </div>
           ) : (
            <div style={{display:'flex', width:'100%', gap:'0.5rem'}}>
              <button 

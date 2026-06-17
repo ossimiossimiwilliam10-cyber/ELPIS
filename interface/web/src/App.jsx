@@ -223,109 +223,104 @@ function AppInner() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Profile Summary */}
-              <div className="config-profile-summary">
-                <div className="profile-stat-card">
-                  <div className="stat-value">{profileSummary.semestres}</div>
-                  <div className="stat-label">Semestres</div>
+              {/* En-tête Configuration */}
+              <div style={{display: 'flex', alignItems: 'center', marginBottom: '2rem', gap: '1rem'}}>
+                <h1 style={{margin: 0, fontSize: '2rem'}}>⚙️ Configuration</h1>
+              </div>
+
+              {/* Profile Summary - Sleek KPIs */}
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '1rem', marginBottom: '2.5rem'}}>
+                {[
+                  { label: "Semestres", val: profileSummary.semestres, color: "#a78bfa", icon: "📅" },
+                  { label: "UEs", val: profileSummary.ues, color: "#60a5fa", icon: "📚" },
+                  { label: "Matières", val: profileSummary.matieres, color: "#f59e0b", icon: "📘" },
+                  { label: "CM", val: profileSummary.cm, color: "#3b82f6", icon: "🏛️" },
+                  { label: "TD", val: profileSummary.td, color: "#34d399", icon: "📝" },
+                  { label: "TP", val: profileSummary.tp, color: "#fbbf24", icon: "🔬" }
+                ].map((stat, i) => (
+                  <div key={i} className="card glass-panel" style={{textAlign: 'center', padding: '1rem', borderTop: `3px solid ${stat.color}`}}>
+                    <div style={{fontSize: '1.5rem', marginBottom: '0.2rem'}}>{stat.icon}</div>
+                    <div style={{fontSize: '2rem', fontWeight: 'bold', color: stat.color}}>{stat.val}</div>
+                    <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px'}}>{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem', marginBottom: '2.5rem'}}>
+                {/* Préférences Générales */}
+                <div className="card glass-panel" style={{display: 'flex', flexDirection: 'column'}}>
+                  <h2 style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-primary)'}}>
+                    <span>🎯</span> Préférences Générales
+                  </h2>
+                  <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
+                    <label style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontWeight: 'bold'}}>
+                      Objectif d'heures d'étude (Jour)
+                      <span style={{fontSize: '1.2rem', color: 'var(--success-color)'}}>{config.maxStudyHoursPerDay || 0}h</span>
+                    </label>
+                    <input 
+                      type="range" 
+                      value={config.maxStudyHoursPerDay || 0}
+                      onChange={e => setConfig({...config, maxStudyHoursPerDay: parseInt(e.target.value) || 0})}
+                      min="1" max="15"
+                      style={{width: '100%', cursor: 'pointer', accentColor: 'var(--accent-primary)'}}
+                    />
+                    <small style={{display: 'block', color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '0.8rem'}}>Le système déduira automatiquement le temps étudié aujourd'hui.</small>
+                  </div>
                 </div>
-                <div className="profile-stat-card">
-                  <div className="stat-value">{profileSummary.ues}</div>
-                  <div className="stat-label">UEs</div>
-                </div>
-                <div className="profile-stat-card">
-                  <div className="stat-value">{profileSummary.matieres}</div>
-                  <div className="stat-label">Matieres</div>
-                </div>
-                <div className="profile-stat-card">
-                  <div className="stat-value">{profileSummary.cm}</div>
-                  <div className="stat-label">CM</div>
-                </div>
-                <div className="profile-stat-card">
-                  <div className="stat-value">{profileSummary.td}</div>
-                  <div className="stat-label">TD</div>
-                </div>
-                <div className="profile-stat-card">
-                  <div className="stat-value">{profileSummary.tp}</div>
-                  <div className="stat-label">TP</div>
+
+                {/* Estimation des Durées */}
+                <div className="card glass-panel" style={{display: 'flex', flexDirection: 'column'}}>
+                  <h2 style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#34d399'}}>
+                    <span>⏱️</span> Calibrage de l'Algorithme
+                  </h2>
+                  <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem'}}>
+                    Durées par défaut allouées aux exercices sans moyenne personnalisée.
+                  </p>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+                    {[
+                      { key: 'defaultDurationNewCM', label: 'Nouveau CM', color: '#3b82f6', defaultVal: 120 },
+                      { key: 'defaultDurationRevCM', label: 'Révision CM', color: '#60a5fa', defaultVal: 30 },
+                      { key: 'defaultDurationTD', label: 'Durée TD', color: '#34d399', defaultVal: 20 },
+                      { key: 'defaultDurationTP', label: 'Durée TP', color: '#fbbf24', defaultVal: 30 },
+                      { key: 'defaultDurationAnnales', label: 'Annales', color: '#ef4444', defaultVal: 60 }
+                    ].map(item => (
+                      <div key={item.key} style={{background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px', borderLeft: `3px solid ${item.color}`}}>
+                        <label style={{display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>{item.label}</label>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                          <input 
+                            type="number" 
+                            min="5" 
+                            value={config[item.key] || item.defaultVal} 
+                            onChange={e => setConfig({...config, [item.key]: parseInt(e.target.value) || item.defaultVal})} 
+                            style={{width: '60px', padding: '0.3rem', background: 'var(--bg-primary)', border: 'none', color: 'white', borderRadius: '4px'}}
+                          />
+                          <span style={{fontSize: '0.8rem', color: 'var(--text-tertiary)'}}>min</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="card glass-panel config-panel">
-                <h2 style={{marginBottom:'2rem'}}>Preferences Generales</h2>
-                
-                <div style={{marginBottom:'1.5rem'}}>
-                  <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Objectif d'heures d'étude pour aujourd'hui :</label>
-                  <input 
-                    type="number" 
-                    value={config.maxStudyHoursPerDay || 0}
-                    onChange={e => {
-                      const newConf = {...config};
-                      newConf.maxStudyHoursPerDay = parseInt(e.target.value) || 0;
-                      setConfig(newConf);
-                    }}
-                    min="0" max="24"
-                    style={{width:'100%', maxWidth:'200px'}}
-                  />
-                  <small style={{display:'block', color:'var(--text-secondary)', marginTop:'0.5rem', fontSize:'0.8rem'}}>Le système déduira automatiquement le temps que tu as déjà passé à étudier aujourd'hui.</small>
-                </div>
-                <h2 style={{marginBottom:'1rem', borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem'}}>Estimation des Durées (Minutes)</h2>
-                <p style={{color:'var(--text-secondary)', marginBottom:'1.5rem'}}>
-                  Temps par défaut alloué par l'algorithme lorsqu'un exercice n'a pas encore de moyenne personnalisée.
-                </p>
-                <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'1rem', marginBottom:'2rem'}}>
-                  <div>
-                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>CM (Première fois) :</label>
-                    <input type="number" min="5" value={config.defaultDurationNewCM || 120} onChange={e => {
-                      const newConf = {...config, defaultDurationNewCM: parseInt(e.target.value) || 120};
-                      setConfig(newConf);
-                    }} style={{width:'100%'}}/>
-                  </div>
-                  <div>
-                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>CM (Révision) :</label>
-                    <input type="number" min="5" value={config.defaultDurationRevCM || 30} onChange={e => {
-                      const newConf = {...config, defaultDurationRevCM: parseInt(e.target.value) || 30};
-                      setConfig(newConf);
-                    }} style={{width:'100%'}}/>
-                  </div>
-                  <div>
-                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Travaux Dirigés (TD) :</label>
-                    <input type="number" min="5" value={config.defaultDurationTD || 20} onChange={e => {
-                      const newConf = {...config, defaultDurationTD: parseInt(e.target.value) || 20};
-                      setConfig(newConf);
-                    }} style={{width:'100%'}}/>
-                  </div>
-                  <div>
-                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Travaux Pratiques (TP) :</label>
-                    <input type="number" min="5" value={config.defaultDurationTP || 30} onChange={e => {
-                      const newConf = {...config, defaultDurationTP: parseInt(e.target.value) || 30};
-                      setConfig(newConf);
-                    }} style={{width:'100%'}}/>
-                  </div>
-                  <div>
-                    <label style={{display:'block', marginBottom:'0.5rem', color:'var(--text-secondary)'}}>Annales (Examens) :</label>
-                    <input type="number" min="5" value={config.defaultDurationAnnales || 60} onChange={e => {
-                      const newConf = {...config, defaultDurationAnnales: parseInt(e.target.value) || 60};
-                      setConfig(newConf);
-                    }} style={{width:'100%'}}/>
-                  </div>
-                </div>
-
-
-                {/* Section Matières avec Dates d'Examen */}
-                <h2 style={{marginBottom:'1rem', borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:'2rem'}}>Matières & Dates d'Examens</h2>
-                <p style={{color:'var(--text-secondary)', marginBottom:'1.5rem'}}>
-                  Enregistre tes matières et leurs dates d'examens. L'orchestrateur augmentera automatiquement la priorité des matières dont l'examen approche.
+              {/* Section Matières avec Dates d'Examen */}
+              <div className="card glass-panel" style={{marginBottom: '2.5rem'}}>
+                <h2 style={{marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f59e0b'}}>
+                  <span>📅</span> Matières & Dates d'Examens
+                </h2>
+                <p style={{color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem'}}>
+                  Enregistre tes matières et leurs dates d'examens. L'orchestrateur augmentera automatiquement la priorité de tes révisions à l'approche de la date !
                 </p>
 
-                <div style={{marginBottom:'2rem'}}>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
                   <AnimatePresence>
                     {coursConfig?.licences?.map((l, lIndex) => 
                       l.semestres?.map((s, sIndex) => 
                         s.ues?.map((u, uIndex) => 
                           u.matieres?.map((matiere, mIndex) => {
-                            // Countdown to nearest exam
+                            // Countdown
                             let countdown = null;
+                            let alertColor = 'var(--text-secondary)';
+                            let alertBg = 'transparent';
                             if (matiere.examDates && matiere.examDates.length > 0) {
                               const today = new Date(); today.setHours(0,0,0,0);
                               const upcoming = matiere.examDates
@@ -335,78 +330,94 @@ function AppInner() {
                                 .sort((a,b) => a - b);
                               if (upcoming.length > 0) {
                                 const diff = Math.ceil((upcoming[0] - today) / (1000 * 60 * 60 * 24));
-                                countdown = diff === 0 ? "Aujourd'hui !" : diff === 1 ? "Demain !" : `${diff} jours`;
+                                if (diff === 0) { countdown = "Aujourd'hui !"; alertColor = '#ef4444'; alertBg = 'rgba(239,68,68,0.15)'; }
+                                else if (diff === 1) { countdown = "Demain !"; alertColor = '#f59e0b'; alertBg = 'rgba(245,158,11,0.15)'; }
+                                else if (diff <= 7) { countdown = `J-${diff}`; alertColor = '#3b82f6'; alertBg = 'rgba(59,130,246,0.15)'; }
+                                else { countdown = `J-${diff}`; alertColor = '#a78bfa'; alertBg = 'rgba(167,139,250,0.15)'; }
                               }
                             }
 
                             return (
                               <motion.div
                                 key={`${lIndex}-${sIndex}-${uIndex}-${mIndex}`}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                style={{display:'flex', gap:'0.75rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', marginBottom:'0.75rem', flexWrap:'wrap'}}
+                                style={{
+                                  display: 'flex', gap: '1rem', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '1rem', 
+                                  borderRadius: '12px', borderLeft: `4px solid ${matiere.color || '#3B82F6'}`, flexWrap: 'wrap'
+                                }}
                               >
-                                <input
-                                  type="color"
-                                  value={matiere.color || '#3B82F6'}
-                                  onChange={e => updateMatiereField(lIndex, sIndex, uIndex, mIndex, 'color', e.target.value)}
-                                  style={{width:'36px', height:'36px', border:'none', borderRadius:'50%', cursor:'pointer', padding:0, background:'transparent'}}
-                                  title="Couleur de la matière"
-                                />
+                                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem'}}>
+                                  <input
+                                    type="color"
+                                    value={matiere.color || '#3B82F6'}
+                                    onChange={e => updateMatiereField(lIndex, sIndex, uIndex, mIndex, 'color', e.target.value)}
+                                    style={{width: '32px', height: '32px', border: 'none', borderRadius: '50%', cursor: 'pointer', padding: 0, background: 'transparent'}}
+                                    title="Changer la couleur"
+                                  />
+                                </div>
 
-                                <div style={{flex: '1 1 180px'}}>
-                                  <div style={{fontWeight:'bold', fontSize:'1.1rem'}}>{matiere.nom || "Sans nom"}</div>
-                                  <div style={{fontSize:'0.75rem', color:'var(--text-secondary)'}}>
-                                    {l.nom} • {s.nom} • {u.nom}
+                                <div style={{flex: '1 1 200px'}}>
+                                  <div style={{fontWeight: 'bold', fontSize: '1.1rem'}}>{matiere.nom || "Sans nom"}</div>
+                                  <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.2rem'}}>
+                                    {l.nom} • {s.nom}
                                   </div>
-                                  <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginTop:'0.25rem'}}>
-                                    <label style={{fontSize:'0.75rem', color:'var(--text-secondary)'}}>Coeff :</label>
+                                  <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem'}}>
+                                    <span style={{fontSize: '0.8rem', color: 'var(--text-tertiary)', background: 'rgba(255,255,255,0.05)', padding: '0.1rem 0.4rem', borderRadius: '4px'}}>
+                                      Coefficient
+                                    </span>
                                     <input 
                                       type="number" 
-                                      min="1" 
-                                      max="10" 
+                                      min="1" max="10" 
                                       value={matiere.coefficient || 1} 
                                       onChange={e => updateMatiereField(lIndex, sIndex, uIndex, mIndex, 'coefficient', parseFloat(e.target.value) || 1)}
-                                      style={{width:'50px', fontSize:'0.8rem', padding:'2px 4px', background:'var(--surface-color)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text-color)', borderRadius:'4px'}}
-                                      title="Coefficient (1-10) - Permet d'intensifier les révisions"
+                                      style={{width: '40px', fontSize: '0.85rem', padding: '0.1rem 0.3rem', background: 'var(--bg-primary)', border: 'none', color: 'white', borderRadius: '4px'}}
                                     />
                                   </div>
                                 </div>
 
-                                <div style={{display:'flex', flexDirection:'column', gap:'0.3rem', flex:'2 1 300px'}}>
+                                <div style={{flex: '2 1 250px', background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
                                   {(matiere.examDates || []).map((date, dIndex) => (
-                                    <div key={dIndex} style={{display:'flex', gap:'0.5rem', alignItems:'center'}}>
+                                    <div key={dIndex} style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
                                       <input
                                         type="date"
                                         value={date}
                                         onChange={e => updateMatiereExamDate(lIndex, sIndex, uIndex, mIndex, dIndex, e.target.value)}
-                                        style={{flex:1, fontSize:'0.85rem'}}
+                                        style={{flex: 1, padding: '0.4rem', background: 'var(--bg-primary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)', borderRadius: '4px', fontSize: '0.85rem'}}
                                       />
                                       <button
                                         onClick={() => removeMatiereExamDate(lIndex, sIndex, uIndex, mIndex, dIndex)}
-                                        style={{background:'transparent', border:'none', cursor:'pointer', color:'var(--danger-color)', fontSize:'0.8rem', padding:'2px 6px'}}
+                                        style={{background: 'rgba(239, 68, 68, 0.1)', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '0.4rem 0.6rem', borderRadius: '4px', fontSize: '0.85rem'}}
                                         title="Supprimer cette date"
                                       >✕</button>
                                     </div>
                                   ))}
                                   <button
                                     onClick={() => addMatiereExamDate(lIndex, sIndex, uIndex, mIndex)}
-                                    style={{background:'transparent', border:'1px dashed var(--text-secondary)', color:'var(--text-secondary)', cursor:'pointer', fontSize:'0.75rem', padding:'4px 8px', borderRadius:'4px', alignSelf:'flex-start'}}
-                                  >+ Ajouter une date d'examen</button>
+                                    style={{background: 'transparent', border: '1px dashed var(--accent-primary)', color: 'var(--accent-primary)', cursor: 'pointer', fontSize: '0.8rem', padding: '0.4rem', borderRadius: '4px', textAlign: 'center', transition: 'all 0.2s'}}
+                                    onMouseOver={e => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)'}
+                                    onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    + Ajouter une date d'examen
+                                  </button>
                                 </div>
 
                                 {countdown && (
                                   <div style={{
-                                    background: countdown.includes("Aujourd'hui") ? 'rgba(239,68,68,0.2)' : countdown === "Demain !" ? 'rgba(245,158,11,0.2)' : 'rgba(59,130,246,0.15)',
-                                    color: countdown.includes("Aujourd'hui") ? '#ef4444' : countdown === "Demain !" ? '#F59E0B' : '#3B82F6',
-                                    padding:'0.35rem 0.75rem',
-                                    borderRadius:'20px',
-                                    fontWeight:'bold',
-                                    fontSize:'0.8rem',
-                                    whiteSpace:'nowrap'
+                                    background: alertBg,
+                                    color: alertColor,
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '8px',
+                                    fontWeight: 'bold',
+                                    fontSize: '0.9rem',
+                                    whiteSpace: 'nowrap',
+                                    border: `1px solid ${alertColor}30`,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem'
                                   }}>
-                                    {countdown}
+                                    <span>⏱️</span> {countdown}
                                   </div>
                                 )}
                               </motion.div>
@@ -416,48 +427,53 @@ function AppInner() {
                       )
                     )}
                   </AnimatePresence>
-                  {/* Removed addSubject button because we read from coursConfig now */}
-                  <div style={{color:'var(--text-secondary)', fontSize:'0.85rem', fontStyle:'italic'}}>
-                    Les matières sont gérées dans l'onglet "Cours". Tu peux ajouter des dates d'examen ici pour chacune d'entre elles.
-                  </div>
                 </div>
+              </div>
 
-                <div className="config-actions">
-                  <div className="config-actions-left">
+              {/* Danger Zone & Actions */}
+              <div style={{display: 'flex', gap: '2rem', flexWrap: 'wrap'}}>
+                {/* Sauvegarde */}
+                <div className="card glass-panel" style={{flex: '1 1 300px', borderTop: '3px solid #10b981', display: 'flex', flexDirection: 'column'}}>
+                  <h3 style={{color: '#10b981', marginBottom: '1rem'}}>💾 Sauvegarde Locale</h3>
+                  <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', flex: 1}}>
+                    L'application sauvegarde tout automatiquement dans ton navigateur. Tu peux exporter un backup manuel de sécurité (Format JSON).
+                  </p>
+                  <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
                     <button 
-                      className="btn-danger"
-                      onClick={handleFactoryReset}
-                      title="Effacer TOUTES les donnees de l'application"
-                    >
-                      Reinitialiser l'App
-                    </button>
-                    <button 
-                      className="btn-secondary"
                       onClick={downloadBackup}
-                      title="Telecharger une sauvegarde locale"
-                    >
-                      Exporter Backup
-                    </button>
-                    <div>
+                      style={{flex: 1, padding: '0.6rem', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}
+                    >Export JSON</button>
+                    <div style={{flex: 1}}>
                       <input 
                         type="file" 
                         accept=".json"
                         id="import-backup"
-                        style={{display:'none'}}
+                        style={{display: 'none'}}
                         onChange={handleImportBackup}
                       />
                       <label 
                         htmlFor="import-backup" 
-                        className="btn-secondary" 
-                        style={{display: 'inline-block', cursor:'pointer'}}
-                        title="Importer une ancienne sauvegarde"
-                      >
-                        Importer Backup
-                      </label>
+                        style={{display: 'block', textAlign: 'center', padding: '0.6rem', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid #10b981', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}
+                      >Importer</label>
                     </div>
                   </div>
-                  <div style={{color:'var(--text-secondary)', fontSize:'0.9rem', fontStyle:'italic'}}>
-                    Sauvegarde automatique activée
+                </div>
+
+                {/* Danger Zone */}
+                <div className="card glass-panel" style={{flex: '1 1 300px', borderTop: '3px solid #ef4444', display: 'flex', flexDirection: 'column'}}>
+                  <h3 style={{color: '#ef4444', marginBottom: '1rem'}}>⚠️ Zone de Danger</h3>
+                  <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', flex: 1}}>
+                    Attention, ces actions sont irréversibles. Une remise à zéro supprime ton historique, tes cours, et tes statistiques.
+                  </p>
+                  <div style={{marginTop: '1.5rem'}}>
+                    <button 
+                      onClick={handleFactoryReset}
+                      style={{width: '100%', padding: '0.6rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'}}
+                      onMouseOver={e => {e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = '#fff'}}
+                      onMouseOut={e => {e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; e.currentTarget.style.color = '#ef4444'}}
+                    >
+                      Remise à Zéro Totale
+                    </button>
                   </div>
                 </div>
               </div>

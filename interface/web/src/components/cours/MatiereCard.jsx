@@ -126,7 +126,7 @@ export default function MatiereCard({
           >
             📄
           </button>
-          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0}}>
             <EditableLabel
               value={cm.titre}
               onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'titre'], v)}
@@ -201,7 +201,7 @@ export default function MatiereCard({
           >
             📄
           </button>
-          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0}}>
             <EditableLabel
               value={td.titre}
               onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'titre'], v)}
@@ -252,7 +252,7 @@ export default function MatiereCard({
           >
             📄
           </button>
-          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0}}>
             <EditableLabel
               value={tp.titre}
               onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'titre'], v)}
@@ -303,7 +303,7 @@ export default function MatiereCard({
           >
             📄
           </button>
-          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+          <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0}}>
             <EditableLabel
               value={annale.titre}
               onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'titre'], v)}

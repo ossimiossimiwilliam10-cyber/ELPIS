@@ -332,12 +332,31 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
             });
           }
 
-          // --- Annales logic ---
-          if (daysToExam <= 28) {
+          // --- Calcul de la complétion pour la matière ---
+          const totalCM = m.listeCM?.length || 0;
+          const cmRevises = (m.listeCM || []).filter(cm => cm.derniereRevision).length;
+          const cmCompletion = totalCM > 0 ? (cmRevises / totalCM) : 1; // Si pas de CM, on considère 100%
+
+          const totalTD = m.listeTD?.length || 0;
+          const tdFaits = (m.listeTD || []).filter(td => td.dernierePratique).length;
+          const tdCompletion = totalTD > 0 ? (tdFaits / totalTD) : 1; // Si pas de TD, on considère 100%
+
+          // --- Annales logic (Intelligent) ---
+          // Déclenchement si : Maîtrise (CM >= 70% et TD >= 50%) OU Urgence (Examen <= 14 jours)
+          const isMastered = cmCompletion >= 0.70 && tdCompletion >= 0.50;
+          const isUrgent = daysToExam <= 14;
+
+          if (isMastered || isUrgent) {
             const annales = (m.listeAnnales || []).filter(ex => ex.dernierePratique !== todayStr);
             for (const ex of annales) {
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+              
+              // Calcul du prio score standard (qui prend en compte l'espacement et la difficulté)
+              let basePrio = getPrioScore(ex, examUrgencyMap, m.nom);
+              // Multiplicateur : si très urgent -> x5.0, si juste maîtrisé -> x3.0
+              const annaleBoost = isUrgent ? 5.0 : 3.0;
+
               poolAnnales.push({
                 matiere: m.nom,
                 type: "ANNALE",
@@ -346,7 +365,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
                 pdfPath: ex.pdfPath || "",
                 page: ex.page || 1,
                 difficulte: ex.difficulte || "",
-                prio: 9999
+                prio: basePrio * annaleBoost
               });
             }
           }

@@ -12,7 +12,7 @@ function CoursPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
   const [activeSemestreIndex, setActiveSemestreIndex] = useState(0);
-  const [collapsedUEs, setCollapsedUEs] = useState({});
+  const [activeUEIndex, setActiveUEIndex] = useState(0);
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', initialValue: '', onSave: null });
 
   // Helper : applique une mutation Immer, sauvegarde dans le store, et retourne le nouvel état
@@ -22,11 +22,6 @@ function CoursPage() {
       setCoursConfig(newConf);
       return newConf;
     });
-  };
-
-  const toggleUE = (lIndex, sIndex, uIndex) => {
-    const key = `${lIndex}-${sIndex}-${uIndex}`;
-    setCollapsedUEs(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   // Resynchroniser le state local quand le store change (ex: import backup)
@@ -42,8 +37,7 @@ function CoursPage() {
         setActiveLicenceIndex(item.lIndex);
         setActiveSemestreIndex(item.sIndex || 0);
         if (item.uIndex !== undefined) {
-          const key = `${item.lIndex}-${item.sIndex || 0}-${item.uIndex}`;
-          setCollapsedUEs(prev => ({ ...prev, [key]: false }));
+          setActiveUEIndex(item.uIndex);
         }
       }
     };
@@ -85,6 +79,7 @@ function CoursPage() {
     });
     setActiveLicenceIndex(configLocal.licences ? configLocal.licences.length : 0);
     setActiveSemestreIndex(0);
+    setActiveUEIndex(0);
   };
 
   const deleteLicence = (lIndex) => {
@@ -106,7 +101,7 @@ function CoursPage() {
   const deleteSemestre = (lIndex, sIndex) => {
     if (!window.confirm("Supprimer ce semestre et toutes ses UEs ?")) return;
     mutateAndSave(draft => { draft.licences[lIndex].semestres.splice(sIndex, 1); });
-    if (activeSemestreIndex === sIndex) setActiveSemestreIndex(Math.max(0, sIndex - 1));
+    if (activeSemestreIndex === sIndex) { setActiveSemestreIndex(Math.max(0, sIndex - 1)); setActiveUEIndex(0); }
     else if (activeSemestreIndex > sIndex) setActiveSemestreIndex(activeSemestreIndex - 1);
   };
 
@@ -116,11 +111,14 @@ function CoursPage() {
       if (!draft.licences[lIndex].semestres[sIndex].ues) draft.licences[lIndex].semestres[sIndex].ues = [];
       draft.licences[lIndex].semestres[sIndex].ues.push({ nom: "Nouvelle UE", ects: 0, matieres: [] });
     });
+    setActiveUEIndex(configLocal.licences[lIndex].semestres[sIndex].ues ? configLocal.licences[lIndex].semestres[sIndex].ues.length : 0);
   };
 
   const deleteUE = (lIndex, sIndex, uIndex) => {
     if (!window.confirm("Supprimer cette UE et toutes ses matières ?")) return;
     mutateAndSave(draft => { draft.licences[lIndex].semestres[sIndex].ues.splice(uIndex, 1); });
+    if (activeUEIndex === uIndex) setActiveUEIndex(Math.max(0, uIndex - 1));
+    else if (activeUEIndex > uIndex) setActiveUEIndex(activeUEIndex - 1);
   };
 
   // ---- CRUD Matiere ----
@@ -235,7 +233,7 @@ function CoursPage() {
           <button 
             key={`lic-${lIndex}`} 
             className={`tab-btn ${activeLicenceIndex === lIndex ? 'active' : ''}`}
-            onClick={() => { setActiveLicenceIndex(lIndex); setActiveSemestreIndex(0); }}
+            onClick={() => { setActiveLicenceIndex(lIndex); setActiveSemestreIndex(0); setActiveUEIndex(0); }}
             style={{fontSize:'1.1rem', fontWeight: activeLicenceIndex === lIndex ? 'bold' : 'normal'}}
           >
             {licence.nom}
@@ -266,7 +264,7 @@ function CoursPage() {
                 <button 
                   key={`tab-${sIndex}`} 
                   className={`tab-btn ${activeSemestreIndex === sIndex ? 'active' : ''}`}
-                  onClick={() => setActiveSemestreIndex(sIndex)}
+                  onClick={() => { setActiveSemestreIndex(sIndex); setActiveUEIndex(0); }}
                 >
                   {semestre.nom}
                 </button>
@@ -294,72 +292,88 @@ function CoursPage() {
                     </div>
                   </div>
 
-                  <div style={{display:'flex', flexDirection:'column', gap:'1.5rem', marginLeft:'1rem'}}>
+                  <div className="ue-tabs" style={{display:'flex', gap:'1rem', marginLeft:'1rem', flexWrap:'wrap'}}>
                     {semestre.ues?.map((ue, uIndex) => {
                       if (!ueMatchesSearch(ue)) return null;
-                      const isCollapsed = collapsedUEs[`${lIndex}-${sIndex}-${uIndex}`];
-                      let ueTotalExos = 0, ueTotalCMs = 0;
-                      ue.matieres?.forEach(m => {
-                        ueTotalCMs += (m.listeCM?.length || 0);
-                        ueTotalExos += (m.listeTD?.length || 0) + (m.listeTP?.length || 0);
-                      });
-
                       return (
-                      <div key={`u-${sIndex}-${uIndex}`} style={{background:'rgba(255,255,255,0.02)', padding:'1.5rem', borderRadius:'12px', border:'1px solid var(--bg-tertiary)'}}>
-                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: isCollapsed ? '0' : '1rem'}}>
-                          <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flex: 1}}>
-                            <button 
-                              className={`ue-accordion-btn ${!isCollapsed ? 'open' : ''}`} 
-                              onClick={() => toggleUE(lIndex, sIndex, uIndex)}
-                              title={isCollapsed ? "Développer" : "Réduire"}
-                            >🔽</button>
-                            <button onClick={() => deleteUE(lIndex, sIndex, uIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1.1rem'}} title="Supprimer l'UE">🗑️</button>
-                            <EditableLabel 
-                              value={ue.nom}
-                              onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'nom'], v)}
-                              placeholder="Nom de l'UE"
-                              style={{fontWeight:'bold', fontSize:'1.1rem', flex: 1}}
-                            />
-                            <div style={{display:'flex', alignItems:'center', gap:'0.3rem', flexShrink: 0}}>
-                              <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>ECTS:</span>
-                              <input 
-                                type="number" value={ue.ects || 0} 
-                                onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'ects'], Math.min(60, Math.max(0, parseInt(e.target.value) || 0)))}
-                                style={{width:'60px', padding:'0.3rem'}} title="Crédits ECTS (0-60)"
+                        <button 
+                          key={`ue-tab-${uIndex}`} 
+                          className={`tab-btn ${activeUEIndex === uIndex ? 'active' : ''}`}
+                          style={{ fontSize:'0.95rem', padding:'0.4rem 1rem', background: activeUEIndex === uIndex ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255,255,255,0.05)' }}
+                          onClick={() => setActiveUEIndex(uIndex)}
+                        >
+                          {ue.nom}
+                        </button>
+                      );
+                    })}
+                    <button className="tab-btn" onClick={() => addUE(lIndex, sIndex)} style={{color:'var(--accent-primary)', fontSize:'0.95rem', padding:'0.4rem 1rem'}}>+ UE</button>
+                  </div>
+
+                  <div style={{display:'flex', flexDirection:'column', gap:'1.5rem', marginLeft:'1rem', marginTop:'1.5rem'}}>
+                    <AnimatePresence mode="wait">
+                      {semestre.ues && semestre.ues[activeUEIndex] && (() => {
+                        const uIndex = activeUEIndex;
+                        const ue = semestre.ues[uIndex];
+                        if (!ueMatchesSearch(ue)) return null;
+                        
+                        return (
+                          <motion.div
+                            key={`ue-content-${uIndex}`}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.25, ease: 'easeOut' }}
+                            style={{background:'rgba(255,255,255,0.02)', padding:'1.5rem', borderRadius:'12px', border:'1px solid var(--bg-tertiary)'}}>
+                          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: '1.5rem'}}>
+                            <div style={{display:'flex', alignItems:'center', gap:'1rem', flex: 1}}>
+                              <EditableLabel 
+                                value={ue.nom}
+                                onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'nom'], v)}
+                                placeholder="Nom de l'UE"
+                                style={{fontWeight:'bold', fontSize:'1.3rem', color:'var(--text-primary)'}}
                               />
+                              <div style={{display:'flex', alignItems:'center', gap:'0.4rem', background:'rgba(0,0,0,0.2)', padding:'0.3rem 0.6rem', borderRadius:'6px'}}>
+                                <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>ECTS:</span>
+                                <input 
+                                  type="number" value={ue.ects || 0} 
+                                  onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'ects'], Math.min(60, Math.max(0, parseInt(e.target.value) || 0)))}
+                                  style={{width:'50px', padding:'0.2rem', fontSize:'0.85rem'}} title="Crédits ECTS (0-60)"
+                                />
+                              </div>
+                            </div>
+                            <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
+                              <button className="btn-secondary" onClick={() => addMatiere(lIndex, sIndex, uIndex)}>+ Matière</button>
+                              <button onClick={() => deleteUE(lIndex, sIndex, uIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1.2rem'}} title="Supprimer l'UE">🗑️</button>
                             </div>
                           </div>
-                          <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
-                            {isCollapsed && (
-                              <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>
-                                {ue.matieres?.length || 0} Matière(s) • {ueTotalCMs} CM(s) • {ueTotalExos} Exercice(s)
-                              </span>
-                            )}
-                            <button className="btn-secondary" style={{fontSize:'0.9rem'}} onClick={() => { if(isCollapsed) toggleUE(lIndex, sIndex, uIndex); addMatiere(lIndex, sIndex, uIndex); }}>+ Matière</button>
-                          </div>
-                        </div>
 
-                        <div className={`ue-accordion-content ${isCollapsed ? 'closed' : 'open'}`}>
-                          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(350px, 1fr))', gap:'1rem'}}>
-                          {ue.matieres?.map((matiere, mIndex) => {
-                            if (!matiereMatchesSearch(matiere)) return null;
-                            return (
-                            <MatiereCard
-                              key={`m-${sIndex}-${uIndex}-${mIndex}`}
-                              matiere={matiere}
-                              lIndex={lIndex} sIndex={sIndex} uIndex={uIndex} mIndex={mIndex}
-                              actions={{
-                                deleteMatiere, updateField, addCM, deleteCM,
-                                addTDManuel, deleteTD, addTPManuel, deleteTP,
-                                addAnnaleManuel, deleteAnnale,
-                                setModalConfig, getNextReviewDate, setConfigLocal, setCoursConfig
-                              }}
-                            />);
-                          })}
+                          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(350px, 1fr))', gap:'1.5rem'}}>
+                            {ue.matieres?.map((matiere, mIndex) => {
+                              if (!matiereMatchesSearch(matiere)) return null;
+                              return (
+                                <MatiereCard
+                                  key={`m-${sIndex}-${uIndex}-${mIndex}`}
+                                  matiere={matiere}
+                                  lIndex={lIndex} sIndex={sIndex} uIndex={uIndex} mIndex={mIndex}
+                                  actions={{
+                                    deleteMatiere, updateField, addCM, deleteCM,
+                                    addTDManuel, deleteTD, addTPManuel, deleteTP,
+                                    addAnnaleManuel, deleteAnnale,
+                                    setModalConfig, getNextReviewDate, setConfigLocal, setCoursConfig
+                                  }}
+                                />
+                              );
+                            })}
+                            {(!ue.matieres || ue.matieres.length === 0) && (
+                              <div style={{gridColumn: '1 / -1', textAlign:'center', padding:'3rem', color:'var(--text-secondary)', border:'1px dashed var(--bg-tertiary)', borderRadius:'8px'}}>
+                                Aucune matière dans cette UE. <br/>Cliquez sur "+ Matière" pour en ajouter.
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      </div>);
-                    })}
+                        </motion.div>
+                      );
+                    })()}
+                  </AnimatePresence>
                   </div>
                 </div>);
               })()}

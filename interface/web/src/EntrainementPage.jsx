@@ -7,7 +7,45 @@ import { useToast } from './ToastProvider';
 import { calculateSM2 } from './sm2';
 import ExerciceCard from './components/cours/ExerciceCard';
 
+const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (percent / 100) * circumference;
 
+  return (
+    <div className="circular-progress" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="circular-progress-circle">
+        <circle
+          className="circular-progress-bg"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+        />
+        <motion.circle
+          className="circular-progress-fill"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+        />
+      </svg>
+      <div className="circular-progress-text" style={{ fontSize: size * 0.25 }}>
+        <motion.span
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          {percent}%
+        </motion.span>
+      </div>
+    </div>
+  );
+};
 
 function EntrainementPage() {
   const { coursConfig, setCoursConfig, addHistoriqueEntry, config, startGlobalChrono, globalChrono, resetGlobalChrono } = useStore();
@@ -137,6 +175,7 @@ function EntrainementPage() {
     d.setHours(d.getHours() - 4);
     const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 
+    let finalJActuel = 0, finalEaseFactor = 2.5;
     const newConf = produce(configLocal, draft => {
       const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
@@ -182,8 +221,12 @@ function EntrainementPage() {
       cm.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
       cm.nombreRevisionsTemps = currentCount + 1;
     }
+
+    // Capturer les valeurs avant la fermeture du scope produce
+    finalJActuel = cm.jActuel;
+    finalEaseFactor = easeFactor;
     });
-    
+
     confetti({
       particleCount: 100,
       spread: 70,
@@ -195,33 +238,50 @@ function EntrainementPage() {
     setCoursConfig(newConf);
     addHistoriqueEntry({
       type: 'CM',
-      titre: cm.titre,
+      titre: exo.titre,
       matiere: exo.matiereNom,
-      action: `Révisé (J${cm.jActuel})`,
+      action: `Révisé (J${finalJActuel})`,
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30),
-      easeFactor: easeFactor
+      easeFactor: finalEaseFactor
     });
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
     const todayStr = getTodayStr();
-    const newConf = produce(configLocal, draft => {
-    let targetList;
-    if (exo.type === 'TD') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
-    else if (exo.type === 'TP') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
-    else if (exo.type === 'ANNALE') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeAnnales;
+    let actionLabel = 'Terminé';
 
-    const currentExo = targetList[exo.exIndex];
-    currentExo.dernierePratique = todayStr;
-    currentExo.nombrePratiques = (currentExo.nombrePratiques || 0) + 1;
-    if (difficulte) currentExo.difficulte = difficulte;
-    
-    if (elapsedMinutes > 0) {
-      const currentAvg = currentExo.tempsMoyen || 0;
-      const currentCount = currentExo.nombreRevisionsTemps || 0;
-      currentExo.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
-      currentExo.nombreRevisionsTemps = currentCount + 1;
-    }
+    const newConf = produce(configLocal, draft => {
+      let targetList;
+      if (exo.type === 'TD') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
+      else if (exo.type === 'TP') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
+      else if (exo.type === 'ANNALE') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeAnnales;
+
+      const currentExo = targetList[exo.exIndex];
+      currentExo.dernierePratique = todayStr;
+      currentExo.nombrePratiques = (currentExo.nombrePratiques || 0) + 1;
+      
+      if (exo.type === 'ANNALE' && difficulte !== "") {
+        // Pour les Annales, 'difficulte' contient en fait la note sur 20
+        const note = parseFloat(difficulte);
+        if (!isNaN(note)) {
+          currentExo.derniereNote = note;
+          actionLabel = `Terminé (Note: ${note}/20)`;
+          if (note >= 18) currentExo.difficulte = 'tres_facile';
+          else if (note >= 15) currentExo.difficulte = 'facile';
+          else if (note >= 11) currentExo.difficulte = 'moyen';
+          else if (note >= 9) currentExo.difficulte = 'assez_difficile';
+          else currentExo.difficulte = 'difficile';
+        }
+      } else if (difficulte) {
+        currentExo.difficulte = difficulte;
+      }
+      
+      if (elapsedMinutes > 0) {
+        const currentAvg = currentExo.tempsMoyen || 0;
+        const currentCount = currentExo.nombreRevisionsTemps || 0;
+        currentExo.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
+        currentExo.nombreRevisionsTemps = currentCount + 1;
+      }
     });
     
     confetti({
@@ -247,7 +307,7 @@ function EntrainementPage() {
       type: exo.type,
       titre: updatedExo.titre,
       matiere: exo.matiereNom,
-      action: 'Terminé',
+      action: actionLabel,
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration
     });
   };
@@ -314,24 +374,16 @@ function EntrainementPage() {
       </div>
 
       {/* === PROGRESS BAR === */}
-      <div className="progress-header">
-        <span className="progress-header-text" style={{color: progressPercent === 100 ? 'var(--success-color)' : 'var(--text-primary)'}}>
-          {progressPercent === 100 ? 'Bravo !' : `${strategicExercices.length} restant${strategicExercices.length > 1 ? 's' : ''}`}
-        </span>
-        <div className="progress-header-bar">
-          <div className="progress-bar-container" style={{height: '8px', margin: 0}}>
-            <motion.div 
-              className="progress-bar-fill"
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercent}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              style={{ background: progressPercent === 100 ? 'var(--success-color)' : 'var(--accent-primary)' }}
-            />
+      <div className="progress-header" style={{ display: 'flex', alignItems: 'center', gap: '2rem', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%)', borderRadius: '16px', border: '1px solid rgba(99, 102, 241, 0.12)' }}>
+        <CircularProgress percent={progressPercent} size={80} strokeWidth={8} />
+        <div>
+          <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: progressPercent === 100 ? 'var(--success-color)' : 'var(--text-primary)' }}>
+            {progressPercent === 100 ? 'Session Terminée ! 🎉' : `${strategicExercices.length} exercice${strategicExercices.length > 1 ? 's' : ''} restant${strategicExercices.length > 1 ? 's' : ''}`}
+          </div>
+          <div style={{ color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
+            Tu as complété {totalExercisesToday - strategicExercices.length} sur {totalExercisesToday} tâches pour aujourd'hui.
           </div>
         </div>
-        <span className="progress-header-text" style={{color: 'var(--accent-primary)'}}>
-          {progressPercent}%
-        </span>
       </div>
 
       {/* === FILTER PILLS === */}
@@ -365,16 +417,14 @@ function EntrainementPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="card glass-panel" 
-            style={{textAlign:'center', padding:'3rem'}}
+            className={strategicExercices.length === 0 ? "empty-state-container" : "card glass-panel"}
+            style={strategicExercices.length > 0 ? {textAlign:'center', padding:'3rem'} : {}}
           >
             {strategicExercices.length === 0 ? (
               <>
-                <div style={{fontSize: '4rem', marginBottom: '1rem'}}>🎉</div>
-                <h3 style={{color: 'var(--success-color)'}}>Tout est fait pour aujourd'hui !</h3>
-                <p style={{color:'var(--text-secondary)', maxWidth: '400px', margin: '0.5rem auto 0'}}>
-                  Tu as complété tous tes exercices du jour. Profite de ton temps libre, ou avance sur tes CM dans l'onglet "Mes Cours".
-                </p>
+                <div className="empty-state-icon">🏆</div>
+                <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
+                <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par l'orchestrateur. Repose-toi bien !</p>
               </>
             ) : (
               <>
@@ -387,23 +437,30 @@ function EntrainementPage() {
             )}
           </motion.div>
         ) : (
-          <motion.div 
-            key="grid"
-            style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap:'1.5rem'}}
-          >
+          <div className="entrainement-timeline" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
             <AnimatePresence>
-              {exercicesDuJour.map((exo) => (
-                <ExerciceCard 
-                  key={exo.matiereNom + exo.titre + exo.type}
-                  exo={exo}
-                  onEvaluateCM={evaluateCM}
-                  onMarkAsDone={markAsDone}
-                  DIFFICULTY_LEVELS={DIFFICULTY_LEVELS}
-                  itemVariants={itemVariants}
-                />
+              {exercicesDuJour.map((exo, index) => (
+                <motion.div 
+                  key={`${exo.matiereNom}-${exo.titre}-${index}`}
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="show"
+                  exit="exit"
+                  style={{ position: 'relative', paddingLeft: '30px' }}
+                >
+                  <div className="timeline-connector"></div>
+                  <div className="timeline-dot"></div>
+                  <ExerciceCard 
+                    exo={exo}
+                    matiereNom={exo.matiereNom}
+                    notebookLMLink={exo.notebookLMLink}
+                    onMarkAsDone={(passedExo, difficulte, elapsedMinutes) => markAsDone(passedExo, difficulte, elapsedMinutes)}
+                    onEvaluateCM={(passedExo, score, elapsedMinutes) => evaluateCM(passedExo, score, elapsedMinutes)}
+                  />
+                </motion.div>
               ))}
             </AnimatePresence>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

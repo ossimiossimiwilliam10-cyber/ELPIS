@@ -88,7 +88,9 @@ export default function GlobalChrono() {
 
   // The actual UI content of the chrono
   const chronoContent = (
-    <div style={{
+    <div 
+      className={!isRunning && elapsedSeconds > 0 ? "chrono-paused-blink" : ""}
+      style={{
       display: 'flex',
       alignItems: 'center',
       gap: '0.8rem',
