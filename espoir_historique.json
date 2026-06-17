@@ -135,5 +135,14 @@
         "action": "Terminé",
         "dureeMinutes": 7,
         "timestamp": "2026-06-17T09:16:58.906Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Révisé (J4)",
+        "dureeMinutes": 29,
+        "easeFactor": 2.2,
+        "timestamp": "2026-06-17T10:05:28.809Z"
     }
 ]

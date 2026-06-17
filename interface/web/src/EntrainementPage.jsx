@@ -162,8 +162,22 @@ function EntrainementPage() {
     const newConf = JSON.parse(JSON.stringify(configLocal));
     const cm = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
+    let finalScore = score;
+    
+    // --- PÉNALITÉ / BONUS TEMPOREL ---
+    // Si l'utilisateur a passé beaucoup plus de temps que sa moyenne historique,
+    // on dégrade le score pour forcer une révision plus précoce.
+    if (elapsedMinutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
+      const ratio = elapsedMinutes / cm.tempsMoyen;
+      
+      if (ratio > 1.5 && finalScore > 1) finalScore -= 1; // +50% de temps = -1 point
+      if (ratio > 2.0 && finalScore > 1) finalScore -= 1; // +100% de temps = encore -1 point
+      
+      if (ratio < 0.5 && finalScore < 4) finalScore += 1; // 2x plus rapide = +1 point
+    }
+
     const { interval, easeFactor, repetitions } = calculateSM2(
-      score,
+      finalScore,
       cm.jActuel || 0,
       cm.easeFactor || 2.5,
       cm.repetitions || 0,
