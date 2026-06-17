@@ -907,12 +907,124 @@ input:focus, select:focus {
 }
 
 /* === OVERFLOW & TEXT FIXES === */
-.todo-item { word-break: break-word; overflow-wrap: break-word; }
+.todo-item { 
+  word-break: break-word; 
+  overflow-wrap: break-word;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: visible;
+}
+.todo-item:hover {
+  transform: translateY(-2px) scale(1.01);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(59, 130, 246, 0.1) inset;
+}
+:root.light .todo-item {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+:root.light .todo-item:hover {
+  background: #F8FAFC;
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(37, 99, 235, 0.1) inset;
+}
 .todo-item > div:first-child { min-width: 0; overflow: hidden; }
 .todo-item > div:first-child > div:first-child { 
   white-space: nowrap; 
   overflow: hidden; 
   text-overflow: ellipsis; 
+}
+
+/* === TIMELINE CONNECTOR === */
+.timeline-connector {
+  position: absolute;
+  left: -20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(59, 130, 246, 0.5), rgba(168, 85, 247, 0.5));
+  opacity: 0.5;
+}
+.timeline-dot {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 2px solid var(--accent-primary);
+  box-shadow: 0 0 8px var(--accent-glow);
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+.todo-item:hover .timeline-dot {
+  background: var(--accent-primary);
+  transform: translateY(-50%) scale(1.3);
+}
+
+/* === CIRCULAR PROGRESS === */
+.circular-progress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.circular-progress-circle {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+.circular-progress-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+}
+:root.light .circular-progress-bg {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+.circular-progress-fill {
+  fill: none;
+  stroke: var(--accent-primary);
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}
+.circular-progress-text {
+  position: absolute;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* === EMPTY STATE WAOUH === */
+.empty-state-container {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05));
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 10px 20px rgba(16, 185, 129, 0.3));
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
 }
 
 /* Config panel responsiveness */

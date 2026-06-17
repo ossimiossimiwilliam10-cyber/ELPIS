@@ -6,6 +6,38 @@ import useStore from './store';
 import { calculateSM2 } from './sm2';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
+const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const offset = circumference - (percent / 100) * circumference;
+
+  return (
+    <div className="circular-progress" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="circular-progress-circle">
+        <circle
+          className="circular-progress-bg"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+        />
+        <circle
+          className="circular-progress-fill"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <div className="circular-progress-text" style={{ fontSize: size * 0.25 }}>
+        {percent}%
+      </div>
+    </div>
+  );
+};
+
 function Dashboard() {
   const { config, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay } = useStore();
   const [data, setData] = useState(null);
@@ -245,7 +277,7 @@ function Dashboard() {
               : "Tu as tout terminé pour aujourd'hui. Bravo !"}
           </p>
         </div>
-        <div className="welcome-stats">
+        <div className="welcome-stats" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           <div className="welcome-stat">
             <div className="welcome-stat-value">{orderedTaches.length}</div>
             <div className="welcome-stat-label">Tâches</div>
@@ -254,13 +286,16 @@ function Dashboard() {
             <div className="welcome-stat-value">{Math.round(tempsRequisMin/60 * 10)/10}h</div>
             <div className="welcome-stat-label">Requis</div>
           </div>
-          <div className="welcome-stat">
-            <div className="welcome-stat-value">{globalPercent}%</div>
+          <div className="welcome-stat" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
+            <CircularProgress percent={globalPercent} />
             <div className="welcome-stat-label">Global</div>
           </div>
-          <div className="welcome-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1rem' }}>
-            <div className="welcome-stat-value">🔥 {config?.currentStreak || 0}</div>
-            <div className="welcome-stat-label" style={{ color: 'var(--accent-color)' }}>Record : {config?.bestStreak || 0}</div>
+          <div className="welcome-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className="welcome-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#F59E0B' }}>
+              <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 3s ease-in-out infinite' }}>🔥</span> 
+              <span style={{ fontSize: '2.4rem' }}>{config?.currentStreak || 0}</span>
+            </div>
+            <div className="welcome-stat-label" style={{ color: 'var(--text-secondary)' }}>Record : {config?.bestStreak || 0}</div>
           </div>
         </div>
       </div>
@@ -305,20 +340,23 @@ function Dashboard() {
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              style={{ textAlign: 'center', marginTop: '2rem', padding: '2rem', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px' }}
+              className="empty-state-container"
+              style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05))' }}
             >
-              <h3 style={{color:'var(--accent-color)', marginBottom: '0.5rem'}}>☕ Mode Repos Activé</h3>
-              <p style={{color:'var(--text-secondary)'}}>{data.message}</p>
-              <p style={{marginTop: '1rem', fontStyle: 'italic', fontSize: '0.9rem'}}>Les tâches prévues aujourd'hui ont été suspendues sans pénalité. Prends ce temps pour toi !</p>
+              <div className="empty-state-icon" style={{ filter: 'drop-shadow(0 10px 20px rgba(59, 130, 246, 0.3))' }}>☕</div>
+              <h3 style={{color:'var(--accent-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Mode Repos Activé</h3>
+              <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>{data.message}</p>
+              <p style={{marginTop: '1rem', fontStyle: 'italic', fontSize: '0.95rem', opacity: 0.8}}>Les tâches prévues aujourd'hui ont été suspendues sans pénalité. Prends ce temps pour toi !</p>
             </motion.div>
           ) : orderedTaches.length === 0 ? (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              style={{ textAlign: 'center', marginTop: '2rem', padding: '2rem', background: 'rgba(16, 185, 129, 0.05)', borderRadius: '12px' }}
+              className="empty-state-container"
             >
-              <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem'}}>🎉 Tout est terminé !</h3>
-              <p style={{color:'var(--text-secondary)'}}>Tu as accompli toutes tes tâches. Repose-toi bien !</p>
+              <div className="empty-state-icon">✨</div>
+              <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
+              <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes tes tâches pour aujourd'hui. Profite de ton temps libre, tu l'as bien mérité !</p>
               {surcharge && (
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
@@ -356,9 +394,12 @@ function Dashboard() {
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               className="todo-item"
+                              style={{ marginLeft: '20px' }}
                             >
+                              <div className="timeline-connector"></div>
+                              <div className="timeline-dot"></div>
                               <div style={{flex: 1}}>
-                                <div style={{fontWeight: 'bold'}}>{t.titre}</div>
+                                <div style={{fontWeight: 'bold', fontSize: '1.05rem', color: 'var(--text-primary)'}}>{t.titre}</div>
                                 <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
                                   {t.matiere} • {t.type}
                                   {t.moment === 'matin' && <span style={{marginLeft: '0.5rem', background: 'rgba(251, 191, 36, 0.15)', color: '#fbbf24', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>🌅 Matin</span>}
