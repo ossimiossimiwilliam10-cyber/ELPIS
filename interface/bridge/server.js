@@ -52,7 +52,13 @@ const storage = multer.diskStorage({
     cb(null, 'doc-' + uniqueSuffix + ext);
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50 MB max
+    files: 1
+  }
+});
 
 // Servir les documents stockés en interne
 app.use('/documents', express.static(DOCUMENTS_DIR));
@@ -187,12 +193,20 @@ app.post('/api/open/file', (req, res) => {
 });
 
 // POST upload pdf
-app.post('/api/upload/pdf', upload.single('pdf'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "Aucun fichier reçu." });
-  }
-  // Renvoie l'URL relative pour accéder au fichier
-  res.json({ success: true, url: `/documents/${req.file.filename}` });
+app.post('/api/upload/pdf', (req, res, next) => {
+  upload.single('pdf')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: "Fichier trop volumineux (50 MB maximum)." });
+      }
+      return res.status(500).json({ error: "Erreur lors de l'upload: " + err.message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ error: "Aucun fichier reçu." });
+    }
+    // Renvoie l'URL relative pour accéder au fichier
+    res.json({ success: true, url: `/documents/${req.file.filename}` });
+  });
 });
 
 // POST shutdown

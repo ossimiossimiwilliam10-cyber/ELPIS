@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import useStore from './store';
+import { parseDateLocal } from './parseDateLocal';
 
 function StatistiquesPage() {
   const { historique, coursConfig } = useStore();
@@ -136,8 +137,8 @@ function StatistiquesPage() {
       let minDays = Infinity;
       let nextExamDateStr = null;
       stats.examDates.forEach(dateStr => {
-        const date = new Date(dateStr);
-        if (!isNaN(date.getTime())) {
+        const date = parseDateLocal(dateStr);
+        if (date) {
           const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 3600 * 24));
           if (diffDays >= 0 && diffDays < minDays) {
             minDays = diffDays;

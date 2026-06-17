@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
 import { calculateSM2 } from './sm2';
+import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
@@ -52,6 +53,8 @@ function Dashboard() {
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [extraTime, setExtraTime] = useState(0);
+
+  const recommendedDailyHours = useWorkloadEngine();
 
   const getRestDaysUsed = () => {
     if (!config || !config.restDays) return 0;
@@ -287,6 +290,10 @@ function Dashboard() {
         </div>
         <div className="welcome-stats" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           <div className="welcome-stat">
+            <div className="welcome-stat-value" style={{color: 'var(--success-color)'}}>{recommendedDailyHours}h</div>
+            <div className="welcome-stat-label">Cible IA</div>
+          </div>
+          <div className="welcome-stat">
             <div className="welcome-stat-value">{orderedTaches.length}</div>
             <div className="welcome-stat-label">Tâches</div>
           </div>
@@ -489,8 +496,8 @@ function Dashboard() {
           
           <div style={{marginTop:'2rem', marginBottom:'1rem'}}>
             <div style={{display:'flex', justifyContent:'space-between', fontSize:'0.9rem'}}>
-              <span style={{color:'var(--text-secondary)'}}>Temps Requis : <strong>{Math.round(tempsRequisMin/60 * 10)/10}h</strong></span>
-              <span style={{color:'var(--text-secondary)'}}>Temps Libre : <strong>{Math.round(tempsDispoMin/60 * 10)/10}h</strong></span>
+              <span style={{color:'var(--text-secondary)'}}>Prévu : <strong>{Math.round(tempsRequisMin/60 * 10)/10}h</strong></span>
+              <span style={{color:'var(--text-secondary)'}}>Cible IA : <strong>{Math.round(tempsDispoMin/60 * 10)/10}h</strong></span>
             </div>
             <div className="progress-bar-container">
               <motion.div 

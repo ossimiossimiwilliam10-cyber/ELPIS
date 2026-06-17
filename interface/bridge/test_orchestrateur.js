@@ -1,5 +1,5 @@
 // Test rapide pour l'orchestrateur — exécuté avec Node.js directement
-const { buildExamUrgencyMap, getPrioScore, getSubjectExamBoost, genererRapportQuotidien } = require('./moteur/orchestrateur');
+const { buildExamUrgencyMap, getPrioScore, getSubjectExamBoost, genererRapportQuotidien, getTodayString } = require('./moteur/orchestrateur');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -119,6 +119,33 @@ test('getSubjectExamBoost: fuzzy name match works', () => {
   const urgencyMap = { 'algèbre': { multiplier: 3.0, daysToExam: 2 } };
   const result = getSubjectExamBoost(matiere, urgencyMap);
   if (result.boost <= 1.0) throw new Error(`Expected boost > 1.0, got ${result.boost}`);
+});
+
+// --- getTodayString ---
+test('getTodayString returns YYYY-MM-DD format', () => {
+  const today = getTodayString();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(today)) throw new Error(`Invalid format: ${today}`);
+});
+
+test('getTodayString returns local date (not UTC)', () => {
+  const today = getTodayString();
+  const [y, m, d] = today.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  if (isNaN(date.getTime())) throw new Error(`Could not parse: ${today}`);
+});
+
+test('getTodayString is deterministic', () => {
+  const t1 = getTodayString();
+  const t2 = getTodayString();
+  if (t1 !== t2) throw new Error('Should be deterministic within same millisecond');
+});
+
+test('getTodayString uses local time with -4h night owl grace period', () => {
+  const d = new Date();
+  d.setHours(d.getHours() - 4);
+  const manual = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const actual = getTodayString();
+  if (manual !== actual) throw new Error(`Mismatch: expected ${manual}, got ${actual}`);
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

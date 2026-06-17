@@ -5,7 +5,9 @@ const DAYS_OF_WEEK = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendre
 
 function getTodayString() {
   const d = new Date();
-  return d.toISOString().split('T')[0];
+  // Période de grâce (Night Owl) : 4h. Cohérent avec le frontend (store.js, Dashboard.jsx).
+  d.setHours(d.getHours() - 4);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
 function getDayOfWeekString() {
@@ -485,4 +487,4 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   return rapport;
 }
 
-module.exports = { genererRapportQuotidien, buildExamUrgencyMap, getPrioScore, getSubjectExamBoost };
+module.exports = { genererRapportQuotidien, buildExamUrgencyMap, getPrioScore, getSubjectExamBoost, getTodayString };

@@ -163,7 +163,7 @@ function AppInner() {
     if (window.confirm("ATTENTION : Supprimer toutes les données ? Cette action est IRREVERSIBLE.")) {
       if (window.confirm("Derniere chance ! Confirmez la suppression totale ?")) {
         try {
-          const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", maxStudyHoursPerDay: 8, targetGrade: 14, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0, bestStreak: 0 };
+          const emptyConfig = { studyStartDate: "07-09-2026", defaultSemesterEndDate: "15-01-2027", bedtime: "23:00", wakeUpTime: "07:00", targetGrade: 14, targetRank: 10, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0, bestStreak: 0 };
           useStore.getState().setConfig(emptyConfig);
           const emptyCours = { licences: [] };
           useStore.getState().setCoursConfig(emptyCours);
@@ -247,24 +247,58 @@ function AppInner() {
               </div>
 
               <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem', marginBottom: '2.5rem'}}>
-                {/* Préférences Générales */}
+                {/* Préférences Générales (Nouveau système IA) */}
                 <div className="card glass-panel" style={{display: 'flex', flexDirection: 'column'}}>
                   <h2 style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-primary)'}}>
-                    <span>🎯</span> Préférences Générales
+                    <span>🎯</span> Objectifs de Réussite
                   </h2>
+                  <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem'}}>
+                    Renseigne tes objectifs, l'IA s'occupe de calculer ton temps d'étude optimal chaque jour.
+                  </p>
+
                   <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>
                     <label style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontWeight: 'bold'}}>
-                      Objectif d'heures d'étude (Jour)
-                      <span style={{fontSize: '1.2rem', color: 'var(--success-color)'}}>{config.maxStudyHoursPerDay || 0}h</span>
+                      Note Cible Estimée
+                      <span style={{fontSize: '1.2rem', color: 'var(--success-color)'}}>{config.targetGrade || 14}/20</span>
                     </label>
                     <input 
                       type="range" 
-                      value={config.maxStudyHoursPerDay || 0}
-                      onChange={e => setConfig({...config, maxStudyHoursPerDay: parseInt(e.target.value) || 0})}
-                      min="1" max="15"
+                      value={config.targetGrade || 14}
+                      onChange={e => setConfig({...config, targetGrade: parseFloat(e.target.value) || 10})}
+                      min="10" max="20" step="0.5"
                       style={{width: '100%', cursor: 'pointer', accentColor: 'var(--accent-primary)'}}
                     />
-                    <small style={{display: 'block', color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '0.8rem'}}>Le système déduira automatiquement le temps étudié aujourd'hui.</small>
+                  </div>
+
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem'}}>
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px'}}>
+                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
+                        Rang Visé
+                      </label>
+                      <select 
+                        value={config.targetRank || 50} 
+                        onChange={e => setConfig({...config, targetRank: parseInt(e.target.value) || 50})}
+                        style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
+                      >
+                        <option value={50}>Moyen (Top 50%)</option>
+                        <option value={20}>Bon (Top 20%)</option>
+                        <option value={10}>Très Bon (Top 10%)</option>
+                        <option value={5}>Excellent (Top 5%)</option>
+                        <option value={1}>Major (Top 1%)</option>
+                      </select>
+                    </div>
+
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px'}}>
+                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
+                        Fin de Semestre
+                      </label>
+                      <input 
+                        type="date"
+                        value={config.defaultSemesterEndDate || "2027-01-15"}
+                        onChange={e => setConfig({...config, defaultSemesterEndDate: e.target.value})}
+                        style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)', fontSize: '0.85rem'}}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -325,7 +359,7 @@ function AppInner() {
                               const today = new Date(); today.setHours(0,0,0,0);
                               const upcoming = matiere.examDates
                                 .filter(d => d)
-                                .map(d => new Date(d.split('-').reverse().join('-') + 'T00:00:00'))
+                                .map(d => new Date(d + 'T00:00:00'))
                                 .filter(d => !isNaN(d.getTime()) && d >= today)
                                 .sort((a,b) => a - b);
                               if (upcoming.length > 0) {

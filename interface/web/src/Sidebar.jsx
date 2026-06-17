@@ -74,11 +74,16 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
             className="btn-secondary" 
             onClick={async () => {
               if (window.confirm("Voulez-vous vraiment éteindre ELPIS ?")) {
-                try {
-                  await fetch('/api/shutdown', { method: 'POST' });
-                  window.close();
-                } catch(e) {}
-                document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:white;font-family:sans-serif'><h1>ELPIS est éteint. Vous pouvez fermer cet onglet.</h1></div>";
+                // Tenter la requête shutdown (best effort)
+                try { await fetch('/api/shutdown', { method: 'POST' }); } catch(e) {}
+                // Tenter window.close() (ne fonctionne que si la page a été ouverte par script)
+                window.close();
+                // Si après 500ms la page est toujours ouverte, afficher un message propre
+                setTimeout(() => {
+                  if (!document.hidden && document.body) {
+                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:white;font-family:sans-serif'><h1>ELPIS est éteint. Vous pouvez fermer cet onglet.</h1></div>";
+                  }
+                }, 500);
               }
             }}
             title="Éteindre l'application"
