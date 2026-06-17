@@ -1,8 +1,7 @@
 
+import { produce } from 'immer';
 import EditableLabel from './EditableLabel';
 import EditableNote from './EditableNote';
-
-const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
 
 const StarRating = ({ value, onChange, tooltip }) => {
   return (
@@ -158,14 +157,14 @@ export default function MatiereCard({
                 onChange={(e) => {
                   const newJ = parseInt(e.target.value) || 0;
                   setConfigLocal(prev => {
-                    const newConf = deepClone(prev);
-                    const currentCM = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
-                    currentCM.jActuel = newJ;
-                    // Réinitialiser prochaineRevisionDate car l'intervalle a changé manuellement
-                    currentCM.prochaineRevisionDate = null;
-                    if (newJ > 0 && (!currentCM.derniereRevision || currentCM.derniereRevision === "")) {
-                      currentCM.derniereRevision = new Date().toISOString().split('T')[0];
-                    }
+                    const newConf = produce(prev, draft => {
+                      const currentCM = draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
+                      currentCM.jActuel = newJ;
+                      currentCM.prochaineRevisionDate = null;
+                      if (newJ > 0 && (!currentCM.derniereRevision || currentCM.derniereRevision === "")) {
+                        currentCM.derniereRevision = new Date().toISOString().split('T')[0];
+                      }
+                    });
                     setCoursConfig(newConf);
                     return newConf;
                   });

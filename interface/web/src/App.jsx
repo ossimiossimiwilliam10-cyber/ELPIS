@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import './index.css';
 import CoursPage from './CoursPage';
@@ -82,29 +83,37 @@ function AppInner() {
 
   // --- Subjects (Sujets à étudier avec dates d'examens, liés à coursConfig) ---
   const updateMatiereField = (lIndex, sIndex, uIndex, mIndex, field, value) => {
-    const newCours = JSON.parse(JSON.stringify(coursConfig));
-    newCours.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex][field] = value;
-    useStore.getState().setCoursConfig(newCours);
+    useStore.getState().setCoursConfig(
+      produce(coursConfig, draft => {
+        draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex][field] = value;
+      })
+    );
   };
 
   const addMatiereExamDate = (lIndex, sIndex, uIndex, mIndex) => {
-    const newCours = JSON.parse(JSON.stringify(coursConfig));
-    const mat = newCours.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
-    if (!mat.examDates) mat.examDates = [];
-    mat.examDates.push("");
-    useStore.getState().setCoursConfig(newCours);
+    useStore.getState().setCoursConfig(
+      produce(coursConfig, draft => {
+        const mat = draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
+        if (!mat.examDates) mat.examDates = [];
+        mat.examDates.push("");
+      })
+    );
   };
 
   const updateMatiereExamDate = (lIndex, sIndex, uIndex, mIndex, dIndex, value) => {
-    const newCours = JSON.parse(JSON.stringify(coursConfig));
-    newCours.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].examDates[dIndex] = value;
-    useStore.getState().setCoursConfig(newCours);
+    useStore.getState().setCoursConfig(
+      produce(coursConfig, draft => {
+        draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].examDates[dIndex] = value;
+      })
+    );
   };
 
   const removeMatiereExamDate = (lIndex, sIndex, uIndex, mIndex, dIndex) => {
-    const newCours = JSON.parse(JSON.stringify(coursConfig));
-    newCours.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].examDates.splice(dIndex, 1);
-    useStore.getState().setCoursConfig(newCours);
+    useStore.getState().setCoursConfig(
+      produce(coursConfig, draft => {
+        draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].examDates.splice(dIndex, 1);
+      })
+    );
   };
 
   const downloadBackup = () => {

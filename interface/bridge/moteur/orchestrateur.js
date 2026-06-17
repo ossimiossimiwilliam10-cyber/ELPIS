@@ -145,6 +145,18 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
 
   const examUrgencyMap = buildExamUrgencyMap(crs);
 
+  /** Multiplier de difficulté pour une tâche donnée. */
+  function getDifficultyMultiplier(difficulte) {
+    switch (difficulte) {
+      case 'difficile': return 1.5;
+      case 'assez_difficile': return 1.2;
+      case 'moyen': return 1.0;
+      case 'facile': return 0.8;
+      case 'tres_facile': return 0.5;
+      default: return 1.0;
+    }
+  }
+
   // 1. Calculate available time
   const heuresTravailJour = Math.max(1, cfg.maxStudyHoursPerDay || 8);
   const maxSubjectsPerDay = cfg.maxSubjectsPerDay || 4;
@@ -204,17 +216,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   const studyStart = studyStartRaw ? new Date(studyStartRaw + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
   const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
   const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
-
-  function getDifficultyMultiplier(difficulte) {
-    switch (difficulte) {
-      case 'difficile': return 1.5;
-      case 'assez_difficile': return 1.2;
-      case 'moyen': return 1.0;
-      case 'facile': return 0.8;
-      case 'tres_facile': return 0.5;
-      default: return 1.0;
-    }
-  }
 
   // Pools de tâches
   const poolCM = [];
@@ -307,7 +308,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
               type: "TD",
               titre: ex.titre,
               dureeMinutes: Math.round(dureeEstimee),
-              pdfSource: ex.pdfSource || "",
+              pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
               prio: getPrioScore(ex, examUrgencyMap, m.nom)
@@ -324,7 +325,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
               type: "TP",
               titre: ex.titre,
               dureeMinutes: Math.round(dureeEstimee),
-              pdfSource: ex.pdfSource || "",
+              pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
               prio: getPrioScore(ex, examUrgencyMap, m.nom)
@@ -342,7 +343,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
                 type: "ANNALE",
                 titre: ex.titre,
                 dureeMinutes: Math.round(dureeEstimee),
-                pdfSource: ex.pdfSource || "",
+                pdfPath: ex.pdfPath || "",
                 page: ex.page || 1,
                 difficulte: ex.difficulte || "",
                 prio: 9999
@@ -465,4 +466,4 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   return rapport;
 }
 
-module.exports = { genererRapportQuotidien };
+module.exports = { genererRapportQuotidien, buildExamUrgencyMap, getPrioScore, getSubjectExamBoost };

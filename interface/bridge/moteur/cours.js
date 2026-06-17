@@ -71,7 +71,8 @@ function loadCours(filePath = COURS_PATH) {
 }
 
 function saveCours(coursConfig, filePath = COURS_PATH) {
-  // Merge with existing to preserve all fields
+  // Fusion superficielle : le frontend envoie toujours l'objet complet.
+  // Pour une vraie fusion profonde (merge des licences), il faudrait itérer.
   const existing = loadCours(filePath);
   const merged = JSON.parse(JSON.stringify({ ...existing, ...coursConfig }));
   const cleaned = sanitizeCours(merged);

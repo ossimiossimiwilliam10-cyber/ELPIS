@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
@@ -78,74 +79,64 @@ function Dashboard() {
 
   const handleTaskComplete = (tache, difficulte = "") => {
     if (!coursConfig) return;
-    const newConfig = JSON.parse(JSON.stringify(coursConfig));
     const today = getTodayStr();
 
     let taskFound = false;
-    newConfig.licences.forEach(licence => {
-      licence.semestres.forEach(semestre => {
-        semestre.ues.forEach(ue => {
-          ue.matieres.forEach(matiere => {
-            if (matiere.nom === tache.matiere) {
+    const newConfig = produce(coursConfig, draft => {
+      draft.licences.forEach(licence =>
+        licence.semestres.forEach(semestre =>
+          semestre.ues.forEach(ue =>
+            ue.matieres.forEach(matiere => {
+              if (matiere.nom !== tache.matiere) return;
               if (tache.type === 'CM') {
                 matiere.listeCM.forEach(cm => {
-                  if (cm.titre === tache.titre) {
-                    let actualDaysElapsed = -1;
-                    if (cm.derniereRevision) {
-                      const revDate = new Date(cm.derniereRevision + 'T00:00:00');
-                      const nowDate = new Date(today + 'T00:00:00');
-                      actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
-                    }
-
-                    const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
-                      3, // Default to 'Good' when marking as done from dashboard
-                      cm.jActuel || 0,
-                      cm.easeFactor || 2.5,
-                      cm.repetitions || 0,
-                      newConfig,
-                      actualDaysElapsed
-                    );
-
-                    cm.jActuel = interval;
-                    cm.easeFactor = easeFactor;
-                    cm.repetitions = repetitions;
-                    cm.derniereRevision = today;
-                    cm.prochaineRevisionDate = prochaineRevisionDate;
-                    taskFound = true;
+                  if (cm.titre !== tache.titre) return;
+                  let actualDaysElapsed = -1;
+                  if (cm.derniereRevision) {
+                    const revDate = new Date(cm.derniereRevision + 'T00:00:00');
+                    const nowDate = new Date(today + 'T00:00:00');
+                    actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
                   }
+                  const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
+                    3, cm.jActuel || 0, cm.easeFactor || 2.5, cm.repetitions || 0,
+                    coursConfig, actualDaysElapsed
+                  );
+                  cm.jActuel = interval;
+                  cm.easeFactor = easeFactor;
+                  cm.repetitions = repetitions;
+                  cm.derniereRevision = today;
+                  cm.prochaineRevisionDate = prochaineRevisionDate;
+                  taskFound = true;
                 });
               } else if (tache.type === 'TD') {
                 matiere.listeTD.forEach(td => {
-                  if (td.titre === tache.titre) {
-                    td.dernierePratique = today;
-                    td.nombrePratiques = (td.nombrePratiques || 0) + 1;
-                    if (difficulte) td.difficulte = difficulte;
-                    taskFound = true;
-                  }
+                  if (td.titre !== tache.titre) return;
+                  td.dernierePratique = today;
+                  td.nombrePratiques = (td.nombrePratiques || 0) + 1;
+                  if (difficulte) td.difficulte = difficulte;
+                  taskFound = true;
                 });
               } else if (tache.type === 'TP') {
                 matiere.listeTP.forEach(tp => {
-                  if (tp.titre === tache.titre) {
-                    tp.dernierePratique = today;
-                    tp.nombrePratiques = (tp.nombrePratiques || 0) + 1;
-                    if (difficulte) tp.difficulte = difficulte;
-                    taskFound = true;
-                  }
+                  if (tp.titre !== tache.titre) return;
+                  tp.dernierePratique = today;
+                  tp.nombrePratiques = (tp.nombrePratiques || 0) + 1;
+                  if (difficulte) tp.difficulte = difficulte;
+                  taskFound = true;
                 });
               } else if (tache.type === 'ANNALE') {
                 matiere.listeAnnales?.forEach(annale => {
-                  if (annale.titre === tache.titre) {
-                    annale.dernierePratique = today;
-                    annale.nombrePratiques = (annale.nombrePratiques || 0) + 1;
-                    if (difficulte) annale.difficulte = difficulte;
-                    taskFound = true;
-                  }
+                  if (annale.titre !== tache.titre) return;
+                  annale.dernierePratique = today;
+                  annale.nombrePratiques = (annale.nombrePratiques || 0) + 1;
+                  if (difficulte) annale.difficulte = difficulte;
+                  taskFound = true;
                 });
               }
-            }
-          });
-        });
-      });
+            })
+          )
+        )
+      );
     });
 
     if (taskFound) {

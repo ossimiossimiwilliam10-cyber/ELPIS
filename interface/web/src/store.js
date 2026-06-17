@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 import debounce from 'lodash/debounce';
 
 // API base URL
@@ -46,7 +47,7 @@ const debouncedSaveHistorique = debounce(async (historique) => {
 }, 500);
 
 
-const useStore = create((set, get) => ({
+const useStore = create(immer((set, get) => ({
   // --- STATE ---
   config: null,
   coursConfig: null,
@@ -248,6 +249,6 @@ const useStore = create((set, get) => ({
     }
   }
 
-}));
+})));
 
 export default useStore;

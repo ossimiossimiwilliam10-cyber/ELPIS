@@ -12,7 +12,8 @@ export function getLoadForDate(dateStr, configLocal) {
             } else if (cm.jActuel > 0 && cm.derniereRevision) {
               const nextDate = new Date(cm.derniereRevision + 'T00:00:00');
               nextDate.setDate(nextDate.getDate() + cm.jActuel);
-              if (nextDate.toISOString().split('T')[0] === dateStr) {
+              const nextStr = nextDate.getFullYear() + '-' + String(nextDate.getMonth() + 1).padStart(2, '0') + '-' + String(nextDate.getDate()).padStart(2, '0');
+              if (nextStr === dateStr) {
                 count++;
               }
             }
@@ -44,7 +45,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal) {
 
     const testDate = new Date(baseDate);
     testDate.setDate(testDate.getDate() + testInterval);
-    const testDateStr = testDate.toISOString().split('T')[0];
+    const testDateStr = testDate.getFullYear() + '-' + String(testDate.getMonth() + 1).padStart(2, '0') + '-' + String(testDate.getDate()).padStart(2, '0');
 
     const load = getLoadForDate(testDateStr, configLocal);
     
@@ -104,12 +105,14 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
   }
 
   // Load balancing : ajuster l'intervalle
-  const todayStr = new Date().toISOString().split('T')[0];
+  const d = new Date();
+  d.setHours(d.getHours() - 4); // Période de grâce (Night Owl) cohérente avec le reste de l'app
+  const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   const optimalInterval = findOptimalInterval(todayStr, newInterval, configLocal);
 
   const [y, m, dNum] = todayStr.split('-').map(Number);
-  const nextDate = new Date(Date.UTC(y, m - 1, dNum + optimalInterval));
-  const prochaineRevisionDate = nextDate.toISOString().split('T')[0];
+  const nextDate = new Date(y, m - 1, dNum + optimalInterval);
+  const prochaineRevisionDate = nextDate.getFullYear() + '-' + String(nextDate.getMonth() + 1).padStart(2, '0') + '-' + String(nextDate.getDate()).padStart(2, '0');
 
   return {
     interval: optimalInterval,

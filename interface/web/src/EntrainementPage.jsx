@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
@@ -59,7 +60,7 @@ function EntrainementPage() {
   // Resynchroniser le state local quand le parent change
   useEffect(() => {
     if (coursConfig && coursConfig.licences) {
-      setConfigLocal(JSON.parse(JSON.stringify(coursConfig)));
+      setConfigLocal(coursConfig);
     }
   }, [coursConfig]);
 
@@ -132,24 +133,21 @@ function EntrainementPage() {
   }, [configLocal, tachesOrchestrateur]);
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
-    const newConf = JSON.parse(JSON.stringify(configLocal));
     const d = new Date();
     d.setHours(d.getHours() - 4);
     const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-    const cm = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
+
+    const newConf = produce(configLocal, draft => {
+      const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
     let finalScore = score;
     
     // --- PÉNALITÉ / BONUS TEMPOREL ---
-    // Si l'utilisateur a passé beaucoup plus de temps que sa moyenne historique,
-    // on dégrade le score pour forcer une révision plus précoce.
     if (elapsedMinutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
       const ratio = elapsedMinutes / cm.tempsMoyen;
-      
-      if (ratio > 1.5 && finalScore > 1) finalScore -= 1; // +50% de temps = -1 point
-      if (ratio > 2.0 && finalScore > 1) finalScore -= 1; // +100% de temps = encore -1 point
-      
-      if (ratio < 0.5 && finalScore < 4) finalScore += 1; // 2x plus rapide = +1 point
+      if (ratio > 1.5 && finalScore > 1) finalScore -= 1;
+      if (ratio > 2.0 && finalScore > 1) finalScore -= 1;
+      if (ratio < 0.5 && finalScore < 4) finalScore += 1;
     }
 
     let actualDaysElapsed = -1;
@@ -165,7 +163,7 @@ function EntrainementPage() {
       cm.jActuel || 0,
       cm.easeFactor || 2.5,
       cm.repetitions || 0,
-      newConf,
+      configLocal,
       actualDaysElapsed
     );
 
@@ -184,6 +182,7 @@ function EntrainementPage() {
       cm.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
       cm.nombreRevisionsTemps = currentCount + 1;
     }
+    });
     
     confetti({
       particleCount: 100,
@@ -199,19 +198,18 @@ function EntrainementPage() {
       titre: cm.titre,
       matiere: exo.matiereNom,
       action: `Révisé (J${cm.jActuel})`,
-      dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (configLocal?.defaultDurationRevCM || 30),
+      dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30),
       easeFactor: easeFactor
     });
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
     const todayStr = getTodayStr();
-    const newConf = JSON.parse(JSON.stringify(configLocal));
-    
+    const newConf = produce(configLocal, draft => {
     let targetList;
-    if (exo.type === 'TD') targetList = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
-    else if (exo.type === 'TP') targetList = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
-    else if (exo.type === 'ANNALE') targetList = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeAnnales;
+    if (exo.type === 'TD') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
+    else if (exo.type === 'TP') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
+    else if (exo.type === 'ANNALE') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeAnnales;
 
     const currentExo = targetList[exo.exIndex];
     currentExo.dernierePratique = todayStr;
@@ -224,6 +222,7 @@ function EntrainementPage() {
       currentExo.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
       currentExo.nombreRevisionsTemps = currentCount + 1;
     }
+    });
     
     confetti({
       particleCount: 100,
@@ -235,13 +234,18 @@ function EntrainementPage() {
     setConfigLocal(newConf);
     setCoursConfig(newConf);
     let fallbackDuration = 30;
-    if (exo.type === 'TD') fallbackDuration = configLocal?.defaultDurationTD || 20;
-    else if (exo.type === 'TP') fallbackDuration = configLocal?.defaultDurationTP || 30;
-    else if (exo.type === 'ANNALE') fallbackDuration = configLocal?.defaultDurationAnnales || 60;
+    if (exo.type === 'TD') fallbackDuration = config?.defaultDurationTD || 20;
+    else if (exo.type === 'TP') fallbackDuration = config?.defaultDurationTP || 30;
+    else if (exo.type === 'ANNALE') fallbackDuration = config?.defaultDurationAnnales || 60;
+
+    // Find updated exo for history entry
+    const updatedExo = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex][
+      exo.type === 'TD' ? 'listeTD' : exo.type === 'TP' ? 'listeTP' : 'listeAnnales'
+    ][exo.exIndex];
 
     addHistoriqueEntry({
       type: exo.type,
-      titre: currentExo.titre,
+      titre: updatedExo.titre,
       matiere: exo.matiereNom,
       action: 'Terminé',
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration

@@ -201,13 +201,38 @@ app.post('/api/shutdown', (req, res) => {
   setTimeout(() => process.exit(0), 1000);
 });
 
+// Cache orchestrateur : évite de recalculer à chaque rafraîchissement (10s TTL)
+const orchestratorCache = { rapport: null, configMtime: 0, coursMtime: 0, extraTime: -1, timestamp: 0 };
+const CACHE_TTL_MS = 10_000;
+
 // GET orchestrator report
 app.get('/api/orchestrateur', (req, res) => {
   try {
     const { CONFIG_PATH } = require('./moteur/config');
     const { COURS_PATH } = require('./moteur/cours');
     const extraTime = parseInt(req.query.extraTime) || 0;
-    const rapport = genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime);
+
+    const configMtime = fs.existsSync(CONFIG_PATH) ? fs.statSync(CONFIG_PATH).mtimeMs : 0;
+    const coursMtime = fs.existsSync(COURS_PATH) ? fs.statSync(COURS_PATH).mtimeMs : 0;
+    const now = Date.now();
+    const cacheValid = orchestratorCache.rapport
+      && orchestratorCache.configMtime === configMtime
+      && orchestratorCache.coursMtime === coursMtime
+      && orchestratorCache.extraTime === extraTime
+      && (now - orchestratorCache.timestamp) < CACHE_TTL_MS;
+
+    const rapport = cacheValid
+      ? orchestratorCache.rapport
+      : genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime);
+
+    if (!cacheValid) {
+      orchestratorCache.rapport = rapport;
+      orchestratorCache.configMtime = configMtime;
+      orchestratorCache.coursMtime = coursMtime;
+      orchestratorCache.extraTime = extraTime;
+      orchestratorCache.timestamp = now;
+    }
+
     res.json(rapport);
   } catch (err) {
     console.error("Erreur orchestrateur:", err);
