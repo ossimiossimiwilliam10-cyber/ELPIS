@@ -58,6 +58,38 @@ const useStore = create((set, get) => ({
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
 
+  // --- CHRONO STATE ---
+  globalChrono: {
+    exoId: null, // Identifiant de l'exercice (titre ou id)
+    titre: null,
+    matiereNom: null,
+    isRunning: false,
+    elapsedSeconds: 0,
+  },
+
+  startGlobalChrono: (exo) => set({
+    globalChrono: {
+      exoId: exo.id || exo.titre, // fallback sur le titre si id n'existe pas
+      titre: exo.titre,
+      matiereNom: exo.matiereNom,
+      isRunning: true,
+      elapsedSeconds: 0
+    }
+  }),
+  toggleGlobalChrono: () => set(state => ({
+    globalChrono: { ...state.globalChrono, isRunning: !state.globalChrono.isRunning }
+  })),
+  resetGlobalChrono: () => set(state => ({
+    globalChrono: { ...state.globalChrono, isRunning: false, elapsedSeconds: 0, exoId: null, titre: null, matiereNom: null }
+  })),
+  tickGlobalChrono: () => set(state => {
+    if (state.globalChrono.isRunning) {
+      return { globalChrono: { ...state.globalChrono, elapsedSeconds: state.globalChrono.elapsedSeconds + 1 } };
+    }
+    return state;
+  }),
+
+
   updatePendingTasksCount: async () => {
     try {
       const res = await fetch(`${API_URL}/orchestrateur?extraTime=0`);

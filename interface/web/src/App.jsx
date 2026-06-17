@@ -7,6 +7,7 @@ import Dashboard from './Dashboard';
 import Sidebar from './Sidebar';
 import StatistiquesPage from './StatistiquesPage';
 import GlobalSearchModal from './GlobalSearchModal';
+import GlobalChrono from './components/GlobalChrono';
 import { ToastProvider, useToast } from './ToastProvider';
 import useStore from './store';
 
@@ -468,6 +469,7 @@ function AppInner() {
       </main>
       
       <GlobalSearchModal />
+      <GlobalChrono />
     </div>
   );
 }

@@ -1,23 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import useStore from '../../store';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, itemVariants }) {
-  const [isRunning, setIsRunning] = useState(false);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
+  
+  const exoId = exo.id || exo.titre;
+  const isThisExoActive = globalChrono.exoId === exoId;
+  const isRunning = isThisExoActive && globalChrono.isRunning;
+  const elapsedSeconds = isThisExoActive ? globalChrono.elapsedSeconds : 0;
 
-  useEffect(() => {
-    let interval = null;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setElapsedSeconds(s => s + 1);
-      }, 1000);
-    } else if (!isRunning && elapsedSeconds !== 0) {
-      clearInterval(interval);
+  const toggleTimer = () => {
+    if (isThisExoActive) {
+      toggleGlobalChrono();
+    } else {
+      startGlobalChrono(exo);
     }
-    return () => clearInterval(interval);
-  }, [isRunning, elapsedSeconds]);
-
-  const toggleTimer = () => setIsRunning(!isRunning);
+  };
 
   const formatTime = (totalSeconds) => {
     const m = Math.floor(totalSeconds / 60);
@@ -26,7 +25,9 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
   };
 
   const handleValidation = (callback, ...args) => {
-    setIsRunning(false);
+    if (isThisExoActive) {
+      resetGlobalChrono();
+    }
     // Convert elapsed seconds to minutes, rounding up to nearest minute. Minimum 1 minute if started.
     const elapsedMinutes = elapsedSeconds > 0 ? Math.max(1, Math.ceil(elapsedSeconds / 60)) : 0;
     callback(exo, ...args, elapsedMinutes);
