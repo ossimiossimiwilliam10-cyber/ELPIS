@@ -110,5 +110,22 @@
         "matiere": "Programmation",
         "action": "Terminé",
         "timestamp": "2026-06-16T21:54:24.250Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Révisé (J3)",
+        "dureeMinutes": 30,
+        "easeFactor": 2.5,
+        "timestamp": "2026-06-17T08:59:49.309Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 2 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
+        "matiere": "Algèbre",
+        "action": "Terminé",
+        "dureeMinutes": 20,
+        "timestamp": "2026-06-17T09:05:29.035Z"
     }
 ]
