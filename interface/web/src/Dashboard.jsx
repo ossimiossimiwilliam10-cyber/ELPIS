@@ -21,18 +21,26 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
           r={radius}
           strokeWidth={strokeWidth}
         />
-        <circle
+        <motion.circle
           className="circular-progress-fill"
           cx={size / 2}
           cy={size / 2}
           r={radius}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
-          strokeDashoffset={offset}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
         />
       </svg>
       <div className="circular-progress-text" style={{ fontSize: size * 0.25 }}>
-        {percent}%
+        <motion.span
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          {percent}%
+        </motion.span>
       </div>
     </div>
   );
@@ -292,7 +300,7 @@ function Dashboard() {
           </div>
           <div className="welcome-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className="welcome-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#F59E0B' }}>
-              <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 3s ease-in-out infinite' }}>🔥</span> 
+              <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 4s ease-in-out infinite' }}>🔥</span> 
               <span style={{ fontSize: '2.4rem' }}>{config?.currentStreak || 0}</span>
             </div>
             <div className="welcome-stat-label" style={{ color: 'var(--text-secondary)' }}>Record : {config?.bestStreak || 0}</div>
@@ -486,7 +494,7 @@ function Dashboard() {
             </div>
             <div className="progress-bar-container">
               <motion.div 
-                className="progress-bar-fill" 
+                className={`progress-bar-fill ${surcharge ? 'surcharge' : ''}`}
                 initial={{ width: 0 }}
                 animate={{ width: `${pourcentageCharge}%` }}
                 transition={{ duration: 1, ease: "easeOut" }}
