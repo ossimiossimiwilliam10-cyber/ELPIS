@@ -6,11 +6,34 @@ import { calculateSM2 } from './sm2';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 function Dashboard() {
-  const { config, coursConfig, setCoursConfig, addHistoriqueEntry } = useStore();
+  const { config, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay } = useStore();
   const [data, setData] = useState(null);
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [extraTime, setExtraTime] = useState(0);
+
+  const getRestDaysUsed = () => {
+    if (!config || !config.restDays) return 0;
+    const now = new Date();
+    const dayOfWeek = now.getDay() || 7;
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - dayOfWeek + 1);
+    startOfWeek.setHours(0,0,0,0);
+    return config.restDays.filter(d => {
+      const date = new Date(d + 'T00:00:00');
+      return date >= startOfWeek;
+    }).length;
+  };
+
+  const getTodayStr = () => {
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  };
+
+  const restDaysUsed = getRestDaysUsed();
+  const todayStr = getTodayStr();
+  const isRestDayToday = config?.restDays?.includes(todayStr);
 
   const DIFFICULTY_LEVELS = [
     { key: 'difficile', label: '🔴', title: 'Difficile' },
@@ -56,7 +79,7 @@ function Dashboard() {
   const handleTaskComplete = (tache, difficulte = "") => {
     if (!coursConfig) return;
     const newConfig = JSON.parse(JSON.stringify(coursConfig));
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayStr();
 
     let taskFound = false;
     newConfig.licences.forEach(licence => {
@@ -251,7 +274,22 @@ function Dashboard() {
         </div>
       </div>
 
-      <div style={{display:'flex', justifyContent:'flex-end', marginBottom:'1rem'}}>
+      <div style={{display:'flex', justifyContent:'flex-end', marginBottom:'1rem', gap: '1rem'}}>
+        {statut !== "REPOS" && !isRestDayToday && (
+          <button 
+            className="btn-secondary" 
+            onClick={() => {
+              if (window.confirm(`Activer un jour de repos ? Il te reste ${2 - restDaysUsed} repos pour cette semaine.`)) {
+                activateRestDay();
+              }
+            }} 
+            disabled={restDaysUsed >= 2}
+            style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', opacity: restDaysUsed >= 2 ? 0.5 : 1}}
+            title={restDaysUsed >= 2 ? "Quota de repos (2/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}
+          >
+            ☕ Activer Jour de Repos ({restDaysUsed}/2)
+          </button>
+        )}
         <button 
           className="btn-secondary" 
           onClick={() => window.print()} 
@@ -272,7 +310,17 @@ function Dashboard() {
         >
           <h2>🎯 Objectifs du Jour</h2>
           
-          {orderedTaches.length === 0 ? (
+          {statut === "REPOS" ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              style={{ textAlign: 'center', marginTop: '2rem', padding: '2rem', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px' }}
+            >
+              <h3 style={{color:'var(--accent-color)', marginBottom: '0.5rem'}}>☕ Mode Repos Activé</h3>
+              <p style={{color:'var(--text-secondary)'}}>{data.message}</p>
+              <p style={{marginTop: '1rem', fontStyle: 'italic', fontSize: '0.9rem'}}>Les tâches prévues aujourd'hui ont été suspendues sans pénalité. Prends ce temps pour toi !</p>
+            </motion.div>
+          ) : orderedTaches.length === 0 ? (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

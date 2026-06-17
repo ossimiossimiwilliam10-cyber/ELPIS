@@ -130,6 +130,19 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   const crs = loadCours(coursPath);
   const rapport = {};
 
+  const todayStr = getTodayString();
+  const now = new Date();
+
+  // --- MODE REPOS ---
+  if (cfg.restDays && cfg.restDays.includes(todayStr)) {
+    rapport.statut = "REPOS";
+    rapport.tachesDuJour = [];
+    rapport.tempsRequisMin = 0;
+    rapport.tempsDispoMin = 0;
+    rapport.message = "Jour de repos imposé. Recharge tes batteries !";
+    return rapport;
+  }
+
   const examUrgencyMap = buildExamUrgencyMap(crs);
 
   // 1. Calculate available time
@@ -147,9 +160,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   tempsLibreMin += extraTimeMin;
   
   rapport.tempsDispoMin = tempsLibreMin;
-
-  const todayStr = getTodayString();
-  const now = new Date();
 
   // 2. Calculer le temps déjà travaillé aujourd'hui
   let tempsDejaTravailleMin = 0;

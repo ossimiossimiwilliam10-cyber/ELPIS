@@ -144,6 +144,47 @@ const useStore = create((set, get) => ({
     debouncedSaveConfig(merged);
   },
 
+  activateRestDay: async () => {
+    const config = get().config;
+    if (!config) return;
+    
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    let restDays = config.restDays || [];
+    
+    // Calculate how many rest days were taken this week (Mon-Sun)
+    const now = new Date();
+    const dayOfWeek = now.getDay() || 7; // 1-7 (Mon-Sun)
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - dayOfWeek + 1);
+    startOfWeek.setHours(0,0,0,0);
+    
+    const restDaysThisWeek = restDays.filter(d => {
+      const date = new Date(d + 'T00:00:00');
+      return date >= startOfWeek;
+    }).length;
+
+    if (restDaysThisWeek < 2 && !restDays.includes(todayStr)) {
+      restDays = [...restDays, todayStr];
+      const newConfig = { ...config, restDays };
+      set({ config: newConfig });
+      
+      // Save directly without debounce to ensure immediate effect before re-fetching
+      try {
+        await fetch(`${API_URL}/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newConfig)
+        });
+        // Now update pending tasks which will query the orchestrator
+        get().updatePendingTasksCount();
+      } catch (e) {
+        console.error("Failed to save rest day", e);
+      }
+    }
+  },
+
   // Update cours state and trigger auto-save
   setCoursConfig: (newCours) => {
     set({ coursConfig: newCours });

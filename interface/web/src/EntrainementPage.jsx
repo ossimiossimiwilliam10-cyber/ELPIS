@@ -9,8 +9,14 @@ import ExerciceCard from './components/cours/ExerciceCard';
 
 
 function EntrainementPage() {
-  const { coursConfig, setCoursConfig, addHistoriqueEntry, config } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, startGlobalChrono, globalChrono, resetGlobalChrono } = useStore();
   const { toast } = useToast();
+
+  const getTodayStr = () => {
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  };
   const [configLocal, setConfigLocal] = useState(() => {
     if (coursConfig && coursConfig.licences) return JSON.parse(JSON.stringify(coursConfig));
     return { licences: [] };
@@ -106,7 +112,9 @@ function EntrainementPage() {
   // Count total (including already completed today)
   const totalExercisesToday = useMemo(() => {
     let completedToday = 0;
-    const todayStr = new Date().toISOString().split('T')[0];
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 
     configLocal.licences?.forEach(l => {
       l.semestres?.forEach(s => {
@@ -125,6 +133,9 @@ function EntrainementPage() {
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
     const newConf = JSON.parse(JSON.stringify(configLocal));
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     const cm = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
     let finalScore = score;
@@ -143,7 +154,7 @@ function EntrainementPage() {
 
     let actualDaysElapsed = -1;
     if (cm.derniereRevision) {
-      const todayStrLocal = new Date().toISOString().split('T')[0];
+      const todayStrLocal = getTodayStr();
       const revDate = new Date(cm.derniereRevision + 'T00:00:00');
       const nowDate = new Date(todayStrLocal + 'T00:00:00');
       actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
@@ -163,7 +174,7 @@ function EntrainementPage() {
     cm.repetitions = repetitions;
     cm.prochaineRevisionDate = prochaineRevisionDate;
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayStr();
     cm.derniereRevision = today;
     
     // Update tempsMoyen if a timer was used
@@ -194,7 +205,7 @@ function EntrainementPage() {
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getTodayStr();
     const newConf = JSON.parse(JSON.stringify(configLocal));
     
     let targetList;
@@ -253,25 +264,47 @@ function EntrainementPage() {
       <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem', flexWrap:'wrap', gap:'1rem'}}>
         <div style={{display:'flex', alignItems:'center', gap:'1.5rem'}}>
           <h2 style={{margin:0}}>Session du Jour</h2>
-          <button 
-            className="btn-secondary" 
-            style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem', background:'rgba(2, 132, 199, 0.2)', color:'#38bdf8', borderColor:'#0ea5e9'}}
-            onClick={async () => {
-              try {
-                const res = await fetch('/api/open/anki', { method: 'POST' });
-                const data = await res.json();
-                if (!res.ok || !data.success) {
-                  toast.error(data.error || "Échec du lancement d'Anki.");
-                } else {
-                  toast.success("Anki lancé avec succès !");
+          {globalChrono.exoId === 'anki' ? (
+            <button 
+              className="btn-secondary" 
+              style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem', background:'rgba(16, 185, 129, 0.2)', color:'#10b981', borderColor:'#059669'}}
+              onClick={() => {
+                const elapsedMinutes = Math.round(globalChrono.elapsedSeconds / 60);
+                addHistoriqueEntry({
+                  type: 'ANKI',
+                  titre: 'Session Anki',
+                  matiere: 'Révisions globales',
+                  action: 'Terminé',
+                  dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : 1
+                });
+                resetGlobalChrono();
+                toast.success(`Session Anki de ${elapsedMinutes > 0 ? elapsedMinutes : 1} min enregistrée !`);
+              }}
+            >
+              ✅ Terminer Anki
+            </button>
+          ) : (
+            <button 
+              className="btn-secondary" 
+              style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem', background:'rgba(2, 132, 199, 0.2)', color:'#38bdf8', borderColor:'#0ea5e9'}}
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/open/anki', { method: 'POST' });
+                  const data = await res.json();
+                  if (!res.ok || !data.success) {
+                    toast.error(data.error || "Échec du lancement d'Anki.");
+                  } else {
+                    toast.success("Anki lancé avec succès !");
+                    startGlobalChrono({ id: 'anki', titre: 'Session Anki', matiereNom: 'Révisions globales' });
+                  }
+                } catch(e) {
+                  toast.error("Impossible de contacter le serveur.");
                 }
-              } catch(e) {
-                toast.error("Impossible de contacter le serveur.");
-              }
-            }}
-          >
-            🗂️ Lancer Anki
-          </button>
+              }}
+            >
+              🗂️ Lancer Anki
+            </button>
+          )}
         </div>
         <span style={{color:'var(--text-secondary)'}}>{exercicesDuJour.length} exercice{exercicesDuJour.length > 1 ? 's' : ''} restant{exercicesDuJour.length > 1 ? 's' : ''}</span>
       </div>
