@@ -33,6 +33,20 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
     callback(exo, ...args, elapsedMinutes);
   };
 
+  const handleOpenPdf = async () => {
+    if (!exo.pdfPath) return;
+    
+    // Si l'URL commence par http, c'est un lien web classique ou le lien relatif /documents/... retourné par le backend
+    // Mais window.open gère très bien les liens relatifs comme absolus.
+    let url = exo.pdfPath;
+    if (url.startsWith('/documents/')) {
+      // Pour être sûr, on utilise le localhost du bridge
+      url = 'http://localhost:3001' + url;
+    }
+    
+    window.open(url, '_blank');
+  };
+
   return (
     <motion.div 
       variants={itemVariants}
@@ -101,31 +115,30 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
         )}
       </div>
 
-      <div style={{display:'flex', gap:'0.5rem'}}>
-        {exo.type === 'CM' ? (
-           <>
-             <button onClick={() => handleValidation(onEvaluateCM, 1)} style={{flex:1, background:'#ef4444', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Échec">À revoir (1)</button>
-             <button onClick={() => handleValidation(onEvaluateCM, 2)} style={{flex:1, background:'#f97316', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Difficile">Difficile (2)</button>
-             <button onClick={() => handleValidation(onEvaluateCM, 3)} style={{flex:1, background:'#3b82f6', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Bien">Bien (3)</button>
-             <button onClick={() => handleValidation(onEvaluateCM, 4)} style={{flex:1, background:'#22c55e', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Parfait">Parfait (4)</button>
-           </>
-        ) : (
+      <div style={{display:'flex', gap:'0.5rem', flexDirection: 'column'}}>
+        {exo.pdfPath && (
+          <button 
+            onClick={handleOpenPdf}
+            className="btn-secondary"
+            style={{background:'var(--bg-tertiary)', color:'var(--text-primary)', border:'1px solid rgba(255,255,255,0.1)', padding:'0.6rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', marginBottom:'0.5rem'}}
+          >
+            📄 Ouvrir le document
+          </button>
+        )}
+        <div style={{display:'flex', gap:'0.5rem'}}>
+          {exo.type === 'CM' ? (
+             <>
+               <button onClick={() => handleValidation(onEvaluateCM, 1)} style={{flex:1, background:'#ef4444', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Échec">À revoir (1)</button>
+               <button onClick={() => handleValidation(onEvaluateCM, 2)} style={{flex:1, background:'#f97316', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Difficile">Difficile (2)</button>
+               <button onClick={() => handleValidation(onEvaluateCM, 3)} style={{flex:1, background:'#3b82f6', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Bien">Bien (3)</button>
+               <button onClick={() => handleValidation(onEvaluateCM, 4)} style={{flex:1, background:'#22c55e', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Parfait">Parfait (4)</button>
+             </>
+          ) : (
            <div style={{display:'flex', width:'100%', gap:'0.5rem'}}>
-             {exo.pdfSource && (
-               <a 
-                 href={`${exo.pdfSource}#page=${exo.page}`} 
-                 target="_blank" 
-                 rel="noreferrer"
-                 className="btn-primary"
-                 style={{flex:1, textAlign:'center', textDecoration:'none', padding:'0.6rem'}}
-               >
-                 Page {exo.page}
-               </a>
-             )}
              <button 
                onClick={() => handleValidation(onMarkAsDone, "")}
                className="btn-secondary"
-               style={{background:'#10B981', color:'white', border:'none', flex: exo.pdfSource ? 1 : 2}}
+               style={{background:'#10B981', color:'white', border:'none', flex: 2}}
              >
                Fait
              </button>
@@ -152,7 +165,8 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
                ))}
              </div>
            </div>
-        )}
+          )}
+        </div>
       </div>
     </motion.div>
   );

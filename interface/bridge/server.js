@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer');
 
 const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
@@ -35,6 +36,26 @@ app.use('/api/', apiLimiter);
 
 const ROOT_DIR = path.join(__dirname, '..', '..');
 const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
+const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
+
+if (!fs.existsSync(DOCUMENTS_DIR)) {
+  fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, DOCUMENTS_DIR)
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'doc-' + uniqueSuffix + ext);
+  }
+});
+const upload = multer({ storage: storage });
+
+// Servir les documents stockés en interne
+app.use('/documents', express.static(DOCUMENTS_DIR));
 
 // ===================== ROUTES =====================
 
@@ -144,6 +165,34 @@ app.post('/api/open/anki', (req, res) => {
   
   child.unref();
   res.json({ success: true, message: "Anki lancé avec succès." });
+});
+
+// POST open file (PDF or other)
+app.post('/api/open/file', (req, res) => {
+  const { exec } = require('child_process');
+  const filepath = req.body.filepath;
+  
+  if (!filepath) {
+    return res.status(400).json({ error: "Chemin du fichier manquant." });
+  }
+
+  // Use 'start' command on Windows to open file with default application
+  exec(`start "" "${filepath}"`, (error) => {
+    if (error) {
+      console.error("Erreur ouverture fichier:", error.message);
+      return res.status(500).json({ error: "Impossible d'ouvrir le fichier." });
+    }
+    res.json({ success: true, message: "Fichier ouvert." });
+  });
+});
+
+// POST upload pdf
+app.post('/api/upload/pdf', upload.single('pdf'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "Aucun fichier reçu." });
+  }
+  // Renvoie l'URL relative pour accéder au fichier
+  res.json({ success: true, url: `/documents/${req.file.filename}` });
 });
 
 // POST shutdown

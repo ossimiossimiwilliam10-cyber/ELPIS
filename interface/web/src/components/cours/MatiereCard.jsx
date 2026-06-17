@@ -24,6 +24,41 @@ export default function MatiereCard({
     setCoursConfig
   } = actions;
 
+  const handleUploadClick = (pathArray) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/pdf';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+        alert('Veuillez sélectionner un fichier PDF.');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('pdf', file);
+      
+      try {
+        const res = await fetch('http://localhost:3001/api/upload/pdf', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          updateField(pathArray, data.url);
+        } else {
+          alert("Erreur lors de l'upload: " + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erreur réseau lors de l'upload.");
+      }
+    };
+    input.click();
+  };
+
   return (
     <div style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0}}>
       {/* MATIERE HEADER */}
@@ -59,6 +94,19 @@ export default function MatiereCard({
       {matiere.listeCM?.map((cm, cmIndex) => (
         <div key={`cm-${cmIndex}`} className="cm-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => deleteCM(lIndex, sIndex, uIndex, mIndex, cmIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+          <button 
+            onClick={() => {
+              if (cm.pdfPath && window.confirm("Remplacer le document existant ?")) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'pdfPath']);
+              } else if (!cm.pdfPath) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'pdfPath']);
+              }
+            }}
+            style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: cm.pdfPath ? 1 : 0.4, padding:0}}
+            title={cm.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+          >
+            📄
+          </button>
           <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
             <EditableLabel
               value={cm.titre}
@@ -119,6 +167,19 @@ export default function MatiereCard({
       {matiere.listeTD?.map((td, tdIndex) => (
         <div key={`td-${tdIndex}`} className="td-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => deleteTD(lIndex, sIndex, uIndex, mIndex, tdIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+          <button 
+            onClick={() => {
+              if (td.pdfPath && window.confirm("Remplacer le document existant ?")) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'pdfPath']);
+              } else if (!td.pdfPath) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'pdfPath']);
+              }
+            }}
+            style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: td.pdfPath ? 1 : 0.4, padding:0}}
+            title={td.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+          >
+            📄
+          </button>
           <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
             <EditableLabel
               value={td.titre}
@@ -150,6 +211,19 @@ export default function MatiereCard({
       {matiere.listeTP?.map((tp, tpIndex) => (
         <div key={`tp-${tpIndex}`} className="tp-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => deleteTP(lIndex, sIndex, uIndex, mIndex, tpIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+          <button 
+            onClick={() => {
+              if (tp.pdfPath && window.confirm("Remplacer le document existant ?")) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'pdfPath']);
+              } else if (!tp.pdfPath) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'pdfPath']);
+              }
+            }}
+            style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: tp.pdfPath ? 1 : 0.4, padding:0}}
+            title={tp.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+          >
+            📄
+          </button>
           <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
             <EditableLabel
               value={tp.titre}
@@ -181,6 +255,19 @@ export default function MatiereCard({
       {matiere.listeAnnales?.map((annale, aIndex) => (
         <div key={`annale-${aIndex}`} className="annale-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(239, 68, 68, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => actions.deleteAnnale(lIndex, sIndex, uIndex, mIndex, aIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+          <button 
+            onClick={() => {
+              if (annale.pdfPath && window.confirm("Remplacer le document existant ?")) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'pdfPath']);
+              } else if (!annale.pdfPath) {
+                handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'pdfPath']);
+              }
+            }}
+            style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: annale.pdfPath ? 1 : 0.4, padding:0}}
+            title={annale.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+          >
+            📄
+          </button>
           <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
             <EditableLabel
               value={annale.titre}
