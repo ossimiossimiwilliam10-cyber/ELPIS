@@ -1,16 +1,27 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import './index.css';
-import CoursPage from './CoursPage';
-import EntrainementPage from './EntrainementPage';
 import Dashboard from './Dashboard';
 import Sidebar from './Sidebar';
-import StatistiquesPage from './StatistiquesPage';
 import GlobalSearchModal from './GlobalSearchModal';
 import GlobalChrono from './components/GlobalChrono';
 import { ToastProvider, useToast } from './ToastProvider';
+
+// Code splitting : pages lourdes chargées à la demande
+const CoursPage = lazy(() => import('./CoursPage'));
+const EntrainementPage = lazy(() => import('./EntrainementPage'));
+const StatistiquesPage = lazy(() => import('./StatistiquesPage'));
 import useStore from './store';
+
+// Mini-fallback pour le chargement paresseux des pages
+const LoadingFallback = () => (
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px', color: 'var(--text-secondary)' }}>
+    <div className="spinner" style={{ width: '28px', height: '28px', border: '3px solid var(--bg-tertiary)', borderTop: '3px solid var(--accent-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginRight: '0.75rem' }}></div>
+    Chargement...
+    <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+  </div>
+);
 
 function AppInner() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
@@ -198,7 +209,9 @@ function AppInner() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <StatistiquesPage />
+              <Suspense fallback={<LoadingFallback />}>
+                <StatistiquesPage />
+              </Suspense>
             </motion.div>
           )}
 
@@ -459,7 +472,9 @@ function AppInner() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <CoursPage />
+              <Suspense fallback={<LoadingFallback />}>
+                <CoursPage />
+              </Suspense>
             </motion.div>
           )}
 
@@ -471,7 +486,9 @@ function AppInner() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <EntrainementPage />
+              <Suspense fallback={<LoadingFallback />}>
+                <EntrainementPage />
+              </Suspense>
             </motion.div>
           )}
         </AnimatePresence>

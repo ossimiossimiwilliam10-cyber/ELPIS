@@ -126,4 +126,55 @@ describe('findOptimalInterval', () => {
     // window=1, offsets 2/3/4. Date 18 is loaded, best is 2 (load=0, lower penalty)
     expect(result).toBe(2);
   });
+
+  it('should handle windowSize=7 for large intervals', () => {
+    // targetInterval=100, window=min(7, floor(15)) = 7
+    const result = findOptimalInterval('2026-06-15', 100, configWithOneCM);
+    expect(result).toBeGreaterThanOrEqual(100 - 7);
+    expect(result).toBeLessThanOrEqual(100 + 7);
+  });
+
+  it('should skip negative test intervals', () => {
+    // targetInterval=2, window=1, offsets -1,0,+1. Offset -1 → testInterval=1 (valid)
+    const result = findOptimalInterval('2026-06-15', 2, configWithOneCM);
+    expect(result).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// --- Integration: calculateSM2 + load balancing ---
+describe('calculateSM2 integration with load balancing', () => {
+  it('should use configWithOneCM for load-aware scheduling', () => {
+    const result = calculateSM2(3, 30, 2.5, 3, configWithOneCM);
+    expect(result.interval).toBeGreaterThan(0);
+    expect(typeof result.prochaineRevisionDate).toBe('string');
+  });
+
+  it('should respect the ease factor floor of 1.3', () => {
+    // score=1, EF drops
+    let ef = 1.4;
+    const result = calculateSM2(1, 10, ef, 2, emptyConfig);
+    expect(result.easeFactor).toBeGreaterThanOrEqual(1.3);
+  });
+
+  it('should not blow up with missing config', () => {
+    const result = calculateSM2(3, 5, 2.5, 2, emptyConfig);
+    expect(result.interval).toBeGreaterThan(0);
+  });
+
+  it('should return increasing intervals for consecutive Good scores', () => {
+    const intervals = [];
+    let prev = 0, ef = 2.5, reps = 0;
+    for (let i = 0; i < 5; i++) {
+      const r = calculateSM2(3, prev, ef, reps, emptyConfig);
+      intervals.push(r.interval);
+      prev = r.interval;
+      ef = r.easeFactor;
+      reps = r.repetitions;
+    }
+    // Intervals should generally increase (1, 3, 8, 20, ...)
+    expect(intervals[0]).toBe(1);
+    expect(intervals[1]).toBe(3);
+    expect(intervals[2]).toBeGreaterThan(intervals[1]);
+    expect(intervals[4]).toBeGreaterThan(intervals[2]);
+  });
 });

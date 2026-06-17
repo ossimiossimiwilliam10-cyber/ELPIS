@@ -65,5 +65,61 @@ test('generates report with OK status', () => {
   if (!Array.isArray(r.tachesDuJour)) throw new Error('tachesDuJour should be array');
 });
 
+test('report has all required fields', () => {
+  const r = genererRapportQuotidien(
+    require('path').join(__dirname, '..', '..', 'espoir_config.json'),
+    require('path').join(__dirname, '..', '..', 'espoir_cours.json'),
+    0
+  );
+  ['statut', 'tachesDuJour', 'tempsRequisMin', 'tempsDispoMin'].forEach(f => {
+    if (!r.hasOwnProperty(f)) throw new Error(`Missing field: ${f}`);
+  });
+});
+
+test('extraTime increases tempsDispoMin', () => {
+  const path = require('path');
+  const cfgPath = path.join(__dirname, '..', '..', 'espoir_config.json');
+  const crsPath = path.join(__dirname, '..', '..', 'espoir_cours.json');
+  const r0 = genererRapportQuotidien(cfgPath, crsPath, 0);
+  const r60 = genererRapportQuotidien(cfgPath, crsPath, 60);
+  if (r0.statut === 'REPOS') { console.log('  ⚠ Skipped: today is a rest day'); return; } if (r60.tempsDispoMin <= r0.tempsDispoMin) throw new Error('Extra time should increase dispo');
+});
+
+test('returns OK or SURCHARGE or REPOS status', () => {
+  const r = genererRapportQuotidien(
+    require('path').join(__dirname, '..', '..', 'espoir_config.json'),
+    require('path').join(__dirname, '..', '..', 'espoir_cours.json'),
+    0
+  );
+  if (!['OK', 'SURCHARGE', 'REPOS'].includes(r.statut)) throw new Error(`Invalid statut: ${r.statut}`);
+});
+
+// getPrioScore additional edge cases
+test('getPrioScore: missing fields use defaults', () => {
+  const ex = {};
+  const score = getPrioScore(ex, null, null);
+  if (typeof score !== 'number' || score <= 0) throw new Error(`Invalid score: ${score}`);
+});
+
+test('getPrioScore: works without urgency map', () => {
+  const ex = { nombrePratiques: 5, difficulte: 'facile' };
+  const score = getPrioScore(ex, null, 'Algèbre');
+  if (typeof score !== 'number') throw new Error('Should return number');
+});
+
+// getSubjectExamBoost additional edge cases
+test('getSubjectExamBoost: handles matiere without exam', () => {
+  const matiere = { nom: 'Nouvelle Matière', coefficient: 1 };
+  const result = getSubjectExamBoost(matiere, {});
+  if (result.boost !== 1.0) throw new Error(`Expected 1.0, got ${result.boost}`);
+});
+
+test('getSubjectExamBoost: fuzzy name match works', () => {
+  const matiere = { nom: 'Algèbre Linéaire', coefficient: 1 };
+  const urgencyMap = { 'algèbre': { multiplier: 3.0, daysToExam: 2 } };
+  const result = getSubjectExamBoost(matiere, urgencyMap);
+  if (result.boost <= 1.0) throw new Error(`Expected boost > 1.0, got ${result.boost}`);
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
