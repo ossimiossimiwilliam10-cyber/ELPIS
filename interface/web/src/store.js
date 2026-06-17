@@ -75,9 +75,15 @@ const useStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const [resConfig, resCours, resHist] = await Promise.all([
-        fetch(`${API_URL}/config`).then(r => r.json()),
-        fetch(`${API_URL}/cours`).then(r => r.json()),
-        fetch(`${API_URL}/historique`).then(r => r.ok ? r.json() : []) // Not yet implemented on backend, fallback to []
+        fetch(`${API_URL}/config`).then(async r => {
+          if (!r.ok) throw new Error(`Erreur chargement config (${r.status})`);
+          return r.json();
+        }),
+        fetch(`${API_URL}/cours`).then(async r => {
+          if (!r.ok) throw new Error(`Erreur chargement cours (${r.status})`);
+          return r.json();
+        }),
+        fetch(`${API_URL}/historique`).then(r => r.ok ? r.json() : [])
       ]);
 
       set({ 
@@ -93,7 +99,7 @@ const useStore = create((set, get) => ({
       get().updatePendingTasksCount();
 
     } catch (err) {
-      set({ error: err.message, loading: false });
+      set({ error: err?.message || 'Erreur réseau lors du chargement des données.', loading: false });
     }
   },
 
@@ -140,7 +146,7 @@ const useStore = create((set, get) => ({
         const [ly, lm, ld] = lastActive.split('-').map(Number);
         const lastDate = new Date(ly, lm - 1, ld);
         const todayDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        const diffTime = Math.abs(todayDate - lastDate);
+        const diffTime = todayDate - lastDate;
         const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
         if (diffDays === 1) {
           streak += 1;

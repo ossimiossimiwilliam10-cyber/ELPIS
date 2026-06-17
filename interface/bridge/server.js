@@ -51,6 +51,9 @@ app.get('/api/config', (req, res) => {
 // POST update config
 app.post('/api/config', (req, res) => {
   try {
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({ error: "Données de configuration invalides." });
+    }
     const success = saveConfig(req.body);
     if (!success) {
       return res.status(500).json({ error: "Erreur sauvegarde configuration." });
@@ -74,6 +77,12 @@ app.get('/api/cours', (req, res) => {
 // POST update courses
 app.post('/api/cours', (req, res) => {
   try {
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({ error: "Données de cours invalides." });
+    }
+    if (!req.body.licences && !req.body.semestres) {
+      return res.status(400).json({ error: "Structure de cours invalide (licences ou semestres requis)." });
+    }
     const success = saveCours(req.body);
     if (!success) {
       return res.status(500).json({ error: "Erreur sauvegarde des cours." });
@@ -101,7 +110,12 @@ app.get('/api/historique', (req, res) => {
 // POST update history
 app.post('/api/historique', (req, res) => {
   try {
-    fs.writeFileSync(HISTORIQUE_FILE, JSON.stringify(req.body, null, 4));
+    if (!Array.isArray(req.body)) {
+      return res.status(400).json({ error: "L'historique doit être un tableau." });
+    }
+    // Limit history to 10 000 entries to prevent unbounded growth
+    const trimmed = req.body.length > 10000 ? req.body.slice(req.body.length - 10000) : req.body;
+    fs.writeFileSync(HISTORIQUE_FILE, JSON.stringify(trimmed, null, 4));
     res.json({ success: true, message: "Historique mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur sauvegarde historique." });

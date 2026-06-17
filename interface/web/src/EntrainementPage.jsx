@@ -103,7 +103,7 @@ function EntrainementPage() {
   });
 
     return exosToReview;
-  }, [configLocal]);
+  }, [configLocal, config]);
 
   // Get unique matiere names for filter pills
   const matiereNames = useMemo(() => {
@@ -144,7 +144,7 @@ function EntrainementPage() {
                   else if (cm.jActuel === 0) {
                      if (cm.derniereRevision !== todayStr) total++;
                   } else {
-                     const nextDate = new Date(cm.derniereRevision);
+                     const nextDate = new Date(cm.derniereRevision + 'T00:00:00');
                      nextDate.setDate(nextDate.getDate() + cm.jActuel);
                      if (nextDate.toISOString().split('T')[0] <= todayStr) total++;
                   }
@@ -156,7 +156,7 @@ function EntrainementPage() {
     });
   });
     return total;
-  }, [configLocal]);
+  }, [configLocal, config]);
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
     const newConf = JSON.parse(JSON.stringify(configLocal));
@@ -198,7 +198,9 @@ function EntrainementPage() {
       type: 'CM',
       titre: cm.titre,
       matiere: exo.matiereNom,
-      action: `Révisé (J${cm.jActuel})`
+      action: `Révisé (J${cm.jActuel})`,
+      dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (configLocal?.defaultDurationRevCM || 30),
+      easeFactor: easeFactor
     });
   };
 
@@ -232,11 +234,17 @@ function EntrainementPage() {
 
     setConfigLocal(newConf);
     setCoursConfig(newConf);
+    let fallbackDuration = 30;
+    if (exo.type === 'TD') fallbackDuration = configLocal?.defaultDurationTD || 20;
+    else if (exo.type === 'TP') fallbackDuration = configLocal?.defaultDurationTP || 30;
+    else if (exo.type === 'ANNALE') fallbackDuration = configLocal?.defaultDurationAnnales || 60;
+
     addHistoriqueEntry({
       type: exo.type,
       titre: currentExo.titre,
       matiere: exo.matiereNom,
-      action: 'Terminé'
+      action: 'Terminé',
+      dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration
     });
   };
 

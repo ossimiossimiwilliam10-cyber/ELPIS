@@ -128,10 +128,17 @@ function Dashboard() {
         type: tache.type, 
         titre: tache.titre, 
         matiere: tache.matiere,
-        action: 'Terminé'
+        action: 'Terminé',
+        dureeMinutes: tache.dureeMinutes || 0
       });
     }
   };
+
+  // Dynamic greeting (must be before early returns)
+  const hour = new Date().getHours();
+  let greeting = 'Bonsoir';
+  if (hour >= 5 && hour < 12) greeting = 'Bonjour';
+  else if (hour >= 12 && hour < 18) greeting = 'Bon après-midi';
 
   if (loading) {
     return (
@@ -187,12 +194,6 @@ function Dashboard() {
 
   const stats = getStats();
   const globalPercent = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
-
-  // Dynamic greeting
-  const hour = new Date().getHours();
-  let greeting = 'Bonsoir';
-  if (hour >= 5 && hour < 12) greeting = 'Bonjour';
-  else if (hour >= 12 && hour < 18) greeting = 'Bon après-midi';
 
   const containerVariants = {
     hidden: { opacity: 0 },

@@ -45,6 +45,12 @@ function sanitizeCours(c) {
             ex.page = Math.max(1, Math.min(9999, ex.page ?? 1));
             ex.nombrePratiques = Math.max(0, Math.min(10000, ex.nombrePratiques ?? 0));
           }
+
+          if (!m.listeAnnales) m.listeAnnales = [];
+          for (const ex of m.listeAnnales) {
+            ex.page = Math.max(1, Math.min(9999, ex.page ?? 1));
+            ex.nombrePratiques = Math.max(0, Math.min(10000, ex.nombrePratiques ?? 0));
+          }
         }
       }
     }

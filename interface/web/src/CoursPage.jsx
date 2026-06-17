@@ -271,9 +271,13 @@ function CoursPage() {
   const getNextReviewDate = (cm) => {
     if (!cm.derniereRevision) return "Aujourd'hui";
     if (cm.jActuel === 0) return "Aujourd'hui";
-    const date = new Date(cm.derniereRevision);
+    // Use T00:00:00 to avoid UTC/local ambiguity with YYYY-MM-DD strings
+    const date = new Date(cm.derniereRevision + 'T00:00:00');
+    if (isNaN(date.getTime())) return "Aujourd'hui";
     date.setDate(date.getDate() + cm.jActuel);
-    const diffTime = date.getTime() - new Date().getTime();
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const diffTime = date.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
     if (diffDays <= 0) return "Aujourd'hui";
