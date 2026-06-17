@@ -169,5 +169,13 @@
         "action": "Terminé",
         "dureeMinutes": 13,
         "timestamp": "2026-06-17T12:58:05.427Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 3 - page 2",
+        "matiere": "Algèbre",
+        "action": "Terminé",
+        "dureeMinutes": 10,
+        "timestamp": "2026-06-17T13:33:43.691Z"
     }
 ]

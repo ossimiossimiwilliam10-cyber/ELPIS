@@ -18,7 +18,7 @@ const debouncedSaveConfig = debounce(async (config) => {
   }
 }, 500);
 
-const debouncedSaveCours = debounce(async (coursConfig) => {
+const debouncedSaveCours = debounce(async (coursConfig, get) => {
   try {
     await fetch(`${API_URL}/cours`, {
       method: 'POST',
@@ -26,6 +26,7 @@ const debouncedSaveCours = debounce(async (coursConfig) => {
       body: JSON.stringify(coursConfig)
     });
     console.log('Auto-saved cours');
+    if (get) get().updatePendingTasksCount();
   } catch (e) {
     console.error('Failed to auto-save cours', e);
   }
@@ -146,9 +147,7 @@ const useStore = create((set, get) => ({
   // Update cours state and trigger auto-save
   setCoursConfig: (newCours) => {
     set({ coursConfig: newCours });
-    debouncedSaveCours(newCours);
-    // Refresh pending count since cours data changed
-    get().updatePendingTasksCount();
+    debouncedSaveCours(newCours, get);
   },
 
   // Update history state and trigger auto-save
