@@ -25,8 +25,8 @@ export function useWorkloadEngine() {
           u.matieres?.forEach(m => {
             // A. Base Effort
             const coeff = m.coefficient || 1;
-            // Assuming 1 coeff = ~10 hours of personal work for a semester
-            const baseEffortHours = coeff * 10;
+            // Assuming 1 coeff = ~15 hours of personal work for a semester
+            const baseEffortHours = coeff * 15;
 
             // B. Multipliers
             const targetGrade = config.targetGrade || 14;
