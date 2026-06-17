@@ -153,5 +153,21 @@
         "dureeMinutes": 40,
         "easeFactor": 2.5,
         "timestamp": "2026-06-17T11:18:36.278Z"
+    },
+    {
+        "type": "TD",
+        "titre": "P1 - 1. Distribution isotrope de charge - page 10",
+        "matiere": "Électromagnétisme",
+        "action": "Terminé",
+        "dureeMinutes": 20,
+        "timestamp": "2026-06-17T12:21:24.515Z"
+    },
+    {
+        "type": "TD",
+        "titre": "P1 - 2. Charge volumique électronique dans l'atome d'hydrogène - page 11",
+        "matiere": "Électromagnétisme",
+        "action": "Terminé",
+        "dureeMinutes": 13,
+        "timestamp": "2026-06-17T12:58:05.427Z"
     }
 ]

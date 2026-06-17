@@ -167,11 +167,16 @@ const useStore = create((set, get) => ({
 
     // Use local date to avoid UTC timezone shift near midnight
     const d = new Date();
+    // Période de grâce (Night Owl) : 4 heures. Si on révise à 3h du matin, c'est compté pour la veille.
+    d.setHours(d.getHours() - 4);
     const today = d.getFullYear() + '-' + 
       String(d.getMonth() + 1).padStart(2, '0') + '-' + 
       String(d.getDate()).padStart(2, '0');
     let streak = config.currentStreak || 0;
     let lastActive = config.lastActiveDate || "";
+    let bestStreak = config.bestStreak || 0;
+
+    let updated = false;
 
     if (lastActive !== today) {
       if (lastActive) {
@@ -188,8 +193,16 @@ const useStore = create((set, get) => ({
       } else {
         streak = 1;
       }
-      
-      const newConfig = { ...config, lastActiveDate: today, currentStreak: streak };
+      updated = true;
+    }
+
+    if (streak > bestStreak) {
+      bestStreak = streak;
+      updated = true;
+    }
+
+    if (updated) {
+      const newConfig = { ...config, lastActiveDate: today, currentStreak: streak, bestStreak };
       set({ config: newConfig });
       debouncedSaveConfig(newConfig);
     }

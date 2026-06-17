@@ -43,13 +43,17 @@ export default function MatiereCard({
   const handleUploadClick = (pathArray) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'application/pdf';
+    input.accept = 'application/pdf,image/*';
+    
     input.onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
+
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      const isImg = file.type.startsWith('image/');
       
-      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert('Veuillez sélectionner un fichier PDF.');
+      if (!isPdf && !isImg) {
+        alert('Veuillez sélectionner un fichier PDF ou une image.');
         return;
       }
       
@@ -57,7 +61,7 @@ export default function MatiereCard({
       formData.append('pdf', file);
       
       try {
-        const res = await fetch('http://localhost:3001/api/upload/pdf', {
+        const res = await fetch('/api/upload/pdf', {
           method: 'POST',
           body: formData
         });
@@ -119,7 +123,7 @@ export default function MatiereCard({
               }
             }}
             style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: cm.pdfPath ? 1 : 0.4, padding:0}}
-            title={cm.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+            title={cm.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF ou Image)"}
           >
             📄
           </button>
@@ -157,6 +161,8 @@ export default function MatiereCard({
                     const newConf = deepClone(prev);
                     const currentCM = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
                     currentCM.jActuel = newJ;
+                    // Réinitialiser prochaineRevisionDate car l'intervalle a changé manuellement
+                    currentCM.prochaineRevisionDate = null;
                     if (newJ > 0 && (!currentCM.derniereRevision || currentCM.derniereRevision === "")) {
                       currentCM.derniereRevision = new Date().toISOString().split('T')[0];
                     }
@@ -192,7 +198,7 @@ export default function MatiereCard({
               }
             }}
             style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: td.pdfPath ? 1 : 0.4, padding:0}}
-            title={td.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+            title={td.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF ou Image)"}
           >
             📄
           </button>
@@ -243,7 +249,7 @@ export default function MatiereCard({
               }
             }}
             style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: tp.pdfPath ? 1 : 0.4, padding:0}}
-            title={tp.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+            title={tp.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF ou Image)"}
           >
             📄
           </button>
@@ -294,7 +300,7 @@ export default function MatiereCard({
               }
             }}
             style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', opacity: annale.pdfPath ? 1 : 0.4, padding:0}}
-            title={annale.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF)"}
+            title={annale.pdfPath ? `Document lié. Cliquez pour remplacer.` : "Importer un document (PDF ou Image)"}
           >
             📄
           </button>

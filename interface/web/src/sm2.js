@@ -5,8 +5,12 @@ export function getLoadForDate(dateStr, configLocal) {
       s.ues?.forEach(u => {
         u.matieres?.forEach(m => {
           m.listeCM?.forEach(cm => {
-            if (cm.jActuel > 0 && cm.derniereRevision) {
-              const nextDate = new Date(cm.derniereRevision);
+            if (cm.prochaineRevisionDate) {
+              if (cm.prochaineRevisionDate === dateStr) {
+                count++;
+              }
+            } else if (cm.jActuel > 0 && cm.derniereRevision) {
+              const nextDate = new Date(cm.derniereRevision + 'T00:00:00');
               nextDate.setDate(nextDate.getDate() + cm.jActuel);
               if (nextDate.toISOString().split('T')[0] === dateStr) {
                 count++;
@@ -23,7 +27,7 @@ export function getLoadForDate(dateStr, configLocal) {
 export function findOptimalInterval(baseDateStr, targetInterval, configLocal) {
   if (targetInterval <= 1) return targetInterval;
 
-  const baseDate = new Date(baseDateStr);
+  const baseDate = new Date(baseDateStr + 'T00:00:00');
   
   // Define a search window based on interval size
   // e.g., if interval is 30 days, we can shift by +/- 3 days.
@@ -58,7 +62,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal) {
   return bestInterval;
 }
 
-export function calculateSM2(score, previousInterval, easeFactor, repetitions, configLocal) {
+export function calculateSM2(score, previousInterval, easeFactor, repetitions, configLocal, actualDaysElapsed = -1) {
   // score: 1 (Fail), 2 (Hard), 3 (Good), 4 (Perfect)
   let newEaseFactor = easeFactor || 2.5;
   let newRepetitions = repetitions || 0;
@@ -83,7 +87,13 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
     } else if (newRepetitions === 1) {
       newInterval = 3; // On commence par un petit saut
     } else {
-      newInterval = Math.round(previousInterval * newEaseFactor);
+      // Late review bonus : Si révision en retard et succès, on utilise le temps réel
+      let effectivePreviousInterval = previousInterval;
+      if (actualDaysElapsed > previousInterval && score >= 3) {
+        effectivePreviousInterval = actualDaysElapsed;
+      }
+      
+      newInterval = Math.round(effectivePreviousInterval * newEaseFactor);
       
       // Bonus pour le score 4
       if (score === 4) {
@@ -97,9 +107,14 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
   const todayStr = new Date().toISOString().split('T')[0];
   const optimalInterval = findOptimalInterval(todayStr, newInterval, configLocal);
 
+  const [y, m, dNum] = todayStr.split('-').map(Number);
+  const nextDate = new Date(Date.UTC(y, m - 1, dNum + optimalInterval));
+  const prochaineRevisionDate = nextDate.toISOString().split('T')[0];
+
   return {
     interval: optimalInterval,
     easeFactor: newEaseFactor,
-    repetitions: newRepetitions
+    repetitions: newRepetitions,
+    prochaineRevisionDate
   };
 }

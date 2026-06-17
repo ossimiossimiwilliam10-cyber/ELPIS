@@ -16,6 +16,22 @@ function EntrainementPage() {
     return { licences: [] };
   });
   const [filterMatiere, setFilterMatiere] = useState('all');
+  const [topSubjects, setTopSubjects] = useState(null);
+  const [tachesOrchestrateur, setTachesOrchestrateur] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/orchestrateur')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.tachesDuJour) {
+          setTachesOrchestrateur(data.tachesDuJour);
+          const subjects = new Set();
+          data.tachesDuJour.forEach(t => subjects.add(t.matiere));
+          setTopSubjects(Array.from(subjects));
+        }
+      })
+      .catch(err => console.error(err));
+  }, [coursConfig]);
 
   const DIFFICULTY_LEVELS = [
     { key: 'difficile', label: '🔴', title: 'Difficile' },
@@ -41,122 +57,71 @@ function EntrainementPage() {
     }
   }, [coursConfig]);
 
-  // Tous les exercices du jour (avant filtre)
-  const allExercicesDuJour = useMemo(() => {
+  // Filtered exercises directly matching the orchestrator
+  const strategicExercices = useMemo(() => {
+    if (!tachesOrchestrateur) return [];
+    
     let exosToReview = [];
-    const todayStr = new Date().toISOString().split('T')[0];
-    const parityJour = getParityJour();
-
     configLocal.licences?.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
-        let matiereIndexDansSemestre = 0;
         s.ues?.forEach((u, uIndex) => {
           u.matieres?.forEach((m, mIndex) => {
-            const activePourExercices = ((matiereIndexDansSemestre % 2) === parityJour);
-            matiereIndexDansSemestre++;
-
-            
-            const extractExos = (listeExos, type) => {
-              if (!listeExos) return [];
-              return listeExos
-                .map((ex, exIndex) => ({
-                  ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
-                }))
-                .filter(ex => ex.dernierePratique !== todayStr)
-                .sort((a, b) => {
-                  if (a.nombrePratiques !== b.nombrePratiques) return (a.nombrePratiques || 0) - (b.nombrePratiques || 0);
-                  return (a.dernierePratique || "0000").localeCompare(b.dernierePratique || "0000");
-                });
+            const extractAndFilter = (listeExos, type) => {
+               if (!listeExos) return;
+               listeExos.forEach((ex, exIndex) => {
+                 const isInOrchestrator = tachesOrchestrateur.some(t => 
+                   t.matiere === m.nom && t.type === type && t.titre === ex.titre
+                 );
+                 if (isInOrchestrator) {
+                   exosToReview.push({
+                     ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
+                   });
+                 }
+               });
             };
-
-            const tds = extractExos(m.listeTD, 'TD');
-            const tps = extractExos(m.listeTP, 'TP');
-
-            const extractCMs = (listeExos) => {
-              if (!listeExos) return [];
-              return listeExos
-                .map((ex, exIndex) => ({
-                  ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type: 'CM', matiereNom: m.nom, notebookLMLink: m.notebookLMLink
-                }))
-              .filter(cm => {
-                 if (!cm.derniereRevision) return true;
-                 if (cm.jActuel === 0) return cm.derniereRevision !== todayStr;
-                 const nextDate = new Date(cm.derniereRevision);
-                 nextDate.setDate(nextDate.getDate() + cm.jActuel);
-                 return nextDate.toISOString().split('T')[0] <= todayStr;
-              });
-          };
-          const cms = extractCMs(m.listeCM);
-          exosToReview.push(...cms);
-
-          if (activePourExercices) {
-            // Compter combien ont déjà été faits aujourd'hui (pour respecter le quota de 2 TD / 1 TP par matière)
-            const doneTDToday = (m.listeTD || []).filter(ex => ex.dernierePratique === todayStr).length;
-            const doneTPToday = (m.listeTP || []).filter(ex => ex.dernierePratique === todayStr).length;
-
-            exosToReview.push(...tds.slice(0, Math.max(0, 2 - doneTDToday)));
-            exosToReview.push(...tps.slice(0, Math.max(0, 1 - doneTPToday)));
-          }
+            extractAndFilter(m.listeTD, 'TD');
+            extractAndFilter(m.listeTP, 'TP');
+            extractAndFilter(m.listeCM, 'CM');
+            extractAndFilter(m.listeAnnales, 'ANNALE');
+          });
         });
       });
     });
-  });
-
     return exosToReview;
-  }, [configLocal, config]);
+  }, [configLocal, tachesOrchestrateur]);
 
   // Get unique matiere names for filter pills
   const matiereNames = useMemo(() => {
     const names = new Set();
-    allExercicesDuJour.forEach(ex => names.add(ex.matiereNom));
+    strategicExercices.forEach(ex => names.add(ex.matiereNom));
     return Array.from(names);
-  }, [allExercicesDuJour]);
+  }, [strategicExercices]);
 
   // Filtered exercises
   const exercicesDuJour = useMemo(() => {
-    if (filterMatiere === 'all') return allExercicesDuJour;
-    return allExercicesDuJour.filter(ex => ex.matiereNom === filterMatiere);
-  }, [allExercicesDuJour, filterMatiere]);
+    if (filterMatiere === 'all') return strategicExercices;
+    return strategicExercices.filter(ex => ex.matiereNom === filterMatiere);
+  }, [strategicExercices, filterMatiere]);
 
   // Count total (including already completed today)
   const totalExercisesToday = useMemo(() => {
-    let total = 0;
+    let completedToday = 0;
     const todayStr = new Date().toISOString().split('T')[0];
-    const parityJour = getParityJour();
 
     configLocal.licences?.forEach(l => {
       l.semestres?.forEach(s => {
-        let matiereIndexDansSemestre = 0;
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {
-            const activePourExercices = ((matiereIndexDansSemestre % 2) === parityJour);
-            matiereIndexDansSemestre++;
-
-            if (activePourExercices) {
-              if (m.listeTD) total += Math.min(2, m.listeTD.length);
-              if (m.listeTP) total += Math.min(1, m.listeTP.length);
-            }
-          if (m.listeCM) {
-             m.listeCM.forEach(cm => {
-                if (cm.derniereRevision === todayStr) total++;
-                else {
-                  if (!cm.derniereRevision) total++;
-                  else if (cm.jActuel === 0) {
-                     if (cm.derniereRevision !== todayStr) total++;
-                  } else {
-                     const nextDate = new Date(cm.derniereRevision + 'T00:00:00');
-                     nextDate.setDate(nextDate.getDate() + cm.jActuel);
-                     if (nextDate.toISOString().split('T')[0] <= todayStr) total++;
-                  }
-                }
-              });
-          }
+            if (m.listeTD) completedToday += m.listeTD.filter(td => td.dernierePratique === todayStr).length;
+            if (m.listeTP) completedToday += m.listeTP.filter(tp => tp.dernierePratique === todayStr).length;
+            if (m.listeAnnales) completedToday += m.listeAnnales.filter(a => a.dernierePratique === todayStr).length;
+            if (m.listeCM) completedToday += m.listeCM.filter(cm => cm.derniereRevision === todayStr).length;
+          });
         });
       });
     });
-  });
-    return total;
-  }, [configLocal, config]);
+    return completedToday + (tachesOrchestrateur ? tachesOrchestrateur.length : 0);
+  }, [configLocal, tachesOrchestrateur]);
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
     const newConf = JSON.parse(JSON.stringify(configLocal));
@@ -176,17 +141,27 @@ function EntrainementPage() {
       if (ratio < 0.5 && finalScore < 4) finalScore += 1; // 2x plus rapide = +1 point
     }
 
-    const { interval, easeFactor, repetitions } = calculateSM2(
+    let actualDaysElapsed = -1;
+    if (cm.derniereRevision) {
+      const todayStrLocal = new Date().toISOString().split('T')[0];
+      const revDate = new Date(cm.derniereRevision + 'T00:00:00');
+      const nowDate = new Date(todayStrLocal + 'T00:00:00');
+      actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
+    }
+
+    const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
       finalScore,
       cm.jActuel || 0,
       cm.easeFactor || 2.5,
       cm.repetitions || 0,
-      newConf
+      newConf,
+      actualDaysElapsed
     );
 
     cm.jActuel = interval;
     cm.easeFactor = easeFactor;
     cm.repetitions = repetitions;
+    cm.prochaineRevisionDate = prochaineRevisionDate;
     
     const today = new Date().toISOString().split('T')[0];
     cm.derniereRevision = today;
@@ -264,7 +239,7 @@ function EntrainementPage() {
 
   // Progression : cible du jour - restants = déjà faits
   const progressPercent = totalExercisesToday > 0
-    ? Math.round(((totalExercisesToday - allExercicesDuJour.length) / totalExercisesToday) * 100)
+    ? Math.round(((totalExercisesToday - strategicExercices.length) / totalExercisesToday) * 100)
     : 0;
 
   const itemVariants = {
@@ -304,7 +279,7 @@ function EntrainementPage() {
       {/* === PROGRESS BAR === */}
       <div className="progress-header">
         <span className="progress-header-text" style={{color: progressPercent === 100 ? 'var(--success-color)' : 'var(--text-primary)'}}>
-          {progressPercent === 100 ? 'Bravo !' : `${allExercicesDuJour.length} restant${allExercicesDuJour.length > 1 ? 's' : ''}`}
+          {progressPercent === 100 ? 'Bravo !' : `${strategicExercices.length} restant${strategicExercices.length > 1 ? 's' : ''}`}
         </span>
         <div className="progress-header-bar">
           <div className="progress-bar-container" style={{height: '8px', margin: 0}}>
@@ -329,10 +304,10 @@ function EntrainementPage() {
             className={`filter-pill ${filterMatiere === 'all' ? 'active' : ''}`}
             onClick={() => setFilterMatiere('all')}
           >
-            Tout ({allExercicesDuJour.length})
+            Tout ({strategicExercices.length})
           </button>
           {matiereNames.map(name => {
-            const count = allExercicesDuJour.filter(e => e.matiereNom === name).length;
+            const count = strategicExercices.filter(e => e.matiereNom === name).length;
             return (
               <button 
                 key={name}
@@ -356,7 +331,7 @@ function EntrainementPage() {
             className="card glass-panel" 
             style={{textAlign:'center', padding:'3rem'}}
           >
-            {allExercicesDuJour.length === 0 ? (
+            {strategicExercices.length === 0 ? (
               <>
                 <div style={{fontSize: '4rem', marginBottom: '1rem'}}>🎉</div>
                 <h3 style={{color: 'var(--success-color)'}}>Tout est fait pour aujourd'hui !</h3>

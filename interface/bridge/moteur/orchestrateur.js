@@ -68,26 +68,26 @@ function buildExamUrgencyMap(crs) {
  * Higher score = more urgent.
  */
 function getPrioScore(ex, examUrgencyMap, matiereNom) {
-  let base = 1.0 / ((ex.nombrePratiques || 0) + 1.0);
-  if (ex.difficulte === 'difficile') base *= 2.0;
-  else if (ex.difficulte === 'assez_difficile') base *= 1.5;
-  else if (ex.difficulte === 'facile') base *= 0.7;
-  else if (ex.difficulte === 'tres_facile') base *= 0.5;
+  let base = 1.0 / Math.sqrt((ex.nombrePratiques || 0) + 1.0);
+  if (ex.difficulte === 'difficile') base *= 1.5;
+  else if (ex.difficulte === 'assez_difficile') base *= 1.2;
+  else if (ex.difficulte === 'facile') base *= 0.8;
+  else if (ex.difficulte === 'tres_facile') base *= 0.6;
 
   // Exam urgency boost: match subject by fuzzy name
   if (examUrgencyMap && matiereNom) {
     const matiereKey = matiereNom.toLowerCase().trim();
     // Try exact match first, then partial (subject name contained in matiere name or vice versa)
-    let boost = examUrgencyMap[matiereKey];
-    if (boost === undefined) {
-      for (const [subjKey, mult] of Object.entries(examUrgencyMap)) {
-        if (matiereKey.includes(subjKey) || subjKey.includes(matiereKey)) {
-          boost = mult;
+    let boostData = examUrgencyMap[matiereKey];
+    if (boostData === undefined) {
+      for (const [subjKey, data] of Object.entries(examUrgencyMap)) {
+        if (matiereKey === subjKey || matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
+          boostData = data;
           break;
         }
       }
     }
-    if (boost) base *= boost;
+    if (boostData) base *= boostData.multiplier;
   }
 
   return base;
@@ -107,7 +107,7 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
     daysToExam = examUrgencyMap[matiereKey].daysToExam;
   } else {
     for (const [subjKey, data] of Object.entries(examUrgencyMap)) {
-      if (matiereKey.includes(subjKey) || subjKey.includes(matiereKey)) {
+      if (matiereKey === subjKey || matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
         baseBoost = data.multiplier;
         daysToExam = data.daysToExam;
         break;
@@ -134,6 +134,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
 
   // 1. Calculate available time
   const heuresTravailJour = Math.max(1, cfg.maxStudyHoursPerDay || 8);
+  const maxSubjectsPerDay = cfg.maxSubjectsPerDay || 4;
   let tempsLibreMin = heuresTravailJour * 60;
 
   const todayDayOfWeek = getDayOfWeekString();
@@ -230,26 +231,38 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
               doitReviser = true;
               joursEnRetard = 999; // Priorité max si jamais révisé
             } else {
-              const revDate = new Date(cm.derniereRevision + 'T00:00:00');
-              const nowDate = new Date(todayStr + 'T00:00:00');
-              if (isNaN(revDate.getTime())) {
-                doitReviser = true;
-                joursEnRetard = 999;
-              } else {
-                const joursEcoules = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
-                if (cm.jActuel > 0 && joursEcoules >= cm.jActuel) {
-                  doitReviser = true;
-                  joursEnRetard = joursEcoules - cm.jActuel;
-                } else if (cm.jActuel === 0 && joursEcoules > 0) {
+              const targetDateStr = cm.prochaineRevisionDate;
+              if (targetDateStr) {
+                const targetDate = new Date(targetDateStr + 'T00:00:00');
+                const nowDate = new Date(todayStr + 'T00:00:00');
+                const joursEcoules = Math.floor((nowDate - targetDate) / (1000 * 60 * 60 * 24));
+                if (joursEcoules >= 0) {
                   doitReviser = true;
                   joursEnRetard = joursEcoules;
+                }
+              } else {
+                const revDate = new Date(cm.derniereRevision + 'T00:00:00');
+                const nowDate = new Date(todayStr + 'T00:00:00');
+                if (isNaN(revDate.getTime())) {
+                  doitReviser = true;
+                  joursEnRetard = 999;
+                } else {
+                  const joursEcoules = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
+                  if (cm.jActuel > 0 && joursEcoules >= cm.jActuel) {
+                    doitReviser = true;
+                    joursEnRetard = joursEcoules - cm.jActuel;
+                  } else if (cm.jActuel === 0 && joursEcoules > 0) {
+                    doitReviser = true;
+                    joursEnRetard = joursEcoules;
+                  }
                 }
               }
             }
 
             if (doitReviser) {
-              // Score CM = (retard) * (boost examen)
-              const prioCM = (joursEnRetard + 1) * examBoost;
+              // Score CM = retard plafonné * (boost examen)
+              const retardPondere = Math.min(joursEnRetard, 10) * 0.5; // Plafonne à +5
+              const prioCM = (1 + retardPondere) * examBoost;
               const dureeBase = (cm.jActuel === 0) ? (cfg.defaultDurationNewCM || 120) : (cfg.defaultDurationRevCM || 30);
               const dureeEstimee = cm.tempsMoyen ? cm.tempsMoyen : dureeBase;
 
@@ -349,14 +362,31 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   const subjectTDCount = {};
   const subjectTPCount = {};
 
+  // PRÉ-SÉLECTION STRATÉGIQUE DES MATIÈRES
+  const subjectMaxPrio = {};
+  const allTasksForPrio = [...poolAnnales, ...poolCM, ...poolTD, ...poolTP];
+  for (const t of allTasksForPrio) {
+    if (!subjectMaxPrio[t.matiere] || t.prio > subjectMaxPrio[t.matiere]) {
+      subjectMaxPrio[t.matiere] = t.prio;
+    }
+  }
+
+  const sortedSubjects = Object.keys(subjectMaxPrio).sort((a, b) => subjectMaxPrio[b] - subjectMaxPrio[a]);
+  const topSubjectsList = sortedSubjects.slice(0, maxSubjectsPerDay);
+  const selectedMatieres = new Set(topSubjectsList);
+
+  const canAddMatiere = (matiere) => selectedMatieres.has(matiere);
+
   // Ajouter Annales d'abord (Priorité super absolue)
   for (const annale of poolAnnales) {
     if (tempsRequisMin + annale.dureeMinutes <= tempsLibreMin) {
+      if (!canAddMatiere(annale.matiere)) continue;
       const count = subjectAnnaleCount[annale.matiere] || 0;
       if (count < 1) { // 1 annale max par matière par jour
         taches.push(annale);
         tempsRequisMin += annale.dureeMinutes;
         subjectAnnaleCount[annale.matiere] = count + 1;
+        selectedMatieres.add(annale.matiere);
       }
     }
   }
@@ -364,19 +394,23 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   // Ajouter CMs (Priorité absolue)
   for (const cm of poolCM) {
     if (tempsRequisMin + cm.dureeMinutes <= tempsLibreMin) {
+      if (!canAddMatiere(cm.matiere)) continue;
       taches.push(cm);
       tempsRequisMin += cm.dureeMinutes;
+      selectedMatieres.add(cm.matiere);
     }
   }
 
   // Ajouter TDs (Max 3 par matière pour éviter l'accaparement)
   for (const td of poolTD) {
     if (tempsRequisMin + td.dureeMinutes <= tempsLibreMin) {
+      if (!canAddMatiere(td.matiere)) continue;
       const count = subjectTDCount[td.matiere] || 0;
       if (count < 3) {
         taches.push(td);
         tempsRequisMin += td.dureeMinutes;
         subjectTDCount[td.matiere] = count + 1;
+        selectedMatieres.add(td.matiere);
       }
     }
   }
@@ -384,12 +418,31 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   // Ajouter TPs (Max 2 par matière)
   for (const tp of poolTP) {
     if (tempsRequisMin + tp.dureeMinutes <= tempsLibreMin) {
+      if (!canAddMatiere(tp.matiere)) continue;
       const count = subjectTPCount[tp.matiere] || 0;
       if (count < 2) {
         taches.push(tp);
         tempsRequisMin += tp.dureeMinutes;
         subjectTPCount[tp.matiere] = count + 1;
+        selectedMatieres.add(tp.matiere);
       }
+    }
+  }
+
+  // 5. Assigner les "Moments de la journée"
+  let accumulatedTime = 0;
+  for (const t of taches) {
+    let percentBefore = accumulatedTime / (tempsRequisMin || 1);
+    accumulatedTime += t.dureeMinutes;
+    let percentAfter = accumulatedTime / (tempsRequisMin || 1);
+    let midPercent = (percentBefore + percentAfter) / 2.0;
+    
+    if (midPercent <= 0.35) {
+      t.moment = 'matin';
+    } else if (midPercent <= 0.70) {
+      t.moment = 'aprem';
+    } else {
+      t.moment = 'soir';
     }
   }
 

@@ -67,18 +67,27 @@ function Dashboard() {
               if (tache.type === 'CM') {
                 matiere.listeCM.forEach(cm => {
                   if (cm.titre === tache.titre) {
-                    const { interval, easeFactor, repetitions } = calculateSM2(
+                    let actualDaysElapsed = -1;
+                    if (cm.derniereRevision) {
+                      const revDate = new Date(cm.derniereRevision + 'T00:00:00');
+                      const nowDate = new Date(today + 'T00:00:00');
+                      actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
+                    }
+
+                    const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
                       3, // Default to 'Good' when marking as done from dashboard
                       cm.jActuel || 0,
                       cm.easeFactor || 2.5,
                       cm.repetitions || 0,
-                      newConfig
+                      newConfig,
+                      actualDaysElapsed
                     );
 
                     cm.jActuel = interval;
                     cm.easeFactor = easeFactor;
                     cm.repetitions = repetitions;
                     cm.derniereRevision = today;
+                    cm.prochaineRevisionDate = prochaineRevisionDate;
                     taskFound = true;
                   }
                 });
@@ -235,6 +244,10 @@ function Dashboard() {
             <div className="welcome-stat-value">{globalPercent}%</div>
             <div className="welcome-stat-label">Global</div>
           </div>
+          <div className="welcome-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1rem' }}>
+            <div className="welcome-stat-value">🔥 {config?.currentStreak || 0}</div>
+            <div className="welcome-stat-label" style={{ color: 'var(--accent-color)' }}>Record : {config?.bestStreak || 0}</div>
+          </div>
         </div>
       </div>
 
@@ -307,7 +320,12 @@ function Dashboard() {
                             >
                               <div style={{flex: 1}}>
                                 <div style={{fontWeight: 'bold'}}>{t.titre}</div>
-                                <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>{t.matiere} • {t.type}</div>
+                                <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
+                                  {t.matiere} • {t.type}
+                                  {t.moment === 'matin' && <span style={{marginLeft: '0.5rem', background: 'rgba(251, 191, 36, 0.15)', color: '#fbbf24', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>🌅 Matin</span>}
+                                  {t.moment === 'aprem' && <span style={{marginLeft: '0.5rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>☀️ Après-midi</span>}
+                                  {t.moment === 'soir' && <span style={{marginLeft: '0.5rem', background: 'rgba(167, 139, 250, 0.15)', color: '#a78bfa', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>🌙 Soir</span>}
+                                </div>
                               </div>
                               <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flexShrink: 0}}>
                                 <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.8rem'}}>
@@ -435,9 +453,9 @@ function Dashboard() {
         </div>
 
         {stats.perMatiere.length > 0 ? (
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px, 1fr))', gap:'1rem'}}>
+          <div className="stats-carousel" style={{display:'flex', gap:'1rem', overflowX:'auto', paddingBottom:'1rem'}}>
             {stats.perMatiere.map(m => (
-              <div key={m.nom} style={{background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', border:'1px solid var(--bg-tertiary)'}}>
+              <div key={m.nom} style={{minWidth:'250px', flexShrink:0, background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', border:'1px solid var(--bg-tertiary)'}}>
                 <div style={{display:'flex', justifyContent:'space-between', marginBottom:'0.5rem'}}>
                   <strong style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}} title={m.nom}>{m.nom}</strong>
                   <span style={{color:'var(--success-color)', fontWeight:'bold'}}>{m.percent}%</span>

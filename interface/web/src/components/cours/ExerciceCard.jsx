@@ -36,13 +36,8 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
   const handleOpenPdf = async () => {
     if (!exo.pdfPath) return;
     
-    // Si l'URL commence par http, c'est un lien web classique ou le lien relatif /documents/... retourné par le backend
-    // Mais window.open gère très bien les liens relatifs comme absolus.
+    // Si l'URL est relative (commence par /documents/), on utilise le chemin relatif.
     let url = exo.pdfPath;
-    if (url.startsWith('/documents/')) {
-      // Pour être sûr, on utilise le localhost du bridge
-      url = 'http://localhost:3001' + url;
-    }
     
     window.open(url, '_blank');
   };

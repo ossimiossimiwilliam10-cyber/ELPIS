@@ -104,7 +104,6 @@ function StatistiquesPage() {
     // 3. Calcul de la note estimée G(A,B) par matière
     const estimations = [];
     Object.entries(matieresStats).forEach(([nom, stats]) => {
-      if (stats.cmCount === 0 && stats.pratiques.length === 0) return;
 
       let B = 0.5;
       if (stats.cmCount > 0) {
@@ -256,8 +255,8 @@ function StatistiquesPage() {
 
             <div style={{flex: '1 1 300px', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px'}}>
               <h4 style={{marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)'}}>Détail par Matière</h4>
-              <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
-                {predictiveModel.matieres.slice(0, 4).map((m, i) => (
+              <div className="custom-scrollbar-y" style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '220px', overflowY: 'auto', paddingRight: '0.5rem'}}>
+                {predictiveModel.matieres.map((m, i) => (
                   <div key={i} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '6px'}}>
                     <span style={{fontSize: '0.9rem', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{m.matiere}</span>
                     <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>

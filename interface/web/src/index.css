@@ -113,6 +113,25 @@ body {
   scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
 }
 
+/* === CUSTOM VERTICAL SCROLLBAR === */
+.custom-scrollbar-y::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar-y::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar-y::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 3px;
+}
+.custom-scrollbar-y::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+.custom-scrollbar-y {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+}
+
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
