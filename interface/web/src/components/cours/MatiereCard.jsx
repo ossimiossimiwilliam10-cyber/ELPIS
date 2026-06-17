@@ -1,4 +1,4 @@
-import React from 'react';
+
 import EditableLabel from './EditableLabel';
 import EditableNote from './EditableNote';
 

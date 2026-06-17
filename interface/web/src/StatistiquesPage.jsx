@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useMemo } from 'react';
+// motion is not used
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import useStore from './store';
 
@@ -121,7 +121,7 @@ function StatistiquesPage() {
       let G = 20 * Math.pow(A / 5, 0.85) * Math.pow(B_m, 1.2);
       G = Math.min(20, Math.max(0, G)); 
 
-      let P = 1.0;
+      let P;
       if (G >= 10) {
         P = 0.70 / (1 + Math.pow((G - 10) / 1.7816, 2.3914));
       } else {
@@ -136,7 +136,7 @@ function StatistiquesPage() {
 
     const avgNote = estimations.reduce((s, e) => s + e.note, 0) / estimations.length;
     // La moyenne des percentiles n'est pas parfaite mathématiquement mais indicative
-    let avgPercentile = 100;
+    let avgPercentile;
     if (avgNote >= 10) {
       avgPercentile = (0.70 / (1 + Math.pow((avgNote - 10) / 1.7816, 2.3914))) * 100;
     } else {

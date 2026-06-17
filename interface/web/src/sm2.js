@@ -62,7 +62,7 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
   // score: 1 (Fail), 2 (Hard), 3 (Good), 4 (Perfect)
   let newEaseFactor = easeFactor || 2.5;
   let newRepetitions = repetitions || 0;
-  let newInterval = previousInterval || 0;
+  let newInterval;
 
   if (score === 1) {
     // Échec
