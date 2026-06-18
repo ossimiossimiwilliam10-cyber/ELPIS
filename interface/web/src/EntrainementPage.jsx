@@ -49,7 +49,7 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 
 function EntrainementPage() {
   console.log("ENTRAINEMENT PAGE LOADED - V2 WITH SAFE MAPS");
-  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, startGlobalChrono, globalChrono, resetGlobalChrono } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, startGlobalChrono, globalChrono, resetGlobalChrono, dailyFillGap, setDailyFillGap } = useStore();
   const { toast } = useToast();
 
   const getTodayStr = () => {
@@ -64,20 +64,30 @@ function EntrainementPage() {
   const [filterMatiere, setFilterMatiere] = useState('all');
   const [topSubjects, setTopSubjects] = useState(null);
   const [tachesOrchestrateur, setTachesOrchestrateur] = useState(null);
+  const [tempsDejaTravaille, setTempsDejaTravaille] = useState(0);
+  const [tempsDispoMin, setTempsDispoMin] = useState(0);
 
-  useEffect(() => {
-    fetch('/api/orchestrateur')
+  const fetchTaches = () => {
+    fetch(`/api/orchestrateur?fillGap=${dailyFillGap}`)
       .then(res => res.json())
       .then(data => {
-        if (data && data.tachesDuJour) {
-          setTachesOrchestrateur(data.tachesDuJour);
-          const subjects = new Set();
-          data.tachesDuJour.forEach(t => subjects.add(t.matiere));
-          setTopSubjects(Array.from(subjects));
+        if (data) {
+          if (data.tachesDuJour) {
+            setTachesOrchestrateur(data.tachesDuJour);
+            const subjects = new Set();
+            data.tachesDuJour.forEach(t => subjects.add(t.matiere));
+            setTopSubjects(Array.from(subjects));
+          }
+          setTempsDejaTravaille(data.tempsDejaTravailleMin || 0);
+          setTempsDispoMin(data.tempsDispoMin || 0);
         }
       })
       .catch(err => console.error(err));
-  }, [coursConfig]);
+  };
+
+  useEffect(() => {
+    fetchTaches();
+  }, [coursConfig, dailyFillGap]);
 
   const DIFFICULTY_LEVELS = [
     { key: 'difficile', label: '🔴', title: 'Difficile' },
@@ -411,6 +421,25 @@ function EntrainementPage() {
         </div>
       )}
 
+      {/* PROGRESSION QUOTIDIENNE */}
+      {tempsDispoMin > 0 && (
+        <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--bg-tertiary)' }}>
+          <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>Progression de la Journée</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <span>{Math.floor(tempsDejaTravaille / 60)}h{String(tempsDejaTravaille % 60).padStart(2, '0')} travaillées</span>
+            <span>Objectif IA : {Math.floor(tempsDispoMin / 60)}h{String(tempsDispoMin % 60).padStart(2, '0')}</span>
+          </div>
+          <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%',
+              background: tempsDejaTravaille >= tempsDispoMin ? 'var(--success-color)' : 'var(--accent-color)',
+              width: `${Math.min(100, (tempsDejaTravaille / tempsDispoMin) * 100)}%`,
+              transition: 'width 0.5s ease-out'
+            }} />
+          </div>
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
         {exercicesDuJour.length === 0 ? (
           <motion.div 
@@ -422,11 +451,31 @@ function EntrainementPage() {
             style={strategicExercices.length > 0 ? {textAlign:'center', padding:'3rem'} : {}}
           >
             {strategicExercices.length === 0 ? (
-              <>
-                <div className="empty-state-icon">🏆</div>
-                <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
-                <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par l'orchestrateur. Repose-toi bien !</p>
-              </>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', textAlign: 'center' }}>
+                {tachesOrchestrateur === null ? (
+                  <div className="loading-spinner"></div>
+                ) : (
+                  <>
+                    <div className="empty-state-icon">🏆</div>
+                    <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
+                    <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par l'orchestrateur. Repose-toi bien !</p>
+                    {tempsDejaTravaille < tempsDispoMin && !dailyFillGap && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setDailyFillGap(true);
+                          toast("Recherche de tâches supplémentaires en cours...", "info");
+                        }}
+                        className="btn-primary"
+                        style={{ marginTop: '2rem', background: 'var(--accent-primary)', padding: '1rem 2rem', fontSize: '1.1rem' }}
+                      >
+                        🔥 Demander plus de tâches à l'IA
+                      </motion.button>
+                    )}
+                  </>
+                )}
+              </div>
             ) : (
               <>
                 <div style={{fontSize: '3rem', marginBottom: '1rem'}}>🔍</div>

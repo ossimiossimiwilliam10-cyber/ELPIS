@@ -56,9 +56,11 @@ const useStore = create(immer((set, get) => ({
   error: null,
   activeTab: 'dashboard',
   pendingTasksCount: 0,
+  dailyFillGap: false,
 
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
+  setDailyFillGap: (val) => set({ dailyFillGap: val }),
 
   // --- CHRONO STATE ---
   globalChrono: {

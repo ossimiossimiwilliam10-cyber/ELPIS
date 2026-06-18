@@ -127,7 +127,7 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
   return { boost: baseBoost * (1.0 + (coeff - 1) * 0.1), daysToExam };
 }
 
-function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
+function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false) {
   const cfg = loadConfig(configPath);
   const crs = loadCours(coursPath);
   const rapport = {};
@@ -199,17 +199,18 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
               tempsDejaTravailleMin += tp.tempsMoyen ? tp.tempsMoyen : (dureeBase * getDifficultyMultiplier(tp.difficulte));
             }
           }
-          for (const annale of (m.listeAnnales || [])) {
-            if (annale.dernierePratique === todayStr) {
-              const dureeBase = cfg.defaultDurationAnnales || 60;
-              tempsDejaTravailleMin += annale.tempsMoyen ? annale.tempsMoyen : (dureeBase * getDifficultyMultiplier(annale.difficulte));
+          for (const ann of (m.listeAnnales || [])) {
+            if (ann.dernierePratique === todayStr) {
+              const dureeBase = cfg.defaultDurationAnnale || 60;
+              tempsDejaTravailleMin += ann.tempsMoyen ? ann.tempsMoyen : (dureeBase * getDifficultyMultiplier(ann.difficulte));
             }
           }
         }
       }
     }
   }
-
+  
+  rapport.tempsDejaTravailleMin = tempsDejaTravailleMin;
   tempsLibreMin -= tempsDejaTravailleMin;
   if (tempsLibreMin < 0) tempsLibreMin = 0;
 
@@ -226,9 +227,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   const poolAnnales = [];
 
   // 2. Scan courses and populate pools
+  const maxNewCMPerSubject = cfg.maxNewCMPerSubjectPerDay !== undefined ? cfg.maxNewCMPerSubjectPerDay : 1;
+  const maxNewCMPerSemester = cfg.maxNewCMPerSemesterPerDay !== undefined ? cfg.maxNewCMPerSemesterPerDay : 3;
+
   for (const l of (crs.licences || [])) {
     for (const s of (l.semestres || [])) {
       let matiereIndexDansSemestre = 0;
+      let newCMCountPerSemester = 0;
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
           const examData = getSubjectExamBoost(m, examUrgencyMap);
@@ -236,20 +241,27 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
           const daysToExam = examData.daysToExam;
 
           // --- CM logic ---
+          let newCMCountPerMatiere = 0;
           for (const cm of (m.listeCM || [])) {
             let doitReviser = false;
             let joursEnRetard = 0;
-            
             if (!cm.derniereRevision) {
+              // Limiter les nouveaux CM, sauf si on est en mode fillGap (où on autorise pour combler si y'a assez de temps)
+              if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject || newCMCountPerSemester >= maxNewCMPerSemester)) {
+                continue;
+              }
               doitReviser = true;
               joursEnRetard = 999; // Priorité max si jamais révisé
+              newCMCountPerMatiere++;
+              newCMCountPerSemester++;
             } else {
               const targetDateStr = cm.prochaineRevisionDate;
               if (targetDateStr) {
                 const targetDate = new Date(targetDateStr + 'T00:00:00');
                 const nowDate = new Date(todayStr + 'T00:00:00');
                 const joursEcoules = Math.floor((nowDate - targetDate) / (1000 * 60 * 60 * 24));
-                if (joursEcoules >= 0) {
+                // Si fillGap, on accepte les CM en avance jusqu'à 3 jours
+                if (joursEcoules >= (fillGap ? -3 : 0)) {
                   doitReviser = true;
                   joursEnRetard = joursEcoules;
                 }
@@ -385,10 +397,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
   // 4. Ordonnancement Adaptatif
   const taches = [];
   let tempsRequisMin = 0;
-  let tempsPotentielTotal = poolAnnales.reduce((acc, t) => acc + t.dureeMinutes, 0) +
-                            poolCM.reduce((acc, t) => acc + t.dureeMinutes, 0) + 
-                            poolTD.reduce((acc, t) => acc + t.dureeMinutes, 0) + 
-                            poolTP.reduce((acc, t) => acc + t.dureeMinutes, 0);
 
   const subjectAnnaleCount = {};
   const subjectTDCount = {};
@@ -409,10 +417,30 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
 
   const canAddMatiere = (matiere) => selectedMatieres.has(matiere);
 
+  const tryAddTask = (pool, validator) => {
+    for (const t of pool) {
+      if (tempsRequisMin + t.dureeMinutes <= tempsLibreMin) {
+        // Si la matière n'est pas dans la pré-sélection (top N), on l'ignore (sauf annales prioritaires ou CM critiques, ou si fillGap est actif)
+        if (!fillGap && !selectedMatieres.has(t.matiere)) {
+          if (!(t.type === 'CM' && t.prio > 80) && !(t.type === 'ANNALE' && t.prio > 90)) {
+            continue;
+          }
+        }
+        if (validator(t)) {
+          taches.push(t);
+          tempsRequisMin += t.dureeMinutes;
+          selectedMatieres.add(t.matiere);
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   // Ajouter Annales d'abord (Priorité super absolue)
   for (const annale of poolAnnales) {
     if (tempsRequisMin + annale.dureeMinutes <= tempsLibreMin) {
-      if (!canAddMatiere(annale.matiere)) continue;
+      if (!fillGap && !canAddMatiere(annale.matiere)) continue;
       const count = subjectAnnaleCount[annale.matiere] || 0;
       if (count < 1) { // 1 annale max par matière par jour
         taches.push(annale);
@@ -423,42 +451,33 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
     }
   }
 
-  // Ajouter CMs (Priorité absolue)
-  for (const cm of poolCM) {
-    if (tempsRequisMin + cm.dureeMinutes <= tempsLibreMin) {
-      if (!canAddMatiere(cm.matiere)) continue;
-      taches.push(cm);
-      tempsRequisMin += cm.dureeMinutes;
-      selectedMatieres.add(cm.matiere);
-    }
-  }
-
-  // Ajouter TDs (Max 3 par matière pour éviter l'accaparement)
-  for (const td of poolTD) {
-    if (tempsRequisMin + td.dureeMinutes <= tempsLibreMin) {
-      if (!canAddMatiere(td.matiere)) continue;
-      const count = subjectTDCount[td.matiere] || 0;
-      if (count < 3) {
-        taches.push(td);
-        tempsRequisMin += td.dureeMinutes;
-        subjectTDCount[td.matiere] = count + 1;
-        selectedMatieres.add(td.matiere);
+  // Fonction d'ajout standard (Mutualisée pour éviter la duplication de logique)
+  const appendFromPool = (pool, subjectCountMap, limitPerSubject) => {
+    for (const item of pool) {
+      if (tempsRequisMin + item.dureeMinutes <= tempsLibreMin) {
+        if (!fillGap && !canAddMatiere(item.matiere)) continue;
+        const count = subjectCountMap ? (subjectCountMap[item.matiere] || 0) : 0;
+        if (!limitPerSubject || count < limitPerSubject) {
+          taches.push(item);
+          tempsRequisMin += item.dureeMinutes;
+          if (subjectCountMap) subjectCountMap[item.matiere] = count + 1;
+          selectedMatieres.add(item.matiere);
+        }
       }
     }
-  }
+  };
 
-  // Ajouter TPs (Max 2 par matière)
-  for (const tp of poolTP) {
-    if (tempsRequisMin + tp.dureeMinutes <= tempsLibreMin) {
-      if (!canAddMatiere(tp.matiere)) continue;
-      const count = subjectTPCount[tp.matiere] || 0;
-      if (count < 2) {
-        taches.push(tp);
-        tempsRequisMin += tp.dureeMinutes;
-        subjectTPCount[tp.matiere] = count + 1;
-        selectedMatieres.add(tp.matiere);
-      }
-    }
+  // Ordre d'ajout selon le mode
+  if (fillGap) {
+    // Mode comblement : On privilégie la pratique (TD, TP) avant la théorie (CM révision)
+    appendFromPool(poolTD, subjectTDCount, 3);
+    appendFromPool(poolTP, subjectTPCount, 2);
+    appendFromPool(poolCM, null, null);
+  } else {
+    // Mode normal : La théorie d'abord, puis la pratique
+    appendFromPool(poolCM, null, null);
+    appendFromPool(poolTD, subjectTDCount, 3);
+    appendFromPool(poolTP, subjectTPCount, 2);
   }
 
   // 5. Assigner les "Moments de la journée"

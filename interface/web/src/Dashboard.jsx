@@ -6,6 +6,7 @@ import useStore from './store';
 import { calculateSM2 } from './sm2';
 import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useToast } from './ToastProvider';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
   const radius = (size - strokeWidth) / 2;
@@ -48,11 +49,12 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 };
 
 function Dashboard() {
-  const { config, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay } = useStore();
+  const { config, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay, dailyFillGap, setDailyFillGap } = useStore();
   const [data, setData] = useState(null);
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [extraTime, setExtraTime] = useState(0);
+  const { toast } = useToast();
 
   const recommendedDailyHours = useWorkloadEngine();
 
@@ -88,7 +90,7 @@ function Dashboard() {
   ];
 
   const fetchDashboard = (currentExtraTime = extraTime) => {
-    fetch(`/api/orchestrateur?extraTime=${currentExtraTime}`)
+    fetch(`/api/orchestrateur?extraTime=${currentExtraTime}&fillGap=${dailyFillGap}`)
       .then(res => res.json())
       .then(d => {
         setData(d);
@@ -105,7 +107,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchDashboard(extraTime);
-  }, [coursConfig, extraTime]);
+  }, [coursConfig, extraTime, dailyFillGap]);
 
   const handleAddExtraTime = () => {
     const newTime = extraTime + 30;
@@ -351,6 +353,25 @@ function Dashboard() {
         >
           <h2>🎯 Objectifs du Jour</h2>
           
+          {/* PROGRESSION QUOTIDIENNE */}
+          {data && data.tempsDispoMin > 0 && statut !== "REPOS" && (
+            <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--bg-tertiary)' }}>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>Progression de la Journée</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                <span>{Math.floor((data.tempsDejaTravailleMin || 0) / 60)}h{String((data.tempsDejaTravailleMin || 0) % 60).padStart(2, '0')} travaillées</span>
+                <span>Objectif IA : {Math.floor(data.tempsDispoMin / 60)}h{String(data.tempsDispoMin % 60).padStart(2, '0')}</span>
+              </div>
+              <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  background: (data.tempsDejaTravailleMin || 0) >= data.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-color)',
+                  width: `${Math.min(100, ((data.tempsDejaTravailleMin || 0) / data.tempsDispoMin) * 100)}%`,
+                  transition: 'width 0.5s ease-out'
+                }} />
+              </div>
+            </div>
+          )}
+
           {statut === "REPOS" ? (
             <motion.div 
               initial={{ opacity: 0 }}
@@ -372,17 +393,35 @@ function Dashboard() {
               <div className="empty-state-icon">✨</div>
               <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
               <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes tes tâches pour aujourd'hui. Profite de ton temps libre, tu l'as bien mérité !</p>
-              {surcharge && (
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleAddExtraTime}
-                  className="btn-primary" 
-                  style={{marginTop: '1.5rem', background: 'var(--accent-color)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
-                >
-                  🔥 J'ai encore de l'énergie (+30 min)
-                </motion.button>
-              )}
+              
+              <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
+                {surcharge && (
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleAddExtraTime}
+                    className="btn-primary" 
+                    style={{background: 'var(--accent-color)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
+                  >
+                    🔥 J'ai encore de l'énergie (+30 min)
+                  </motion.button>
+                )}
+                
+                {data && (data.tempsDejaTravailleMin || 0) < data.tempsDispoMin && !dailyFillGap && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setDailyFillGap(true);
+                      toast("Recherche de tâches supplémentaires en cours...", "info");
+                    }}
+                    className="btn-primary"
+                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
+                  >
+                    🚀 Demander plus de tâches à l'IA
+                  </motion.button>
+                )}
+              </div>
             </motion.div>
           ) : (
             <DragDropContext onDragEnd={onDragEnd}>

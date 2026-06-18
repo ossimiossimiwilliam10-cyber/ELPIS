@@ -302,6 +302,48 @@ function AppInner() {
                   </div>
                 </div>
 
+                {/* Paramètres de l'Orchestrateur */}
+                <div className="card glass-panel" style={{display: 'flex', flexDirection: 'column'}}>
+                  <h2 style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a855f7'}}>
+                    <span>🧠</span> Paramètres de l'Orchestrateur
+                  </h2>
+                  <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem'}}>
+                    Contrôle la façon dont l'IA génère les nouvelles tâches pour éviter la surcharge.
+                  </p>
+
+                  <div style={{display: 'grid', gap: '1rem', marginBottom: '1rem'}}>
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', borderLeft: '3px solid #ef4444'}}>
+                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
+                        Max Nouveaux CM / Matière / Jour
+                      </label>
+                      <input 
+                        type="number" 
+                        min="1" max="10" 
+                        value={config.maxNewCMPerSubjectPerDay || 1}
+                        onChange={e => setConfig({...config, maxNewCMPerSubjectPerDay: parseInt(e.target.value) || 1})}
+                        style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
+                      />
+                    </div>
+
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', borderLeft: '3px solid #f59e0b'}}>
+                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
+                        Max Nouveaux CM / Semestre / Jour
+                      </label>
+                      <input 
+                        type="number" 
+                        min="1" max="20" 
+                        value={config.maxNewCMPerSemesterPerDay || 3}
+                        onChange={e => setConfig({...config, maxNewCMPerSemesterPerDay: parseInt(e.target.value) || 3})}
+                        style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{background: 'rgba(239, 68, 68, 0.1)', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.3)', color: 'var(--text-secondary)', fontSize: '0.85rem'}}>
+                    <strong style={{color: '#ef4444'}}>⚠️ Fortement conseillé :</strong> Garde ces limites basses pour ne pas t'épuiser. Augmente-les uniquement en dernier recours si tu as beaucoup de retard.
+                  </div>
+                </div>
+
                 {/* Estimation des Durées */}
                 <div className="card glass-panel" style={{display: 'flex', flexDirection: 'column'}}>
                   <h2 style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#34d399'}}>

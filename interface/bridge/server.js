@@ -225,11 +225,12 @@ app.get('/api/orchestrateur', (req, res) => {
     const { CONFIG_PATH } = require('./moteur/config');
     const { COURS_PATH } = require('./moteur/cours');
     const extraTime = parseInt(req.query.extraTime) || 0;
+    const fillGap = req.query.fillGap === 'true';
 
     const configMtime = fs.existsSync(CONFIG_PATH) ? fs.statSync(CONFIG_PATH).mtimeMs : 0;
     const coursMtime = fs.existsSync(COURS_PATH) ? fs.statSync(COURS_PATH).mtimeMs : 0;
     const now = Date.now();
-    const cacheValid = orchestratorCache.rapport
+    const cacheValid = !fillGap && orchestratorCache.rapport
       && orchestratorCache.configMtime === configMtime
       && orchestratorCache.coursMtime === coursMtime
       && orchestratorCache.extraTime === extraTime
@@ -237,9 +238,9 @@ app.get('/api/orchestrateur', (req, res) => {
 
     const rapport = cacheValid
       ? orchestratorCache.rapport
-      : genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime);
+      : genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime, fillGap);
 
-    if (!cacheValid) {
+    if (!cacheValid && !fillGap) {
       orchestratorCache.rapport = rapport;
       orchestratorCache.configMtime = configMtime;
       orchestratorCache.coursMtime = coursMtime;
