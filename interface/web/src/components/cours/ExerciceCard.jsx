@@ -6,6 +6,26 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
   const [note, setNote] = useState('');
 
+  const getTPStepName = (etape) => {
+    switch(etape) {
+      case 1: return "🔍 Étape 1 : Découverte";
+      case 2: return "🗺️ Étape 2 : Planification";
+      case 3: return "📊 Étape 3 : Vérification";
+      case 4: return "🚨 Étape 4 : Révision Finale";
+      default: return `Étape ${etape}`;
+    }
+  };
+
+  const getTPButtonText = (etape) => {
+    switch(etape) {
+      case 1: return "Valider la Découverte";
+      case 2: return "Valider la Planification";
+      case 3: return "Valider la Vérification";
+      case 4: return "Valider la Révision";
+      default: return "Valider le TP";
+    }
+  };
+
   const DIFFICULTY_LEVELS = [
     { key: 'difficile', label: '🔴', title: 'Difficile' },
     { key: 'assez_difficile', label: '🟠', title: 'Assez difficile' },
@@ -87,7 +107,9 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
           )}
         </div>
         <span style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>
-          {exo.type === 'CM' ? `Revu ${exo.repetitions || 0} fois (J${exo.jActuel || 0})` : `Pratiqué ${exo.nombrePratiques || 0} fois`}
+          {exo.type === 'CM' ? `Revu ${exo.repetitions || 0} fois (J${exo.jActuel || 0})` : 
+           exo.type === 'TP' && exo.etape ? getTPStepName(exo.etape) : 
+           `Pratiqué ${exo.nombrePratiques || 0} fois`}
         </span>
       </div>
       
@@ -173,7 +195,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
                className="btn-secondary"
                style={{background:'#10B981', color:'white', border:'none', flex: 2}}
              >
-               Fait
+               {exo.type === 'TP' && exo.etape ? getTPButtonText(exo.etape) : "Fait"}
              </button>
              <div style={{display:'flex', flexWrap:'wrap', gap:'2px', justifyContent:'center', alignItems:'center'}}>
                {DIFFICULTY_LEVELS?.map(dl => (

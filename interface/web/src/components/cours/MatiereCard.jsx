@@ -269,6 +269,18 @@ export default function MatiereCard({
               })}
               placeholder="+ Ajouter une note (markdown supporté)" 
             />
+            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem'}}>
+              <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>📅 Date du TP :</span>
+              <input 
+                type="date" 
+                value={tp.dateTP || ''}
+                onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'dateTP'], e.target.value)}
+                style={{
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', 
+                  color: 'var(--text-primary)', borderRadius: '4px', padding: '0.1rem 0.3rem', fontSize: '0.75rem'
+                }}
+              />
+            </div>
           </div>
           <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
             <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>

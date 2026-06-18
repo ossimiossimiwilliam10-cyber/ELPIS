@@ -134,6 +134,12 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   const todayStr = getTodayString();
   const now = new Date();
+  
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowStr = tomorrowDate.toISOString().split('T')[0];
+  const dayOfWeek = now.getDay();
+  const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
   // --- MODE REPOS ---
   if (cfg.restDays && cfg.restDays.includes(todayStr)) {
@@ -332,8 +338,33 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           // --- TP logic ---
           const tps = (m.listeTP || []).filter(ex => ex.dernierePratique !== todayStr);
           for (const ex of tps) {
+            const currentStep = ex.nombrePratiques || 0;
+            if (currentStep >= 4) continue; // TP totalement terminé
+            
+            const isTomorrow = ex.dateTP && ex.dateTP === tomorrowStr;
+            
+            // Règles d'apparition
+            if (!isTomorrow) {
+              if (currentStep < 3 && !isWeekend) {
+                // Étapes 1, 2, 3 sont exclusives au week-end
+                continue;
+              }
+              if (currentStep === 3) {
+                // L'étape 4 n'apparaît QUE la veille du TP
+                continue;
+              }
+            }
+
             const dureeBase = cfg.defaultDurationTP || 30;
             const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+            
+            let tpPrio = getPrioScore(ex, examUrgencyMap, m.nom);
+            if (isTomorrow) {
+              tpPrio = 999; // Priorité absolue la veille
+            } else if (isWeekend) {
+              tpPrio += 500; // Priorité haute le week-end
+            }
+
             poolTP.push({
               matiere: m.nom,
               type: "TP",
@@ -342,7 +373,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m.nom)
+              prio: tpPrio,
+              etape: currentStep + 1
             });
           }
 
