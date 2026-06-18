@@ -54,9 +54,9 @@ describe('calculateSM2', () => {
 
   it('should boost interval for perfect score', () => {
     const result = calculateSM2(4, 8, 2.5, 3, emptyConfig);
-    // EF = 2.5 + 0.15 = 2.65, interval = 8 * 2.65 = 21.2 → 21, bonus = 21 * 1.3 = 27.3 → 27
-    expect(result.interval).toBe(27);
-    expect(result.easeFactor).toBeCloseTo(2.65, 1);
+    // EF = 2.5 + 0.30 = 2.80, interval = 8 * 2.80 = 22.4 → 22, bonus = 22 * 2.0 = 44
+    expect(result.interval).toBe(44);
+    expect(result.easeFactor).toBeCloseTo(2.80, 1);
   });
 
   it('should decrease easeFactor on hard (score=2)', () => {
