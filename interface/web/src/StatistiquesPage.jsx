@@ -124,7 +124,12 @@ function StatistiquesPage() {
 
       let A = 1.5;
       if (stats.pratiques.length > 0) {
-         A = stats.pratiques.reduce((sum, val) => sum + val, 0) / stats.pratiques.length;
+        const sorted = [...stats.pratiques].sort((a, b) => b - a);
+        A = sorted[0]; // Prends la difficulté maximale
+        for (let i = 1; i < sorted.length; i++) {
+          A += sorted[i] * Math.pow(0.5, i); // Rendement décroissant
+        }
+        A = Math.min(5, A); // Plafond à 5
       }
 
       const B_m = Math.max(0.3, B); 

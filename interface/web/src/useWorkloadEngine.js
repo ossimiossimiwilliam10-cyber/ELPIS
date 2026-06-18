@@ -82,6 +82,7 @@ export function useWorkloadEngine() {
       setConfig({ ...config, maxStudyHoursPerDay: recommendedHours });
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config?.targetGrade, config?.targetRank, config?.defaultSemesterEndDate, coursConfig, historique]);
 
   return config?.maxStudyHoursPerDay || 0;

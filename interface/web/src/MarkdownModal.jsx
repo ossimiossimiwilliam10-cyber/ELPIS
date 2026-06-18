@@ -7,6 +7,7 @@ function MarkdownModal({ isOpen, onClose, initialValue, onSave, title }) {
   const [mode, setMode] = useState('edit');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVal(initialValue || "");
     setMode('edit');
   }, [isOpen, initialValue]);

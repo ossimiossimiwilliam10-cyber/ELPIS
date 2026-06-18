@@ -107,6 +107,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchDashboard(extraTime);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursConfig, extraTime, dailyFillGap]);
 
   const handleAddExtraTime = () => {
