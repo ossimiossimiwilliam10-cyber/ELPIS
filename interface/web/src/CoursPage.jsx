@@ -26,6 +26,7 @@ function CoursPage() {
 
   // Resynchroniser le state local quand le store change (ex: import backup)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (coursConfig) setConfigLocal(coursConfig);
   }, [coursConfig]);
 

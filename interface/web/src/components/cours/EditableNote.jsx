@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function EditableNote({ value, onClick, placeholder }) {
   return (
     <div 

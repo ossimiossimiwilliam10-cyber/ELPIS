@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function EditableLabel({ value, onRename, placeholder, style }) {
   const handleRename = () => {
     const newName = window.prompt("Nouveau nom :", value || '');

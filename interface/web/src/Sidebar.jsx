@@ -1,5 +1,3 @@
-import React from 'react';
-
 function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount }) {
   const navGroups = [
     {
@@ -75,7 +73,9 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
             onClick={async () => {
               if (window.confirm("Voulez-vous vraiment éteindre ELPIS ?")) {
                 // Tenter la requête shutdown (best effort)
-                try { await fetch('/api/shutdown', { method: 'POST' }); } catch(e) {}
+                try { await fetch('/api/shutdown', { method: 'POST' }); } catch {
+                  // Ignorer l'erreur si Chrome n'est pas trouvé
+                }
                 // Tenter window.close() (ne fonctionne que si la page a été ouverte par script)
                 window.close();
                 // Si après 500ms la page est toujours ouverte, afficher un message propre

@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { create } from 'zustand';
 
 // SM-2 Algorithm tests
 function mockCalculateSM2(score, previousInterval = 0, easeFactor = 2.5, repetitions = 0) {
   let newEaseFactor = easeFactor;
   let newRepetitions = repetitions;
-  let newInterval = previousInterval;
+  let newInterval;
 
   if (score === 1) {
     // Fail

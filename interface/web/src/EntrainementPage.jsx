@@ -62,7 +62,6 @@ function EntrainementPage() {
     return { licences: [] };
   });
   const [filterMatiere, setFilterMatiere] = useState('all');
-  const [topSubjects, setTopSubjects] = useState(null);
   const [tachesOrchestrateur, setTachesOrchestrateur] = useState(null);
   const [tempsDejaTravaille, setTempsDejaTravaille] = useState(0);
   const [tempsDispoMin, setTempsDispoMin] = useState(0);
@@ -74,9 +73,6 @@ function EntrainementPage() {
         if (data) {
           if (data.tachesDuJour) {
             setTachesOrchestrateur(data.tachesDuJour);
-            const subjects = new Set();
-            data.tachesDuJour.forEach(t => subjects.add(t.matiere));
-            setTopSubjects(Array.from(subjects));
           }
           setTempsDejaTravaille(data.tempsDejaTravailleMin || 0);
           setTempsDispoMin(data.tempsDispoMin || 0);
@@ -87,28 +83,13 @@ function EntrainementPage() {
 
   useEffect(() => {
     fetchTaches();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursConfig, dailyFillGap]);
-
-  const DIFFICULTY_LEVELS = [
-    { key: 'difficile', label: '🔴', title: 'Difficile' },
-    { key: 'assez_difficile', label: '🟠', title: 'Assez difficile' },
-    { key: 'moyen', label: '🟡', title: 'Moyen' },
-    { key: 'facile', label: '🟢', title: 'Facile' },
-    { key: 'tres_facile', label: '🔵', title: 'Très facile' },
-  ];
-
-  // Helper : calcul du jour de parité basé sur studyStartDate
-  const getParityJour = () => {
-    const now = new Date();
-    const studyStartRaw = config?.studyStartDate ? config.studyStartDate.split('-').reverse().join('-') : null;
-    const studyStart = studyStartRaw ? new Date(studyStartRaw + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
-    const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
-    return Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
-  };
 
   // Resynchroniser le state local quand le parent change
   useEffect(() => {
     if (coursConfig && coursConfig.licences) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConfigLocal(coursConfig);
     }
   }, [coursConfig]);
@@ -174,9 +155,7 @@ function EntrainementPage() {
   // Count total (including already completed today)
   const totalExercisesToday = useMemo(() => {
     let completedToday = 0;
-    const d = new Date();
-    d.setHours(d.getHours() - 4);
-    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const todayStr = getTodayStr();
 
     configLocal.licences?.forEach(l => {
       l.semestres?.forEach(s => {
@@ -194,10 +173,6 @@ function EntrainementPage() {
   }, [configLocal, tachesOrchestrateur]);
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
-    const d = new Date();
-    d.setHours(d.getHours() - 4);
-    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-
     let finalJActuel = 0, finalEaseFactor = 2.5;
     const newConf = produce(configLocal, draft => {
       const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
@@ -273,9 +248,9 @@ function EntrainementPage() {
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
+    const todayStr = getTodayStr();
     let effectiveMinutes = elapsedMinutes > 0 ? elapsedMinutes : (exo.tempsMoyen || 30);
 
-    const todayStr = getTodayStr();
     let actionLabel = 'Terminé';
 
     if (exo.type === 'ANKI') {
@@ -371,15 +346,15 @@ function EntrainementPage() {
       colors: exo.type === 'TD' ? ['#34D399', '#ffffff'] : exo.type === 'TP' ? ['#FBBF24', '#ffffff'] : ['#ef4444', '#ffffff']
     });
 
-    setConfigLocal(newConf);
-    setCoursConfig(newConf);
+    setConfigLocal(newConfig);
+    setCoursConfig(newConfig);
     let fallbackDuration = 30;
     if (exo.type === 'TD') fallbackDuration = config?.defaultDurationTD || 20;
     else if (exo.type === 'TP') fallbackDuration = config?.defaultDurationTP || 30;
     else if (exo.type === 'ANNALE') fallbackDuration = config?.defaultDurationAnnales || 60;
 
     // Find updated exo for history entry
-    const updatedExo = newConf.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex][
+    const updatedExo = newConfig.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex][
       exo.type === 'TD' ? 'listeTD' : exo.type === 'TP' ? 'listeTP' : 'listeAnnales'
     ][exo.exIndex];
 
@@ -441,7 +416,7 @@ function EntrainementPage() {
                     toast.success("Anki lancé avec succès !");
                     startGlobalChrono({ id: 'anki', titre: 'Session Anki', matiereNom: 'Révisions globales' });
                   }
-                } catch(e) {
+                } catch {
                   toast.error("Impossible de contacter le serveur.");
                 }
               }}

@@ -50,7 +50,7 @@ export default function GlobalChrono() {
           const style = pip.document.createElement('style');
           style.textContent = cssRules;
           pip.document.head.appendChild(style);
-        } catch (e) {
+        } catch {
           const link = pip.document.createElement('link');
           link.rel = 'stylesheet';
           link.type = styleSheet.type;

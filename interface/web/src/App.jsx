@@ -151,7 +151,7 @@ function AppInner() {
         } else {
           addToast("Fichier invalide : pas de données de cours détectées.", 'error');
         }
-      } catch (err) {
+      } catch {
         addToast("Impossible de lire le fichier (JSON invalide).", 'error');
       }
     };

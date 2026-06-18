@@ -132,7 +132,8 @@ function Dashboard() {
       setConfig({ ...config, dernierePratiqueAnki: today });
       taskFound = true;
     } else {
-      const newConfig = produce(coursConfig, draft => {
+      const configLocal = coursConfig;
+      const newConfig = produce(configLocal, draft => {
       draft.licences.forEach(licence =>
         licence.semestres.forEach(semestre =>
           semestre.ues.forEach(ue =>
@@ -200,7 +201,6 @@ function Dashboard() {
         origin: { y: 0.6 },
         colors: ['#818CF8', '#34D399', '#FBBF24']
       });
-      setCoursConfig(newConfig);
       addHistoriqueEntry({ 
         type: tache.type, 
         titre: tache.titre, 
@@ -239,7 +239,7 @@ function Dashboard() {
     );
   }
 
-  const { statut, tempsDispoMin, tempsRequisMin, tachesDuJour } = data;
+  const { statut, tempsDispoMin, tempsRequisMin } = data;
   const surcharge = statut === "SURCHARGE";
   const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
 
