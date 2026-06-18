@@ -225,13 +225,16 @@ function EntrainementPage() {
     const today = getTodayStr();
     cm.derniereRevision = today;
     
-    // Update tempsMoyen if a timer was used
-    if (elapsedMinutes > 0) {
-      const currentAvg = cm.tempsMoyen || 0;
-      const currentCount = cm.nombreRevisionsTemps || 0;
-      cm.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
-      cm.nombreRevisionsTemps = currentCount + 1;
+    // Update tempsMoyen: use elapsedMinutes if > 0, otherwise use default duration
+    let effectiveMinutes = elapsedMinutes;
+    if (effectiveMinutes <= 0) {
+      effectiveMinutes = (cm.jActuel === 0) ? (config?.defaultDurationNewCM || 120) : (config?.defaultDurationRevCM || 30);
     }
+    
+    const currentAvg = cm.tempsMoyen || 0;
+    const currentCount = cm.nombreRevisionsTemps || 0;
+    cm.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+    cm.nombreRevisionsTemps = currentCount + 1;
 
     // Capturer les valeurs avant la fermeture du scope produce
     finalJActuel = cm.jActuel;
@@ -287,12 +290,17 @@ function EntrainementPage() {
         currentExo.difficulte = difficulte;
       }
       
-      if (elapsedMinutes > 0) {
-        const currentAvg = currentExo.tempsMoyen || 0;
-        const currentCount = currentExo.nombreRevisionsTemps || 0;
-        currentExo.tempsMoyen = ((currentAvg * currentCount) + elapsedMinutes) / (currentCount + 1);
-        currentExo.nombreRevisionsTemps = currentCount + 1;
+      let effectiveMinutes = elapsedMinutes;
+      if (effectiveMinutes <= 0) {
+        if (exo.type === 'TD') effectiveMinutes = config?.defaultDurationTD || 20;
+        else if (exo.type === 'TP') effectiveMinutes = config?.defaultDurationTP || 30;
+        else if (exo.type === 'ANNALE') effectiveMinutes = config?.defaultDurationAnnales || 60;
       }
+      
+      const currentAvg = currentExo.tempsMoyen || 0;
+      const currentCount = currentExo.nombreRevisionsTemps || 0;
+      currentExo.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+      currentExo.nombreRevisionsTemps = currentCount + 1;
     });
     
     confetti({
