@@ -192,6 +192,10 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   // 2. Calculer le temps déjà travaillé aujourd'hui
   let tempsDejaTravailleMin = 0;
+  if (cfg.dernierePratiqueAnki === todayStr) {
+    tempsDejaTravailleMin += (cfg.defaultDurationAnki || 30);
+  }
+
   for (const l of (crs.licences || [])) {
     for (const s of (l.semestres || [])) {
       for (const ue of (s.ues || [])) {

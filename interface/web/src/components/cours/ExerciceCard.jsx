@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import useStore from '../../store';
+import { useToast } from '../../ToastProvider';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
+  const { toast } = useToast();
   const [note, setNote] = useState('');
 
   const getTPStepName = (etape) => {
@@ -45,10 +47,23 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const isRunning = isThisExoActive && globalChrono.isRunning;
   const elapsedSeconds = isThisExoActive ? globalChrono.elapsedSeconds : 0;
 
-  const toggleTimer = () => {
+  const toggleTimer = async () => {
     if (isThisExoActive) {
       toggleGlobalChrono();
     } else {
+      if (exo.type === 'ANKI') {
+        try {
+          const res = await fetch('/api/open/anki', { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            toast.error(data.error || "Échec du lancement d'Anki.");
+          } else {
+            toast.success("Anki lancé avec succès !");
+          }
+        } catch {
+          toast.error("Impossible de lancer Anki (serveur injoignable).");
+        }
+      }
       startGlobalChrono(exo);
     }
   };

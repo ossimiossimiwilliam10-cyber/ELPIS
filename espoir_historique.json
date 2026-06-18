@@ -177,5 +177,21 @@
         "action": "Terminé",
         "dureeMinutes": 10,
         "timestamp": "2026-06-17T13:33:43.691Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Session Anki",
+        "matiere": "Révisions globales",
+        "action": "Terminé",
+        "dureeMinutes": 1,
+        "timestamp": "2026-06-18T09:10:23.897Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Révision Flashcards",
+        "matiere": "Routine",
+        "action": "Terminé",
+        "dureeMinutes": 26,
+        "timestamp": "2026-06-18T10:36:13.521Z"
     }
 ]

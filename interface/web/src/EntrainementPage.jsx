@@ -246,6 +246,7 @@ function EntrainementPage() {
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30),
       easeFactor: finalEaseFactor
     });
+    setTempsDejaTravaille(prev => prev + effectiveMinutes);
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
@@ -270,7 +271,8 @@ function EntrainementPage() {
         colors: ['#818CF8', '#34D399', '#FBBF24']
       });
       resetGlobalChrono();
-      fetchTaches();
+      setTempsDejaTravaille(prev => prev + effectiveMinutes);
+      setTimeout(() => fetchTaches(), 600);
       return;
     }
 
@@ -366,6 +368,7 @@ function EntrainementPage() {
       action: actionLabel,
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration
     });
+    setTempsDejaTravaille(prev => prev + (elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration));
   };
 
   // Progression : cible du jour - restants = déjà faits
@@ -384,47 +387,6 @@ function EntrainementPage() {
       <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem', flexWrap:'wrap', gap:'1rem'}}>
         <div style={{display:'flex', alignItems:'center', gap:'1.5rem'}}>
           <h2 style={{margin:0}}>Session du Jour</h2>
-          {globalChrono.exoId === 'anki' ? (
-            <button 
-              className="btn-secondary" 
-              style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem', background:'rgba(16, 185, 129, 0.2)', color:'#10b981', borderColor:'#059669'}}
-              onClick={() => {
-                const elapsedMinutes = Math.round(globalChrono.elapsedSeconds / 60);
-                addHistoriqueEntry({
-                  type: 'ANKI',
-                  titre: 'Session Anki',
-                  matiere: 'Révisions globales',
-                  action: 'Terminé',
-                  dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : 1
-                });
-                resetGlobalChrono();
-                toast.success(`Session Anki de ${elapsedMinutes > 0 ? elapsedMinutes : 1} min enregistrée !`);
-              }}
-            >
-              ✅ Terminer Anki
-            </button>
-          ) : (
-            <button 
-              className="btn-secondary" 
-              style={{padding:'0.4rem 0.8rem', fontSize:'0.85rem', background:'rgba(2, 132, 199, 0.2)', color:'#38bdf8', borderColor:'#0ea5e9'}}
-              onClick={async () => {
-                try {
-                  const res = await fetch('/api/open/anki', { method: 'POST' });
-                  const data = await res.json();
-                  if (!res.ok || !data.success) {
-                    toast.error(data.error || "Échec du lancement d'Anki.");
-                  } else {
-                    toast.success("Anki lancé avec succès !");
-                    startGlobalChrono({ id: 'anki', titre: 'Session Anki', matiereNom: 'Révisions globales' });
-                  }
-                } catch {
-                  toast.error("Impossible de contacter le serveur.");
-                }
-              }}
-            >
-              🗂️ Lancer Anki
-            </button>
-          )}
         </div>
         <span style={{color:'var(--text-secondary)'}}>{exercicesDuJour.length} exercice{exercicesDuJour.length > 1 ? 's' : ''} restant{exercicesDuJour.length > 1 ? 's' : ''}</span>
       </div>
