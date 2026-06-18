@@ -193,5 +193,21 @@
         "action": "Terminé",
         "dureeMinutes": 26,
         "timestamp": "2026-06-18T10:36:13.521Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercices - Unit 1",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Terminé",
+        "dureeMinutes": 17,
+        "timestamp": "2026-06-18T12:12:27.601Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercices - Unit 2",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Terminé",
+        "dureeMinutes": 15,
+        "timestamp": "2026-06-18T12:54:05.661Z"
     }
 ]

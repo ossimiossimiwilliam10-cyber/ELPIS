@@ -146,16 +146,30 @@ function EntrainementPage() {
     return Array.from(names);
   }, [strategicExercices]);
 
+  // Remaining exercises
+  const remainingExercises = useMemo(() => {
+    const todayStr = getTodayStr();
+    return strategicExercices.filter(exo => {
+      if (exo.type === 'ANKI') return config?.dernierePratiqueAnki !== todayStr;
+      if (exo.type === 'CM') return exo.derniereRevision !== todayStr;
+      return exo.dernierePratique !== todayStr;
+    });
+  }, [strategicExercices, configLocal, config]);
+
   // Filtered exercises
   const exercicesDuJour = useMemo(() => {
-    if (filterMatiere === 'all') return strategicExercices;
-    return strategicExercices.filter(ex => ex.matiereNom === filterMatiere);
-  }, [strategicExercices, filterMatiere]);
+    if (filterMatiere === 'all') return remainingExercises;
+    return remainingExercises.filter(ex => ex.matiereNom === filterMatiere);
+  }, [remainingExercises, filterMatiere]);
 
   // Count total (including already completed today)
   const totalExercisesToday = useMemo(() => {
     let completedToday = 0;
     const todayStr = getTodayStr();
+    
+    if (config?.dernierePratiqueAnki === todayStr) {
+      completedToday += 1;
+    }
 
     configLocal.licences?.forEach(l => {
       l.semestres?.forEach(s => {
@@ -169,8 +183,8 @@ function EntrainementPage() {
         });
       });
     });
-    return completedToday + (tachesOrchestrateur ? tachesOrchestrateur.length : 0);
-  }, [configLocal, tachesOrchestrateur]);
+    return completedToday + remainingExercises.length;
+  }, [configLocal, config, remainingExercises]);
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
     let finalJActuel = 0, finalEaseFactor = 2.5;
@@ -373,7 +387,7 @@ function EntrainementPage() {
 
   // Progression : cible du jour - restants = déjà faits
   const progressPercent = totalExercisesToday > 0
-    ? Math.round(((totalExercisesToday - strategicExercices.length) / totalExercisesToday) * 100)
+    ? Math.round(((totalExercisesToday - remainingExercises.length) / totalExercisesToday) * 100)
     : 0;
 
   const itemVariants = {
@@ -396,10 +410,10 @@ function EntrainementPage() {
         <CircularProgress percent={progressPercent} size={80} strokeWidth={8} />
         <div>
           <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: progressPercent === 100 ? 'var(--success-color)' : 'var(--text-primary)' }}>
-            {progressPercent === 100 ? 'Session Terminée ! 🎉' : `${strategicExercices.length} exercice${strategicExercices.length > 1 ? 's' : ''} restant${strategicExercices.length > 1 ? 's' : ''}`}
+            {progressPercent === 100 ? 'Session Terminée ! 🎉' : `${remainingExercises.length} exercice${remainingExercises.length > 1 ? 's' : ''} restant${remainingExercises.length > 1 ? 's' : ''}`}
           </div>
           <div style={{ color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
-            Tu as complété {totalExercisesToday - strategicExercices.length} sur {totalExercisesToday} tâches pour aujourd'hui.
+            Tu as complété {totalExercisesToday - remainingExercises.length} sur {totalExercisesToday} tâches pour aujourd'hui.
           </div>
         </div>
       </div>
@@ -411,10 +425,10 @@ function EntrainementPage() {
             className={`filter-pill ${filterMatiere === 'all' ? 'active' : ''}`}
             onClick={() => setFilterMatiere('all')}
           >
-            Tout ({strategicExercices.length})
+            Tout ({remainingExercises.length})
           </button>
           {matiereNames?.map(name => {
-            const count = strategicExercices.filter(e => e.matiereNom === name).length;
+            const count = remainingExercises.filter(e => e.matiereNom === name).length;
             return (
               <button 
                 key={name}
@@ -439,7 +453,7 @@ function EntrainementPage() {
           <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
             <div style={{
               height: '100%',
-              background: tempsDejaTravaille >= tempsDispoMin ? 'var(--success-color)' : 'var(--accent-color)',
+              background: tempsDejaTravaille >= tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)',
               width: `${Math.min(100, (tempsDejaTravaille / tempsDispoMin) * 100)}%`,
               transition: 'width 0.5s ease-out'
             }} />
@@ -454,10 +468,10 @@ function EntrainementPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className={strategicExercices.length === 0 ? "empty-state-container" : "card glass-panel"}
-            style={strategicExercices.length > 0 ? {textAlign:'center', padding:'3rem'} : {}}
+            className={remainingExercises.length === 0 ? "empty-state-container" : "card glass-panel"}
+            style={remainingExercises.length > 0 ? {textAlign:'center', padding:'3rem'} : {}}
           >
-            {strategicExercices.length === 0 ? (
+            {remainingExercises.length === 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', textAlign: 'center' }}>
                 {tachesOrchestrateur === null ? (
                   <div className="loading-spinner"></div>

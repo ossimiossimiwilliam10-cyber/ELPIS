@@ -332,15 +332,15 @@ function Dashboard() {
           <button 
             className="btn-secondary" 
             onClick={() => {
-              if (window.confirm(`Activer un jour de repos ? Il te reste ${2 - restDaysUsed} repos pour cette semaine.`)) {
+              if (window.confirm(`Activer un jour de repos ? Il te reste ${1 - restDaysUsed} repos pour cette semaine.`)) {
                 activateRestDay();
               }
             }} 
-            disabled={restDaysUsed >= 2}
-            style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', opacity: restDaysUsed >= 2 ? 0.5 : 1}}
-            title={restDaysUsed >= 2 ? "Quota de repos (2/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}
+            disabled={restDaysUsed >= 1}
+            style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', opacity: restDaysUsed >= 1 ? 0.5 : 1}}
+            title={restDaysUsed >= 1 ? "Quota de repos (1/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}
           >
-            ☕ Activer Jour de Repos ({restDaysUsed}/2)
+            ☕ Activer Jour de Repos ({restDaysUsed}/1)
           </button>
         )}
         <button 
@@ -374,9 +374,9 @@ function Dashboard() {
               <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
-                  background: (data.tempsDejaTravailleMin || 0) >= data.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-color)',
+                  background: (data.tempsDejaTravailleMin || 0) >= data.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)',
                   width: `${Math.min(100, ((data.tempsDejaTravailleMin || 0) / data.tempsDispoMin) * 100)}%`,
-                  transition: 'width 0.5s ease-out'
+                  transition: 'width 1s ease-out'
                 }} />
               </div>
             </div>
@@ -387,12 +387,41 @@ function Dashboard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="empty-state-container"
-              style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05))' }}
             >
               <div className="empty-state-icon" style={{ filter: 'drop-shadow(0 10px 20px rgba(59, 130, 246, 0.3))' }}>☕</div>
-              <h3 style={{color:'var(--accent-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Mode Repos Activé</h3>
+              <h3 style={{color:'var(--accent-primary)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Mode Repos Activé</h3>
               <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>{data.message}</p>
               <p style={{marginTop: '1rem', fontStyle: 'italic', fontSize: '0.95rem', opacity: 0.8}}>Les tâches prévues aujourd'hui ont été suspendues sans pénalité. Prends ce temps pour toi !</p>
+              
+              <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
+                {surcharge && (
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleAddExtraTime}
+                    className="btn-primary" 
+                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
+                  >
+                    🔥 J'ai encore de l'énergie (+30 min)
+                  </motion.button>
+                )}
+                
+                {data && (data.tempsDejaTravailleMin || 0) < data.tempsDispoMin && !dailyFillGap && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={async () => {
+                      toast("Génération de nouvelles tâches en cours...", "info");
+                      await fetch('/api/orchestrateur?fillGap=true');
+                      fetchDashboardData();
+                    }}
+                    className="btn-primary"
+                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
+                  >
+                    🔥 Demander plus de tâches
+                  </motion.button>
+                )}
+              </div>
             </motion.div>
           ) : orderedTaches.length === 0 ? (
             <motion.div 
@@ -411,7 +440,7 @@ function Dashboard() {
                     whileTap={{ scale: 0.95 }}
                     onClick={handleAddExtraTime}
                     className="btn-primary" 
-                    style={{background: 'var(--accent-color)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
+                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
                   >
                     🔥 J'ai encore de l'énergie (+30 min)
                   </motion.button>
@@ -547,12 +576,15 @@ function Dashboard() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.05 }}
         >
-          <h2 style={{display:'flex', alignItems:'center', gap:'0.5rem'}}>
-            ⚡ Charge du Jour
-            <span className={`status-badge ${surcharge ? 'status-surcharge' : 'status-ok'}`}>
-              {surcharge ? 'SURCHARGE' : 'OK'}
-            </span>
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '1.2rem', color: 'var(--accent-primary)' }}>⚡</div>
+              <h2 style={{ margin: 0 }}>Charge du Jour</h2>
+              {surcharge && (
+                <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                  RETARD ACCUMULÉ
+                </span>
+              )}
+            </div>
           
           <div style={{marginTop:'2rem', marginBottom:'1rem'}}>
             <div style={{display:'flex', justifyContent:'space-between', fontSize:'0.9rem'}}>
@@ -573,9 +605,11 @@ function Dashboard() {
           </div>
           
           {surcharge ? (
-            <div style={{background:'rgba(239, 68, 68, 0.1)', padding:'1rem', borderRadius:'8px', borderLeft:'4px solid var(--danger-color)'}}>
-              <strong>Alerte Burnout :</strong> Tu as prévu trop de choses aujourd'hui. Pense à reporter certaines tâches !
-            </div>
+            <div style={{background: 'rgba(239, 68, 68, 0.1)', padding: '1rem', borderRadius: '8px', marginTop: '1rem', border: '1px solid rgba(239, 68, 68, 0.2)'}}>
+                <p style={{color: 'var(--danger-color)', margin: 0}}>
+                  <strong>⚠️ Attention :</strong> Tu as accumulé du retard sur tes révisions (CM/Annales). L'IA a étalé la charge pour te protéger, mais reste concentré pour tout rattraper !
+                </p>
+              </div>
           ) : (
             <div style={{background:'rgba(16, 185, 129, 0.1)', padding:'1rem', borderRadius:'8px', borderLeft:'4px solid var(--success-color)'}}>
               <strong>Equilibre parfait :</strong> Ta charge de travail est compatible avec tes objectifs de santé.
