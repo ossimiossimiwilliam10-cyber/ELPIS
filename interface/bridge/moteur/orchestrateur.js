@@ -498,6 +498,19 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const taches = [];
   let tempsRequisMin = 0;
 
+  // --- AJOUT DE LA TÂCHE ABSOLUE ANKI ---
+  // On l'ajoute EN PREMIER pour qu'elle consomme le temps libre avant les autres tâches
+  if (cfg.dernierePratiqueAnki !== todayStr) {
+    taches.push({
+      matiere: "Routine",
+      type: "ANKI",
+      titre: "Révision Flashcards",
+      dureeMinutes: cfg.defaultDurationAnki || 30,
+      prio: 9999
+    });
+    tempsRequisMin += (cfg.defaultDurationAnki || 30);
+  }
+
   const subjectAnnaleCount = {};
   const subjectTDCount = {};
   const subjectTPCount = {};
@@ -563,18 +576,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     appendFromPool(poolCM, null, null);
     appendFromPool(poolTD, subjectTDCount, 3);
     appendFromPool(poolTP, subjectTPCount, 1);
-  }
-
-  // --- AJOUT DE LA TÂCHE ABSOLUE ANKI ---
-  if (cfg.dernierePratiqueAnki !== todayStr) {
-    taches.unshift({
-      matiere: "Routine",
-      type: "ANKI",
-      titre: "Révision Flashcards",
-      dureeMinutes: cfg.defaultDurationAnki || 30,
-      prio: 9999
-    });
-    tempsRequisMin += (cfg.defaultDurationAnki || 30);
   }
 
   // 5. Assigner les "Moments de la journée"

@@ -74,6 +74,7 @@ function StatistiquesPage() {
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {
             matieresStats[m.nom] = { 
+              ue: u.nom || 'Autres',
               cmCount: 0, 
               cmEaseTotal: 0, 
               pratiques: [],
@@ -101,7 +102,7 @@ function StatistiquesPage() {
     historique.forEach(h => {
       if (!matieresStats[h.matiere]) {
         // Fallback for subjects in history but no longer in config (or renamed)
-        matieresStats[h.matiere] = { cmCount: 0, cmEaseTotal: 0, pratiques: [], coefficient: 1, examDates: [] };
+        matieresStats[h.matiere] = { ue: 'Autres', cmCount: 0, cmEaseTotal: 0, pratiques: [], coefficient: 1, examDates: [] };
       }
       if (h.type === 'CM' && h.easeFactor) {
         matieresStats[h.matiere].cmCount++;
@@ -173,6 +174,7 @@ function StatistiquesPage() {
 
       estimations.push({ 
         matiere: nom, 
+        ue: stats.ue,
         note: G, 
         projectedNote,
         percentile: P,
@@ -207,11 +209,24 @@ function StatistiquesPage() {
     if (avgNote >= 10) avgPercentile = (0.70 / (1 + Math.pow((avgNote - 10) / 1.7816, 2.3914))) * 100;
     else avgPercentile = (1.0 - (0.03 * avgNote)) * 100;
 
-    const radarData = estimations.filter(e => e.hasData).map(e => ({
-      subject: e.matiere.length > 15 ? e.matiere.substring(0, 15) + '...' : e.matiere,
-      A: Math.round(e.note),
-      fullMark: 20
-    })).slice(0, 6);
+    const ueStats = {};
+    estimations.forEach(e => {
+      if (!e.hasData) return;
+      if (!ueStats[e.ue]) {
+        ueStats[e.ue] = { sumWeightedNote: 0, sumWeights: 0 };
+      }
+      ueStats[e.ue].sumWeightedNote += e.note * e.coefficient;
+      ueStats[e.ue].sumWeights += e.coefficient;
+    });
+
+    const radarData = Object.entries(ueStats).map(([ueName, stat]) => {
+      const avgGrade = stat.sumWeights > 0 ? (stat.sumWeightedNote / stat.sumWeights) : 0;
+      return {
+        subject: ueName.length > 20 ? ueName.substring(0, 20) + '...' : ueName,
+        A: Math.round(avgGrade * 10) / 10,
+        fullMark: 20
+      };
+    });
 
     return {
       global: { note: avgNote, percentile: avgPercentile, trend: globalTrend, projectedNote: globalProjectedNote },
