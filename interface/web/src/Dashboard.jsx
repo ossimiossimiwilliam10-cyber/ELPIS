@@ -398,7 +398,7 @@ function Dashboard() {
                     style={{display:'flex', flexDirection:'column', gap:'0.8rem', marginTop:'1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem'}}
                   >
                     <AnimatePresence>
-                      {orderedTaches.map((t, index) => {
+                      {orderedTaches?.map((t, index) => {
                         const dragId = t.matiere + t.titre + index;
                         return (
                           <Draggable key={dragId} draggableId={dragId} index={index}>
@@ -445,7 +445,7 @@ function Dashboard() {
                                 >
                                   Fait
                                 </button>
-                                {t.type !== 'CM' && DIFFICULTY_LEVELS.map(dl => (
+                                {t.type !== 'CM' && DIFFICULTY_LEVELS?.map(dl => (
                                   <button
                                     key={dl.key}
                                     onClick={() => handleTaskComplete(t, dl.key)}
@@ -547,9 +547,9 @@ function Dashboard() {
           </div>
         </div>
 
-        {stats.perMatiere.length > 0 ? (
+        {stats.perMatiere?.length > 0 ? (
           <div className="stats-carousel" style={{display:'flex', gap:'1rem', overflowX:'auto', paddingBottom:'1rem'}}>
-            {stats.perMatiere.map(m => (
+            {stats.perMatiere?.map(m => (
               <div key={m.nom} style={{minWidth:'250px', flexShrink:0, background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', border:'1px solid var(--bg-tertiary)'}}>
                 <div style={{display:'flex', justifyContent:'space-between', marginBottom:'0.5rem'}}>
                   <strong style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}} title={m.nom}>{m.nom}</strong>

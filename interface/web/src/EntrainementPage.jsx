@@ -48,6 +48,7 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 };
 
 function EntrainementPage() {
+  console.log("ENTRAINEMENT PAGE LOADED - V2 WITH SAFE MAPS");
   const { coursConfig, setCoursConfig, addHistoriqueEntry, config, startGlobalChrono, globalChrono, resetGlobalChrono } = useStore();
   const { toast } = useToast();
 
@@ -395,7 +396,7 @@ function EntrainementPage() {
           >
             Tout ({strategicExercices.length})
           </button>
-          {matiereNames.map(name => {
+          {matiereNames?.map(name => {
             const count = strategicExercices.filter(e => e.matiereNom === name).length;
             return (
               <button 
@@ -439,7 +440,7 @@ function EntrainementPage() {
         ) : (
           <div className="entrainement-timeline" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
             <AnimatePresence>
-              {exercicesDuJour.map((exo, index) => (
+              {exercicesDuJour?.map((exo, index) => (
                 <motion.div 
                   key={`${exo.matiereNom}-${exo.titre}-${index}`}
                   variants={itemVariants}

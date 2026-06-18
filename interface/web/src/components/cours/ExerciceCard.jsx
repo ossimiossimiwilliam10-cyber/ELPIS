@@ -2,9 +2,23 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import useStore from '../../store';
 
-function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, itemVariants }) {
+function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
   const [note, setNote] = useState('');
+
+  const DIFFICULTY_LEVELS = [
+    { key: 'difficile', label: '🔴', title: 'Difficile' },
+    { key: 'assez_difficile', label: '🟠', title: 'Assez difficile' },
+    { key: 'moyen', label: '🟡', title: 'Moyen' },
+    { key: 'facile', label: '🟢', title: 'Facile' },
+    { key: 'tres_facile', label: '🔵', title: 'Très facile' },
+  ];
+
+  const itemVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    show: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.8, x: -50, transition: { duration: 0.2 } }
+  };
   
   const exoId = exo.id || exo.titre;
   const isThisExoActive = globalChrono.exoId === exoId;
@@ -162,7 +176,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, DIFFICULTY_LEVELS, item
                Fait
              </button>
              <div style={{display:'flex', flexWrap:'wrap', gap:'2px', justifyContent:'center', alignItems:'center'}}>
-               {DIFFICULTY_LEVELS.map(dl => (
+               {DIFFICULTY_LEVELS?.map(dl => (
                  <button
                    key={dl.key}
                    onClick={() => handleValidation(onMarkAsDone, dl.key)}

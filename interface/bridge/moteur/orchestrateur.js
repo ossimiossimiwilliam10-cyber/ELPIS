@@ -480,9 +480,14 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0) {
 
   rapport.tempsRequisMin = tempsRequisMin;
   rapport.tachesDuJour = taches;
-  // Surcharge signalée si le potentiel total dépassait le temps libre, 
-  // mais la liste 'taches' a été coupée pour respecter tempsLibreMin !
-  rapport.statut = (tempsPotentielTotal > tempsLibreMin) ? "SURCHARGE" : "OK";
+  
+  // Calcul du temps urgent réel (CMs en retard + Annales)
+  // On ne compte plus les TDs et TPs car ils sont dans une piscine infinie
+  const tempsUrgentTotal = poolCM.reduce((acc, t) => acc + t.dureeMinutes, 0) +
+                           poolAnnales.reduce((acc, t) => acc + t.dureeMinutes, 0);
+
+  // Surcharge signalée uniquement si le travail absolument obligatoire dépasse le temps dispo
+  rapport.statut = (tempsUrgentTotal > tempsLibreMin) ? "SURCHARGE" : "OK";
 
   return rapport;
 }
