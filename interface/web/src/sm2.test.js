@@ -112,6 +112,14 @@ describe('getLoadForDate', () => {
     const result = getLoadForDate('2026-06-18', config);
     expect(result).toBeGreaterThanOrEqual(0);
   });
+
+  it('should apply massive penalty for the same subject', () => {
+    const countWithSubject = getLoadForDate('2026-06-18', configWithOneCM, 'Maths');
+    expect(countWithSubject).toBe(10); // 10 penalty instead of 1
+    
+    const countDifferentSubject = getLoadForDate('2026-06-18', configWithOneCM, 'Physique');
+    expect(countDifferentSubject).toBe(1); // No penalty
+  });
 });
 
 describe('findOptimalInterval', () => {
@@ -124,6 +132,12 @@ describe('findOptimalInterval', () => {
     // configWithOneCM has a CM scheduled on 2026-06-18
     const result = findOptimalInterval('2026-06-15', 3, configWithOneCM);
     // window=1, offsets 2/3/4. Date 18 is loaded, best is 2 (load=0, lower penalty)
+    expect(result).toBe(2);
+  });
+
+  it('should shift interval to avoid same subject overload', () => {
+    const result = findOptimalInterval('2026-06-15', 3, configWithOneCM, 'Maths');
+    // The load for 18th is now 11 for Maths, strongly discouraging offset 3
     expect(result).toBe(2);
   });
 

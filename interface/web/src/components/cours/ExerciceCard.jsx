@@ -92,6 +92,11 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
           <span style={{background:'var(--bg-tertiary)', padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.8rem'}}>
             {exo.matiereNom} ({exo.type})
           </span>
+          {exo.raisons && exo.raisons.map((r, i) => (
+            <span key={i} style={{background: r.includes('Anti-Décrochage') ? 'rgba(239,68,68,0.1)' : r.includes('Examen') ? 'rgba(245,158,11,0.1)' : r.includes('Précoce') ? 'rgba(168,85,247,0.1)' : 'var(--bg-tertiary)', color: r.includes('Anti-Décrochage') ? '#ef4444' : r.includes('Examen') ? '#f59e0b' : r.includes('Précoce') ? '#a855f7' : 'var(--text-secondary)', padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.75rem', fontWeight:'500'}}>
+              {r}
+            </span>
+          ))}
           {exo.notebookLMLink && (
             <button 
               onClick={() => {

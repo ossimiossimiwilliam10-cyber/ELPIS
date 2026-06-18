@@ -277,6 +277,10 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           
           const examBoost = examBoostOriginal * inactivityBoost;
 
+          const baseRaisons = [];
+          if (inactivityBoost > 1.0) baseRaisons.push("🛡️ Anti-Décrochage");
+          if (examBoostOriginal > 1.0) baseRaisons.push("⏳ Examen Proche");
+
           // --- CM logic ---
           let newCMCountPerMatiere = 0;
           for (const cm of (m.listeCM || [])) {
@@ -420,7 +424,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
               prio: tpPrio * inactivityBoost,
-              etape: currentStep + 1
+              etape: currentStep + 1,
+              raisons: [...baseRaisons]
             });
           }
 
@@ -439,6 +444,11 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           const isEarlyReady = tdFaits >= 2 || tpFaits >= 1;
           const isMastered = (cmCompletion >= 0.70 && tdCompletion >= 0.50) || isEarlyReady;
           const isUrgent = daysToExam <= 14;
+
+          const annalesRaisons = [...baseRaisons];
+          if (isUrgent) annalesRaisons.push("🚨 Examen Imminent");
+          else if (isEarlyReady && !isMastered) annalesRaisons.push("🚀 Défi Précoce");
+          else if (isMastered) annalesRaisons.push("🏆 Maîtrise Atteinte");
 
           if (isMastered || isUrgent) {
             const annales = (m.listeAnnales || []).filter(ex => ex.dernierePratique !== todayStr);
@@ -459,7 +469,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
                 pdfPath: ex.pdfPath || "",
                 page: ex.page || 1,
                 difficulte: ex.difficulte || "",
-                prio: basePrio * annaleBoost
+                prio: basePrio * annaleBoost,
+                raisons: annalesRaisons
               });
             }
           }

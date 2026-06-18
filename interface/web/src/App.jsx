@@ -312,6 +312,23 @@ function AppInner() {
                   </p>
 
                   <div style={{display: 'grid', gap: '1rem', marginBottom: '1rem'}}>
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', borderLeft: '3px solid #a855f7'}}>
+                      <label style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
+                        Agressivité Anti-Ennui (Fast-Track)
+                        <span style={{fontSize: '1rem', color: '#a855f7'}}>x{config.antiEnnuiMultiplier || 2.0}</span>
+                      </label>
+                      <input 
+                        type="range" 
+                        min="1.0" max="4.0" step="0.1"
+                        value={config.antiEnnuiMultiplier || 2.0}
+                        onChange={e => setConfig({...config, antiEnnuiMultiplier: parseFloat(e.target.value) || 2.0})}
+                        style={{width: '100%', cursor: 'pointer', accentColor: '#a855f7'}}
+                      />
+                      <p style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginBottom: 0}}>
+                        Multiplicateur d'intervalle quand un exercice est jugé "Très Facile". Plus c'est haut, plus le planning se purge vite.
+                      </p>
+                    </div>
+
                     <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', borderLeft: '3px solid #ef4444'}}>
                       <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
                         Max Nouveaux CM / Matière / Jour

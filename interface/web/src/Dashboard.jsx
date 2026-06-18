@@ -150,7 +150,7 @@ function Dashboard() {
                   }
                   const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
                     3, cm.jActuel || 0, cm.easeFactor || 2.5, cm.repetitions || 0,
-                    coursConfig, actualDaysElapsed
+                    coursConfig, actualDaysElapsed, tache.matiere
                   );
                   cm.jActuel = interval;
                   cm.easeFactor = easeFactor;

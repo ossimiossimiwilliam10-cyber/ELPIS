@@ -1,4 +1,4 @@
-export function getLoadForDate(dateStr, configLocal) {
+export function getLoadForDate(dateStr, configLocal, subjectName = null) {
   let count = 0;
   configLocal.licences?.forEach(l => {
     l.semestres?.forEach(s => {
@@ -7,14 +7,22 @@ export function getLoadForDate(dateStr, configLocal) {
           m.listeCM?.forEach(cm => {
             if (cm.prochaineRevisionDate) {
               if (cm.prochaineRevisionDate === dateStr) {
-                count++;
+                if (subjectName && m.nom === subjectName) {
+                  count += 10; // Pénalité massive pour la même matière
+                } else {
+                  count++;
+                }
               }
             } else if (cm.jActuel > 0 && cm.derniereRevision) {
               const nextDate = new Date(cm.derniereRevision + 'T00:00:00');
               nextDate.setDate(nextDate.getDate() + cm.jActuel);
               const nextStr = nextDate.getFullYear() + '-' + String(nextDate.getMonth() + 1).padStart(2, '0') + '-' + String(nextDate.getDate()).padStart(2, '0');
               if (nextStr === dateStr) {
-                count++;
+                if (subjectName && m.nom === subjectName) {
+                  count += 10;
+                } else {
+                  count++;
+                }
               }
             }
           });
@@ -25,7 +33,7 @@ export function getLoadForDate(dateStr, configLocal) {
   return count;
 }
 
-export function findOptimalInterval(baseDateStr, targetInterval, configLocal) {
+export function findOptimalInterval(baseDateStr, targetInterval, configLocal, subjectName = null) {
   if (targetInterval <= 1) return targetInterval;
 
   const baseDate = new Date(baseDateStr + 'T00:00:00');
@@ -47,7 +55,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal) {
     testDate.setDate(testDate.getDate() + testInterval);
     const testDateStr = testDate.getFullYear() + '-' + String(testDate.getMonth() + 1).padStart(2, '0') + '-' + String(testDate.getDate()).padStart(2, '0');
 
-    const load = getLoadForDate(testDateStr, configLocal);
+    const load = getLoadForDate(testDateStr, configLocal, subjectName);
     
     // Prefer original interval if loads are equal
     // To do this, we add a tiny penalty to the load based on distance from original target
@@ -63,7 +71,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal) {
   return bestInterval;
 }
 
-export function calculateSM2(score, previousInterval, easeFactor, repetitions, configLocal, actualDaysElapsed = -1) {
+export function calculateSM2(score, previousInterval, easeFactor, repetitions, configLocal, actualDaysElapsed = -1, subjectName = null) {
   // score: 1 (Fail), 2 (Hard), 3 (Good), 4 (Perfect)
   let newEaseFactor = easeFactor || 2.5;
   let newRepetitions = repetitions || 0;
@@ -99,7 +107,8 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
       
       // Bonus agressif pour le score 4 (Anti-Ennui)
       if (score === 4) {
-        newInterval = Math.round(newInterval * 2.0);
+        const antiEnnuiMult = configLocal?.antiEnnuiMultiplier || 2.0;
+        newInterval = Math.round(newInterval * antiEnnuiMult);
       }
     }
     newRepetitions += 1;
@@ -109,7 +118,7 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
   const d = new Date();
   d.setHours(d.getHours() - 4); // Période de grâce (Night Owl) cohérente avec le reste de l'app
   const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  const optimalInterval = findOptimalInterval(todayStr, newInterval, configLocal);
+  const optimalInterval = findOptimalInterval(todayStr, newInterval, configLocal, subjectName);
 
   const [y, m, dNum] = todayStr.split('-').map(Number);
   const nextDate = new Date(y, m - 1, dNum + optimalInterval);

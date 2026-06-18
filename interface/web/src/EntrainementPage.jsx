@@ -201,7 +201,8 @@ function EntrainementPage() {
       cm.easeFactor || 2.5,
       cm.repetitions || 0,
       configLocal,
-      actualDaysElapsed
+      actualDaysElapsed,
+      exo.matiereNom
     );
 
     cm.jActuel = interval;
