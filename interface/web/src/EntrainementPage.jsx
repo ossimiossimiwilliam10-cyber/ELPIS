@@ -49,7 +49,7 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 
 function EntrainementPage() {
   console.log("ENTRAINEMENT PAGE LOADED - V2 WITH SAFE MAPS");
-  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, startGlobalChrono, globalChrono, resetGlobalChrono, dailyFillGap, setDailyFillGap } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, startGlobalChrono, globalChrono, resetGlobalChrono, dailyFillGap, setDailyFillGap } = useStore();
   const { toast } = useToast();
 
   const getTodayStr = () => {
@@ -118,6 +118,18 @@ function EntrainementPage() {
     if (!tachesOrchestrateur) return [];
     
     let exosToReview = [];
+    
+    const ankiTask = tachesOrchestrateur.find(t => t.type === 'ANKI');
+    if (ankiTask) {
+       exosToReview.push({
+           type: 'ANKI',
+           titre: ankiTask.titre,
+           matiereNom: 'Routine',
+           dureeMinutes: ankiTask.dureeMinutes,
+           id: 'anki_task'
+       });
+    }
+
     configLocal.licences?.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
         s.ues?.forEach((u, uIndex) => {
@@ -261,10 +273,32 @@ function EntrainementPage() {
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
+    let effectiveMinutes = elapsedMinutes > 0 ? elapsedMinutes : (exo.tempsMoyen || 30);
+
     const todayStr = getTodayStr();
     let actionLabel = 'Terminé';
 
-    const newConf = produce(configLocal, draft => {
+    if (exo.type === 'ANKI') {
+      setConfig({ ...config, dernierePratiqueAnki: todayStr });
+      addHistoriqueEntry({
+        type: 'ANKI',
+        titre: exo.titre,
+        matiere: exo.matiereNom,
+        action: 'Terminé',
+        dureeMinutes: effectiveMinutes || (config.defaultDurationAnki || 30)
+      });
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#818CF8', '#34D399', '#FBBF24']
+      });
+      resetGlobalChrono();
+      fetchTaches();
+      return;
+    }
+
+    const newConfig = produce(configLocal, draft => {
       let targetList;
       if (exo.type === 'TD') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
       else if (exo.type === 'TP') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;

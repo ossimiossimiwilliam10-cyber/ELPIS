@@ -80,13 +80,14 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
     if (score === 2) {
       newEaseFactor = Math.max(1.3, newEaseFactor - 0.15);
     } else if (score === 4) {
-      newEaseFactor += 0.15;
+      // FAST-TRACK : Boost massif de l'ease factor si "Très facile"
+      newEaseFactor += 0.30;
     }
 
     if (newRepetitions === 0) {
-      newInterval = 1;
+      newInterval = score === 4 ? 4 : 1; // Sauter directement à 4 jours si parfait du premier coup
     } else if (newRepetitions === 1) {
-      newInterval = 3; // On commence par un petit saut
+      newInterval = score === 4 ? 14 : 3; // Sauter à 2 semaines si parfait à la 2ème fois
     } else {
       // Late review bonus : Si révision en retard et succès, on utilise le temps réel
       let effectivePreviousInterval = previousInterval;
@@ -96,9 +97,9 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
       
       newInterval = Math.round(effectivePreviousInterval * newEaseFactor);
       
-      // Bonus pour le score 4
+      // Bonus agressif pour le score 4 (Anti-Ennui)
       if (score === 4) {
-        newInterval = Math.round(newInterval * 1.3);
+        newInterval = Math.round(newInterval * 2.0);
       }
     }
     newRepetitions += 1;

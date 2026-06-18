@@ -357,6 +357,7 @@ function AppInner() {
                       { key: 'defaultDurationNewCM', label: 'Nouveau CM', color: '#3b82f6', defaultVal: 120 },
                       { key: 'defaultDurationRevCM', label: 'Révision CM', color: '#60a5fa', defaultVal: 30 },
                       { key: 'defaultDurationTD', label: 'Durée TD', color: '#34d399', defaultVal: 20 },
+                      { key: 'defaultDurationAnki', label: 'Flashcards (Anki)', color: '#8b5cf6', defaultVal: 30 },
                       { key: 'defaultDurationTP_Etape1', label: 'TP (Étape 1)', color: '#fbbf24', defaultVal: 45 },
                       { key: 'defaultDurationTP_Etape2', label: 'TP (Étape 2)', color: '#fbbf24', defaultVal: 180 },
                       { key: 'defaultDurationTP_Etape3', label: 'TP (Étape 3)', color: '#fbbf24', defaultVal: 90 },

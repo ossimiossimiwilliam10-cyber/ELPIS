@@ -49,7 +49,7 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 };
 
 function Dashboard() {
-  const { config, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay, dailyFillGap, setDailyFillGap } = useStore();
+  const { config, setConfig, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay, dailyFillGap, setDailyFillGap } = useStore();
   const [data, setData] = useState(null);
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -127,7 +127,12 @@ function Dashboard() {
     const today = getTodayStr();
 
     let taskFound = false;
-    const newConfig = produce(coursConfig, draft => {
+    
+    if (tache.type === 'ANKI') {
+      setConfig({ ...config, dernierePratiqueAnki: today });
+      taskFound = true;
+    } else {
+      const newConfig = produce(coursConfig, draft => {
       draft.licences.forEach(licence =>
         licence.semestres.forEach(semestre =>
           semestre.ues.forEach(ue =>
@@ -183,6 +188,10 @@ function Dashboard() {
         )
       );
     });
+    if (taskFound && tache.type !== 'ANKI') {
+      setCoursConfig(newConfig);
+    }
+    }
 
     if (taskFound) {
       confetti({
@@ -453,7 +462,18 @@ function Dashboard() {
                               <div className="timeline-connector"></div>
                               <div className="timeline-dot"></div>
                               <div style={{flex: 1}}>
-                                <div style={{fontWeight: 'bold', fontSize: '1.05rem', color: 'var(--text-primary)'}}>{t.titre}</div>
+                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '1.05rem', color: 'var(--text-primary)'}}>
+                                  <span style={{
+                                    background: 'var(--bg-tertiary)',
+                                    color: 'var(--text-secondary)',
+                                    padding: '0.1rem 0.4rem',
+                                    borderRadius: '6px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 'bold',
+                                    border: '1px solid rgba(255,255,255,0.05)'
+                                  }}>#{index + 1}</span>
+                                  {t.titre}
+                                </div>
                                 <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
                                   {t.matiere} • {t.type}
                                   {t.moment === 'matin' && <span style={{marginLeft: '0.5rem', background: 'rgba(251, 191, 36, 0.15)', color: '#fbbf24', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>🌅 Matin</span>}

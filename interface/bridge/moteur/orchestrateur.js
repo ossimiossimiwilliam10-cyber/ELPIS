@@ -251,8 +251,31 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
           const examData = getSubjectExamBoost(m, examUrgencyMap);
-          const examBoost = examData.boost;
+          const examBoostOriginal = examData.boost;
           const daysToExam = examData.daysToExam;
+
+          // --- Bouclier Anti-Décrochage ---
+          let lastPratiqueMs = 0;
+          const checkDate = (dStr) => {
+            if (dStr) {
+              const d = new Date(dStr + 'T00:00:00').getTime();
+              if (d > lastPratiqueMs) lastPratiqueMs = d;
+            }
+          };
+          (m.listeCM || []).forEach(x => checkDate(x.derniereRevision));
+          (m.listeTD || []).forEach(x => checkDate(x.dernierePratique));
+          (m.listeTP || []).forEach(x => checkDate(x.dernierePratique));
+          (m.listeAnnales || []).forEach(x => checkDate(x.dernierePratique));
+          
+          let inactivityBoost = 1.0;
+          if (lastPratiqueMs > 0) {
+            const daysInactive = (now.getTime() - lastPratiqueMs) / (1000 * 60 * 60 * 24);
+            if (daysInactive > 10) {
+              inactivityBoost = 3.0; // Bouclier anti-décrochage
+            }
+          }
+          
+          const examBoost = examBoostOriginal * inactivityBoost;
 
           // --- CM logic ---
           let newCMCountPerMatiere = 0;
@@ -339,7 +362,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m.nom)
+              prio: getPrioScore(ex, examUrgencyMap, m.nom) * inactivityBoost
             });
           }
 
@@ -396,7 +419,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: tpPrio,
+              prio: tpPrio * inactivityBoost,
               etape: currentStep + 1
             });
           }
@@ -409,10 +432,12 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           const totalTD = m.listeTD?.length || 0;
           const tdFaits = (m.listeTD || []).filter(td => td.dernierePratique).length;
           const tdCompletion = totalTD > 0 ? (tdFaits / totalTD) : 1; // Si pas de TD, on considère 100%
+          const tpFaits = (m.listeTP || []).reduce((acc, tp) => acc + (tp.nombrePratiques || 0), 0);
 
-          // --- Annales logic (Intelligent) ---
-          // Déclenchement si : Maîtrise (CM >= 70% et TD >= 50%) OU Urgence (Examen <= 14 jours)
-          const isMastered = cmCompletion >= 0.70 && tdCompletion >= 0.50;
+          // --- Annales logic (Intelligent & Précoce) ---
+          // Déclenchement si : Maîtrise (CM >= 70% et TD >= 50%), OU Urgence (Examen <= 14 jours), OU Précoce (>= 2 TD ou >= 1 TP faits)
+          const isEarlyReady = tdFaits >= 2 || tpFaits >= 1;
+          const isMastered = (cmCompletion >= 0.70 && tdCompletion >= 0.50) || isEarlyReady;
           const isUrgent = daysToExam <= 14;
 
           if (isMastered || isUrgent) {
@@ -456,6 +481,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const subjectAnnaleCount = {};
   const subjectTDCount = {};
   const subjectTPCount = {};
+  const subjectCMCount = {};
 
   // PRÉ-SÉLECTION STRATÉGIQUE DES MATIÈRES
   const subjectMaxPrio = {};
@@ -508,15 +534,27 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   // Ordre d'ajout selon le mode
   if (fillGap) {
-    // Mode comblement : On privilégie la pratique (TD, TP) avant la théorie (CM révision)
-    appendFromPool(poolTD, subjectTDCount, 3);
+    // Mode comblement : On privilégie la pratique, et on force la rotation (1 TD/TP max par matière)
+    appendFromPool(poolTD, subjectTDCount, 1);
     appendFromPool(poolTP, subjectTPCount, 1);
-    appendFromPool(poolCM, null, null);
+    appendFromPool(poolCM, subjectCMCount, 1);
   } else {
     // Mode normal : La théorie d'abord, puis la pratique
     appendFromPool(poolCM, null, null);
     appendFromPool(poolTD, subjectTDCount, 3);
     appendFromPool(poolTP, subjectTPCount, 1);
+  }
+
+  // --- AJOUT DE LA TÂCHE ABSOLUE ANKI ---
+  if (cfg.dernierePratiqueAnki !== todayStr) {
+    taches.unshift({
+      matiere: "Routine",
+      type: "ANKI",
+      titre: "Révision Flashcards",
+      dureeMinutes: cfg.defaultDurationAnki || 30,
+      prio: 9999
+    });
+    tempsRequisMin += (cfg.defaultDurationAnki || 30);
   }
 
   // 5. Assigner les "Moments de la journée"
