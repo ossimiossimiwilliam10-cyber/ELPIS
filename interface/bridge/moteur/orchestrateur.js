@@ -355,8 +355,17 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               }
             }
 
-            const dureeBase = cfg.defaultDurationTP || 30;
-            const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+            const TP_STEP_DURATIONS = [45, 180, 90, 30];
+            const dureeBase = TP_STEP_DURATIONS[currentStep] || (cfg.defaultDurationTP || 30);
+            
+            let avgForStep = null;
+            if (ex.tempsMoyenEtapes && ex.tempsMoyenEtapes.length > currentStep && ex.tempsMoyenEtapes[currentStep]) {
+              avgForStep = ex.tempsMoyenEtapes[currentStep];
+            } else if (ex.tempsMoyen && !ex.tempsMoyenEtapes) {
+              avgForStep = ex.tempsMoyen;
+            }
+            
+            const dureeEstimee = avgForStep ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             
             let tpPrio = getPrioScore(ex, examUrgencyMap, m.nom);
             if (isTomorrow) {
@@ -370,6 +379,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               type: "TP",
               titre: ex.titre,
               dureeMinutes: Math.round(dureeEstimee),
+              tempsMoyen: avgForStep, // Passed specifically for the UI display
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",

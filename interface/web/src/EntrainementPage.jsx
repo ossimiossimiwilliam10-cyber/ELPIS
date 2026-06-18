@@ -293,14 +293,36 @@ function EntrainementPage() {
       let effectiveMinutes = elapsedMinutes;
       if (effectiveMinutes <= 0) {
         if (exo.type === 'TD') effectiveMinutes = config?.defaultDurationTD || 20;
-        else if (exo.type === 'TP') effectiveMinutes = config?.defaultDurationTP || 30;
+        else if (exo.type === 'TP') {
+          const stepIndex = (currentExo.nombrePratiques || 1) - 1;
+          const TP_STEP_DURATIONS = [45, 180, 90, 30];
+          effectiveMinutes = TP_STEP_DURATIONS[stepIndex] || (config?.defaultDurationTP || 30);
+        }
         else if (exo.type === 'ANNALE') effectiveMinutes = config?.defaultDurationAnnales || 60;
       }
       
-      const currentAvg = currentExo.tempsMoyen || 0;
-      const currentCount = currentExo.nombreRevisionsTemps || 0;
-      currentExo.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
-      currentExo.nombreRevisionsTemps = currentCount + 1;
+      if (exo.type === 'TP') {
+        const stepIndex = (currentExo.nombrePratiques || 1) - 1;
+        if (!currentExo.tempsMoyenEtapes) {
+          currentExo.tempsMoyenEtapes = [];
+        }
+        while(currentExo.tempsMoyenEtapes.length <= stepIndex) currentExo.tempsMoyenEtapes.push(null);
+        
+        if (!currentExo.nombreRevisionsEtapes) {
+          currentExo.nombreRevisionsEtapes = [];
+        }
+        while(currentExo.nombreRevisionsEtapes.length <= stepIndex) currentExo.nombreRevisionsEtapes.push(0);
+        
+        const currentAvg = currentExo.tempsMoyenEtapes[stepIndex] || 0;
+        const currentCount = currentExo.nombreRevisionsEtapes[stepIndex] || 0;
+        currentExo.tempsMoyenEtapes[stepIndex] = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+        currentExo.nombreRevisionsEtapes[stepIndex] = currentCount + 1;
+      } else {
+        const currentAvg = currentExo.tempsMoyen || 0;
+        const currentCount = currentExo.nombreRevisionsTemps || 0;
+        currentExo.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+        currentExo.nombreRevisionsTemps = currentCount + 1;
+      }
     });
     
     confetti({
