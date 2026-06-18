@@ -201,8 +201,16 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           }
           for (const tp of (m.listeTP || [])) {
             if (tp.dernierePratique === todayStr) {
-              const dureeBase = cfg.defaultDurationTP || 30;
-              tempsDejaTravailleMin += tp.tempsMoyen ? tp.tempsMoyen : (dureeBase * getDifficultyMultiplier(tp.difficulte));
+              const stepIndex = Math.max(0, (tp.nombrePratiques || 1) - 1);
+              const TP_STEP_DURATIONS = [
+                cfg.defaultDurationTP_Etape1 || 45, 
+                cfg.defaultDurationTP_Etape2 || 180, 
+                cfg.defaultDurationTP_Etape3 || 90, 
+                cfg.defaultDurationTP_Etape4 || 30
+              ];
+              const dureeBase = TP_STEP_DURATIONS[stepIndex] || 30;
+              const avgForStep = (tp.tempsMoyenEtapes && tp.tempsMoyenEtapes[stepIndex]) ? tp.tempsMoyenEtapes[stepIndex] : (tp.tempsMoyen || null);
+              tempsDejaTravailleMin += avgForStep ? avgForStep : (dureeBase * getDifficultyMultiplier(tp.difficulte));
             }
           }
           for (const ann of (m.listeAnnales || [])) {
@@ -336,7 +344,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           }
 
           // --- TP logic ---
-          const tps = (m.listeTP || []).filter(ex => ex.dernierePratique !== todayStr);
+          const tps = (m.listeTP || []).filter(ex => ex.dernierePratique !== todayStr || (ex.dateTP && ex.dateTP === tomorrowStr));
           for (const ex of tps) {
             const currentStep = ex.nombrePratiques || 0;
             if (currentStep >= 4) continue; // TP totalement terminé
@@ -464,25 +472,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   const canAddMatiere = (matiere) => selectedMatieres.has(matiere);
 
-  const tryAddTask = (pool, validator) => {
-    for (const t of pool) {
-      if (tempsRequisMin + t.dureeMinutes <= tempsLibreMin) {
-        // Si la matière n'est pas dans la pré-sélection (top N), on l'ignore (sauf annales prioritaires ou CM critiques, ou si fillGap est actif)
-        if (!fillGap && !selectedMatieres.has(t.matiere)) {
-          if (!(t.type === 'CM' && t.prio > 80) && !(t.type === 'ANNALE' && t.prio > 90)) {
-            continue;
-          }
-        }
-        if (validator(t)) {
-          taches.push(t);
-          tempsRequisMin += t.dureeMinutes;
-          selectedMatieres.add(t.matiere);
-          return true;
-        }
-      }
-    }
-    return false;
-  };
 
   // Ajouter Annales d'abord (Priorité super absolue)
   for (const annale of poolAnnales) {
@@ -502,7 +491,10 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const appendFromPool = (pool, subjectCountMap, limitPerSubject) => {
     for (const item of pool) {
       if (tempsRequisMin + item.dureeMinutes <= tempsLibreMin) {
-        if (!fillGap && !canAddMatiere(item.matiere)) continue;
+        // Exception: Les CM (SuperMemo) ne doivent pas être bloqués par la limite de matières.
+        // Sinon, la courbe de l'oubli est brisée.
+        if (!fillGap && !canAddMatiere(item.matiere) && item.type !== 'CM') continue;
+        
         const count = subjectCountMap ? (subjectCountMap[item.matiere] || 0) : 0;
         if (!limitPerSubject || count < limitPerSubject) {
           taches.push(item);
@@ -518,13 +510,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   if (fillGap) {
     // Mode comblement : On privilégie la pratique (TD, TP) avant la théorie (CM révision)
     appendFromPool(poolTD, subjectTDCount, 3);
-    appendFromPool(poolTP, subjectTPCount, 2);
+    appendFromPool(poolTP, subjectTPCount, 1);
     appendFromPool(poolCM, null, null);
   } else {
     // Mode normal : La théorie d'abord, puis la pratique
     appendFromPool(poolCM, null, null);
     appendFromPool(poolTD, subjectTDCount, 3);
-    appendFromPool(poolTP, subjectTPCount, 2);
+    appendFromPool(poolTP, subjectTPCount, 1);
   }
 
   // 5. Assigner les "Moments de la journée"
