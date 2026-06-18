@@ -357,7 +357,10 @@ function AppInner() {
                       { key: 'defaultDurationNewCM', label: 'Nouveau CM', color: '#3b82f6', defaultVal: 120 },
                       { key: 'defaultDurationRevCM', label: 'Révision CM', color: '#60a5fa', defaultVal: 30 },
                       { key: 'defaultDurationTD', label: 'Durée TD', color: '#34d399', defaultVal: 20 },
-                      { key: 'defaultDurationTP', label: 'Durée TP', color: '#fbbf24', defaultVal: 30 },
+                      { key: 'defaultDurationTP_Etape1', label: 'TP (Étape 1)', color: '#fbbf24', defaultVal: 45 },
+                      { key: 'defaultDurationTP_Etape2', label: 'TP (Étape 2)', color: '#fbbf24', defaultVal: 180 },
+                      { key: 'defaultDurationTP_Etape3', label: 'TP (Étape 3)', color: '#fbbf24', defaultVal: 90 },
+                      { key: 'defaultDurationTP_Etape4', label: 'TP (Étape 4)', color: '#fbbf24', defaultVal: 30 },
                       { key: 'defaultDurationAnnales', label: 'Annales', color: '#ef4444', defaultVal: 60 }
                     ].map(item => (
                       <div key={item.key} style={{background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px', borderLeft: `3px solid ${item.color}`}}>

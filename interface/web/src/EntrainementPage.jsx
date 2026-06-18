@@ -295,8 +295,13 @@ function EntrainementPage() {
         if (exo.type === 'TD') effectiveMinutes = config?.defaultDurationTD || 20;
         else if (exo.type === 'TP') {
           const stepIndex = (currentExo.nombrePratiques || 1) - 1;
-          const TP_STEP_DURATIONS = [45, 180, 90, 30];
-          effectiveMinutes = TP_STEP_DURATIONS[stepIndex] || (config?.defaultDurationTP || 30);
+          const TP_STEP_DURATIONS = [
+            config?.defaultDurationTP_Etape1 || 45, 
+            config?.defaultDurationTP_Etape2 || 180, 
+            config?.defaultDurationTP_Etape3 || 90, 
+            config?.defaultDurationTP_Etape4 || 30
+          ];
+          effectiveMinutes = TP_STEP_DURATIONS[stepIndex] || 30;
         }
         else if (exo.type === 'ANNALE') effectiveMinutes = config?.defaultDurationAnnales || 60;
       }

@@ -355,8 +355,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               }
             }
 
-            const TP_STEP_DURATIONS = [45, 180, 90, 30];
-            const dureeBase = TP_STEP_DURATIONS[currentStep] || (cfg.defaultDurationTP || 30);
+            const TP_STEP_DURATIONS = [
+              cfg.defaultDurationTP_Etape1 || 45, 
+              cfg.defaultDurationTP_Etape2 || 180, 
+              cfg.defaultDurationTP_Etape3 || 90, 
+              cfg.defaultDurationTP_Etape4 || 30
+            ];
+            const dureeBase = TP_STEP_DURATIONS[currentStep] || 30;
             
             let avgForStep = null;
             if (ex.tempsMoyenEtapes && ex.tempsMoyenEtapes.length > currentStep && ex.tempsMoyenEtapes[currentStep]) {
