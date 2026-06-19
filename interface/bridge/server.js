@@ -71,7 +71,7 @@ app.get('/api/config', (req, res) => {
     const config = loadConfig();
     res.json(config);
   } catch (err) {
-    res.status(500).json({ error: "Erreur lecture configuration." });
+    res.status(500).json({ error: "Erreur lecture configuration: " + err.message });
   }
 });
 
@@ -97,7 +97,7 @@ app.get('/api/cours', (req, res) => {
     const cours = loadCours();
     res.json(cours);
   } catch (err) {
-    res.status(500).json({ error: "Erreur lecture des cours." });
+    res.status(500).json({ error: "Erreur lecture des cours: " + err.message });
   }
 });
 

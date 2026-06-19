@@ -61,7 +61,7 @@ function EntrainementPage() {
         if (d.intelligence) setIntelligence(d.intelligence);
       })
       .catch(console.error);
-  }, []);
+  }, [coursConfig]);
 
   const getTodayStr = () => {
     const d = new Date();

@@ -102,6 +102,7 @@ function Dashboard() {
       .catch(err => {
         console.error(err);
         setLoading(false);
+        toast.error("Impossible de charger le planning. Vérifie que le serveur est lancé.");
       });
   };
 
@@ -158,6 +159,12 @@ function Dashboard() {
                   cm.repetitions = repetitions;
                   cm.derniereRevision = today;
                   cm.prochaineRevisionDate = prochaineRevisionDate;
+                  // Tracking tempsMoyen (cohérent avec EntrainementPage.evaluateCM)
+                  const effectiveMinutes = tache.dureeMinutes || (config?.defaultDurationRevCM || 30);
+                  const currentAvg = cm.tempsMoyen || 0;
+                  const currentCount = cm.nombreRevisionsTemps || 0;
+                  cm.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+                  cm.nombreRevisionsTemps = currentCount + 1;
                   taskFound = true;
                 });
               } else if (tache.type === 'TD') {

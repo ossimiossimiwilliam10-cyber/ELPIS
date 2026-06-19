@@ -193,6 +193,19 @@ function CoursPage() {
   };
 
   const getNextReviewDate = (cm) => {
+    // Priorité au champ prochaineRevisionDate calculé par SM-2
+    if (cm.prochaineRevisionDate) {
+      const target = new Date(cm.prochaineRevisionDate + 'T00:00:00');
+      if (!isNaN(target.getTime())) {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const diffDays = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        if (diffDays <= 0) return "Aujourd'hui";
+        if (diffDays === 1) return "Demain";
+        return target.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+      }
+    }
+    // Fallback : ancienne logique (derniereRevision + jActuel)
     if (!cm.derniereRevision) return "Aujourd'hui";
     if (cm.jActuel === 0) return "Aujourd'hui";
     const date = new Date(cm.derniereRevision + 'T00:00:00');
