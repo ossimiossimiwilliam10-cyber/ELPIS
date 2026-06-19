@@ -27,7 +27,7 @@ const debouncedSaveCours = debounce(async (coursConfig, get) => {
       body: JSON.stringify(coursConfig)
     });
     console.log('Auto-saved cours');
-    if (get) get().updatePendingTasksCount();
+    if (get) get().fetchOrchestrator();
   } catch (e) {
     console.error('Failed to auto-save cours', e);
   }
@@ -57,10 +57,30 @@ const useStore = create(immer((set, get) => ({
   activeTab: 'dashboard',
   pendingTasksCount: 0,
   dailyFillGap: false,
+  orchestratorData: null,
+  intelligence: null,
 
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
   setDailyFillGap: (val) => set({ dailyFillGap: val }),
+
+  // --- ORCHESTRATOR FETCH (global, used by all pages) ---
+  fetchOrchestrator: async (params = {}) => {
+    const { extraTime = 0, fillGap = false } = params;
+    try {
+      const res = await fetch(`${API_URL}/orchestrateur?extraTime=${extraTime}&fillGap=${fillGap}`);
+      if (res.ok) {
+        const data = await res.json();
+        set({
+          orchestratorData: data,
+          intelligence: data.intelligence || null,
+          pendingTasksCount: data.tachesDuJour?.length || 0
+        });
+      }
+    } catch (e) {
+      console.error("Failed to fetch orchestrator", e);
+    }
+  },
 
   // --- CHRONO STATE ---
   globalChrono: {
@@ -95,15 +115,7 @@ const useStore = create(immer((set, get) => ({
 
 
   updatePendingTasksCount: async () => {
-    try {
-      const res = await fetch(`${API_URL}/orchestrateur?extraTime=0`);
-      if (res.ok) {
-        const data = await res.json();
-        set({ pendingTasksCount: data.tachesDuJour?.length || 0 });
-      }
-    } catch (e) {
-      console.error("Failed to update pending tasks count", e);
-    }
+    await get().fetchOrchestrator({ extraTime: 0, fillGap: false });
   },
   
   // Fetch all initial data
@@ -131,8 +143,8 @@ const useStore = create(immer((set, get) => ({
 
       // Call streak check immediately after load
       get().checkStreak();
-      // Fetch accurate pending tasks count
-      get().updatePendingTasksCount();
+      // Fetch orchestrator data (intelligence + tasks) once after init
+      get().fetchOrchestrator();
 
     } catch (err) {
       set({ error: err?.message || 'Erreur réseau lors du chargement des données.', loading: false });
@@ -181,7 +193,7 @@ const useStore = create(immer((set, get) => ({
           body: JSON.stringify(newConfig)
         });
         // Now update pending tasks which will query the orchestrator
-        get().updatePendingTasksCount();
+        get().fetchOrchestrator();
       } catch (e) {
         console.error("Failed to save rest day", e);
       }

@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const { loadConfig } = require('./config');
 const { loadCours } = require('./cours');
 
@@ -540,8 +542,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   // === INTELLIGENCE MODULE v2 : Charger l'historique et construire les maps ===
   let historique = [];
   try {
-    const fs = require('fs');
-    const path = require('path');
     const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
     if (fs.existsSync(histPath)) {
       historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));

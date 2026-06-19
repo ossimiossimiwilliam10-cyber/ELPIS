@@ -49,19 +49,9 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 
 function EntrainementPage() {
   console.log("ENTRAINEMENT PAGE LOADED - V2 WITH SAFE MAPS");
-  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, resetGlobalChrono, dailyFillGap, setDailyFillGap } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, resetGlobalChrono, dailyFillGap, setDailyFillGap, intelligence, orchestratorData, fetchOrchestrator } = useStore();
   const { toast } = useToast();
-  const [intelligence, setIntelligence] = useState(null);
   const [fatigueCounter, setFatigueCounter] = useState(0);
-
-  useEffect(() => {
-    fetch(`/api/orchestrateur?extraTime=0`)
-      .then(res => res.json())
-      .then(d => {
-        if (d.intelligence) setIntelligence(d.intelligence);
-      })
-      .catch(console.error);
-  }, [coursConfig]);
 
   const getTodayStr = () => {
     const d = new Date();
@@ -77,25 +67,21 @@ function EntrainementPage() {
   const [tempsDejaTravaille, setTempsDejaTravaille] = useState(0);
   const [tempsDispoMin, setTempsDispoMin] = useState(0);
 
-  const fetchTaches = () => {
-    fetch(`/api/orchestrateur?fillGap=${dailyFillGap}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data) {
-          if (data.tachesDuJour) {
-            setTachesOrchestrateur(data.tachesDuJour);
-          }
-          setTempsDejaTravaille(data.tempsDejaTravailleMin || 0);
-          setTempsDispoMin(data.tempsDispoMin || 0);
-        }
-      })
-      .catch(err => console.error(err));
-  };
-
   useEffect(() => {
-    fetchTaches();
+    fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursConfig, dailyFillGap]);
+
+  // Derive local state from orchestratorData
+  useEffect(() => {
+    if (orchestratorData) {
+      if (orchestratorData.tachesDuJour) {
+        setTachesOrchestrateur(orchestratorData.tachesDuJour);
+      }
+      setTempsDejaTravaille(orchestratorData.tempsDejaTravailleMin || 0);
+      setTempsDispoMin(orchestratorData.tempsDispoMin || 0);
+    }
+  }, [orchestratorData]);
 
   // Resynchroniser le state local quand le parent change
   useEffect(() => {
@@ -321,7 +307,7 @@ function EntrainementPage() {
       });
       resetGlobalChrono();
       setTempsDejaTravaille(prev => prev + effectiveMinutes);
-      setTimeout(() => fetchTaches(), 600);
+      setTimeout(() => fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 }), 600);
       return;
     }
 

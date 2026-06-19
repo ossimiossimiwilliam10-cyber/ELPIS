@@ -4,10 +4,9 @@ import { produce } from 'immer';
 import EditableLabel from './components/cours/EditableLabel';
 
 export default function BulletinPage() {
-  const { coursConfig, setCoursConfig } = useStore();
+  const { coursConfig, setCoursConfig, intelligence } = useStore();
   const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
   const [expandedUEs, setExpandedUEs] = useState({});
-  const [intelligence, setIntelligence] = useState(null);
   
   // AXE 15: What-If Simulation Mode
   const [isSimulationMode, setIsSimulationMode] = useState(false);
@@ -24,14 +23,6 @@ export default function BulletinPage() {
   };
 
   const activeConfig = isSimulationMode ? simulationConfig : coursConfig;
-
-  // Fetch intelligence data from orchestrateur
-  useEffect(() => {
-    fetch('/api/orchestrateur?extraTime=0')
-      .then(r => r.json())
-      .then(d => { if (d.intelligence) setIntelligence(d.intelligence); })
-      .catch(() => {});
-  }, [coursConfig]);
 
   if (!activeConfig || !activeConfig.licences || activeConfig.licences.length === 0) {
     return <div style={{padding: '2rem'}}>Aucun cours configuré.</div>;

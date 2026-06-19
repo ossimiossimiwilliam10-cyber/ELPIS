@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -7,6 +7,7 @@ import { calculateSM2 } from './sm2';
 import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from './ToastProvider';
+import CMCompletionModal from './components/CMCompletionModal';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
   const radius = (size - strokeWidth) / 2;
@@ -49,12 +50,15 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 };
 
 function Dashboard() {
-  const { config, setConfig, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay, dailyFillGap, setDailyFillGap } = useStore();
-  const [data, setData] = useState(null);
+  const { config, setConfig, coursConfig, setCoursConfig, addHistoriqueEntry, activateRestDay, dailyFillGap, setDailyFillGap, orchestratorData, intelligence, fetchOrchestrator } = useStore();
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [extraTime, setExtraTime] = useState(0);
   const { toast } = useToast();
+  
+  // CM modal state
+  const [cmModalOpen, setCmModalOpen] = useState(false);
+  const [pendingCMTask, setPendingCMTask] = useState(null);
 
   const recommendedDailyHours = useWorkloadEngine();
 
@@ -89,27 +93,28 @@ function Dashboard() {
     { key: 'tres_facile', label: '🔵', title: 'Très facile' },
   ];
 
-  const fetchDashboard = (currentExtraTime = extraTime) => {
-    fetch(`/api/orchestrateur?extraTime=${currentExtraTime}&fillGap=${dailyFillGap}`)
-      .then(res => res.json())
-      .then(d => {
-        setData(d);
-        if (d.tachesDuJour) {
-          setOrderedTaches(d.tachesDuJour);
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-        toast.error("Impossible de charger le planning. Vérifie que le serveur est lancé.");
-      });
-  };
-
+  // Fetch orchestrator via store (global) — triggers on param changes
   useEffect(() => {
-    fetchDashboard(extraTime);
+    const doFetch = async () => {
+      try {
+        await fetchOrchestrator({ extraTime, fillGap: dailyFillGap });
+      } catch (err) {
+        console.error(err);
+        toast.error("Impossible de charger le planning. Vérifie que le serveur est lancé.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    doFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coursConfig, extraTime, dailyFillGap]);
+  }, [coursConfig, extraTime, dailyFillGap, fetchOrchestrator]);
+
+  // Derive orderedTaches from orchestratorData when it changes
+  useEffect(() => {
+    if (orchestratorData?.tachesDuJour) {
+      setOrderedTaches(orchestratorData.tachesDuJour);
+    }
+  }, [orchestratorData]);
 
   const handleAddExtraTime = () => {
     const newTime = extraTime + 30;
@@ -126,6 +131,14 @@ function Dashboard() {
 
   const handleTaskComplete = (tache, difficulte = "") => {
     if (!coursConfig) return;
+    
+    // For CM tasks, open the mini-modal to capture real time and retention score
+    if (tache.type === 'CM') {
+      setPendingCMTask(tache);
+      setCmModalOpen(true);
+      return;
+    }
+    
     const today = getTodayStr();
 
     let taskFound = false;
@@ -141,33 +154,7 @@ function Dashboard() {
           semestre.ues.forEach(ue =>
             ue.matieres.forEach(matiere => {
               if (matiere.nom !== tache.matiere) return;
-              if (tache.type === 'CM') {
-                matiere.listeCM.forEach(cm => {
-                  if (cm.titre !== tache.titre) return;
-                  let actualDaysElapsed = -1;
-                  if (cm.derniereRevision) {
-                    const revDate = new Date(cm.derniereRevision + 'T00:00:00');
-                    const nowDate = new Date(today + 'T00:00:00');
-                    actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
-                  }
-                  const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
-                    3, cm.jActuel || 0, cm.easeFactor || 2.5, cm.repetitions || 0,
-                    coursConfig, actualDaysElapsed, tache.matiere
-                  );
-                  cm.jActuel = interval;
-                  cm.easeFactor = easeFactor;
-                  cm.repetitions = repetitions;
-                  cm.derniereRevision = today;
-                  cm.prochaineRevisionDate = prochaineRevisionDate;
-                  // Tracking tempsMoyen (cohérent avec EntrainementPage.evaluateCM)
-                  const effectiveMinutes = tache.dureeMinutes || (config?.defaultDurationRevCM || 30);
-                  const currentAvg = cm.tempsMoyen || 0;
-                  const currentCount = cm.nombreRevisionsTemps || 0;
-                  cm.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
-                  cm.nombreRevisionsTemps = currentCount + 1;
-                  taskFound = true;
-                });
-              } else if (tache.type === 'TD') {
+              if (tache.type === 'TD') {
                 matiere.listeTD.forEach(td => {
                   if (td.titre !== tache.titre) return;
                   td.dernierePratique = today;
@@ -219,6 +206,65 @@ function Dashboard() {
     }
   };
 
+  // Called by CMCompletionModal when user submits real time + retention score
+  const handleCMComplete = useCallback(({ minutes, sm2Score }) => {
+    if (!coursConfig || !pendingCMTask) return;
+    const tache = pendingCMTask;
+    const today = getTodayStr();
+
+    const configLocal = coursConfig;
+    const newConfig = produce(configLocal, draft => {
+      draft.licences.forEach(licence =>
+        licence.semestres.forEach(semestre =>
+          semestre.ues.forEach(ue =>
+            ue.matieres.forEach(matiere => {
+              if (matiere.nom !== tache.matiere) return;
+              matiere.listeCM.forEach(cm => {
+                if (cm.titre !== tache.titre) return;
+                let actualDaysElapsed = -1;
+                if (cm.derniereRevision) {
+                  const revDate = new Date(cm.derniereRevision + 'T00:00:00');
+                  const nowDate = new Date(today + 'T00:00:00');
+                  actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
+                }
+                const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
+                  sm2Score, cm.jActuel || 0, cm.easeFactor || 2.5, cm.repetitions || 0,
+                  coursConfig, actualDaysElapsed, tache.matiere
+                );
+                cm.jActuel = interval;
+                cm.easeFactor = easeFactor;
+                cm.repetitions = repetitions;
+                cm.derniereRevision = today;
+                cm.prochaineRevisionDate = prochaineRevisionDate;
+                // Tracking tempsMoyen with real elapsed minutes
+                const currentAvg = cm.tempsMoyen || 0;
+                const currentCount = cm.nombreRevisionsTemps || 0;
+                cm.tempsMoyen = ((currentAvg * currentCount) + minutes) / (currentCount + 1);
+                cm.nombreRevisionsTemps = currentCount + 1;
+              });
+            })
+          )
+        )
+      );
+    });
+
+    setCoursConfig(newConfig);
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#818CF8', '#34D399', '#FBBF24']
+    });
+    addHistoriqueEntry({
+      type: 'CM',
+      titre: tache.titre,
+      matiere: tache.matiere,
+      action: `Révisé (${sm2Score}/4)`,
+      dureeMinutes: minutes
+    });
+    setPendingCMTask(null);
+  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry]);
+
   // Dynamic greeting (must be before early returns)
   const hour = new Date().getHours();
   let greeting = 'Bonsoir';
@@ -233,7 +279,7 @@ function Dashboard() {
     );
   }
 
-  if (!data || data.error) {
+  if (!orchestratorData || orchestratorData.error) {
     return (
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -247,7 +293,7 @@ function Dashboard() {
     );
   }
 
-  const { statut, tempsDispoMin, tempsRequisMin } = data;
+  const { statut, tempsDispoMin, tempsRequisMin } = orchestratorData;
   const surcharge = statut === "SURCHARGE";
   const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
 
@@ -371,18 +417,18 @@ function Dashboard() {
           <h2>🎯 Objectifs du Jour</h2>
           
           {/* PROGRESSION QUOTIDIENNE */}
-          {data && data.tempsDispoMin > 0 && statut !== "REPOS" && (
+          {orchestratorData && orchestratorData.tempsDispoMin > 0 && statut !== "REPOS" && (
             <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--bg-tertiary)' }}>
               <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>Progression de la Journée</h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                <span>{Math.floor((data.tempsDejaTravailleMin || 0) / 60)}h{String((data.tempsDejaTravailleMin || 0) % 60).padStart(2, '0')} travaillées</span>
-                <span>Objectif IA : {Math.floor(data.tempsDispoMin / 60)}h{String(data.tempsDispoMin % 60).padStart(2, '0')}</span>
+                <span>{Math.floor((orchestratorData.tempsDejaTravailleMin || 0) / 60)}h{String((orchestratorData.tempsDejaTravailleMin || 0) % 60).padStart(2, '0')} travaillées</span>
+                <span>Objectif IA : {Math.floor(orchestratorData.tempsDispoMin / 60)}h{String(orchestratorData.tempsDispoMin % 60).padStart(2, '0')}</span>
               </div>
               <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
-                  background: (data.tempsDejaTravailleMin || 0) >= data.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)',
-                  width: `${Math.min(100, ((data.tempsDejaTravailleMin || 0) / data.tempsDispoMin) * 100)}%`,
+                  background: (orchestratorData.tempsDejaTravailleMin || 0) >= orchestratorData.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)',
+                  width: `${Math.min(100, ((orchestratorData.tempsDejaTravailleMin || 0) / orchestratorData.tempsDispoMin) * 100)}%`,
                   transition: 'width 1s ease-out'
                 }} />
               </div>
@@ -397,7 +443,7 @@ function Dashboard() {
             >
               <div className="empty-state-icon" style={{ filter: 'drop-shadow(0 10px 20px rgba(59, 130, 246, 0.3))' }}>☕</div>
               <h3 style={{color:'var(--accent-primary)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Mode Repos Activé</h3>
-              <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>{data.message}</p>
+              <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>{orchestratorData.message}</p>
               <p style={{marginTop: '1rem', fontStyle: 'italic', fontSize: '0.95rem', opacity: 0.8}}>Les tâches prévues aujourd'hui ont été suspendues sans pénalité. Prends ce temps pour toi !</p>
               
               <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
@@ -413,14 +459,13 @@ function Dashboard() {
                   </motion.button>
                 )}
                 
-                {data && (data.tempsDejaTravailleMin || 0) < data.tempsDispoMin && !dailyFillGap && (
+                {orchestratorData && (orchestratorData.tempsDejaTravailleMin || 0) < orchestratorData.tempsDispoMin && !dailyFillGap && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={async () => {
                       toast("Génération de nouvelles tâches en cours...", "info");
-                      await fetch('/api/orchestrateur?fillGap=true');
-                      fetchDashboard();
+                      await fetchOrchestrator({ fillGap: true, extraTime });
                     }}
                     className="btn-primary"
                     style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
@@ -453,7 +498,7 @@ function Dashboard() {
                   </motion.button>
                 )}
                 
-                {data && (data.tempsDejaTravailleMin || 0) < data.tempsDispoMin && !dailyFillGap && (
+                {orchestratorData && (orchestratorData.tempsDejaTravailleMin || 0) < orchestratorData.tempsDispoMin && !dailyFillGap && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -628,7 +673,7 @@ function Dashboard() {
       </div>
 
       {/* === INSIGHTS IA v2 === */}
-      {data?.intelligence && (
+      {intelligence && (
         <motion.div 
           className="card glass-panel"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -642,22 +687,22 @@ function Dashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             
             {/* Burnout Risk */}
-            {data.intelligence.burnoutRisk && data.intelligence.burnoutRisk.riskLevel !== 'none' && (
+            {intelligence.burnoutRisk && intelligence.burnoutRisk.riskLevel !== 'none' && (
               <div style={{ 
-                background: data.intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.15)' : data.intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                border: `1px solid ${data.intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.3)' : data.intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                background: intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.15)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                border: `1px solid ${intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.3)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
                 padding: '1rem', borderRadius: '8px'
               }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '0.3rem', color: data.intelligence.burnoutRisk.riskLevel === 'high' ? 'var(--danger-color)' : '#f59e0b' }}>
-                  {data.intelligence.burnoutRisk.riskLevel === 'high' ? '🚨 Risque de Burnout Élevé' : data.intelligence.burnoutRisk.riskLevel === 'medium' ? '⚠️ Fatigue Détectée' : '💤 Sommeil Perturbé'}
+                <div style={{ fontWeight: 'bold', marginBottom: '0.3rem', color: intelligence.burnoutRisk.riskLevel === 'high' ? 'var(--danger-color)' : '#f59e0b' }}>
+                  {intelligence.burnoutRisk.riskLevel === 'high' ? '🚨 Risque de Burnout Élevé' : intelligence.burnoutRisk.riskLevel === 'medium' ? '⚠️ Fatigue Détectée' : '💤 Sommeil Perturbé'}
                 </div>
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{data.intelligence.burnoutRisk.reason}</div>
+                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{intelligence.burnoutRisk.reason}</div>
               </div>
             )}
 
             {/* Velocity Insights */}
-            {data.intelligence.velocityMap && (() => {
-              const slowSubjects = Object.entries(data.intelligence.velocityMap).filter(([, v]) => v.isSlowLearner);
+            {intelligence.velocityMap && (() => {
+              const slowSubjects = Object.entries(intelligence.velocityMap).filter(([, v]) => v.isSlowLearner);
               if (slowSubjects.length === 0) return null;
               return (
                 <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '1rem', borderRadius: '8px' }}>
@@ -675,9 +720,9 @@ function Dashboard() {
             })()}
 
             {/* Cognitive Load Summary */}
-            {data.intelligence.cognitiveLoadMap && (() => {
-              const heavy = Object.entries(data.intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'heavy');
-              const light = Object.entries(data.intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'light');
+            {intelligence.cognitiveLoadMap && (() => {
+              const heavy = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'heavy');
+              const light = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'light');
               if (heavy.length === 0 && light.length === 0) return null;
               return (
                 <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1rem', borderRadius: '8px' }}>
@@ -691,8 +736,8 @@ function Dashboard() {
             })()}
 
             {/* Remaining Weight */}
-            {data.intelligence.remainingWeightMap && (() => {
-              const highRemaining = Object.entries(data.intelligence.remainingWeightMap)
+            {intelligence.remainingWeightMap && (() => {
+              const highRemaining = Object.entries(intelligence.remainingWeightMap)
                 .filter(([, v]) => v.remainingRatio === 1 && v.totalCoef > 0)
                 .sort((a, b) => b[1].totalCoef - a[1].totalCoef);
               if (highRemaining.length === 0) return null;
@@ -711,11 +756,11 @@ function Dashboard() {
             })()}
 
             {/* All clear */}
-            {data.intelligence.burnoutRisk?.riskLevel === 'none' && (
+            {intelligence.burnoutRisk?.riskLevel === 'none' && (
               <div style={{ background: 'rgba(52, 211, 153, 0.08)', padding: '0.8rem 1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>✅ Burnout : Aucun risque détecté</span>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                  ({data.intelligence.burnoutRisk.daysWithoutRest}j sans repos, {Math.round(data.intelligence.burnoutRisk.avgDailyMinutes/60 * 10)/10}h/jour moy.)
+                  ({intelligence.burnoutRisk.daysWithoutRest}j sans repos, {Math.round(intelligence.burnoutRisk.avgDailyMinutes/60 * 10)/10}h/jour moy.)
                 </span>
               </div>
             )}
@@ -762,6 +807,14 @@ function Dashboard() {
           <p style={{color:'var(--text-secondary)'}}>Aucune donnée disponible. Ajoute des cours pour voir tes statistiques.</p>
         )}
       </motion.div>
+      {/* === CM Completion Modal === */}
+      <CMCompletionModal
+        isOpen={cmModalOpen}
+        onClose={() => { setCmModalOpen(false); setPendingCMTask(null); }}
+        onSubmit={handleCMComplete}
+        taskTitle={pendingCMTask?.titre || ''}
+        defaultMinutes={pendingCMTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)}
+      />
     </motion.div>
   );
 }
