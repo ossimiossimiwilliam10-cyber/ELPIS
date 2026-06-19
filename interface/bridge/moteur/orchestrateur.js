@@ -245,11 +245,20 @@ function buildProjectedScoreMap(crs, velocityMap) {
         for (const m of (u.matieres || [])) {
           let baseScore = 10;
           
-          // 1. Analyse des notes passées dans la matière (AC/SC)
+          // 1. Analyse des notes passées dans la matière (AC/SC) et des Annales !
           let pastGrades = [];
           if (m.evaluations) {
              pastGrades = m.evaluations.filter(e => e.note !== undefined && e.note !== null && e.note !== "").map(e => parseFloat(e.note));
           }
+          // Intégrer les notes obtenues aux Annales d'entraînement comme des évaluations réelles
+          if (m.listeAnnales) {
+             m.listeAnnales.forEach(a => {
+                if (a.nombrePratiques > 0 && a.derniereNote !== undefined && a.derniereNote !== null) {
+                   pastGrades.push(parseFloat(a.derniereNote));
+                }
+             });
+          }
+
           if (pastGrades.length > 0) {
              baseScore = pastGrades.reduce((a, b) => a + b, 0) / pastGrades.length;
           }
@@ -265,9 +274,9 @@ function buildProjectedScoreMap(crs, velocityMap) {
 
           // 3. Modulateur de pratique (Annales / TD / TP)
           let practiceCount = 0;
-          if (m.listeAnnales) practiceCount += m.listeAnnales.filter(a => (a.nombrePratiques || 0) > 0).length * 2;
-          if (m.listeTD) practiceCount += m.listeTD.filter(t => (t.nombrePratiques || 0) > 0).length;
-          let practiceMod = Math.min(3, practiceCount * 0.5); // Max +3 points thanks to practice
+          if (m.listeAnnales) practiceCount += m.listeAnnales.filter(a => (a.nombrePratiques || 0) > 0).length * 5; // L'effort brut donne un petit bonus fixe (+0.5 pt)
+          if (m.listeTD) practiceCount += m.listeTD.filter(t => (t.nombrePratiques || 0) > 0).length; // 1 TD = +0.1 pt
+          let practiceMod = Math.min(3, practiceCount * 0.1);
 
           let projected = baseScore + masteryMod + practiceMod;
           

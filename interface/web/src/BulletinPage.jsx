@@ -103,21 +103,35 @@ export default function BulletinPage() {
     return totalCoef > 0 ? (totalScore / totalCoef) : null;
   };
 
-  let globalSumWeight = 0;
-  let globalSumNotes = 0;
-
-  ues.forEach(ue => {
-    ue.matieres?.forEach(m => {
-      const avg = getSubjectAverage(m.evaluations);
-      if (avg !== null) {
-        const coef = m.coefficient || 1;
-        globalSumWeight += coef;
-        globalSumNotes += avg * coef;
+  const semesterAverages = [];
+  licence.semestres?.forEach(sem => {
+    let semSumNotes = 0;
+    let semSumECTS = 0;
+    
+    sem.ues?.forEach(ue => {
+      let ueSumWeight = 0;
+      let ueSumNotes = 0;
+      ue.matieres?.forEach(m => {
+        const avg = getSubjectAverage(m.evaluations);
+        if (avg !== null) {
+          const coef = m.coefficient || 1;
+          ueSumWeight += coef;
+          ueSumNotes += avg * coef;
+        }
+      });
+      
+      const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
+      if (ueAvg !== null) {
+        const ects = ue.ects || 0; // Use ECTS for UE weighting
+        semSumNotes += ueAvg * ects;
+        semSumECTS += ects;
       }
     });
+    
+    const semAvg = semSumECTS > 0 ? (semSumNotes / semSumECTS).toFixed(2) : '--';
+    semesterAverages.push({ nom: sem.nom, avg: semAvg });
   });
 
-  const globalAverage = globalSumWeight > 0 ? (globalSumNotes / globalSumWeight).toFixed(2) : '--';
 
   const toggleUE = (idx) => {
     setExpandedUEs(prev => ({ ...prev, [idx]: prev[idx] !== undefined ? !prev[idx] : true }));
@@ -172,11 +186,15 @@ export default function BulletinPage() {
         </div>
       )}
 
-      {/* RECAP GLOBAL */}
-        <div className="card glass-panel" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '12px' }}>
-          <span style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>Moyenne Année</span>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', textAlign: 'center' }}>{globalAverage} <span style={{fontSize:'1.2rem', opacity:0.8}}>/ 20</span></div>
-        </div>
+      {/* RECAP GLOBAL PAR SEMESTRE */}
+      <div style={{display:'flex', gap:'1rem', flexWrap:'wrap', justifyContent:'flex-end', marginBottom:'1.5rem'}}>
+        {semesterAverages.map((sem, idx) => (
+          <div key={idx} className="card glass-panel" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '12px', minWidth: '150px' }}>
+            <span style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>Moyenne {sem.nom}</span>
+            <div style={{ fontSize: '2rem', fontWeight: 'bold', textAlign: 'center' }}>{sem.avg} <span style={{fontSize:'1.2rem', opacity:0.8}}>/ 20</span></div>
+          </div>
+        ))}
+      </div>
       </div>
 
       <div style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
@@ -220,21 +238,30 @@ export default function BulletinPage() {
                 {(() => {
                   if (ueAverage === '--' || parseFloat(ueAverage) >= 10) return null;
                   
-                  // Compute semester average locally for real-time simulation
-                  let semSumWeight = 0;
+                  // Compute semester average locally for real-time simulation (using ECTS rules)
+                  let semSumECTS = 0;
                   let semSumNotes = 0;
                   (licence.semestres[ue.semIndex]?.ues || []).forEach(siblingUe => {
+                     let ueSumWeight = 0;
+                     let ueSumNotes = 0;
                      siblingUe.matieres?.forEach(m => {
                        const avg = getSubjectAverage(m.evaluations);
                        if (avg !== null) {
                          const coef = m.coefficient || 1;
-                         semSumWeight += coef;
-                         semSumNotes += avg * coef;
+                         ueSumWeight += coef;
+                         ueSumNotes += avg * coef;
                        }
                      });
+                     const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
+                     if (ueAvg !== null) {
+                         const ects = siblingUe.ects || 0;
+                         semSumNotes += ueAvg * ects;
+                         semSumECTS += ects;
+                     }
                   });
-                  const semAverage = semSumWeight > 0 ? (semSumNotes / semSumWeight) : 0;
+                  const semAverage = semSumECTS > 0 ? (semSumNotes / semSumECTS) : 0;
                   const isCompensable = semAverage >= 10;
+
                   
                   return isCompensable 
                       ? <span style={{ background: 'rgba(52, 211, 153, 0.2)', color: 'var(--success)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>✅ Compensable</span>

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import useStore from './store';
@@ -7,6 +7,14 @@ import { parseDateLocal } from './parseDateLocal';
 function StatistiquesPage() {
   const { historique, coursConfig } = useStore();
   const [period, setPeriod] = useState(30); // 7, 30, 365 (pour tout voir)
+  const [intelligence, setIntelligence] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/orchestrateur?extraTime=0')
+      .then(r => r.json())
+      .then(d => { if (d.intelligence) setIntelligence(d.intelligence); })
+      .catch(() => {});
+  }, [coursConfig, historique]);
 
   const filteredHist = useMemo(() => {
     if (period === 365) return historique;
@@ -153,19 +161,12 @@ function StatistiquesPage() {
         }
       });
 
-      // Marge de progression
-      const effort = stats.pratiques.length + stats.cmCount;
-      let baseTrend = Math.min(3.5, effort * 0.15); 
-      
-      let timeMultiplier = 1;
-      if (minDays !== Infinity) {
-        if (minDays <= 0) timeMultiplier = 0.1;
-        else if (minDays <= 30) timeMultiplier = minDays / 30;
+      // Note projetée via le moteur d'Intelligence (Axe 11)
+      let projectedNote = G;
+      if (intelligence?.projectedScoreMap && typeof intelligence.projectedScoreMap[nom] !== 'undefined') {
+         projectedNote = intelligence.projectedScoreMap[nom];
       }
 
-      const matiereTrend = baseTrend * timeMultiplier;
-      const theoreticalGain = 2.0 * timeMultiplier; 
-      const projectedNote = Math.min(20, G + matiereTrend * 1.5 + theoreticalGain);
 
       let P;
       if (G >= 10) P = 0.70 / (1 + Math.pow((G - 10) / 1.7816, 2.3914));
@@ -232,7 +233,7 @@ function StatistiquesPage() {
       matieres: estimations.sort((a,b) => b.note - a.note),
       radarData
     };
-  }, [historique, coursConfig]);
+  }, [historique, coursConfig, intelligence]);
 
   const COLORS_PIE = ['#34d399', '#60a5fa', '#f59e0b', '#a78bfa', '#ec4899'];
 
