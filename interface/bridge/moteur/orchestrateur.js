@@ -148,7 +148,7 @@ function buildVelocityMap(crs, historique) {
           const mHist = histByMatiere[m.nom] || [];
           const cmSessions = mHist.filter(h => h.type === 'CM');
           const totalMinutes = mHist.reduce((acc, h) => acc + (h.dureeMinutes || 30), 0);
-          const masteredCMs = (m.listeCM || []).filter(cm => cm.easeFactor && cm.easeFactor >= 2.5).length;
+          const masteredCMs = (m.listeCM || []).filter(cm => cm.easeFactor && cm.easeFactor >= 2.5 && (cm.repetitions || 0) > 0).length;
           const totalCMs = (m.listeCM || []).length;
 
           let avgSessionsToMaster = null;
@@ -267,9 +267,14 @@ function buildProjectedScoreMap(crs, velocityMap) {
           const vData = velocityMap[m.nom];
           let masteryMod = 0;
           if (vData && vData.totalCMs > 0) {
-             const masteryRatio = vData.masteredCMs / vData.totalCMs;
-             // Si > 80% maîtrisé, bonus +3. Si < 30%, malus -3.
-             masteryMod = (masteryRatio - 0.5) * 6; 
+             if (vData.totalStudyMinutes === 0) {
+                // Sujet totalement vierge : ni bonus, ni malus
+                masteryMod = 0;
+             } else {
+                const masteryRatio = vData.masteredCMs / vData.totalCMs;
+                // Si > 80% maîtrisé, bonus +3. Si < 30%, malus -3.
+                masteryMod = (masteryRatio - 0.5) * 6; 
+             }
           }
 
           // 3. Modulateur de pratique (Annales / TD / TP)
