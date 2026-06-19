@@ -35,8 +35,68 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 
 const ROOT_DIR = path.join(__dirname, '..', '..');
+const CONFIG_FILE = path.join(ROOT_DIR, 'espoir_config.json');
+const COURS_FILE = path.join(ROOT_DIR, 'espoir_cours.json');
 const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
+const BACKUPS_DIR = path.join(ROOT_DIR, 'backups');
 const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
+
+// --- Atomic file write utility ---
+function atomicWriteFileSync(filePath, data) {
+  const tmpPath = filePath + '.tmp';
+  try {
+    fs.writeFileSync(tmpPath, data, 'utf8');
+    // On Windows, renameSync requires the target to not exist
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    fs.renameSync(tmpPath, filePath);
+    return true;
+  } catch (err) {
+    console.error(`Erreur écriture atomique ${filePath}:`, err.message);
+    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch {}
+    return false;
+  }
+}
+
+// --- Backup automatique au démarrage (5 jours glissants) ---
+function performStartupBackup() {
+  try {
+    if (!fs.existsSync(BACKUPS_DIR)) {
+      fs.mkdirSync(BACKUPS_DIR, { recursive: true });
+    }
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+    const filesToBackup = [
+      { src: CONFIG_FILE, name: 'espoir_config' },
+      { src: COURS_FILE, name: 'espoir_cours' },
+      { src: HISTORIQUE_FILE, name: 'espoir_historique' }
+    ];
+
+    for (const { src, name } of filesToBackup) {
+      if (!fs.existsSync(src)) continue;
+      const dest = path.join(BACKUPS_DIR, `${name}_${today}.json`);
+      if (!fs.existsSync(dest)) {
+        fs.copyFileSync(src, dest);
+        console.log(`Backup créé : ${dest}`);
+      }
+    }
+
+    // Nettoyage : ne garder que les 5 derniers backups par type
+    for (const { name } of filesToBackup) {
+      const existing = fs.readdirSync(BACKUPS_DIR)
+        .filter(f => f.startsWith(`${name}_`) && f.endsWith('.json'))
+        .sort(); // tri chronologique naturel avec les dates ISO
+      while (existing.length > 5) {
+        const oldest = existing.shift();
+        fs.unlinkSync(path.join(BACKUPS_DIR, oldest));
+        console.log(`Backup ancien supprimé : ${oldest}`);
+      }
+    }
+  } catch (err) {
+    console.error('Erreur backup automatique:', err.message);
+  }
+}
+// Exécuter le backup au démarrage
+performStartupBackup();
 
 if (!fs.existsSync(DOCUMENTS_DIR)) {
   fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
@@ -142,7 +202,10 @@ app.post('/api/historique', (req, res) => {
     }
     // Limit history to 10 000 entries to prevent unbounded growth
     const trimmed = req.body.length > 10000 ? req.body.slice(req.body.length - 10000) : req.body;
-    fs.writeFileSync(HISTORIQUE_FILE, JSON.stringify(trimmed, null, 4));
+    const success = atomicWriteFileSync(HISTORIQUE_FILE, JSON.stringify(trimmed, null, 4));
+    if (!success) {
+      return res.status(500).json({ error: "Erreur sauvegarde historique." });
+    }
     res.json({ success: true, message: "Historique mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur sauvegarde historique." });
