@@ -8,6 +8,22 @@ export default function BulletinPage() {
   const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
   const [expandedUEs, setExpandedUEs] = useState({});
   const [intelligence, setIntelligence] = useState(null);
+  
+  // AXE 15: What-If Simulation Mode
+  const [isSimulationMode, setIsSimulationMode] = useState(false);
+  const [simulationConfig, setSimulationConfig] = useState(null);
+
+  const toggleSimulationMode = () => {
+    if (isSimulationMode) {
+      setIsSimulationMode(false);
+      setSimulationConfig(null);
+    } else {
+      setSimulationConfig(coursConfig);
+      setIsSimulationMode(true);
+    }
+  };
+
+  const activeConfig = isSimulationMode ? simulationConfig : coursConfig;
 
   // Fetch intelligence data from orchestrateur
   useEffect(() => {
@@ -17,12 +33,12 @@ export default function BulletinPage() {
       .catch(() => {});
   }, [coursConfig]);
 
-  if (!coursConfig || !coursConfig.licences || coursConfig.licences.length === 0) {
+  if (!activeConfig || !activeConfig.licences || activeConfig.licences.length === 0) {
     return <div style={{padding: '2rem'}}>Aucun cours configuré.</div>;
   }
 
-  const currentLicenceIndex = activeLicenceIndex < coursConfig.licences.length ? activeLicenceIndex : 0;
-  const licence = coursConfig.licences[currentLicenceIndex];
+  const currentLicenceIndex = activeLicenceIndex < activeConfig.licences.length ? activeLicenceIndex : 0;
+  const licence = activeConfig.licences[currentLicenceIndex];
   
   const ues = [];
   licence.semestres?.forEach((sem, semIndex) => {
@@ -32,7 +48,11 @@ export default function BulletinPage() {
   });
 
   const mutateConfig = (recipe) => {
-    setCoursConfig(produce(coursConfig, recipe));
+    if (isSimulationMode) {
+      setSimulationConfig(produce(simulationConfig, recipe));
+    } else {
+      setCoursConfig(produce(coursConfig, recipe));
+    }
   };
 
   const handleUpdateNote = (semIndex, ueIndex, matIndex, evalIndex, newValStr) => {
@@ -121,9 +141,38 @@ export default function BulletinPage() {
               </button>
             ))}
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '1rem' }}>(Pour ajouter une licence, rends-toi dans Bibliothèque)</span>
+            
+          <button 
+            onClick={toggleSimulationMode}
+            style={{
+              padding: '0.6rem 1rem', 
+              borderRadius: '8px', 
+              border: isSimulationMode ? '1px solid #a855f7' : '1px solid var(--border-color)', 
+              background: isSimulationMode ? 'rgba(168, 85, 247, 0.15)' : 'transparent', 
+              color: isSimulationMode ? '#a855f7' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            {isSimulationMode ? '🔮 Quitter le Mode Simulation' : '🧪 Mode Simulation (What-If)'}
+          </button>
+        </div>
+      </div>
+
+      {isSimulationMode && (
+        <div style={{ background: 'rgba(168, 85, 247, 0.15)', border: '1px solid #a855f7', color: '#d8b4fe', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span style={{ fontSize: '1.5rem' }}>🧪</span>
+          <div>
+            <strong>Mode Simulation (What-If) Actif</strong>
+            <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Les notes que tu entres ici sont virtuelles et ne seront pas sauvegardées. Observe comment cela impacte tes moyennes et la compensation.</div>
           </div>
         </div>
+      )}
 
+      {/* RECAP GLOBAL */}
         <div className="card glass-panel" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '12px' }}>
           <span style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>Moyenne Année</span>
           <div style={{ fontSize: '2rem', fontWeight: 'bold', textAlign: 'center' }}>{globalAverage} <span style={{fontSize:'1.2rem', opacity:0.8}}>/ 20</span></div>
@@ -168,17 +217,28 @@ export default function BulletinPage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                 {/* Compensation badge */}
-                {intelligence?.compensationMap && (() => {
-                  const firstMat = ue.matieres?.[0];
-                  if (!firstMat) return null;
-                  const compData = intelligence.compensationMap[firstMat.nom];
-                  if (!compData) return null;
-                  if (ueAverage !== '--' && parseFloat(ueAverage) < 10) {
-                    return compData.compensable 
+                {(() => {
+                  if (ueAverage === '--' || parseFloat(ueAverage) >= 10) return null;
+                  
+                  // Compute semester average locally for real-time simulation
+                  let semSumWeight = 0;
+                  let semSumNotes = 0;
+                  (licence.semestres[ue.semIndex]?.ues || []).forEach(siblingUe => {
+                     siblingUe.matieres?.forEach(m => {
+                       const avg = getSubjectAverage(m.evaluations);
+                       if (avg !== null) {
+                         const coef = m.coefficient || 1;
+                         semSumWeight += coef;
+                         semSumNotes += avg * coef;
+                       }
+                     });
+                  });
+                  const semAverage = semSumWeight > 0 ? (semSumNotes / semSumWeight) : 0;
+                  const isCompensable = semAverage >= 10;
+                  
+                  return isCompensable 
                       ? <span style={{ background: 'rgba(52, 211, 153, 0.2)', color: 'var(--success)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>✅ Compensable</span>
                       : <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>⚠️ Non compensable</span>;
-                  }
-                  return null;
                 })()}
                 <div style={{ fontWeight: 'bold', color: ueAverage !== '--' ? (ueAverage >= 10 ? 'var(--success)' : 'var(--danger)') : 'var(--text-secondary)' }}>
                   {ueAverage !== '--' ? `Moyenne : ${ueAverage} / 20` : 'Pas de notes'}
@@ -192,11 +252,17 @@ export default function BulletinPage() {
                 {ue.matieres?.map((matiere, matIndex) => {
                   const avg = getSubjectAverage(matiere.evaluations);
                   const coef = matiere.coefficient || 1;
+                  const projected = intelligence?.projectedScoreMap?.[matiere.nom];
                   return (
                     <div key={matIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '1.1rem' }}>{matiere.nom}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                          {projected !== undefined && (
+                            <span style={{ fontSize: '0.85rem', color: '#d8b4fe', background: 'rgba(168, 85, 247, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(168, 85, 247, 0.3)', fontWeight: 'bold' }} title="Score Projeté par l'IA">
+                              🔮 Projeté : {projected} / 20
+                            </span>
+                          )}
                           <span style={{ color: 'var(--accent-secondary)', fontSize: '0.85rem', fontWeight: 'bold', background: 'rgba(52, 211, 153, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>Coef {coef}</span>
                           <span style={{ fontWeight: 'bold', fontSize: '1.1rem', color: avg !== null ? (avg >= 10 ? 'var(--success)' : 'var(--danger)') : 'var(--text-secondary)' }}>
                             {avg !== null ? `${avg.toFixed(2)} / 20` : '--'}

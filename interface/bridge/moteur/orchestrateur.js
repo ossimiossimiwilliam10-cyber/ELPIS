@@ -232,6 +232,57 @@ function detectBurnoutRisk(cfg, historique) {
 }
 
 /**
+ * AXE 11 : Prédiction de Note (Score Projeté)
+ * Estime la prochaine note en croisant historique, vélocité et maîtrise.
+ */
+function buildProjectedScoreMap(crs, velocityMap) {
+  const map = {};
+  if (!crs || !crs.licences) return map;
+
+  for (const l of crs.licences) {
+    for (const s of (l.semestres || [])) {
+      for (const u of (s.ues || [])) {
+        for (const m of (u.matieres || [])) {
+          let baseScore = 10;
+          
+          // 1. Analyse des notes passées dans la matière (AC/SC)
+          let pastGrades = [];
+          if (m.evaluations) {
+             pastGrades = m.evaluations.filter(e => e.note !== undefined && e.note !== null && e.note !== "").map(e => parseFloat(e.note));
+          }
+          if (pastGrades.length > 0) {
+             baseScore = pastGrades.reduce((a, b) => a + b, 0) / pastGrades.length;
+          }
+
+          // 2. Modulateur de maîtrise (VelocityMap)
+          const vData = velocityMap[m.nom];
+          let masteryMod = 0;
+          if (vData && vData.totalCMs > 0) {
+             const masteryRatio = vData.masteredCMs / vData.totalCMs;
+             // Si > 80% maîtrisé, bonus +3. Si < 30%, malus -3.
+             masteryMod = (masteryRatio - 0.5) * 6; 
+          }
+
+          // 3. Modulateur de pratique (Annales / TD / TP)
+          let practiceCount = 0;
+          if (m.listeAnnales) practiceCount += m.listeAnnales.filter(a => (a.nombrePratiques || 0) > 0).length * 2;
+          if (m.listeTD) practiceCount += m.listeTD.filter(t => (t.nombrePratiques || 0) > 0).length;
+          let practiceMod = Math.min(3, practiceCount * 0.5); // Max +3 points thanks to practice
+
+          let projected = baseScore + masteryMod + practiceMod;
+          
+          // Cap between 0 and 20
+          projected = Math.max(0, Math.min(20, projected));
+          
+          map[m.nom] = parseFloat(projected.toFixed(1));
+        }
+      }
+    }
+  }
+  return map;
+}
+
+/**
  * AXE 6 : Chronobiologie — Classifie les matières par difficulté cognitive.
  */
 function buildCognitiveLoadMap(crs) {
@@ -340,6 +391,8 @@ function buildExamUrgencyMap(crs) {
  * Priority score for exercises: combines practice count + difficulty + exam urgency.
  * Higher score = more urgent.
  */
+let velocityMapGlobal = null;
+
 function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensationMap) {
   let base = 1.0 / Math.sqrt((ex.nombrePratiques || 0) + 1.0);
   if (ex.difficulte === 'difficile') base *= 1.5;
@@ -403,6 +456,23 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
       }
     }
   }
+
+  // AXE 13: Synergies Inter-Matières
+  let synergyBoost = 1.0;
+  if (matiere.synergies && velocityMapGlobal) {
+    for (const syn of matiere.synergies) {
+       const v = velocityMapGlobal[syn];
+       if (v && v.totalCMs > 0) {
+          const ratio = v.masteredCMs / v.totalCMs;
+          if (ratio < 0.3) {
+             synergyBoost += 0.2; // Synergy is weak -> boost this subject to compensate
+          } else if (ratio > 0.8) {
+             synergyBoost -= 0.1; // Synergy is strong -> slightly less pressure
+          }
+       }
+    }
+  }
+  base *= synergyBoost;
 
   return base;
 }
@@ -473,8 +543,10 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const compensationMap = buildCompensationMap(crs);
   const remainingWeightMap = buildRemainingWeightMap(crs);
   const velocityMap = buildVelocityMap(crs, historique);
+  velocityMapGlobal = velocityMap; // Store for getPrioScore
   const cognitiveLoadMap = buildCognitiveLoadMap(crs);
   const burnoutRisk = detectBurnoutRisk(cfg, historique);
+  const projectedScoreMap = buildProjectedScoreMap(crs, velocityMap);
 
   // Stocker les insights dans le rapport pour l'UI
   rapport.intelligence = {
@@ -482,7 +554,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     remainingWeightMap,
     velocityMap,
     cognitiveLoadMap,
-    burnoutRisk
+    burnoutRisk,
+    projectedScoreMap
   };
 
   // --- AXE 12 : ANTI-BURNOUT — Forcer le repos si risque élevé ---
@@ -842,6 +915,19 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   poolCM.sort((a, b) => b.prio - a.prio);
   poolTD.sort((a, b) => b.prio - a.prio);
   poolTP.sort((a, b) => b.prio - a.prio);
+
+  // AXE 14 : Corrélation CM -> TD (Preparation Boost)
+  // Si des TD sont dans le pool, on s'assure que les CM de la même matière ont une priorité massive pour être faits AVANT le TD.
+  for (const td of poolTD) {
+    const cmForThis = poolCM.filter(c => c.matiere === td.matiere);
+    for (const cm of cmForThis) {
+      cm.prio *= 1.5; // Boost Preparation
+      if (!cm.raisons.includes("🔗 Préparation TD")) {
+        cm.raisons.unshift("🔗 Préparation TD");
+      }
+    }
+  }
+  poolCM.sort((a, b) => b.prio - a.prio); // Re-sort after boost
 
   // 4. Ordonnancement Adaptatif
   const taches = [];

@@ -51,6 +51,17 @@ function EntrainementPage() {
   console.log("ENTRAINEMENT PAGE LOADED - V2 WITH SAFE MAPS");
   const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, startGlobalChrono, globalChrono, resetGlobalChrono, dailyFillGap, setDailyFillGap } = useStore();
   const { toast } = useToast();
+  const [intelligence, setIntelligence] = useState(null);
+  const [fatigueCounter, setFatigueCounter] = useState(0);
+
+  useEffect(() => {
+    fetch(`/api/orchestrateur?extraTime=0`)
+      .then(res => res.json())
+      .then(d => {
+        if (d.intelligence) setIntelligence(d.intelligence);
+      })
+      .catch(console.error);
+  }, []);
 
   const getTodayStr = () => {
     const d = new Date();
@@ -209,6 +220,25 @@ function EntrainementPage() {
       actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
     }
 
+    // AXE 9: Personalized Decay Multiplier
+    let personalizedDecayMultiplier = 1.0;
+    if (intelligence?.velocityMap && exo.matiereNom) {
+       const vData = intelligence.velocityMap[exo.matiereNom];
+       if (vData && vData.isSlowLearner) {
+          personalizedDecayMultiplier = 0.8; // Fragile subject -> retain more often
+       } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {
+          personalizedDecayMultiplier = 1.2; // Fast learner -> retain less often
+       }
+    }
+
+    // AXE 7: Fatigue tracking
+    const expectedDuration = cm.jActuel === 0 ? (config?.defaultDurationNewCM || 120) : (config?.defaultDurationRevCM || 30);
+    if (finalScore <= 2 || (elapsedMinutes > 0 && elapsedMinutes > expectedDuration * 1.5)) {
+      setFatigueCounter(prev => prev + 1);
+    } else if (finalScore === 4) {
+      setFatigueCounter(0); // Good shape
+    }
+
     const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
       finalScore,
       cm.jActuel || 0,
@@ -216,7 +246,8 @@ function EntrainementPage() {
       cm.repetitions || 0,
       configLocal,
       actualDaysElapsed,
-      exo.matiereNom
+      exo.matiereNom,
+      personalizedDecayMultiplier
     );
 
     cm.jActuel = interval;
@@ -354,6 +385,18 @@ function EntrainementPage() {
         currentExo.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
         currentExo.nombreRevisionsTemps = currentCount + 1;
       }
+      
+      // AXE 7: Fatigue Tracking for TP/TD/Annales
+      let expectedDur = 30;
+      if (exo.type === 'TD') expectedDur = config?.defaultDurationTD || 20;
+      else if (exo.type === 'TP') expectedDur = config?.defaultDurationTP || 45;
+      else if (exo.type === 'ANNALE') expectedDur = config?.defaultDurationAnnales || 60;
+      
+      if (difficulte === 'difficile' || (elapsedMinutes > 0 && elapsedMinutes > expectedDur * 1.5)) {
+         setFatigueCounter(prev => prev + 1);
+      } else if (difficulte === 'tres_facile') {
+         setFatigueCounter(0);
+      }
     });
     
     confetti({
@@ -417,6 +460,35 @@ function EntrainementPage() {
           </div>
         </div>
       </div>
+
+      {/* === AXE 7: ALERTE FATIGUE === */}
+      <AnimatePresence>
+        {fatigueCounter >= 3 && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }} 
+            animate={{ opacity: 1, height: 'auto' }} 
+            exit={{ opacity: 0, height: 0 }}
+            style={{ overflow: 'hidden', marginBottom: '1.5rem' }}
+          >
+            <div style={{ background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #f59e0b', padding: '1.2rem', borderRadius: '12px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ fontSize: '2rem' }}>⚠️</span>
+              <div>
+                <strong style={{ fontSize: '1.1rem' }}>Fatigue Cognitive Détectée</strong>
+                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
+                  Tu as passé beaucoup de temps sur les derniers exercices ou cliqué répétitivement sur "Difficile". 
+                  L'algorithme te conseille fortement de prendre une <strong>pause Pomodoro de 15 min</strong> ou de changer de matière (Interleaving).
+                </div>
+              </div>
+              <button 
+                onClick={() => setFatigueCounter(0)} 
+                style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid #f59e0b', color: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
+              >
+                Ignorer
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* === FILTER PILLS === */}
       {matiereNames.length > 1 && (

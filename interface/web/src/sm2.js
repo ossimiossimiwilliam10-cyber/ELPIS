@@ -71,7 +71,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal, su
   return bestInterval;
 }
 
-export function calculateSM2(score, previousInterval, easeFactor, repetitions, configLocal, actualDaysElapsed = -1, subjectName = null) {
+export function calculateSM2(score, previousInterval, easeFactor, repetitions, configLocal, actualDaysElapsed = -1, subjectName = null, personalizedDecayMultiplier = 1.0) {
   // score: 1 (Fail), 2 (Hard), 3 (Good), 4 (Perfect)
   let newEaseFactor = easeFactor || 2.5;
   let newRepetitions = repetitions || 0;
@@ -103,7 +103,8 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
         effectivePreviousInterval = actualDaysElapsed;
       }
       
-      newInterval = Math.round(effectivePreviousInterval * newEaseFactor);
+      // AXE 9: personalizedDecayMultiplier applied here
+      newInterval = Math.round(effectivePreviousInterval * newEaseFactor * personalizedDecayMultiplier);
       
       // Bonus agressif pour le score 4 (Anti-Ennui)
       if (score === 4) {

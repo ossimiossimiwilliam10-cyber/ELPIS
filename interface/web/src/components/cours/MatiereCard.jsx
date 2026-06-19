@@ -91,7 +91,7 @@ export default function MatiereCard({
         />
       </div>
       
-      {/* CONFIG NOTEBOOK LM */}
+      {/* CONFIG NOTEBOOK LM & SYNERGIES */}
       <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
         <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
           <span style={{fontSize:'1rem'}} title="Lien NotebookLM">📖</span>
@@ -100,6 +100,19 @@ export default function MatiereCard({
             placeholder="Collez ici le lien NotebookLM pour cette matière..." 
             value={matiere.notebookLMLink || ''}
             onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'notebookLMLink'], e.target.value)}
+            style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
+          />
+        </div>
+        <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
+          <span style={{fontSize:'1rem'}} title="Synergies inter-matières">🔗</span>
+          <input 
+            type="text" 
+            placeholder="Matières liées (ex: Algèbre, Python)..." 
+            value={matiere.synergies ? matiere.synergies.join(', ') : ''}
+            onChange={(e) => {
+               const val = e.target.value.split(',').map(s => s.trim()).filter(s => s);
+               updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'synergies'], val);
+            }}
             style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
           />
         </div>
