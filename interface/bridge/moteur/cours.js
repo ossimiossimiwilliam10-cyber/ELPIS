@@ -4,6 +4,51 @@ const path = require('path');
 const ROOT_DIR = path.join(__dirname, '..', '..', '..');
 const COURS_PATH = path.join(ROOT_DIR, 'espoir_cours.json');
 
+/**
+ * Validation minimale de la structure du fichier cours.
+ * Retourne true si la structure est cohérente, false sinon.
+ */
+function validateCoursSchema(data) {
+  if (!data || typeof data !== 'object') {
+    console.error('[VALIDATION] Structure cours invalide : données nulles ou non-objet.');
+    return false;
+  }
+  if (!Array.isArray(data.licences)) {
+    console.error('[VALIDATION] Structure cours invalide : champ "licences" manquant ou non-tableau.');
+    return false;
+  }
+  for (let li = 0; li < data.licences.length; li++) {
+    const l = data.licences[li];
+    if (!l || typeof l !== 'object') {
+      console.error(`[VALIDATION] Licence[${li}] invalide.`);
+      return false;
+    }
+    if (!Array.isArray(l.semestres)) {
+      console.error(`[VALIDATION] Licence[${li}] : "semestres" manquant.`);
+      return false;
+    }
+    for (let si = 0; si < l.semestres.length; si++) {
+      const s = l.semestres[si];
+      if (!s || typeof s !== 'object' || !Array.isArray(s.ues)) {
+        console.error(`[VALIDATION] Licence[${li}].semestres[${si}] : "ues" manquant.`);
+        return false;
+      }
+      for (let ui = 0; ui < s.ues.length; ui++) {
+        const u = s.ues[ui];
+        if (!u || typeof u !== 'object') {
+          console.error(`[VALIDATION] UE[${li}][${si}][${ui}] invalide.`);
+          return false;
+        }
+        if (!Array.isArray(u.matieres)) {
+          console.error(`[VALIDATION] UE "${u.nom || '?'}" : "matieres" manquant.`);
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
 function sanitizeCours(c) {
   if (!c.licences && c.semestres) {
     c.licences = [{ nom: "Licence 1", semestres: c.semestres }];
@@ -63,6 +108,10 @@ function loadCours(filePath = COURS_PATH) {
     if (!fs.existsSync(filePath)) return { licences: [] };
     const raw = fs.readFileSync(filePath, 'utf8');
     const parsed = JSON.parse(raw);
+    if (!validateCoursSchema(parsed)) {
+      console.error('[VALIDATION] Fichier cours corrompu — chargement du fallback vide.');
+      return { licences: [] };
+    }
     return sanitizeCours(parsed);
   } catch (err) {
     console.error("Erreur lecture cours:", err.message);
@@ -72,10 +121,16 @@ function loadCours(filePath = COURS_PATH) {
 
 function saveCours(coursConfig, filePath = COURS_PATH) {
   // Fusion superficielle : le frontend envoie toujours l'objet complet.
-  // Pour une vraie fusion profonde (merge des licences), il faudrait itérer.
   const existing = loadCours(filePath);
   const merged = JSON.parse(JSON.stringify({ ...existing, ...coursConfig }));
   const cleaned = sanitizeCours(merged);
+
+  // Refuser d'écrire une structure corrompue
+  if (!validateCoursSchema(cleaned)) {
+    console.error('[VALIDATION] Refus d\'écriture : la structure cours est corrompue. Sauvegarde annulée.');
+    return false;
+  }
+
   const json = JSON.stringify(cleaned, null, 4);
   const tmpPath = filePath + '.tmp';
   
@@ -91,4 +146,4 @@ function saveCours(coursConfig, filePath = COURS_PATH) {
   }
 }
 
-module.exports = { sanitizeCours, loadCours, saveCours, COURS_PATH };
+module.exports = { validateCoursSchema, sanitizeCours, loadCours, saveCours, COURS_PATH };

@@ -104,6 +104,87 @@ test('getTodayString: uses local time with -4h grace period', () => {
   if (manual !== actual) throw new Error(`Mismatch: expected ${manual}, got ${actual}`);
 });
 
+// --- buildProjectedScoreMap (Axe 11) ---
+test('buildProjectedScoreMap: returns empty map for null cours', () => {
+  const map = buildProjectedScoreMap(null, {});
+  if (typeof map !== 'object' || Object.keys(map).length !== 0) throw new Error('Expected {}');
+});
+
+test('buildProjectedScoreMap: base score ~10 for new subject', () => {
+  const crs = {
+    licences: [{
+      nom: 'Test',
+      semestres: [{
+        ues: [{
+          nom: 'UE1',
+          matieres: [{
+            nom: 'Maths',
+            evaluations: [],
+            listeCM: [],
+            listeTD: [],
+            listeTP: [],
+            listeAnnales: []
+          }]
+        }]
+      }]
+    }]
+  };
+  const map = buildProjectedScoreMap(crs, {});
+  if (typeof map['Maths'] !== 'number') throw new Error('Maths should have a score');
+  if (map['Maths'] < 0 || map['Maths'] > 20) throw new Error(`Score out of range: ${map['Maths']}`);
+});
+
+test('buildProjectedScoreMap: mastery increases score via velocityMap', () => {
+  const crs = {
+    licences: [{
+      nom: 'Test',
+      semestres: [{
+        ues: [{
+          nom: 'UE1',
+          matieres: [{
+            nom: 'Physique',
+            evaluations: [],
+            listeCM: [{ titre: 'CM1' }, { titre: 'CM2' }],
+            listeTD: [],
+            listeTP: [],
+            listeAnnales: []
+          }]
+        }]
+      }]
+    }]
+  };
+  // 100% mastery → masteryMod = (1.0 - 0.5) * 6 = +3
+  const velocityMap = { 'Physique': { totalCMs: 2, masteredCMs: 2, totalStudyMinutes: 120 } };
+  const map = buildProjectedScoreMap(crs, velocityMap);
+  // Base 10 + mastery 3 = ~13
+  if (map['Physique'] < 11) throw new Error(`Expected >= 11 with full mastery, got ${map['Physique']}`);
+});
+
+test('buildProjectedScoreMap: past grades affect base score', () => {
+  const crs = {
+    licences: [{
+      nom: 'Test',
+      semestres: [{
+        ues: [{
+          nom: 'UE1',
+          matieres: [{
+            nom: 'Chimie',
+            evaluations: [{ note: 16, coefficient: 1 }, { note: 14, coefficient: 1 }],
+            listeCM: [],
+            listeTD: [],
+            listeTP: [],
+            listeAnnales: []
+          }]
+        }]
+      }]
+    }]
+  };
+  const map = buildProjectedScoreMap(crs, {});
+  // Average of [16, 14] = 15 as base score
+  if (map['Chimie'] < 14) throw new Error(`Expected >= 14 with good grades, got ${map['Chimie']}`);
+  if (map['Chimie'] > 17) throw new Error(`Expected <= 17, got ${map['Chimie']}`);
+});
+
 // ============================================================
 // SCORING
 // ============================================================

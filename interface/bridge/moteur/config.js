@@ -28,6 +28,44 @@ const DEFAULT_CONFIG = {
   defaultDurationAnnales: 60
 };
 
+/**
+ * Validation minimale de la structure du fichier config.
+ * La config est un objet plat — on vérifie juste que c'est un objet valide.
+ */
+function validateConfigSchema(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    console.error('[VALIDATION] Structure config invalide : données nulles ou non-objet.');
+    return false;
+  }
+  // Vérifier que les champs numériques critiques sont dans les plages acceptables
+  const numChecks = [
+    ['maxStudyHoursPerDay', 0, 24],
+    ['targetGrade', 0, 20],
+    ['defaultDurationNewCM', 5, 600],
+    ['defaultDurationRevCM', 5, 600],
+  ];
+  for (const [field, min, max] of numChecks) {
+    if (data[field] !== undefined && (typeof data[field] !== 'number' || data[field] < min || data[field] > max)) {
+      console.error(`[VALIDATION] Config : champ "${field}" hors plage (${min}-${max}).`);
+      return false;
+    }
+  }
+  // Vérifier que les tableaux attendus sont bien des tableaux
+  if (data.subjects !== undefined && !Array.isArray(data.subjects)) {
+    console.error('[VALIDATION] Config : "subjects" doit être un tableau.');
+    return false;
+  }
+  if (data.fixedCommitments !== undefined && !Array.isArray(data.fixedCommitments)) {
+    console.error('[VALIDATION] Config : "fixedCommitments" doit être un tableau.');
+    return false;
+  }
+  if (data.restDays !== undefined && !Array.isArray(data.restDays)) {
+    console.error('[VALIDATION] Config : "restDays" doit être un tableau.');
+    return false;
+  }
+  return true;
+}
+
 function sanitize(c) {
   c.maxStudyHoursPerDay = Math.max(0, Math.min(24, c.maxStudyHoursPerDay ?? 8));
   c.targetGrade = Math.max(0, Math.min(20, c.targetGrade ?? 14));
@@ -56,6 +94,10 @@ function loadConfig(filePath = CONFIG_PATH) {
     if (!fs.existsSync(filePath)) return { ...DEFAULT_CONFIG };
     const raw = fs.readFileSync(filePath, 'utf8');
     const parsed = JSON.parse(raw);
+    if (!validateConfigSchema(parsed)) {
+      console.error('[VALIDATION] Fichier config corrompu — chargement des valeurs par défaut.');
+      return { ...DEFAULT_CONFIG };
+    }
     // Merge with defaults to fill missing keys
     const merged = { ...DEFAULT_CONFIG, ...parsed };
     return sanitize(merged);
@@ -70,6 +112,13 @@ function saveConfig(config, filePath = CONFIG_PATH) {
   const existing = loadConfig(filePath);
   const merged = { ...existing, ...config };
   const cleaned = sanitize(merged);
+
+  // Refuser d'écrire une structure corrompue
+  if (!validateConfigSchema(cleaned)) {
+    console.error('[VALIDATION] Refus d\'écriture : la structure config est corrompue. Sauvegarde annulée.');
+    return false;
+  }
+
   const json = JSON.stringify(cleaned, null, 4);
   const tmpPath = filePath + '.tmp';
   
@@ -86,4 +135,4 @@ function saveConfig(config, filePath = CONFIG_PATH) {
   }
 }
 
-module.exports = { DEFAULT_CONFIG, sanitize, loadConfig, saveConfig, CONFIG_PATH };
+module.exports = { DEFAULT_CONFIG, validateConfigSchema, sanitize, loadConfig, saveConfig, CONFIG_PATH };
