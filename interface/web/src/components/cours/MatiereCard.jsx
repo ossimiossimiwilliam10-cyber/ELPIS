@@ -21,6 +21,7 @@ const StarRating = ({ value, onChange, tooltip }) => {
 
 export default function MatiereCard({ 
   matiere, 
+  allMatiereNames,
   lIndex, sIndex, uIndex, mIndex, 
   actions
 }) {
@@ -103,18 +104,45 @@ export default function MatiereCard({
             style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
           />
         </div>
-        <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
-          <span style={{fontSize:'1rem'}} title="Synergies inter-matières">🔗</span>
-          <input 
-            type="text" 
-            placeholder="Matières liées (ex: Algèbre, Python)..." 
-            value={matiere.synergies ? matiere.synergies.join(', ') : ''}
-            onChange={(e) => {
-               const val = e.target.value.split(',').map(s => s.trim()).filter(s => s);
-               updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'synergies'], val);
-            }}
-            style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
-          />
+        <div style={{display:'flex', gap:'0.5rem', alignItems: 'flex-start'}}>
+          <span style={{fontSize:'1rem', marginTop: '4px'}} title="Synergies inter-matières">🔗</span>
+          <div style={{flex:1}}>
+            <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px'}}>Matières liées (Synergies) :</div>
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
+              {(allMatiereNames || []).filter(name => name !== matiere.nom).map(name => {
+                const isSelected = matiere.synergies?.includes(name);
+                return (
+                  <button
+                    key={name}
+                    onClick={() => {
+                       let current = [...(matiere.synergies || [])];
+                       if (isSelected) {
+                         current = current.filter(n => n !== name);
+                       } else {
+                         current.push(name);
+                       }
+                       updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'synergies'], current);
+                    }}
+                    style={{
+                      background: isSelected ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255,255,255,0.05)',
+                      border: isSelected ? '1px solid #3b82f6' : '1px solid transparent',
+                      color: isSelected ? '#60a5fa' : 'var(--text-secondary)',
+                      padding: '0.2rem 0.5rem',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
+              {(!allMatiereNames || allMatiereNames.length <= 1) && (
+                 <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic'}}>Ajoutez d'autres matières d'abord.</span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
       

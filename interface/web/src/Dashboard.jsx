@@ -413,7 +413,7 @@ function Dashboard() {
                     onClick={async () => {
                       toast("Génération de nouvelles tâches en cours...", "info");
                       await fetch('/api/orchestrateur?fillGap=true');
-                      fetchDashboardData();
+                      fetchDashboard();
                     }}
                     className="btn-primary"
                     style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
@@ -650,7 +650,7 @@ function Dashboard() {
 
             {/* Velocity Insights */}
             {data.intelligence.velocityMap && (() => {
-              const slowSubjects = Object.entries(data.intelligence.velocityMap).filter(([_, v]) => v.isSlowLearner);
+              const slowSubjects = Object.entries(data.intelligence.velocityMap).filter(([, v]) => v.isSlowLearner);
               if (slowSubjects.length === 0) return null;
               return (
                 <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '1rem', borderRadius: '8px' }}>
@@ -669,8 +669,8 @@ function Dashboard() {
 
             {/* Cognitive Load Summary */}
             {data.intelligence.cognitiveLoadMap && (() => {
-              const heavy = Object.entries(data.intelligence.cognitiveLoadMap).filter(([_, v]) => v.cognitiveLoad === 'heavy');
-              const light = Object.entries(data.intelligence.cognitiveLoadMap).filter(([_, v]) => v.cognitiveLoad === 'light');
+              const heavy = Object.entries(data.intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'heavy');
+              const light = Object.entries(data.intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'light');
               if (heavy.length === 0 && light.length === 0) return null;
               return (
                 <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1rem', borderRadius: '8px' }}>
@@ -686,7 +686,7 @@ function Dashboard() {
             {/* Remaining Weight */}
             {data.intelligence.remainingWeightMap && (() => {
               const highRemaining = Object.entries(data.intelligence.remainingWeightMap)
-                .filter(([_, v]) => v.remainingRatio === 1 && v.totalCoef > 0)
+                .filter(([, v]) => v.remainingRatio === 1 && v.totalCoef > 0)
                 .sort((a, b) => b[1].totalCoef - a[1].totalCoef);
               if (highRemaining.length === 0) return null;
               return (

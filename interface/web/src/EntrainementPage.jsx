@@ -49,7 +49,7 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 
 function EntrainementPage() {
   console.log("ENTRAINEMENT PAGE LOADED - V2 WITH SAFE MAPS");
-  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, startGlobalChrono, globalChrono, resetGlobalChrono, dailyFillGap, setDailyFillGap } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, resetGlobalChrono, dailyFillGap, setDailyFillGap } = useStore();
   const { toast } = useToast();
   const [intelligence, setIntelligence] = useState(null);
   const [fatigueCounter, setFatigueCounter] = useState(0);
@@ -165,7 +165,7 @@ function EntrainementPage() {
       if (exo.type === 'CM') return exo.derniereRevision !== todayStr;
       return exo.dernierePratique !== todayStr;
     });
-  }, [strategicExercices, configLocal, config]);
+  }, [strategicExercices, config]);
 
   // Filtered exercises
   const exercicesDuJour = useMemo(() => {
@@ -198,8 +198,11 @@ function EntrainementPage() {
   }, [configLocal, config, remainingExercises]);
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
-    let finalJActuel = 0, finalEaseFactor = 2.5;
-    const newConf = produce(configLocal, draft => {
+    let finalJActuel = 0;
+    let finalEaseFactor = 2.5;
+    let finalEffectiveMinutes = 0;
+
+    const newConf = produce(coursConfig, draft => {
       const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
     
     let finalScore = score;
@@ -272,6 +275,7 @@ function EntrainementPage() {
     // Capturer les valeurs avant la fermeture du scope produce
     finalJActuel = cm.jActuel;
     finalEaseFactor = easeFactor;
+    finalEffectiveMinutes = effectiveMinutes;
     });
 
     confetti({
@@ -291,7 +295,7 @@ function EntrainementPage() {
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30),
       easeFactor: finalEaseFactor
     });
-    setTempsDejaTravaille(prev => prev + effectiveMinutes);
+    setTempsDejaTravaille(prev => prev + finalEffectiveMinutes);
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {

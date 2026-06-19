@@ -204,7 +204,20 @@ function CoursPage() {
     if (diffDays <= 0) return "Aujourd'hui";
     if (diffDays === 1) return "Demain";
     return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+  };  const getAllMatiereNames = () => {
+    const names = [];
+    configLocal.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(u => {
+          u.matieres?.forEach(m => {
+            if (m.nom && m.nom.trim() !== '') names.push(m.nom.trim());
+          });
+        });
+      });
+    });
+    return Array.from(new Set(names));
   };
+  const allMatiereNames = getAllMatiereNames();
 
   return (
     <div className="cours-page">
@@ -355,6 +368,7 @@ function CoursPage() {
                                 <MatiereCard
                                   key={`m-${sIndex}-${uIndex}-${mIndex}`}
                                   matiere={matiere}
+                                  allMatiereNames={allMatiereNames}
                                   lIndex={lIndex} sIndex={sIndex} uIndex={uIndex} mIndex={mIndex}
                                   actions={{
                                     deleteMatiere, updateField, addCM, deleteCM,

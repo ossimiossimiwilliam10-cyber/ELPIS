@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
-import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import './index.css';
 import Dashboard from './Dashboard';
@@ -93,40 +92,7 @@ function AppInner() {
 
 
 
-  // --- Subjects (Sujets à étudier avec dates d'examens, liés à coursConfig) ---
-  const updateMatiereField = (lIndex, sIndex, uIndex, mIndex, field, value) => {
-    useStore.getState().setCoursConfig(
-      produce(coursConfig, draft => {
-        draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex][field] = value;
-      })
-    );
-  };
 
-  const addMatiereExamDate = (lIndex, sIndex, uIndex, mIndex) => {
-    useStore.getState().setCoursConfig(
-      produce(coursConfig, draft => {
-        const mat = draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
-        if (!mat.examDates) mat.examDates = [];
-        mat.examDates.push("");
-      })
-    );
-  };
-
-  const updateMatiereExamDate = (lIndex, sIndex, uIndex, mIndex, dIndex, value) => {
-    useStore.getState().setCoursConfig(
-      produce(coursConfig, draft => {
-        draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].examDates[dIndex] = value;
-      })
-    );
-  };
-
-  const removeMatiereExamDate = (lIndex, sIndex, uIndex, mIndex, dIndex) => {
-    useStore.getState().setCoursConfig(
-      produce(coursConfig, draft => {
-        draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].examDates.splice(dIndex, 1);
-      })
-    );
-  };
 
   const downloadBackup = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(coursConfig, null, 4));
