@@ -14,6 +14,255 @@ function getDayOfWeekString() {
   return DAYS_OF_WEEK[new Date().getDay()];
 }
 
+// ============================================================
+// INTELLIGENCE MODULE v2 — Fonctions d'analyse avancée
+// ============================================================
+
+/**
+ * Calcule la moyenne pondérée d'une matière à partir de ses évaluations.
+ * Ne prend en compte que les évaluations déjà notées.
+ */
+function getMatiereAverage(matiere) {
+  if (!matiere || !matiere.evaluations || !Array.isArray(matiere.evaluations)) return null;
+  let totalScore = 0;
+  let totalCoef = 0;
+  matiere.evaluations.forEach(ev => {
+    if (ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
+      const c = ev.coefficient || 1;
+      totalScore += ev.note * c;
+      totalCoef += c;
+    }
+  });
+  return totalCoef > 0 ? { avg: totalScore / totalCoef, evaluatedCoef: totalCoef } : null;
+}
+
+/**
+ * AXE 8 : Compensation Inter-UE.
+ * Calcule pour chaque UE si sa moyenne actuelle est compensable
+ * par les autres UEs du même semestre (moyenne semestre >= 10).
+ */
+function buildCompensationMap(crs) {
+  const map = {};
+  if (!crs || !crs.licences) return map;
+
+  for (const l of (crs.licences || [])) {
+    for (const s of (l.semestres || [])) {
+      const ueData = [];
+      for (const ue of (s.ues || [])) {
+        let ueSumWeight = 0;
+        let ueSumNotes = 0;
+        let hasAnyNote = false;
+        for (const m of (ue.matieres || [])) {
+          const result = getMatiereAverage(m);
+          if (result) {
+            const coef = m.coefficient || 1;
+            ueSumWeight += coef;
+            ueSumNotes += result.avg * coef;
+            hasAnyNote = true;
+          }
+        }
+        const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
+        ueData.push({ ue, ueAvg, ueSumWeight, ueSumNotes, hasAnyNote });
+      }
+
+      let semSumWeight = 0;
+      let semSumNotes = 0;
+      ueData.forEach(ud => {
+        if (ud.ueAvg !== null) {
+          semSumWeight += ud.ueSumWeight;
+          semSumNotes += ud.ueSumNotes;
+        }
+      });
+      const semAvg = semSumWeight > 0 ? semSumNotes / semSumWeight : null;
+
+      ueData.forEach(ud => {
+        for (const m of (ud.ue.matieres || [])) {
+          const ueAvg = ud.ueAvg;
+          if (ueAvg !== null && semAvg !== null) {
+            map[m.nom] = {
+              compensable: ueAvg < 10 && semAvg >= 10,
+              ueAvg,
+              semestreAvg: semAvg,
+              deficit: ueAvg < 10 ? 10 - ueAvg : 0
+            };
+          }
+        }
+      });
+    }
+  }
+  return map;
+}
+
+/**
+ * AXE 5 : Remaining Weight Factor.
+ * Pour chaque matière, calcule le ratio de coefficient restant à évaluer.
+ */
+function buildRemainingWeightMap(crs) {
+  const map = {};
+  if (!crs || !crs.licences) return map;
+
+  for (const l of (crs.licences || [])) {
+    for (const s of (l.semestres || [])) {
+      for (const ue of (s.ues || [])) {
+        for (const m of (ue.matieres || [])) {
+          if (!m.evaluations || !Array.isArray(m.evaluations)) continue;
+          let totalCoef = 0;
+          let evaluatedCoef = 0;
+          m.evaluations.forEach(ev => {
+            const c = ev.coefficient || 1;
+            totalCoef += c;
+            if (ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
+              evaluatedCoef += c;
+            }
+          });
+          const remainingRatio = totalCoef > 0 ? (totalCoef - evaluatedCoef) / totalCoef : 1;
+          map[m.nom] = { remainingRatio, totalCoef, evaluatedCoef };
+        }
+      }
+    }
+  }
+  return map;
+}
+
+/**
+ * AXE 10 : Study Velocity.
+ * Calcule la "vitesse d'apprentissage" par matière.
+ */
+function buildVelocityMap(crs, historique) {
+  const map = {};
+  if (!historique || historique.length === 0) return map;
+
+  const histByMatiere = {};
+  historique.forEach(h => {
+    if (!h.matiere) return;
+    if (!histByMatiere[h.matiere]) histByMatiere[h.matiere] = [];
+    histByMatiere[h.matiere].push(h);
+  });
+
+  if (!crs || !crs.licences) return map;
+
+  for (const l of (crs.licences || [])) {
+    for (const s of (l.semestres || [])) {
+      for (const ue of (s.ues || [])) {
+        for (const m of (ue.matieres || [])) {
+          const mHist = histByMatiere[m.nom] || [];
+          const cmSessions = mHist.filter(h => h.type === 'CM');
+          const totalMinutes = mHist.reduce((acc, h) => acc + (h.dureeMinutes || 30), 0);
+          const masteredCMs = (m.listeCM || []).filter(cm => cm.easeFactor && cm.easeFactor >= 2.5).length;
+          const totalCMs = (m.listeCM || []).length;
+
+          let avgSessionsToMaster = null;
+          if (masteredCMs > 0 && cmSessions.length > 0) {
+            avgSessionsToMaster = cmSessions.length / masteredCMs;
+          }
+
+          const avgMinutesPerSession = cmSessions.length > 0
+            ? totalMinutes / cmSessions.length
+            : 60;
+
+          const isSlowLearner = avgSessionsToMaster !== null && avgSessionsToMaster > 4;
+
+          const unmasteredCMs = totalCMs - masteredCMs;
+          const estimatedRemainingMinutes = unmasteredCMs * (avgSessionsToMaster || 3) * avgMinutesPerSession;
+
+          map[m.nom] = {
+            avgSessionsToMaster,
+            avgMinutesPerSession,
+            isSlowLearner,
+            masteredCMs,
+            totalCMs,
+            estimatedRemainingMinutes,
+            totalStudyMinutes: totalMinutes
+          };
+        }
+      }
+    }
+  }
+  return map;
+}
+
+/**
+ * AXE 12 : Anti-Burnout Guardian.
+ * Analyse le streak, les jours de repos, et les patterns de session.
+ */
+function detectBurnoutRisk(cfg, historique) {
+  const streak = cfg.currentStreak || 0;
+  const restDays = cfg.restDays || [];
+
+  const today = new Date();
+  let daysWithoutRest = 0;
+  for (let i = 0; i < 30; i++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(checkDate.getDate() - i);
+    const dateStr = checkDate.getFullYear() + '-' + String(checkDate.getMonth() + 1).padStart(2, '0') + '-' + String(checkDate.getDate()).padStart(2, '0');
+    if (restDays.includes(dateStr)) break;
+    daysWithoutRest++;
+  }
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const recentHist = (historique || []).filter(h => h.timestamp && new Date(h.timestamp) >= sevenDaysAgo);
+  const totalRecentMinutes = recentHist.reduce((acc, h) => acc + (h.dureeMinutes || 30), 0);
+  const avgDailyMinutes = totalRecentMinutes / 7;
+
+  const bedtimeHour = cfg.bedtime ? parseInt(cfg.bedtime.split(':')[0]) : 23;
+  const lateSessionCount = recentHist.filter(h => {
+    if (!h.timestamp) return false;
+    const hour = new Date(h.timestamp).getHours();
+    return hour >= bedtimeHour || hour < 4;
+  }).length;
+
+  let riskLevel = 'none';
+  let shouldForceRest = false;
+  let reason = '';
+
+  if (daysWithoutRest >= 14 && avgDailyMinutes > 360) {
+    riskLevel = 'high';
+    shouldForceRest = true;
+    reason = `${daysWithoutRest} jours sans repos et ${Math.round(avgDailyMinutes/60)}h/jour en moyenne. Repos forcé.`;
+  } else if (daysWithoutRest >= 10 || avgDailyMinutes > 480) {
+    riskLevel = 'medium';
+    reason = `${daysWithoutRest} jours consécutifs. Pense à prendre un Joker bientôt.`;
+  } else if (lateSessionCount >= 3) {
+    riskLevel = 'low';
+    reason = `${lateSessionCount} sessions tardives cette semaine. Ton sommeil est crucial.`;
+  }
+
+  return { riskLevel, shouldForceRest, reason, daysWithoutRest, avgDailyMinutes, lateSessionCount };
+}
+
+/**
+ * AXE 6 : Chronobiologie — Classifie les matières par difficulté cognitive.
+ */
+function buildCognitiveLoadMap(crs) {
+  const map = {};
+  if (!crs || !crs.licences) return map;
+
+  for (const l of (crs.licences || [])) {
+    for (const s of (l.semestres || [])) {
+      for (const ue of (s.ues || [])) {
+        for (const m of (ue.matieres || [])) {
+          let totalEF = 0;
+          let count = 0;
+          (m.listeCM || []).forEach(cm => {
+            if (cm.easeFactor) {
+              totalEF += cm.easeFactor;
+              count++;
+            }
+          });
+          const avgEF = count > 0 ? totalEF / count : 2.5;
+          let cognitiveLoad = 'medium';
+          if (avgEF < 2.0) cognitiveLoad = 'heavy';
+          else if (avgEF > 3.0) cognitiveLoad = 'light';
+
+          map[m.nom] = { cognitiveLoad, avgEaseFactor: avgEF };
+        }
+      }
+    }
+  }
+  return map;
+}
+
 /**
  * Build a map of subject name → urgency multiplier based on exam proximity.
  *  0-3 days  → 3.0x
@@ -33,27 +282,40 @@ function buildExamUrgencyMap(crs) {
     for (const s of (l.semestres || [])) {
       for (const ue of (s.ues || [])) {
         for (const subj of (ue.matieres || [])) {
-          if (!subj.nom || !subj.examDates || subj.examDates.length === 0) continue;
+          if (!subj.nom) continue;
 
           let minDays = Infinity;
-          for (const raw of subj.examDates) {
-            if (!raw) continue;
-            let y, m, d;
-            const parts = raw.split('-');
-            if (parts.length === 3) {
-              if (parts[0].length === 4) { // YYYY-MM-DD
-                y = parts[0]; m = parts[1]; d = parts[2];
-              } else { // DD-MM-YYYY
-                d = parts[0]; m = parts[1]; y = parts[2];
+
+          // Legacy: scan examDates array
+          if (subj.examDates && subj.examDates.length > 0) {
+            for (const raw of subj.examDates) {
+              if (!raw) continue;
+              let y, m, d;
+              const parts = raw.split('-');
+              if (parts.length === 3) {
+                if (parts[0].length === 4) { y = parts[0]; m = parts[1]; d = parts[2]; }
+                else { d = parts[0]; m = parts[1]; y = parts[2]; }
+              } else { continue; }
+              const examDate = new Date(y, m - 1, d);
+              if (isNaN(examDate.getTime())) continue;
+              const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+              if (diffDays >= 0 && diffDays < minDays) {
+                minDays = diffDays;
               }
-            } else {
-              continue;
             }
-            const examDate = new Date(y, m - 1, d);
-            if (isNaN(examDate.getTime())) continue;
-            const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-            if (diffDays >= 0 && diffDays < minDays) {
-              minDays = diffDays;
+          }
+
+          // AXE 1: Also scan individual evaluation dates (from BulletinPage)
+          if (subj.evaluations && Array.isArray(subj.evaluations)) {
+            for (const ev of subj.evaluations) {
+              if (!ev.date) continue;
+              // Evaluation dates are in YYYY-MM-DD format
+              const evalDate = new Date(ev.date + 'T00:00:00');
+              if (isNaN(evalDate.getTime())) continue;
+              const diffDays = Math.ceil((evalDate - today) / (1000 * 60 * 60 * 24));
+              if (diffDays >= 0 && diffDays < minDays) {
+                minDays = diffDays;
+              }
             }
           }
 
@@ -78,7 +340,7 @@ function buildExamUrgencyMap(crs) {
  * Priority score for exercises: combines practice count + difficulty + exam urgency.
  * Higher score = more urgent.
  */
-function getPrioScore(ex, examUrgencyMap, matiere) {
+function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensationMap) {
   let base = 1.0 / Math.sqrt((ex.nombrePratiques || 0) + 1.0);
   if (ex.difficulte === 'difficile') base *= 1.5;
   else if (ex.difficulte === 'assez_difficile') base *= 1.2;
@@ -106,20 +368,11 @@ function getPrioScore(ex, examUrgencyMap, matiere) {
     if (boostData) base *= boostData.multiplier;
   }
 
-  // Grade deficit boost
-  if (typeof matiere === 'object' && matiere.evaluations && Array.isArray(matiere.evaluations)) {
-    let totalScore = 0;
-    let totalCoef = 0;
-    matiere.evaluations.forEach(ev => {
-      if (ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
-        const c = ev.coefficient || 1.0;
-        totalScore += ev.note * c;
-        totalCoef += c;
-      }
-    });
-
-    if (totalCoef > 0) {
-      const avgNote = totalScore / totalCoef;
+  // Grade deficit boost (enhanced with compensation awareness)
+  if (typeof matiere === 'object') {
+    const result = getMatiereAverage(matiere);
+    if (result) {
+      const avgNote = result.avg;
       const coeff = matiere.coefficient || 1.0;
       let gradeBoost = 1.0;
       if (avgNote < 12) {
@@ -128,6 +381,26 @@ function getPrioScore(ex, examUrgencyMap, matiere) {
         gradeBoost = 0.8; 
       }
       base *= gradeBoost;
+    }
+
+    // AXE 5: Remaining Weight Factor — boost subjects with lots of unevaluated coefficient
+    if (remainingWeightMap && typeof matiere === 'object' && matiere.nom) {
+      const rwData = remainingWeightMap[matiere.nom];
+      if (rwData && rwData.remainingRatio > 0.5) {
+        // More than 50% of the coefficient is still unevaluated → boost
+        // The boost scales from 1.0 (50% remaining) to 1.5 (100% remaining)
+        const rwBoost = 1.0 + (rwData.remainingRatio - 0.5) * 1.0;
+        base *= rwBoost;
+      }
+    }
+
+    // AXE 8: Compensation — reduce pressure if UE is compensable
+    if (compensationMap && typeof matiere === 'object' && matiere.nom) {
+      const compData = compensationMap[matiere.nom];
+      if (compData && compData.compensable && compData.deficit < 2) {
+        // UE is below 10 but compensated by others, and deficit is small
+        base *= 0.7; // Reduce priority slightly
+      }
     }
   }
 
@@ -179,6 +452,48 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const tomorrowStr = tomorrowDate.toISOString().split('T')[0];
   const dayOfWeek = now.getDay();
   const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+  // === INTELLIGENCE MODULE v2 : Charger l'historique et construire les maps ===
+  let historique = [];
+  try {
+    const { loadHistorique } = require('./historique');
+    historique = loadHistorique ? loadHistorique(configPath.replace('espoir_config', 'espoir_historique')) : [];
+  } catch (e) {
+    // Pas grave, on continue sans historique
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
+      if (fs.existsSync(histPath)) {
+        historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));
+      }
+    } catch (e2) { /* silently ignore */ }
+  }
+
+  const compensationMap = buildCompensationMap(crs);
+  const remainingWeightMap = buildRemainingWeightMap(crs);
+  const velocityMap = buildVelocityMap(crs, historique);
+  const cognitiveLoadMap = buildCognitiveLoadMap(crs);
+  const burnoutRisk = detectBurnoutRisk(cfg, historique);
+
+  // Stocker les insights dans le rapport pour l'UI
+  rapport.intelligence = {
+    compensationMap,
+    remainingWeightMap,
+    velocityMap,
+    cognitiveLoadMap,
+    burnoutRisk
+  };
+
+  // --- AXE 12 : ANTI-BURNOUT — Forcer le repos si risque élevé ---
+  if (burnoutRisk.shouldForceRest) {
+    rapport.statut = "REPOS";
+    rapport.tachesDuJour = [];
+    rapport.tempsRequisMin = 0;
+    rapport.tempsDispoMin = 0;
+    rapport.message = `🛡️ Anti-Burnout activé : ${burnoutRisk.reason}`;
+    return rapport;
+  }
 
   // --- MODE REPOS ---
   if (cfg.restDays && cfg.restDays.includes(todayStr)) {
@@ -409,7 +724,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m) * inactivityBoost
+              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap) * inactivityBoost
             });
           }
 
@@ -450,7 +765,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             
             const dureeEstimee = avgForStep ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             
-            let tpPrio = getPrioScore(ex, examUrgencyMap, m);
+            let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap);
             if (isTomorrow) {
               tpPrio = 999; // Priorité absolue la veille
             } else if (isWeekend) {
@@ -500,7 +815,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               
               // Calcul du prio score standard (qui prend en compte l'espacement et la difficulté)
-              let basePrio = getPrioScore(ex, examUrgencyMap, m);
+              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap);
               // Multiplicateur : si très urgent -> x5.0, si juste maîtrisé -> x3.0
               const annaleBoost = isUrgent ? 5.0 : 3.0;
 
@@ -612,7 +927,33 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     appendFromPool(poolTP, subjectTPCount, 1);
   }
 
-  // 5. Assigner les "Moments de la journée"
+  // 5. AXE 6 : Chronobiologie — Assigner les moments de la journée
+  // Les matières à charge cognitive élevée (easeFactor bas) vont le matin,
+  // les matières légères vont le soir.
+  const heavyTasks = [];
+  const mediumTasks = [];
+  const lightTasks = [];
+
+  for (const t of taches) {
+    if (t.type === 'ANKI') {
+      // Anki always goes first (morning)
+      heavyTasks.unshift(t);
+      continue;
+    }
+    const cogData = cognitiveLoadMap[t.matiere];
+    if (cogData && cogData.cognitiveLoad === 'heavy') {
+      heavyTasks.push(t);
+    } else if (cogData && cogData.cognitiveLoad === 'light') {
+      lightTasks.push(t);
+    } else {
+      mediumTasks.push(t);
+    }
+  }
+
+  // Rebuild taches array: heavy first (morning), medium (afternoon), light (evening)
+  taches.length = 0;
+  taches.push(...heavyTasks, ...mediumTasks, ...lightTasks);
+
   let accumulatedTime = 0;
   for (const t of taches) {
     let percentBefore = accumulatedTime / (tempsRequisMin || 1);

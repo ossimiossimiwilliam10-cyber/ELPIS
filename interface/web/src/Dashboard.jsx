@@ -620,6 +620,102 @@ function Dashboard() {
         </motion.div>
       </div>
 
+      {/* === INSIGHTS IA v2 === */}
+      {data?.intelligence && (
+        <motion.div 
+          className="card glass-panel"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.15 }}
+          style={{ marginTop: '2rem', borderLeft: '4px solid #a78bfa', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(167, 139, 250, 0.05))' }}
+        >
+          <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a78bfa', marginBottom: '1.5rem' }}>
+            🧠 Insights IA
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            
+            {/* Burnout Risk */}
+            {data.intelligence.burnoutRisk && data.intelligence.burnoutRisk.riskLevel !== 'none' && (
+              <div style={{ 
+                background: data.intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.15)' : data.intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
+                border: `1px solid ${data.intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.3)' : data.intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
+                padding: '1rem', borderRadius: '8px'
+              }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '0.3rem', color: data.intelligence.burnoutRisk.riskLevel === 'high' ? 'var(--danger-color)' : '#f59e0b' }}>
+                  {data.intelligence.burnoutRisk.riskLevel === 'high' ? '🚨 Risque de Burnout Élevé' : data.intelligence.burnoutRisk.riskLevel === 'medium' ? '⚠️ Fatigue Détectée' : '💤 Sommeil Perturbé'}
+                </div>
+                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{data.intelligence.burnoutRisk.reason}</div>
+              </div>
+            )}
+
+            {/* Velocity Insights */}
+            {data.intelligence.velocityMap && (() => {
+              const slowSubjects = Object.entries(data.intelligence.velocityMap).filter(([_, v]) => v.isSlowLearner);
+              if (slowSubjects.length === 0) return null;
+              return (
+                <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '1rem', borderRadius: '8px' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#f59e0b' }}>🐢 Matières à Apprentissage Lent</div>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    {slowSubjects.map(([name, v]) => (
+                      <div key={name} style={{ marginBottom: '0.3rem' }}>
+                        <strong>{name}</strong> — {v.avgSessionsToMaster?.toFixed(1)} sessions/CM en moyenne 
+                        ({v.masteredCMs}/{v.totalCMs} CM maîtrisés, ~{Math.round(v.estimatedRemainingMinutes/60)}h restantes estimées)
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Cognitive Load Summary */}
+            {data.intelligence.cognitiveLoadMap && (() => {
+              const heavy = Object.entries(data.intelligence.cognitiveLoadMap).filter(([_, v]) => v.cognitiveLoad === 'heavy');
+              const light = Object.entries(data.intelligence.cognitiveLoadMap).filter(([_, v]) => v.cognitiveLoad === 'light');
+              if (heavy.length === 0 && light.length === 0) return null;
+              return (
+                <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1rem', borderRadius: '8px' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#818cf8' }}>🧬 Chronobiologie Activée</div>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    {heavy.length > 0 && <div>🌅 <strong>Matin</strong> (charge cognitive élevée) : {heavy.map(([n]) => n).join(', ')}</div>}
+                    {light.length > 0 && <div>🌙 <strong>Soir</strong> (charge cognitive légère) : {light.map(([n]) => n).join(', ')}</div>}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Remaining Weight */}
+            {data.intelligence.remainingWeightMap && (() => {
+              const highRemaining = Object.entries(data.intelligence.remainingWeightMap)
+                .filter(([_, v]) => v.remainingRatio === 1 && v.totalCoef > 0)
+                .sort((a, b) => b[1].totalCoef - a[1].totalCoef);
+              if (highRemaining.length === 0) return null;
+              return (
+                <div style={{ background: 'rgba(52, 211, 153, 0.08)', border: '1px solid rgba(52, 211, 153, 0.2)', padding: '1rem', borderRadius: '8px' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--success-color)' }}>📊 Matières Sans Notes (100% du coefficient à jouer)</div>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {highRemaining.map(([name, v]) => (
+                      <span key={name} style={{ background: 'rgba(52, 211, 153, 0.15)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.85rem' }}>
+                        {name} (Coef total: {v.totalCoef.toFixed(1)})
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* All clear */}
+            {data.intelligence.burnoutRisk?.riskLevel === 'none' && (
+              <div style={{ background: 'rgba(52, 211, 153, 0.08)', padding: '0.8rem 1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>✅ Burnout : Aucun risque détecté</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                  ({data.intelligence.burnoutRisk.daysWithoutRest}j sans repos, {Math.round(data.intelligence.burnoutRisk.avgDailyMinutes/60 * 10)/10}h/jour moy.)
+                </span>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+
       {/* === STATISTIQUES === */}
       <motion.div 
         className="card glass-panel"

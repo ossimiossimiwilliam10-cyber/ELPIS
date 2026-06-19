@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useStore from './store';
 import { produce } from 'immer';
 import EditableLabel from './components/cours/EditableLabel';
@@ -7,6 +7,15 @@ export default function BulletinPage() {
   const { coursConfig, setCoursConfig } = useStore();
   const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
   const [expandedUEs, setExpandedUEs] = useState({});
+  const [intelligence, setIntelligence] = useState(null);
+
+  // Fetch intelligence data from orchestrateur
+  useEffect(() => {
+    fetch('/api/orchestrateur?extraTime=0')
+      .then(r => r.json())
+      .then(d => { if (d.intelligence) setIntelligence(d.intelligence); })
+      .catch(() => {});
+  }, [coursConfig]);
 
   if (!coursConfig || !coursConfig.licences || coursConfig.licences.length === 0) {
     return <div style={{padding: '2rem'}}>Aucun cours configuré.</div>;
@@ -49,7 +58,7 @@ export default function BulletinPage() {
     mutateConfig(draft => {
       const mat = draft.licences[currentLicenceIndex].semestres[semIndex].ues[ueIndex].matieres[matIndex];
       if (!mat.evaluations) mat.evaluations = [];
-      mat.evaluations.push({ nom: "Nouvelle Éval", coefficient: 1, note: null });
+      mat.evaluations.push({ nom: "Nouvelle Éval", coefficient: 1, note: null, type: 'SC', date: null });
     });
   };
 
@@ -158,6 +167,19 @@ export default function BulletinPage() {
                 <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>{ue.nom}</h2>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                {/* Compensation badge */}
+                {intelligence?.compensationMap && (() => {
+                  const firstMat = ue.matieres?.[0];
+                  if (!firstMat) return null;
+                  const compData = intelligence.compensationMap[firstMat.nom];
+                  if (!compData) return null;
+                  if (ueAverage !== '--' && parseFloat(ueAverage) < 10) {
+                    return compData.compensable 
+                      ? <span style={{ background: 'rgba(52, 211, 153, 0.2)', color: 'var(--success)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>✅ Compensable</span>
+                      : <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>⚠️ Non compensable</span>;
+                  }
+                  return null;
+                })()}
                 <div style={{ fontWeight: 'bold', color: ueAverage !== '--' ? (ueAverage >= 10 ? 'var(--success)' : 'var(--danger)') : 'var(--text-secondary)' }}>
                   {ueAverage !== '--' ? `Moyenne : ${ueAverage} / 20` : 'Pas de notes'}
                 </div>
@@ -196,14 +218,28 @@ export default function BulletinPage() {
                                 onSave={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'nom', val)} 
                                 style={{ fontWeight: 'bold', color: 'var(--text-primary)', cursor: 'text' }}
                               />
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                                Coef: 
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                <span>Coef:</span>
                                 <EditableLabel 
                                   text={String(ev.coefficient)} 
                                   onSave={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'coefficient', val)} 
                                   style={{ cursor: 'text' }}
                                 />
+                                <select 
+                                  value={ev.type || 'SC'} 
+                                  onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'type', e.target.value)}
+                                  style={{ padding: '0.1rem 0.3rem', background: ev.type === 'AC' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.15)', color: ev.type === 'AC' ? '#ef4444' : '#34d399', border: 'none', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+                                >
+                                  <option value="SC">SC</option>
+                                  <option value="AC">AC</option>
+                                </select>
                               </div>
+                              <input 
+                                type="date" 
+                                value={ev.date || ''}
+                                onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'date', e.target.value || null)}
+                                style={{ padding: '0.15rem 0.3rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px', fontSize: '0.75rem', width: '100%' }}
+                              />
                             </div>
                             <input 
                               type="number" 
