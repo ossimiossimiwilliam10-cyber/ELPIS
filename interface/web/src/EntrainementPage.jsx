@@ -48,7 +48,6 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 };
 
 function EntrainementPage() {
-  console.log("ENTRAINEMENT PAGE LOADED - V2 WITH SAFE MAPS");
   const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, resetGlobalChrono, dailyFillGap, setDailyFillGap, intelligence, orchestratorData, fetchOrchestrator } = useStore();
   const { toast } = useToast();
   const [fatigueCounter, setFatigueCounter] = useState(0);
