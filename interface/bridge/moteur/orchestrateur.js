@@ -540,18 +540,14 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   // === INTELLIGENCE MODULE v2 : Charger l'historique et construire les maps ===
   let historique = [];
   try {
-    const { loadHistorique } = require('./historique');
-    historique = loadHistorique ? loadHistorique(configPath.replace('espoir_config', 'espoir_historique')) : [];
+    const fs = require('fs');
+    const path = require('path');
+    const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
+    if (fs.existsSync(histPath)) {
+      historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));
+    }
   } catch (e) {
-    // Pas grave, on continue sans historique
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
-      if (fs.existsSync(histPath)) {
-        historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));
-      }
-    } catch (e2) { /* silently ignore */ }
+    console.error("Erreur lecture historique:", e);
   }
 
   const compensationMap = buildCompensationMap(crs);
