@@ -78,17 +78,22 @@ function buildExamUrgencyMap(crs) {
  * Priority score for exercises: combines practice count + difficulty + exam urgency.
  * Higher score = more urgent.
  */
-function getPrioScore(ex, examUrgencyMap, matiereNom) {
+function getPrioScore(ex, examUrgencyMap, matiere) {
   let base = 1.0 / Math.sqrt((ex.nombrePratiques || 0) + 1.0);
   if (ex.difficulte === 'difficile') base *= 1.5;
   else if (ex.difficulte === 'assez_difficile') base *= 1.2;
   else if (ex.difficulte === 'facile') base *= 0.8;
   else if (ex.difficulte === 'tres_facile') base *= 0.6;
 
+  let matiereNom = matiere;
+  if (typeof matiere === 'object' && matiere.nom) {
+    matiereNom = matiere.nom;
+  }
+
   // Exam urgency boost: match subject by fuzzy name
   if (examUrgencyMap && matiereNom) {
     const matiereKey = matiereNom.toLowerCase().trim();
-    // Try exact match first, then partial (subject name contained in matiere name or vice versa)
+    // Try exact match first, then partial
     let boostData = examUrgencyMap[matiereKey];
     if (boostData === undefined) {
       for (const [subjKey, data] of Object.entries(examUrgencyMap)) {
@@ -99,6 +104,31 @@ function getPrioScore(ex, examUrgencyMap, matiereNom) {
       }
     }
     if (boostData) base *= boostData.multiplier;
+  }
+
+  // Grade deficit boost
+  if (typeof matiere === 'object' && matiere.evaluations && Array.isArray(matiere.evaluations)) {
+    let totalScore = 0;
+    let totalCoef = 0;
+    matiere.evaluations.forEach(ev => {
+      if (ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
+        const c = ev.coefficient || 1.0;
+        totalScore += ev.note * c;
+        totalCoef += c;
+      }
+    });
+
+    if (totalCoef > 0) {
+      const avgNote = totalScore / totalCoef;
+      const coeff = matiere.coefficient || 1.0;
+      let gradeBoost = 1.0;
+      if (avgNote < 12) {
+        gradeBoost = 1.0 + ((12 - avgNote) / 10) * coeff;
+      } else if (avgNote >= 15) {
+        gradeBoost = 0.8; 
+      }
+      base *= gradeBoost;
+    }
   }
 
   return base;
@@ -379,7 +409,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m.nom) * inactivityBoost
+              prio: getPrioScore(ex, examUrgencyMap, m) * inactivityBoost
             });
           }
 
@@ -420,7 +450,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             
             const dureeEstimee = avgForStep ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             
-            let tpPrio = getPrioScore(ex, examUrgencyMap, m.nom);
+            let tpPrio = getPrioScore(ex, examUrgencyMap, m);
             if (isTomorrow) {
               tpPrio = 999; // Priorité absolue la veille
             } else if (isWeekend) {
@@ -470,7 +500,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               
               // Calcul du prio score standard (qui prend en compte l'espacement et la difficulté)
-              let basePrio = getPrioScore(ex, examUrgencyMap, m.nom);
+              let basePrio = getPrioScore(ex, examUrgencyMap, m);
               // Multiplicateur : si très urgent -> x5.0, si juste maîtrisé -> x3.0
               const annaleBoost = isUrgent ? 5.0 : 3.0;
 

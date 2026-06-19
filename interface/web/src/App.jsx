@@ -12,6 +12,7 @@ import { ToastProvider, useToast } from './ToastProvider';
 const CoursPage = lazy(() => import('./CoursPage'));
 const EntrainementPage = lazy(() => import('./EntrainementPage'));
 const StatistiquesPage = lazy(() => import('./StatistiquesPage'));
+const BulletinPage = lazy(() => import('./BulletinPage'));
 import useStore from './store';
 
 // Mini-fallback pour le chargement paresseux des pages
@@ -211,6 +212,20 @@ function AppInner() {
             >
               <Suspense fallback={<LoadingFallback />}>
                 <StatistiquesPage />
+              </Suspense>
+            </motion.div>
+          )}
+
+          {activeTab === 'bulletin' && (
+            <motion.div 
+              key="bulletin"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                <BulletinPage />
               </Suspense>
             </motion.div>
           )}

@@ -211,7 +211,6 @@ function StatistiquesPage() {
 
     const ueStats = {};
     estimations.forEach(e => {
-      if (!e.hasData) return;
       if (!ueStats[e.ue]) {
         ueStats[e.ue] = { sumWeightedNote: 0, sumWeights: 0 };
       }

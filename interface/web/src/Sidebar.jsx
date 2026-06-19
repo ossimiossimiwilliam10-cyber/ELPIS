@@ -10,7 +10,8 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
     {
       title: "Scolarité",
       tabs: [
-        { id: 'cours', label: 'Bibliothèque', icon: '📚' }
+        { id: 'cours', label: 'Bibliothèque', icon: '📚' },
+        { id: 'bulletin', label: 'Bulletin & Notes', icon: '📝' }
       ]
     },
     {
