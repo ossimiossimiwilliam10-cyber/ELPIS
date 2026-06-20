@@ -357,7 +357,7 @@ function buildExamUrgencyMap(crs) {
           let multiplier = 1.0;
           if (minDays <= 3) multiplier = 3.0;
           else if (minDays <= 7) multiplier = 2.0;
-          else if (minDays <= 14) multiplier = 1.5;
+          else if (minDays <= 21) multiplier = 1.5;
           else if (minDays <= 30) multiplier = 1.2;
 
           const key = subj.nom.toLowerCase().trim();

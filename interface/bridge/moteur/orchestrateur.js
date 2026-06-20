@@ -384,14 +384,16 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
           const isEarlyReady = tdFaits >= 2 || tpFaits >= 1;
           const isMastered = (cmCompletion >= 0.70 && tdCompletion >= 0.50) || isEarlyReady;
-          const isUrgent = daysToExam <= 14;
+          const isUrgent = daysToExam <= 21; // Modifié de 14 à 21 jours
+          const hasStartedAnnales = (m.listeAnnales || []).some(a => (a.nombrePratiques || 0) > 0 || a.dernierePratique);
 
           const annalesRaisons = [...baseRaisons];
           if (isUrgent) annalesRaisons.push("🚨 Examen Imminent");
           else if (isEarlyReady && !isMastered) annalesRaisons.push("🚀 Défi Précoce");
           else if (isMastered) annalesRaisons.push("🏆 Maîtrise Atteinte");
 
-          if (isMastered || isUrgent) {
+          // Si une annale a été commencée un jour, elle n'est plus jamais verrouillée
+          if (isMastered || isUrgent || hasStartedAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));

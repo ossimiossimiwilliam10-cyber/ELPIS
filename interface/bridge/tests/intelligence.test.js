@@ -43,7 +43,7 @@ describe('Intelligence Engine - buildExamUrgencyMap (Axe 1)', () => {
     expect(map['maths'].multiplier).toBe(3.0);
     expect(map['physique'].multiplier).toBe(2.0);
     expect(map['chimie'].multiplier).toBe(1.5);
-    expect(map['bio'].multiplier).toBe(1.2); // <= 30 days is 1.2
+    expect(map['bio'].multiplier).toBe(1.5); // <= 21 days is 1.5
     expect(map['histoire']).toBeUndefined();
   });
 });
