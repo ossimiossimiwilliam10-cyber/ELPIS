@@ -1,0 +1,1355 @@
+{
+    "licences": [
+        {
+            "nom": "Licence 2 Sciences pour l'ingénieur (SPI) - Sciences pour l'ingénieur et santé",
+            "semestres": [
+                {
+                    "nom": "Semestre 3",
+                    "ues": [
+                        {
+                            "nom": "UE 1 - Semestre 3 - Langues",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Anglais Lansad - Semestre impair",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Chapitre 1 : Rédiger un protocole d'essai technique (Experimental / Testing Procedures)",
+                                            "jActuel": 3,
+                                            "derniereRevision": "2026-06-16"
+                                        },
+                                        {
+                                            "titre": "Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).",
+                                            "jActuel": 3,
+                                            "derniereRevision": "2026-06-17",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 2
+                                        },
+                                        {
+                                            "titre": "Chapitre 3 : Les pièges du \"Frenglish\"",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "Chapitre 4 : Étude de cas : La Nanocar Race",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "Exercices - Unit 1",
+                                            "dernierePratique": "2026-06-18",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "difficulteInitiale": 1,
+                                            "pdfPath": "/documents/doc-1781701386030-196312938.pdf",
+                                            "page": 1,
+                                            "difficulte": "tres_facile",
+                                            "tempsMoyen": 17,
+                                            "nombreRevisionsTemps": 1
+                                        },
+                                        {
+                                            "titre": "Exercices - Unit 2",
+                                            "dernierePratique": "2026-06-18",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "difficulteInitiale": 1,
+                                            "pdfPath": "/documents/doc-1781701390326-909597551.pdf",
+                                            "page": 1,
+                                            "difficulte": "facile",
+                                            "tempsMoyen": 15,
+                                            "nombreRevisionsTemps": 1
+                                        },
+                                        {
+                                            "titre": "Exercices - Unit 3",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 1,
+                                            "pdfPath": "/documents/doc-1781701394460-560023348.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercices - Unit 4",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 1,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781722149706-624585212.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercices - Unit 5",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 1,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781722154743-289104488.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercices - Unit 6",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 1,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781722159477-686099467.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercices - Unit 7",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 1,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781722164345-881763341.pdf"
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/eb2872a8-1b9f-43f9-90dc-18a606a15079",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "Question paper: Paper 1 Explorations in creative reading and writing - June 2017",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781721147074-872401987.pdf",
+                                            "page": 1,
+                                            "difficulteInitiale": 4
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "examDates": [
+                                        "2026-10-27",
+                                        "2026-12-01"
+                                    ],
+                                    "evaluations": [
+                                        {
+                                            "nom": "Évaluation",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ],
+                                    "synergies": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE 2 - Semestre 3 - Mathématiques pour l'ingénieur",
+                            "ects": 6,
+                            "matieres": [
+                                {
+                                    "nom": "Algèbre",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Cours n°1",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Cours n°2",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Cours n°3",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Cours n°4",
+                                            "jActuel": 14,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Cours n°5",
+                                            "jActuel": 14,
+                                            "derniereRevision": "2026-06-15"
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "Exercice 1 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
+                                            "dernierePratique": "2026-06-17",
+                                            "nombrePratiques": 2,
+                                            "notes": "",
+                                            "difficulte": "tres_facile",
+                                            "page": 1,
+                                            "tempsMoyen": 7,
+                                            "nombreRevisionsTemps": 1,
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781701451622-559499730.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercice 2 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
+                                            "dernierePratique": "2026-06-17",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "page": 1,
+                                            "difficulte": "tres_facile",
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781701455573-914509763.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercice 3 - page 2",
+                                            "dernierePratique": "2026-06-17",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781701556599-83949976.pdf",
+                                            "page": 1,
+                                            "tempsMoyen": 10,
+                                            "nombreRevisionsTemps": 1,
+                                            "difficulteInitiale": 2
+                                        },
+                                        {
+                                            "titre": "Exercice 4 - page 2",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781721946184-412532431.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 1 - page 3",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781721950824-337563858.pdf",
+                                            "difficulteInitiale": 3,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 2 - page 3",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781721956093-948906398.pdf",
+                                            "difficulteInitiale": 4,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 3 - page 3",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781721960850-929230128.pdf",
+                                            "difficulteInitiale": 4,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/a86ef3dd-89b8-47de-b0fc-6f8f9f4e5cfe",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "Contrôle du 26 Octobre 2023",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781722402030-670357573.pdf",
+                                            "difficulteInitiale": 4,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "examDates": [
+                                        "2026-11-04",
+                                        "2027-01-07"
+                                    ],
+                                    "evaluations": [
+                                        {
+                                            "nom": "Écrit 1",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Écrit 2",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Analyse",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Chapitre 1",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Chapitre 2",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Chapitre 3",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Chapitre 4",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "Exercice 1 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+                                            "dernierePratique": "2026-06-16",
+                                            "nombrePratiques": 2,
+                                            "notes": "",
+                                            "difficulte": "tres_facile",
+                                            "page": 1,
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781723192884-222765089.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercice 2 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+                                            "dernierePratique": "2026-06-16",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "difficulte": "facile",
+                                            "page": 1,
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781723197801-134753172.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercice 3 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781723202889-547560166.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercice 4 - page 3",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781723207881-779507686.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 5 - page 3",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781723213016-939770190.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 6 - page 3",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781723218028-634308527.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 1 - page 4",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781723222927-640094154.pdf",
+                                            "page": 1
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/c02b1ecf-7190-46b4-a0db-5cb97f5ab30c",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "CC1 – Mercredi 24 octobre 2018",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781723063094-577097040.pdf",
+                                            "difficulteInitiale": 3,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "examDates": [
+                                        "2026-11-04",
+                                        "2027-01-07"
+                                    ],
+                                    "evaluations": [
+                                        {
+                                            "nom": "Écrit 1",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Écrit 2",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE 3 - Semestre 3 - Informatique",
+                            "ects": 6,
+                            "matieres": [
+                                {
+                                    "nom": "Architecture des systèmes d'exploitation",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
+                                            "jActuel": 4,
+                                            "derniereRevision": "2026-06-17",
+                                            "easeFactor": 2.2,
+                                            "repetitions": 2,
+                                            "tempsMoyen": 29,
+                                            "nombreRevisionsTemps": 1
+                                        },
+                                        {
+                                            "titre": "Chapitre 2 : Codage de l'information et représentation des nombres",
+                                            "jActuel": 3,
+                                            "derniereRevision": "2026-06-17",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 2,
+                                            "tempsMoyen": 40,
+                                            "nombreRevisionsTemps": 1
+                                        },
+                                        {
+                                            "titre": "Chapitre 3 : Logique booléenne et opérations binaires",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "Chapitre 4 : Fonctions logiques de base et circuits",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "Chapitre 5 : Architecture matérielle d'un ordinateur",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "Exercice 1 - page 46",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781704382458-862162371.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 2 - page 46",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781704385674-594159484.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 3 - page 46",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781704389624-475815086.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 4 - page 46",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781723701127-312744179.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 5 - page 46",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781723706486-927826776.pdf",
+                                            "difficulteInitiale": 4,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 6 - page 47",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781723710988-564017675.pdf",
+                                            "difficulteInitiale": 4,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 7 - page 47",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781723721513-148359340.pdf",
+                                            "difficulteInitiale": 5,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/0fed1632-db58-4521-b6fd-9434206ce50d",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "L2ing_S3_ArchitectureDesOrdinateurs_CC1_2014-2015",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 5,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "examDates": [
+                                        "2026-10-02",
+                                        "2026-10-23"
+                                    ],
+                                    "evaluations": [
+                                        {
+                                            "nom": "Écrit 1",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Écrit 2",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Examen de TP",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Programmation",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Chapitre 1 - Premiers Pas en programmation",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15",
+                                            "pdfPath": "/documents/doc-1781724839146-645086359.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 2 - Les fonctions",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15",
+                                            "pdfPath": "/documents/doc-1781724846022-338905540.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 3 - Les conditions",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15",
+                                            "pdfPath": "/documents/doc-1781724851758-714992675.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 4 - Les boucles",
+                                            "jActuel": 7,
+                                            "derniereRevision": "2026-06-15",
+                                            "pdfPath": "/documents/doc-1781724856463-181902148.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 5 - Les listes",
+                                            "jActuel": 7,
+                                            "derniereRevision": "2026-06-15",
+                                            "pdfPath": "/documents/doc-1781724861143-579234487.pdf"
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "Exercice 1 - page 1 - Travaux dirigés n°1 Variables, fonctions et affichage",
+                                            "dernierePratique": "2026-06-16",
+                                            "nombrePratiques": 3,
+                                            "notes": "",
+                                            "difficulte": "facile",
+                                            "page": 1,
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781724791421-479501463.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercice 2 - page 2 - Travaux dirigés n°1 Variables, fonctions et affichage",
+                                            "dernierePratique": "2026-06-16",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "difficulte": "difficile",
+                                            "page": 1,
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781724796912-789724181.pdf"
+                                        },
+                                        {
+                                            "titre": "Exercice 3 - page 2 - TD1",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781724802741-480042909.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 1 - page 2 - TD2",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781724808194-233816212.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 2 - page 2 - TD2",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781724813037-436943314.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 3 - page 2 - TD2",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781724818212-469330451.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Exercice 4 - page 3 - TD2",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781724824197-290926619.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/d027b94d-83b1-4058-8368-c703f3342025",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "Programmation - 2024-25 - Épreuve écrite n°1",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781725016341-573263425.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "examDates": [
+                                        "2026-10-20",
+                                        "2027-01-06"
+                                    ],
+                                    "evaluations": [
+                                        {
+                                            "nom": "Écrit 1",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Écrit 2",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Épreuve pratique",
+                                            "coefficient": 0.8,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "QCM + Rapport TP",
+                                            "coefficient": 0.2,
+                                            "note": null
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE 4 - Semestre 3 - Sciences pour l'ingénieur 1 (orientation génie électrique)",
+                            "ects": 6,
+                            "matieres": [
+                                {
+                                    "nom": "Électromagnétisme",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Chapitre 0 : Introduction et grandeurs fondamentales",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Chapitre 1 : Électrostatique",
+                                            "jActuel": 30,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Chapitre 2 : Électrocinétique",
+                                            "jActuel": 14,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Chapitre 3 : Magnétostatique",
+                                            "jActuel": 7,
+                                            "derniereRevision": "2026-06-15"
+                                        },
+                                        {
+                                            "titre": "Chapitre 4 : Induction électromagnétique",
+                                            "jActuel": 7,
+                                            "derniereRevision": "2026-06-15"
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "P1 - 1. Distribution isotrope de charge - page 10",
+                                            "dernierePratique": "2026-06-17",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781697692380-664349354.png",
+                                            "difficulteInitiale": 3,
+                                            "difficulte": "moyen"
+                                        },
+                                        {
+                                            "titre": "P1 - 2. Charge volumique électronique dans l'atome d'hydrogène - page 11",
+                                            "dernierePratique": "2026-06-17",
+                                            "nombrePratiques": 1,
+                                            "notes": "",
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781700210298-565196241.png",
+                                            "difficulteInitiale": 4,
+                                            "tempsMoyen": 13,
+                                            "nombreRevisionsTemps": 1
+                                        },
+                                        {
+                                            "titre": "Pl-\r\n 3. Charge surfacique d'\r\nune couche sphérique - page 11",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Pl-\r\n 4. Distribution surfacique moyenne radiale de profil parabolique",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1-\r\n 5. Distribution volumique radiale de profil parabolique",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1-\r\n 6. Sphère de distribution surfacique en cos",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 3,
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "Pl-\r\n7. Charge volumique d'\r\nun noyau",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "page": 1
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/48f4fbb5-b5f2-4653-8ebc-18f6d31eab4b",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "Contrôle continu d'électromagnétisme - Novembre 2022",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781726276803-18306733.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "examDates": [
+                                        "2026-10-22",
+                                        "2027-01-11"
+                                    ],
+                                    "evaluations": [
+                                        {
+                                            "nom": "Écrit 1",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Écrit 2",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Introduction aux systèmes électroniques",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Chapitre 1 : Outils et théorèmes fondamentaux de l'électrocinétique",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853358939-971488381.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 2 : Les amplificateurs linéaires : concepts généraux et modélisation",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853361749-256261273.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 3 : L'amplificateur opérationnel (AOP) et ses applications linéaires",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853365407-682249199.pdf"
+                                        }
+                                    ],
+                                    "listeTD": [],
+                                    "listeTP": [
+                                        {
+                                            "titre": "TP 1 : Mesures électriques et vérification expérimentale des lois de Kirchhoff, des diviseurs, et des théorèmes de Thévenin, Norton et superposition",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "dateTP": "2026-10-14",
+                                            "difficulteInitiale": 2,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781853342500-286952004.pdf"
+                                        },
+                                        {
+                                            "titre": "TP 2 : Mise en œuvre de montages fondamentaux à AOP (non-inverseur, inverseur, sommateur, soustracteur)",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "dateTP": "2026-11-25",
+                                            "difficulteInitiale": 3,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781853346192-168151837.pdf"
+                                        },
+                                        {
+                                            "titre": "TP 3 : À développer pour le circuit RC (voir la section ci-dessous sur l'adéquation des sources)",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "dateTP": "2026-12-07",
+                                            "difficulteInitiale": 4,
+                                            "page": 1,
+                                            "pdfPath": "/documents/doc-1781853349614-902487698.pdf"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "EXAMEN D'ELECTRONIQUE ANALOGIQUE",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781853157389-727564467.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/3badb9b6-ca8d-4fa5-bd71-1f8ff878bb93",
+                                    "evaluations": [
+                                        {
+                                            "nom": "Écrit 1",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Écrit 2",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Examen de TP",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE 4 - Semestre 3 -Sciences pour l'ingénieur 2 (orientation génie mécanique)",
+                            "ects": 6,
+                            "matieres": [
+                                {
+                                    "nom": "Mécanique du solide",
+                                    "listeCM": [
+                                        {
+                                            "titre": "Chapitre 1 : Outils mathématiques : Vecteurs et Torseurs",
+                                            "jActuel": 7,
+                                            "derniereRevision": "2026-06-15",
+                                            "pdfPath": "/documents/doc-1781853397516-740145245.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 2 : Cinématique du solide indéformable",
+                                            "jActuel": 7,
+                                            "derniereRevision": "2026-06-15",
+                                            "pdfPath": "/documents/doc-1781853402130-527425835.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 3 : Changements de référentiels et composition des mouvements",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853405307-982385010.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 4 : Cinématique des solides en contact",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853408526-907828400.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 5 : Modélisation des actions mécaniques et liaisons usuelles",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853411830-428588807.pdf"
+                                        },
+                                        {
+                                            "titre": "Chapitre 6 : Statique des solides",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853415234-17255009.pdf"
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "P1– 1. Équation d’un plan",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781727396002-729350230.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1– 2. Moment en un point et moment par rapport à un axe",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781727400595-838297416.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1– 3. Volume d’un parallélépipède",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781727405797-621071571.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1– 4. Double produit vectoriel",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781727410060-208236514.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1– 5. Vecteurs réciproques",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 4,
+                                            "pdfPath": "/documents/doc-1781727414613-117016996.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1– 6. Axe central d’un torseur",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781727420523-316590843.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "P1– 7. Torseur associé à trois vecteurs liés",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781727425895-557991118.pdf",
+                                            "page": 1
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/c8a96d1c-521a-457d-8cf2-63db322dc7e2",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [
+                                        {
+                                            "titre": "L2ing_S3_Mecanique_CC1_2014-2015",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781727460295-886658101.pdf",
+                                            "difficulteInitiale": 2,
+                                            "page": 1
+                                        }
+                                    ],
+                                    "coefficient": 3,
+                                    "examDates": [
+                                        "2026-12-17"
+                                    ],
+                                    "evaluations": [
+                                        {
+                                            "nom": "Ecrit",
+                                            "coefficient": 3,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "Participation TD",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Construction mécanique",
+                                    "listeCM": [
+                                        {
+                                            "titre": "CM1",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853914197-18437079.pdf"
+                                        },
+                                        {
+                                            "titre": "CM2",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853921340-723364917.pdf"
+                                        },
+                                        {
+                                            "titre": "CM3",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853924688-5596368.pdf"
+                                        },
+                                        {
+                                            "titre": "CM4",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853928601-646571292.pdf"
+                                        },
+                                        {
+                                            "titre": "CM5",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0,
+                                            "pdfPath": "/documents/doc-1781853931944-794893794.pdf"
+                                        }
+                                    ],
+                                    "listeTD": [],
+                                    "listeTP": [
+                                        {
+                                            "titre": "TP1 : Dessin industriel",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781853986162-671449038.pdf",
+                                            "dateTP": "2026-11-06",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "TP2 : Étude d’un vé réglable",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 2,
+                                            "pdfPath": "/documents/doc-1781854015603-843896687.pdf",
+                                            "dateTP": "2026-11-17",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "TP3 : Étude d’un étau",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 3,
+                                            "pdfPath": "/documents/doc-1781854042473-793726340.pdf",
+                                            "dateTP": "2026-12-01",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "TP4 : Étude d’un compresseur",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 4,
+                                            "pdfPath": "/documents/doc-1781854089304-76108337.pdf",
+                                            "dateTP": "2027-01-04",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "TP5 : Étude d’une scie sauteuse",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "difficulteInitiale": 5,
+                                            "pdfPath": "/documents/doc-1781854094192-945009489.pdf",
+                                            "dateTP": "2027-01-04",
+                                            "page": 1
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeAnnales": [],
+                                    "coefficient": 3,
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/361628c2-f47f-41de-829b-4be02f8016b4",
+                                    "evaluations": [
+                                        {
+                                            "nom": "CC = ET",
+                                            "coefficient": 1,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "CC Formatif TP",
+                                            "coefficient": 1,
+                                            "note": null
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE 5 - Semestre 3 - Santé",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Signal et technologie en santé (Santé)",
+                                    "listeCM": [
+                                        {
+                                            "titre": "CM1",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM2",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM3",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM4",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM5",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM6",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        }
+                                    ],
+                                    "listeTD": [
+                                        {
+                                            "titre": "TD1",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781856612955-165993903.pdf",
+                                            "page": 1
+                                        },
+                                        {
+                                            "titre": "TD2",
+                                            "dernierePratique": "",
+                                            "nombrePratiques": 0,
+                                            "notes": "",
+                                            "pdfPath": "/documents/doc-1781856641678-700368930.pdf",
+                                            "page": 1
+                                        }
+                                    ],
+                                    "listeTP": [],
+                                    "listeAnnales": [],
+                                    "coefficient": 2,
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/0df580c6-56ac-443c-bf53-4a601c6ffbcd",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "evaluations": [
+                                        {
+                                            "nom": "CC1",
+                                            "coefficient": 0.25,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "CC2",
+                                            "coefficient": 0.25,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "CC3",
+                                            "coefficient": 0.5,
+                                            "note": null
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Aspects médicaux-légaux en santé (Santé)",
+                                    "listeCM": [
+                                        {
+                                            "titre": "CM1",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM2",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM3",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM4",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        },
+                                        {
+                                            "titre": "CM5",
+                                            "jActuel": 0,
+                                            "derniereRevision": "",
+                                            "easeFactor": 2.5,
+                                            "repetitions": 0
+                                        }
+                                    ],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": [],
+                                    "notebookLMLink": "https://notebooklm.google.com/notebook/7878e25a-de6b-420c-96ce-ee1c37e818da",
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "CC1",
+                                            "coefficient": 0.3,
+                                            "note": null
+                                        },
+                                        {
+                                            "nom": "CC2",
+                                            "coefficient": 0.7,
+                                            "note": null
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -75,8 +75,8 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
     // AXE 5: Remaining Weight Factor
     if (remainingWeightMap && typeof matiere === 'object' && matiere.nom) {
       const rwData = remainingWeightMap[matiere.nom];
-      if (rwData && rwData.remainingRatio > 0.5) {
-        const rwBoost = 1.0 + (rwData.remainingRatio - 0.5) * 1.0;
+      if (rwData && rwData.remainingRatio >= 0.4) {
+        const rwBoost = 1.0 + (rwData.remainingRatio - 0.4) * 1.0;
         base *= rwBoost;
       }
     }

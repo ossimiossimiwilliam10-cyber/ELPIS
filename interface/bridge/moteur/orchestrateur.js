@@ -189,10 +189,18 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             if (daysInactive > 10) inactivityBoost = 3.0;
           }
 
-          const examBoost = examBoostOriginal * inactivityBoost;
+          let crisisBoost = 1.0;
+          if (projectedScoreMap && projectedScoreMap[m.nom] !== undefined && projectedScoreMap[m.nom] < 5.0) {
+            crisisBoost = 2.0;
+          }
+
+          const examBoost = examBoostOriginal * inactivityBoost * crisisBoost;
           const baseRaisons = [];
           if (inactivityBoost > 1.0) baseRaisons.push("🛡️ Anti-Décrochage");
-          if (examBoostOriginal > 1.0) baseRaisons.push("⏳ Examen Proche");
+          if (crisisBoost > 1.0) baseRaisons.push("🚨 MODE CRISE (< 5/20)");
+          
+          if (daysToExam < 60) baseRaisons.push("⏳ Examen Proche");
+          else if (examBoostOriginal > 1.0) baseRaisons.push("🔥 Fort Coeff");
 
           // --- CM ---
           let newCMCountPerMatiere = 0;

@@ -203,10 +203,14 @@ function detectBurnoutRisk(cfg, historique) {
   let shouldForceRest = false;
   let reason = '';
 
-  if (daysWithoutRest >= 14 && avgDailyMinutes > 360) {
+  if ((daysWithoutRest >= 14 && avgDailyMinutes > 360) || daysWithoutRest >= 21) {
     riskLevel = 'high';
     shouldForceRest = true;
-    reason = `${daysWithoutRest} jours sans repos et ${Math.round(avgDailyMinutes / 60)}h/jour en moyenne. Repos forcé.`;
+    if (daysWithoutRest >= 21) {
+      reason = `${daysWithoutRest} jours consécutifs sans aucun repos. Repos forcé pour éviter l'épuisement.`;
+    } else {
+      reason = `${daysWithoutRest} jours sans repos et ${Math.round(avgDailyMinutes / 60)}h/jour en moyenne. Repos forcé.`;
+    }
   } else if (daysWithoutRest >= 10 || avgDailyMinutes > 480) {
     riskLevel = 'medium';
     reason = `${daysWithoutRest} jours consécutifs. Pense à prendre un Joker bientôt.`;

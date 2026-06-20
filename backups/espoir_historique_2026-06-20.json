@@ -1,0 +1,213 @@
+[
+    {
+        "type": "TD",
+        "titre": "Exercice 3 - Page 2 - TD1 - échelonnage d'une matrice-résolution d'un système par remontée - Serie_TD",
+        "matiere": "Algèbre",
+        "action": "Terminé",
+        "timestamp": "2026-06-13T15:45:08.720Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 4 - The passive voice",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Terminé",
+        "timestamp": "2026-06-15T08:50:01.712Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Rédiger un protocole d'essai technique (Experimental / Testing Procedures)",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Révisé (J1)",
+        "timestamp": "2026-06-15T08:50:12.991Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
+        "matiere": "Algèbre",
+        "action": "Terminé",
+        "timestamp": "2026-06-15T09:16:25.720Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+        "matiere": "Analyse",
+        "action": "Terminé",
+        "timestamp": "2026-06-15T09:48:32.962Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Terminé",
+        "timestamp": "2026-06-15T10:51:23.616Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 1 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-15T11:29:07.768Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Rédiger un protocole d'essai technique (Experimental / Testing Procedures)",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Révisé (J3)",
+        "timestamp": "2026-06-16T07:49:15.147Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T08:42:40.610Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+        "matiere": "Analyse",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T09:12:40.036Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Révisé (J1)",
+        "timestamp": "2026-06-16T09:53:31.067Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 2 : Codage de l'information et représentation des nombres",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Révisé (J1)",
+        "timestamp": "2026-06-16T11:46:21.971Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 1 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T19:21:42.188Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 1 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T19:21:47.329Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 2 - page 2 - Travaux Dirigés d'analyse mathématique 2018",
+        "matiere": "Analyse",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T21:40:40.547Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 2 - page 2 - Travaux dirigés n°1 Variables, fonctions et affichage",
+        "matiere": "Programmation",
+        "action": "Terminé",
+        "timestamp": "2026-06-16T21:54:24.250Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Révisé (J3)",
+        "dureeMinutes": 30,
+        "easeFactor": 2.5,
+        "timestamp": "2026-06-17T08:59:49.309Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 2 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
+        "matiere": "Algèbre",
+        "action": "Terminé",
+        "dureeMinutes": 20,
+        "timestamp": "2026-06-17T09:05:29.035Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 1 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
+        "matiere": "Algèbre",
+        "action": "Terminé",
+        "dureeMinutes": 7,
+        "timestamp": "2026-06-17T09:16:58.906Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Révisé (J4)",
+        "dureeMinutes": 29,
+        "easeFactor": 2.2,
+        "timestamp": "2026-06-17T10:05:28.809Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 2 : Codage de l'information et représentation des nombres",
+        "matiere": "Architecture des systèmes d'exploitation",
+        "action": "Révisé (J3)",
+        "dureeMinutes": 40,
+        "easeFactor": 2.5,
+        "timestamp": "2026-06-17T11:18:36.278Z"
+    },
+    {
+        "type": "TD",
+        "titre": "P1 - 1. Distribution isotrope de charge - page 10",
+        "matiere": "Électromagnétisme",
+        "action": "Terminé",
+        "dureeMinutes": 20,
+        "timestamp": "2026-06-17T12:21:24.515Z"
+    },
+    {
+        "type": "TD",
+        "titre": "P1 - 2. Charge volumique électronique dans l'atome d'hydrogène - page 11",
+        "matiere": "Électromagnétisme",
+        "action": "Terminé",
+        "dureeMinutes": 13,
+        "timestamp": "2026-06-17T12:58:05.427Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercice 3 - page 2",
+        "matiere": "Algèbre",
+        "action": "Terminé",
+        "dureeMinutes": 10,
+        "timestamp": "2026-06-17T13:33:43.691Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Session Anki",
+        "matiere": "Révisions globales",
+        "action": "Terminé",
+        "dureeMinutes": 1,
+        "timestamp": "2026-06-18T09:10:23.897Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Révision Flashcards",
+        "matiere": "Routine",
+        "action": "Terminé",
+        "dureeMinutes": 26,
+        "timestamp": "2026-06-18T10:36:13.521Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercices - Unit 1",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Terminé",
+        "dureeMinutes": 17,
+        "timestamp": "2026-06-18T12:12:27.601Z"
+    },
+    {
+        "type": "TD",
+        "titre": "Exercices - Unit 2",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Terminé",
+        "dureeMinutes": 15,
+        "timestamp": "2026-06-18T12:54:05.661Z"
+    }
+]
