@@ -30,8 +30,9 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const now = new Date();
 
   const tomorrowDate = new Date();
+  tomorrowDate.setHours(tomorrowDate.getHours() - 4); // aligner avec la période de grâce (Night Owl)
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-  const tomorrowStr = tomorrowDate.toISOString().split('T')[0];
+  const tomorrowStr = tomorrowDate.getFullYear() + '-' + String(tomorrowDate.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrowDate.getDate()).padStart(2, '0');
   const dayOfWeek = now.getDay();
   const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
@@ -90,7 +91,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const maxSubjectsPerDay = cfg.maxSubjectsPerDay || 4;
   let tempsLibreMin = heuresTravailJour * 60;
 
-  if (tempsLibreMin < 0) tempsLibreMin = 0;
   tempsLibreMin += extraTimeMin;
   rapport.tempsDispoMin = tempsLibreMin;
 

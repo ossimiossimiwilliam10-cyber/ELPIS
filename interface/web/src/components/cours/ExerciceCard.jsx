@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import useStore from '../../store';
 import { useToast } from '../../ToastProvider';
+import { DIFFICULTY_LEVELS } from '../../constants';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
@@ -27,14 +28,6 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
       default: return "Valider le TP";
     }
   };
-
-  const DIFFICULTY_LEVELS = [
-    { key: 'difficile', label: '🔴', title: 'Difficile' },
-    { key: 'assez_difficile', label: '🟠', title: 'Assez difficile' },
-    { key: 'moyen', label: '🟡', title: 'Moyen' },
-    { key: 'facile', label: '🟢', title: 'Facile' },
-    { key: 'tres_facile', label: '🔵', title: 'Très facile' },
-  ];
 
   const itemVariants = {
     hidden: { opacity: 0, scale: 0.8 },

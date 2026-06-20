@@ -258,7 +258,7 @@ function CoursPage() {
       <div className="licence-tabs" style={{display:'flex', gap:'1.5rem', marginBottom:'1rem', borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.5rem'}}>
         {configLocal.licences?.map((licence, lIndex) => (
           <button 
-            key={`lic-${lIndex}`} 
+            key={`lic-${lIndex}-${licence.nom}`} 
             className={`tab-btn ${activeLicenceIndex === lIndex ? 'active' : ''}`}
             onClick={() => { setActiveLicenceIndex(lIndex); setActiveSemestreIndex(0); setActiveUEIndex(0); }}
             style={{fontSize:'1.1rem', fontWeight: activeLicenceIndex === lIndex ? 'bold' : 'normal'}}
@@ -289,7 +289,7 @@ function CoursPage() {
             <div className="semestre-tabs" style={{display:'flex', gap:'1.5rem'}}>
               {licence.semestres?.map((semestre, sIndex) => (
                 <button 
-                  key={`tab-${sIndex}`} 
+                  key={`sem-${sIndex}-${semestre.nom}`} 
                   className={`tab-btn ${activeSemestreIndex === sIndex ? 'active' : ''}`}
                   onClick={() => { setActiveSemestreIndex(sIndex); setActiveUEIndex(0); }}
                 >
@@ -324,7 +324,7 @@ function CoursPage() {
                       if (!ueMatchesSearch(ue)) return null;
                       return (
                         <button 
-                          key={`ue-tab-${uIndex}`} 
+                          key={`ue-tab-${uIndex}-${ue.nom}`} 
                           className={`tab-btn ${activeUEIndex === uIndex ? 'active' : ''}`}
                           style={{ fontSize:'0.95rem', padding:'0.4rem 1rem', background: activeUEIndex === uIndex ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255,255,255,0.05)' }}
                           onClick={() => setActiveUEIndex(uIndex)}

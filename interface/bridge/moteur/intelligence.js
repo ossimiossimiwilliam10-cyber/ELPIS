@@ -237,7 +237,7 @@ function buildProjectedScoreMap(crs, velocityMap) {
 
           let pastGrades = [];
           if (m.evaluations) {
-            pastGrades = m.evaluations.filter(e => e.note !== undefined && e.note !== null && e.note !== "").map(e => parseFloat(e.note));
+            pastGrades = m.evaluations.filter(e => e.note !== undefined && e.note !== null && e.note !== "" && !isNaN(parseFloat(e.note))).map(e => parseFloat(e.note));
           }
           if (m.listeAnnales) {
             m.listeAnnales.forEach(a => {

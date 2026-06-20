@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -8,6 +8,7 @@ import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from './ToastProvider';
 import CMCompletionModal from './components/CMCompletionModal';
+import { DIFFICULTY_LEVELS } from './constants';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
   const radius = (size - strokeWidth) / 2;
@@ -84,14 +85,6 @@ function Dashboard() {
   const restDaysUsed = getRestDaysUsed();
   const todayStr = getTodayStr();
   const isRestDayToday = config?.restDays?.includes(todayStr);
-
-  const DIFFICULTY_LEVELS = [
-    { key: 'difficile', label: '🔴', title: 'Difficile' },
-    { key: 'assez_difficile', label: '🟠', title: 'Assez difficile' },
-    { key: 'moyen', label: '🟡', title: 'Moyen' },
-    { key: 'facile', label: '🟢', title: 'Facile' },
-    { key: 'tres_facile', label: '🔵', title: 'Très facile' },
-  ];
 
   // Fetch orchestrator via store (global) — triggers on param changes
   useEffect(() => {
@@ -203,6 +196,8 @@ function Dashboard() {
         action: 'Terminé',
         dureeMinutes: tache.dureeMinutes || 0
       });
+    } else if (tache.type !== 'ANKI' && tache.type !== 'CM') {
+      toast.error(`Tâche "${tache.titre}" introuvable. Recharge le planning.`);
     }
   };
 
@@ -274,7 +269,7 @@ function Dashboard() {
   if (loading) {
     return (
       <div style={{textAlign:'center', marginTop:'5rem'}}>
-        Analyse des donnees en cours...
+        Analyse des données en cours...
       </div>
     );
   }
@@ -297,7 +292,7 @@ function Dashboard() {
   const surcharge = statut === "SURCHARGE";
   const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
 
-  const getStats = () => {
+  const stats = useMemo(() => {
     if (!coursConfig) return { total: 0, done: 0, perMatiere: [] };
     let total = 0;
     let done = 0;
@@ -321,9 +316,7 @@ function Dashboard() {
       });
     });
     return { total, done, perMatiere };
-  };
-
-  const stats = getStats();
+  }, [coursConfig]);
   const globalPercent = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
 
   const containerVariants = {
@@ -664,7 +657,7 @@ function Dashboard() {
               </div>
           ) : (
             <div style={{background:'rgba(16, 185, 129, 0.1)', padding:'1rem', borderRadius:'8px', borderLeft:'4px solid var(--success-color)'}}>
-              <strong>Equilibre parfait :</strong> Ta charge de travail est compatible avec tes objectifs de santé.
+              <strong>Équilibre parfait :</strong> Ta charge de travail est compatible avec tes objectifs de santé.
             </div>
           )}
 

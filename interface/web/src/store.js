@@ -180,7 +180,7 @@ const useStore = create(immer((set, get) => ({
       return date >= startOfWeek;
     }).length;
 
-    if (restDaysThisWeek < 2 && !restDays.includes(todayStr)) {
+    if (restDaysThisWeek < 1 && !restDays.includes(todayStr)) {
       restDays = [...restDays, todayStr];
       const newConfig = { ...config, restDays };
       set({ config: newConfig });

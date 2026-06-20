@@ -310,6 +310,16 @@ function EntrainementPage() {
       return;
     }
 
+    // Vérifier que les indices sont toujours valides (la config a pu changer)
+    const licence = configLocal.licences?.[exo.lIndex];
+    const semestre = licence?.semestres?.[exo.sIndex];
+    const ue = semestre?.ues?.[exo.uIndex];
+    const matiere = ue?.matieres?.[exo.mIndex];
+    if (!matiere) {
+      toast.error("Configuration modifiée. Recharge la page.");
+      return;
+    }
+
     const newConfig = produce(configLocal, draft => {
       let targetList;
       if (exo.type === 'TD') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
