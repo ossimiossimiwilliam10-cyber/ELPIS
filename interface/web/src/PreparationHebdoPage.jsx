@@ -25,13 +25,13 @@ export default function PreparationHebdoPage() {
       const mat = draft.licences[l].semestres[s].ues[u].matieres[m];
       if (type === 'TD') {
         if (!mat.listeTD) mat.listeTD = [];
-        mat.listeTD.push({ titre: `TD ${mat.listeTD.length + 1}`, dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
+        mat.listeTD.push({ titre: "Nouvel Exercice de TD", dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
       } else if (type === 'TP') {
         if (!mat.listeTP) mat.listeTP = [];
-        mat.listeTP.push({ titre: `TP ${mat.listeTP.length + 1}`, dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
+        mat.listeTP.push({ titre: "Nouvel Exercice de TP", dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
       } else if (type === 'Annale') {
         if (!mat.listeAnnales) mat.listeAnnales = [];
-        mat.listeAnnales.push({ titre: `Annale ${mat.listeAnnales.length + 1}`, dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
+        mat.listeAnnales.push({ titre: "Nouvelle Annale", dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
       }
     });
   };
