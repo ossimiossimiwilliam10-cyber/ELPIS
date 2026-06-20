@@ -1,8 +1,8 @@
-
 import { produce } from 'immer';
 import EditableLabel from './EditableLabel';
 import EditableNote from './EditableNote';
 import StarRating from './StarRating';
+import InfoTooltip from '../InfoTooltip';
 
 export default function MatiereCard({ 
   matiere, 
@@ -92,7 +92,11 @@ export default function MatiereCard({
         <div style={{display:'flex', gap:'0.5rem', alignItems: 'flex-start'}}>
           <span style={{fontSize:'1rem', marginTop: '4px'}} title="Synergies inter-matières">🔗</span>
           <div style={{flex:1}}>
-            <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px'}}>Matières liées (Synergies) :</div>
+            <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px'}}>
+              <InfoTooltip content="Lier deux matières crée des ponts cognitifs. L'Orchestrateur tentera de planifier des sessions mixtes (Interleaving) pour stimuler la mémorisation transversale." width={260}>
+                Matières liées (Synergies) : <span style={{fontSize:'0.75rem'}}>ℹ️</span>
+              </InfoTooltip>
+            </div>
             <div style={{display: 'flex', flexWrap: 'wrap', gap: '6px'}}>
               {(allMatiereNames || []).filter(name => name !== matiere.nom).map(name => {
                 const isSelected = matiere.synergies?.includes(name);

@@ -26,6 +26,16 @@ export function getLoadForDate(dateStr, configLocal, subjectName = null) {
               }
             }
           });
+
+          // AXE 3 / Load Balancing v2 : prise en compte des TD, TP, Annales
+          // Contrairement aux CM, ces exercices n'ont pas de date future planifiée.
+          // On comptabilise leur volume total comme charge potentielle pour la matière.
+          if (subjectName && m.nom === subjectName) {
+            const tdCount = (m.listeTD || []).length;
+            const tpCount = (m.listeTP || []).length;
+            const annaleCount = (m.listeAnnales || []).length;
+            count += tdCount * 0.5 + tpCount * 2 + annaleCount * 1;
+          }
         });
       });
     });

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import useStore from '../../store';
 import { useToast } from '../../ToastProvider';
+import InfoTooltip from '../InfoTooltip';
 import { DIFFICULTY_LEVELS } from '../../constants';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
@@ -120,7 +121,11 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
           )}
         </div>
         <span style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>
-          {exo.type === 'CM' ? `Revu ${exo.repetitions || 0} fois (J${exo.jActuel || 0})` : 
+          {exo.type === 'CM' ? (
+            <span>
+              Revu {exo.repetitions || 0} fois <InfoTooltip content="L'algorithme SM2 calcule ce délai (en jours) en fonction de ta note de difficulté. Plus tu réussis, plus le J-Actuel augmente.">(J{exo.jActuel || 0}) <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip>
+            </span>
+          ) : 
            exo.type === 'TP' && exo.etape ? getTPStepName(exo.etape) : 
            `Pratiqué ${exo.nombrePratiques || 0} fois`}
         </span>

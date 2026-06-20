@@ -8,6 +8,7 @@ import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from './ToastProvider';
 import CMCompletionModal from './components/CMCompletionModal';
+import InfoTooltip from './components/InfoTooltip';
 import { DIFFICULTY_LEVELS } from './constants';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
@@ -207,8 +208,20 @@ function Dashboard() {
     const tache = pendingCMTask;
     const today = getTodayStr();
 
-    const configLocal = coursConfig;
-    const newConfig = produce(configLocal, draft => {
+    // AXE 9: Personalized Decay Multiplier (cohérent avec EntrainementPage)
+    let personalizedDecayMultiplier = 1.0;
+    if (intelligence?.velocityMap && tache.matiere) {
+      const vData = intelligence.velocityMap[tache.matiere];
+      if (vData && vData.isSlowLearner) {
+        personalizedDecayMultiplier = 0.8;
+      } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {
+        personalizedDecayMultiplier = 1.2;
+      }
+    }
+
+    let finalScore = sm2Score;
+
+    const newConfig = produce(coursConfig, draft => {
       draft.licences.forEach(licence =>
         licence.semestres.forEach(semestre =>
           semestre.ues.forEach(ue =>
@@ -216,6 +229,15 @@ function Dashboard() {
               if (matiere.nom !== tache.matiere) return;
               matiere.listeCM.forEach(cm => {
                 if (cm.titre !== tache.titre) return;
+
+                // --- Pénalité / Bonus Temporel (cohérent avec EntrainementPage) ---
+                if (minutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
+                  const ratio = minutes / cm.tempsMoyen;
+                  if (ratio > 1.5 && finalScore > 1) finalScore -= 1;
+                  if (ratio > 2.0 && finalScore > 1) finalScore -= 1;
+                  if (ratio < 0.5 && finalScore < 4) finalScore += 1;
+                }
+
                 let actualDaysElapsed = -1;
                 if (cm.derniereRevision) {
                   const revDate = new Date(cm.derniereRevision + 'T00:00:00');
@@ -223,8 +245,8 @@ function Dashboard() {
                   actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
                 }
                 const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
-                  sm2Score, cm.jActuel || 0, cm.easeFactor || 2.5, cm.repetitions || 0,
-                  coursConfig, actualDaysElapsed, tache.matiere
+                  finalScore, cm.jActuel || 0, cm.easeFactor || 2.5, cm.repetitions || 0,
+                  coursConfig, actualDaysElapsed, tache.matiere, personalizedDecayMultiplier
                 );
                 cm.jActuel = interval;
                 cm.easeFactor = easeFactor;
@@ -254,43 +276,17 @@ function Dashboard() {
       type: 'CM',
       titre: tache.titre,
       matiere: tache.matiere,
-      action: `Révisé (${sm2Score}/4)`,
+      action: `Révisé (${finalScore}/4)`,
       dureeMinutes: minutes
     });
     setPendingCMTask(null);
-  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry]);
+  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence]);
 
   // Dynamic greeting (must be before early returns)
   const hour = new Date().getHours();
   let greeting = 'Bonsoir';
   if (hour >= 5 && hour < 12) greeting = 'Bonjour';
   else if (hour >= 12 && hour < 18) greeting = 'Bon après-midi';
-
-  if (loading) {
-    return (
-      <div style={{textAlign:'center', marginTop:'5rem'}}>
-        Analyse des données en cours...
-      </div>
-    );
-  }
-
-  if (!orchestratorData || orchestratorData.error) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="card glass-panel" 
-        style={{textAlign:'center', marginTop:'3rem'}}
-      >
-        <h2>{greeting} ! Bienvenue sur ELPIS</h2>
-        <p style={{color:'var(--text-secondary)'}}>Configure tes objectifs et tes cours pour activer l'Orchestrateur.</p>
-      </motion.div>
-    );
-  }
-
-  const { statut, tempsDispoMin, tempsRequisMin } = orchestratorData;
-  const surcharge = statut === "SURCHARGE";
-  const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
 
   const stats = useMemo(() => {
     if (!coursConfig) return { total: 0, done: 0, perMatiere: [] };
@@ -317,7 +313,34 @@ function Dashboard() {
     });
     return { total, done, perMatiere };
   }, [coursConfig]);
+  
   const globalPercent = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
+
+  if (loading) {
+    return (
+      <div style={{textAlign:'center', marginTop:'5rem'}}>
+        Analyse des données en cours...
+      </div>
+    );
+  }
+
+  if (!orchestratorData || orchestratorData.error) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="card glass-panel" 
+        style={{textAlign:'center', marginTop:'3rem'}}
+      >
+        <h2>{greeting} ! Bienvenue sur ELPIS</h2>
+        <p style={{color:'var(--text-secondary)'}}>Configure tes objectifs et tes cours pour activer l'Orchestrateur.</p>
+      </motion.div>
+    );
+  }
+
+  const { statut, tempsDispoMin, tempsRequisMin } = orchestratorData;
+  const surcharge = statut === "SURCHARGE";
+  const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -349,7 +372,7 @@ function Dashboard() {
         <div className="welcome-stats" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           <div className="welcome-stat">
             <div className="welcome-stat-value" style={{color: 'var(--success-color)'}}>{recommendedDailyHours}h</div>
-            <div className="welcome-stat-label">Cible IA</div>
+            <div className="welcome-stat-label"><InfoTooltip content="Calculé dynamiquement par le moteur de charge selon tes coefficients et les jours restants avant l'examen.">Cible IA <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
           </div>
           <div className="welcome-stat">
             <div className="welcome-stat-value">{orderedTaches.length}</div>
@@ -357,18 +380,18 @@ function Dashboard() {
           </div>
           <div className="welcome-stat">
             <div className="welcome-stat-value">{Math.round(tempsRequisMin/60 * 10)/10}h</div>
-            <div className="welcome-stat-label">Requis</div>
+            <div className="welcome-stat-label"><InfoTooltip content="Temps total estimé par l'Orchestrateur pour accomplir toutes les tâches planifiées aujourd'hui.">Requis <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
           </div>
           <div className="welcome-stat" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
             <CircularProgress percent={globalPercent} />
-            <div className="welcome-stat-label">Global</div>
+            <div className="welcome-stat-label"><InfoTooltip content="Pourcentage global d'avancement (tous cours et exercices confondus).">Global <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
           </div>
           <div className="welcome-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className="welcome-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#F59E0B' }}>
               <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 4s ease-in-out infinite' }}>🔥</span> 
               <span style={{ fontSize: '2.4rem' }}>{config?.currentStreak || 0}</span>
             </div>
-            <div className="welcome-stat-label" style={{ color: 'var(--text-secondary)' }}>Record : {config?.bestStreak || 0}</div>
+            <div className="welcome-stat-label" style={{ color: 'var(--text-secondary)' }}><InfoTooltip content="Le nombre de jours consécutifs où tu as validé une tâche ou pris un jour de repos autorisé. Ne brise pas la chaîne !">Record : {config?.bestStreak || 0} <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
           </div>
         </div>
       </div>

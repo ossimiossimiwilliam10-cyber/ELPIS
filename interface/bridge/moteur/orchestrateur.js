@@ -186,7 +186,10 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           let inactivityBoost = 1.0;
           if (lastPratiqueMs > 0) {
             const daysInactive = (now.getTime() - lastPratiqueMs) / (1000 * 60 * 60 * 24);
-            if (daysInactive > 10) inactivityBoost = 3.0;
+            // Progression linéaire : neutre avant J7, puis montée graduelle jusqu'à 3.0 à J21
+            if (daysInactive > 7) {
+              inactivityBoost = Math.min(3.0, 1.0 + (daysInactive - 7) / 7);
+            }
           }
 
           let crisisBoost = 1.0;

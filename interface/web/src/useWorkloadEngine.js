@@ -41,10 +41,16 @@ export function useWorkloadEngine() {
             
             let requiredEffortHours = baseEffortHours * totalMultiplier;
 
-            // C. Subtract work already done
+            // C. Subtract work already done (filtré par date de début d'étude)
             let hoursDone = 0;
-            if (historique) {
-              const subjectHistory = historique.filter(h => h.matiere === m.nom);
+            if (historique && config.studyStartDate) {
+              const studyStart = parseDateLocal(config.studyStartDate);
+              const subjectHistory = historique.filter(h => {
+                if (h.matiere !== m.nom) return false;
+                if (!h.timestamp) return false;
+                const entryDate = new Date(h.timestamp);
+                return studyStart ? entryDate >= studyStart : true;
+              });
               hoursDone = subjectHistory.reduce((sum, h) => sum + ((h.dureeMinutes || 0) / 60), 0);
             }
             

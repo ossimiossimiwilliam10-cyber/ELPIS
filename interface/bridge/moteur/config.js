@@ -25,7 +25,16 @@ const DEFAULT_CONFIG = {
   defaultDurationRevCM: 30,
   defaultDurationTD: 20,
   defaultDurationTP: 30,
-  defaultDurationAnnales: 60
+  defaultDurationAnnales: 60,
+  defaultDurationAnki: 30,
+  defaultDurationTP_Etape1: 45,
+  defaultDurationTP_Etape2: 180,
+  defaultDurationTP_Etape3: 90,
+  defaultDurationTP_Etape4: 30,
+  maxNewCMPerSubjectPerDay: 1,
+  maxNewCMPerSemesterPerDay: 3,
+  antiEnnuiMultiplier: 2.0,
+  restDays: []
 };
 
 /**
@@ -79,12 +88,21 @@ function sanitize(c) {
   c.defaultDurationTD = Math.max(5, c.defaultDurationTD ?? 20);
   c.defaultDurationTP = Math.max(5, c.defaultDurationTP ?? 30);
   c.defaultDurationAnnales = Math.max(5, c.defaultDurationAnnales ?? 60);
+  c.defaultDurationAnki = Math.max(5, c.defaultDurationAnki ?? 30);
+  c.defaultDurationTP_Etape1 = Math.max(5, c.defaultDurationTP_Etape1 ?? 45);
+  c.defaultDurationTP_Etape2 = Math.max(5, c.defaultDurationTP_Etape2 ?? 180);
+  c.defaultDurationTP_Etape3 = Math.max(5, c.defaultDurationTP_Etape3 ?? 90);
+  c.defaultDurationTP_Etape4 = Math.max(5, c.defaultDurationTP_Etape4 ?? 30);
+  c.maxNewCMPerSubjectPerDay = Math.max(1, c.maxNewCMPerSubjectPerDay ?? 1);
+  c.maxNewCMPerSemesterPerDay = Math.max(1, c.maxNewCMPerSemesterPerDay ?? 3);
+  c.antiEnnuiMultiplier = Math.max(1.0, c.antiEnnuiMultiplier ?? 2.0);
   
   if (c.theme !== "light" && c.theme !== "dark") c.theme = "dark";
   
   // Ensure arrays
   if (!Array.isArray(c.subjects)) c.subjects = [];
   if (!Array.isArray(c.fixedCommitments)) c.fixedCommitments = [];
+  if (!Array.isArray(c.restDays)) c.restDays = [];
   
   return c;
 }

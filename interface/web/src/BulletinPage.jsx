@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import useStore from './store';
 import { produce } from 'immer';
 import EditableLabel from './components/cours/EditableLabel';
+import InfoTooltip from './components/InfoTooltip';
 
 export default function BulletinPage() {
   const { coursConfig, setCoursConfig, intelligence } = useStore();
@@ -181,7 +182,12 @@ export default function BulletinPage() {
       <div style={{display:'flex', gap:'1rem', flexWrap:'wrap', justifyContent:'flex-end', marginBottom:'1.5rem'}}>
         {semesterAverages.map((sem, idx) => (
           <div key={idx} className="card glass-panel" style={{ padding: '0.75rem 1.5rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '12px', minWidth: '150px' }}>
-            <span style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>Moyenne {sem.nom}</span>
+            <span style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9 }}>
+              Moyenne {sem.nom}
+              <InfoTooltip content="La moyenne du semestre est pondérée par les ECTS de chaque UE. La moyenne d'une UE est elle-même pondérée par les coefficients de ses matières." width={280}>
+                <span style={{ marginLeft: '0.3rem', fontSize: '0.85rem', opacity: 0.7, cursor: 'help' }}>ℹ️</span>
+              </InfoTooltip>
+            </span>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', textAlign: 'center' }}>{sem.avg} <span style={{fontSize:'1.2rem', opacity:0.8}}>/ 20</span></div>
           </div>
         ))}

@@ -1,6 +1,7 @@
 import EditableLabel from './EditableLabel';
 import EditableNote from './EditableNote';
 import StarRating from './StarRating';
+import InfoTooltip from '../InfoTooltip';
 
 /**
  * ExerciceRow — Ligne d'exercice éditable (titre, PDF, notes Markdown, difficulté).
@@ -83,7 +84,11 @@ export default function ExerciceRow({
 
       {/* Difficulté */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.2rem', flexShrink: 0 }}>
-        <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>Difficulté</span>
+        <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
+          <InfoTooltip content="Définit la fréquence d'apparition dans ton planning. Plus il y a d'étoiles, plus l'Orchestrateur te le proposera souvent." width={200}>
+            Difficulté <span style={{fontSize:'0.65rem'}}>ℹ️</span>
+          </InfoTooltip>
+        </span>
         <StarRating
           value={exercice.difficulteInitiale || (type === 'Annale' ? 3 : 1)}
           onChange={(v) => onUpdate('difficulteInitiale', v)}
