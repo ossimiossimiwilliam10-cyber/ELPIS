@@ -3,7 +3,7 @@ import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
-import { calculateSM2 } from './sm2';
+import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from './ToastProvider';
@@ -238,21 +238,25 @@ function Dashboard() {
                   if (ratio < 0.5 && finalScore < 4) finalScore += 1;
                 }
 
-                let actualDaysElapsed = -1;
-                if (cm.derniereRevision) {
-                  const revDate = new Date(cm.derniereRevision + 'T00:00:00');
-                  const nowDate = new Date(today + 'T00:00:00');
-                  actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
-                }
-                const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
-                  finalScore, cm.jActuel || 0, cm.easeFactor || 2.5, cm.repetitions || 0,
-                  coursConfig, actualDaysElapsed, tache.matiere, personalizedDecayMultiplier
-                );
-                cm.jActuel = interval;
-                cm.easeFactor = easeFactor;
-                cm.repetitions = repetitions;
+                // --- FSRS : Migration ou récupération de la carte ---
+                let fsrsCard = cm.fsrsCard ? { ...cm.fsrsCard } : migrateToFSRSCard(cm);
+                if (typeof fsrsCard.due === 'string') fsrsCard.due = new Date(fsrsCard.due);
+                if (typeof fsrsCard.last_review === 'string') fsrsCard.last_review = new Date(fsrsCard.last_review);
+
+                const ratingMap = { 1: Rating.Again, 2: Rating.Hard, 3: Rating.Good, 4: Rating.Easy };
+                const fsrsRating = ratingMap[finalScore] || Rating.Good;
+
+                const newCard = evaluateFSRS(fsrsCard, fsrsRating, personalizedDecayMultiplier);
+                cm.fsrsCard = newCard;
+
+                // Rétrocompatibilité SM-2
+                cm.jActuel = newCard.scheduled_days || 1;
+                cm.easeFactor = (10 - newCard.difficulty) / 4 + 1.3;
+                cm.repetitions = newCard.reps;
                 cm.derniereRevision = today;
-                cm.prochaineRevisionDate = prochaineRevisionDate;
+                cm.prochaineRevisionDate = newCard.due instanceof Date
+                  ? newCard.due.toISOString().split('T')[0]
+                  : new Date(newCard.due).toISOString().split('T')[0];
                 // Tracking tempsMoyen with real elapsed minutes
                 const currentAvg = cm.tempsMoyen || 0;
                 const currentCount = cm.nombreRevisionsTemps || 0;

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, LineChart, Line } from 'recharts';
 import useStore from './store';
 
 function StatistiquesPage() {
@@ -113,6 +113,90 @@ function StatistiquesPage() {
 
     return { avg, matieres, radarData };
   }, [intelligence, coursConfig]);
+
+  const fsrsMetrics = useMemo(() => {
+    if (!coursConfig) return null;
+    let totalCards = 0;
+    let totalStability = 0;
+    let matureCards = 0;
+    let youngCards = 0;
+    let learningCards = 0;
+    let retentionSum = 0;
+    
+    const now = new Date();
+    
+    coursConfig.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(u => {
+          u.matieres?.forEach(m => {
+            m.listeCM?.forEach(cm => {
+              if (cm.fsrsCard) {
+                totalCards++;
+                const S = cm.fsrsCard.stability || 0;
+                totalStability += S;
+                if (S >= 21) matureCards++;
+                else if (S >= 3) youngCards++;
+                else learningCards++;
+                
+                if (cm.fsrsCard.last_review) {
+                  const lastReview = new Date(cm.fsrsCard.last_review);
+                  const elapsedDays = Math.max(0, (now.getTime() - lastReview.getTime()) / (1000 * 60 * 60 * 24));
+                  // Formule exacte DSR : R(t) = (1 + t / (9 * S)) ^ -1
+                  const R = Math.pow(1 + elapsedDays / (9 * Math.max(0.1, S)), -1);
+                  retentionSum += R;
+                } else {
+                  retentionSum += 1.0;
+                }
+              }
+            });
+          });
+        });
+      });
+    });
+
+    if (totalCards === 0) return null;
+
+    return {
+      totalCards,
+      avgStability: (totalStability / totalCards).toFixed(1),
+      avgRetention: ((retentionSum / totalCards) * 100).toFixed(1),
+      stabilityData: [
+        { name: 'Apprentissage', value: learningCards, fill: '#f59e0b', desc: '< 3 jours' },
+        { name: 'Jeune', value: youngCards, fill: '#3b82f6', desc: '3 à 21 jours' },
+        { name: 'Mature', value: matureCards, fill: '#10b981', desc: '> 21 jours' },
+      ]
+    };
+  }, [coursConfig]);
+
+  // Courbe d'oubli théorique DSR pour visualiser l'effet de la stabilité
+  const forgettingCurveData = useMemo(() => {
+    if (!fsrsMetrics) return null;
+    const avgS = parseFloat(fsrsMetrics.avgStability);
+    if (avgS <= 0) return null;
+
+    const refLevels = [
+      { s: 1, label: 'S=1j (début)', color: '#ef4444' },
+      { s: 7, label: 'S=7j', color: '#f59e0b' },
+      { s: 21, label: 'S=21j (mature)', color: '#3b82f6' },
+      { s: avgS, label: `S=${avgS}j (toi)`, color: '#10b981' },
+    ].filter((l, i, arr) => {
+      // Dedup: skip ref levels that are within 0.5 of another
+      if (i < arr.length - 1 && Math.abs(l.s - avgS) < 0.5) return l.s === avgS;
+      return true;
+    });
+
+    const maxT = Math.max(60, Math.ceil(avgS * 2));
+    const points = [];
+    for (let t = 0; t <= maxT; t++) {
+      const point = { days: t };
+      refLevels.forEach(level => {
+        const R = Math.pow(1 + t / (9 * Math.max(0.1, level.s)), -1);
+        point[level.label] = Math.round(R * 1000) / 10;
+      });
+      points.push(point);
+    }
+    return { points, refLevels };
+  }, [fsrsMetrics]);
 
   const COLORS_PIE = ['#34d399', '#60a5fa', '#f59e0b', '#a78bfa', '#ec4899'];
 
@@ -281,6 +365,131 @@ function StatistiquesPage() {
               </div>
             </div>
           </div>
+        </motion.div>
+      )}
+
+      {/* Profil de Rétention FSRS */}
+      {fsrsMetrics && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card glass-panel" 
+          style={{marginBottom: '2rem', borderLeft: '4px solid #10b981', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(16, 185, 129, 0.05))'}}
+        >
+          <div style={{display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap'}}>
+            <div style={{flex: '1 1 350px'}}>
+              <h3 style={{marginBottom: '1rem', color: '#10b981'}}>🧠 Profil de Rétention FSRS</h3>
+              <p style={{color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem'}}>
+                Évaluation en temps réel de ta mémoire à long terme (Stabilité) et à court terme (Rétention) sur l'ensemble de tes {fsrsMetrics.totalCards} CM.
+              </p>
+              
+              <div style={{display: 'flex', gap: '1rem', alignItems: 'stretch', flexWrap: 'wrap'}}>
+                <div style={{background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px'}}>
+                  <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>Stabilité Moyenne</div>
+                  <div style={{fontSize: '2.5rem', fontWeight: 'bold', color: '#3b82f6'}}>
+                    {fsrsMetrics.avgStability} <span style={{fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>jours</span>
+                  </div>
+                  <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem'}}>
+                    Temps moyen avant oubli
+                  </div>
+                </div>
+
+                <div style={{background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px'}}>
+                  <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>Rétention Actuelle</div>
+                  <div style={{fontSize: '2.5rem', fontWeight: 'bold', color: fsrsMetrics.avgRetention >= 90 ? '#10b981' : '#f59e0b'}}>
+                    {fsrsMetrics.avgRetention}%
+                  </div>
+                  <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem'}}>
+                    Probabilité de rappel immédiat
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* FSRS Stability Pie Chart */}
+            <div style={{flex: '1 1 300px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+              <h4 style={{fontSize: '0.9rem', color: 'var(--text-secondary)'}}>Maturité de la mémoire</h4>
+              <div style={{width: '100%', height: '220px'}}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={fsrsMetrics.stabilityData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {fsrsMetrics.stabilityData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', color: 'var(--text-primary)'}}
+                      formatter={(value, name, props) => [`${value} CM`, props.payload.desc]}
+                    />
+                    <Legend verticalAlign="bottom" height={36}/>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Courbe d'oubli DSR */}
+          {forgettingCurveData && (
+            <div style={{marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.06)'}}>
+              <h4 style={{fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
+                📉 Courbe d'Oubli — Modèle DSR (R(t) = (1 + t/(9·S))⁻¹)
+              </h4>
+              <p style={{color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '1rem'}}>
+                Plus la stabilité S augmente, plus la rétention décroît lentement. Ta courbe est en <strong style={{color: '#10b981'}}>vert</strong>.
+              </p>
+              <div style={{width: '100%', height: '300px'}}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={forgettingCurveData.points} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                    <XAxis 
+                      dataKey="days" 
+                      stroke="var(--text-secondary)" 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false}
+                      label={{ value: 'Jours écoulés', position: 'insideBottomRight', offset: -5, fill: 'var(--text-secondary)', fontSize: 11 }}
+                    />
+                    <YAxis 
+                      stroke="var(--text-secondary)" 
+                      fontSize={11} 
+                      tickLine={false} 
+                      axisLine={false}
+                      domain={[0, 100]}
+                      tickFormatter={(v) => `${v}%`}
+                      label={{ value: 'Rétention', angle: -90, position: 'insideLeft', fill: 'var(--text-secondary)', fontSize: 11 }}
+                    />
+                    <Tooltip 
+                      contentStyle={{backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', color: 'var(--text-primary)'}}
+                      formatter={(value) => [`${value}%`, 'Rétention']}
+                      labelFormatter={(days) => `Après ${days} jour${days > 1 ? 's' : ''}`}
+                    />
+                    <Legend verticalAlign="top" height={30} />
+                    {forgettingCurveData.refLevels.map((level, i) => (
+                      <Line 
+                        key={level.label}
+                        type="monotone"
+                        dataKey={level.label}
+                        stroke={level.color}
+                        strokeWidth={level.label.includes('(toi)') ? 3 : 1.5}
+                        strokeDasharray={level.label.includes('(toi)') ? undefined : '5 5'}
+                        dot={false}
+                        activeDot={{ r: 4 }}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
 

@@ -123,7 +123,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
         <span style={{fontSize:'0.8rem', color:'var(--text-secondary)'}}>
           {exo.type === 'CM' ? (
             <span>
-              Revu {exo.repetitions || 0} fois <InfoTooltip content="L'algorithme SM2 calcule ce délai (en jours) en fonction de ta note de difficulté. Plus tu réussis, plus le J-Actuel augmente.">(J{exo.jActuel || 0}) <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip>
+              Revu {exo.repetitions || 0} fois <InfoTooltip content="L'algorithme FSRS calcule ce délai (en jours) en fonction de ta note de difficulté. Plus tu réussis, plus l'intervalle augmente.">(J{exo.jActuel || 0}) <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip>
             </span>
           ) : 
            exo.type === 'TP' && exo.etape ? getTPStepName(exo.etape) : 

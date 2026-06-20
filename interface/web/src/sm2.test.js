@@ -120,6 +120,72 @@ describe('getLoadForDate', () => {
     const countDifferentSubject = getLoadForDate('2026-06-18', configWithOneCM, 'Physique');
     expect(countDifferentSubject).toBe(1); // No penalty
   });
+
+  // --- TD/TP/Annales load tests (AXE 3 / Load Balancing v2) ---
+  it('should count TD/TP/Annales as subject load', () => {
+    const configWithExercises = {
+      licences: [{
+        nom: "L1", semestres: [{ nom: "S1", ues: [{ nom: "UE1", matieres: [{
+          nom: "Maths",
+          listeCM: [],
+          listeTD: [{ titre: "TD1" }, { titre: "TD2" }],
+          listeTP: [{ titre: "TP1" }],
+          listeAnnales: [{ titre: "Annale1" }, { titre: "Annale2" }, { titre: "Annale3" }]
+        }]}]}]
+      }]
+    };
+    // TD: 2 × 0.5 = 1, TP: 1 × 2 = 2, Annales: 3 × 1 = 3 → total = 6
+    const count = getLoadForDate('2026-06-18', configWithExercises, 'Maths');
+    expect(count).toBe(6);
+  });
+
+  it('should not count TD/TP/Annales for different subjects', () => {
+    const configWithExercises = {
+      licences: [{
+        nom: "L1", semestres: [{ nom: "S1", ues: [{ nom: "UE1", matieres: [{
+          nom: "Maths",
+          listeCM: [],
+          listeTD: [{ titre: "TD1" }],
+          listeTP: [{ titre: "TP1" }]
+        }]}]}]
+      }]
+    };
+    // Different subject → no TD/TP penalty
+    const count = getLoadForDate('2026-06-18', configWithExercises, 'Physique');
+    expect(count).toBe(0);
+  });
+
+  it('should not count TD/TP/Annales when subjectName is null', () => {
+    const configWithExercises = {
+      licences: [{
+        nom: "L1", semestres: [{ nom: "S1", ues: [{ nom: "UE1", matieres: [{
+          nom: "Maths",
+          listeCM: [],
+          listeTD: [{ titre: "TD1" }],
+          listeTP: [{ titre: "TP1" }],
+          listeAnnales: [{ titre: "A1" }]
+        }]}]}]
+      }]
+    };
+    // No subjectName → only counts CMs, which are 0
+    const count = getLoadForDate('2026-06-18', configWithExercises);
+    expect(count).toBe(0);
+  });
+
+  it('should handle missing listeTD/listeTP/listeAnnales gracefully', () => {
+    const config = {
+      licences: [{
+        nom: "L1", semestres: [{ nom: "S1", ues: [{ nom: "UE1", matieres: [{
+          nom: "Maths",
+          listeCM: [{ titre: "C1", jActuel: 3, derniereRevision: "2026-06-15" }]
+          // No listeTD, listeTP, listeAnnales
+        }]}]}]
+      }]
+    };
+    // Should not crash, just count the CM
+    const count = getLoadForDate('2026-06-18', config, 'Maths');
+    expect(count).toBeGreaterThanOrEqual(10); // 10 from CM penalty
+  });
 });
 
 describe('findOptimalInterval', () => {

@@ -2,16 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SCORE_LABELS = [
-  { value: 1, label: 'Échec', short: '1', color: '#ef4444', desc: 'Je n\'ai rien retenu' },
-  { value: 2, label: 'Difficile', short: '2', color: '#f59e0b', desc: 'Beaucoup d\'oubli' },
-  { value: 3, label: 'Correct', short: '3', color: '#3b82f6', desc: 'Quelques hésitations' },
-  { value: 4, label: 'Bon', short: '4', color: '#34d399', desc: 'Bien maîtrisé' },
-  { value: 5, label: 'Parfait', short: '5', color: '#a78bfa', desc: 'Restitution immédiate' },
+  { value: 1, label: 'Échec', short: '1', color: '#ef4444', desc: 'Oubli total (Again)' },
+  { value: 2, label: 'Difficile', short: '2', color: '#f59e0b', desc: 'Avec effort (Hard)' },
+  { value: 3, label: 'Bon', short: '3', color: '#3b82f6', desc: 'Correct (Good)' },
+  { value: 4, label: 'Facile', short: '4', color: '#10b981', desc: 'Sans effort (Easy)' },
 ];
 
 /**
  * Mini-modale affichée lors de la complétion d'un CM depuis le Dashboard.
- * Demande le temps réel passé et le score de rétention (1-5).
+ * Demande le temps réel passé et le score FSRS (1-4 : Again, Hard, Good, Easy).
  */
 export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle, defaultMinutes }) {
   const [minutes, setMinutes] = useState(defaultMinutes || 30);
@@ -33,9 +32,8 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
 
   const handleSubmit = () => {
     if (score === null) return;
-    // Map score 1-5 to SM-2 score: 1→1 (fail), 2→2 (hard), 3→3 (good), 4/5→4 (perfect)
-    const sm2Score = score <= 1 ? 1 : score === 2 ? 2 : score === 3 ? 3 : 4;
-    onSubmit({ minutes: Math.max(1, Math.round(minutes)), sm2Score });
+    // Map score 1-4 directement pour FSRS
+    onSubmit({ minutes: Math.max(1, Math.round(minutes)), sm2Score: score });
     onClose();
   };
 

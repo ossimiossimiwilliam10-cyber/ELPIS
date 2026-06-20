@@ -443,7 +443,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const appendFromPool = (pool, subjectCountMap, limitPerSubject) => {
     for (const item of pool) {
       if (tempsRequisMin + item.dureeMinutes <= tempsLibreMin) {
-        if (!fillGap && !canAddMatiere(item.matiere) && item.type !== 'CM') continue;
+        if (!fillGap && !canAddMatiere(item.matiere)) continue;
         const count = subjectCountMap ? (subjectCountMap[item.matiere] || 0) : 0;
         if (!limitPerSubject || count < limitPerSubject) {
           taches.push(item);

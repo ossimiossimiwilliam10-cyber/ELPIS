@@ -202,7 +202,7 @@ export default function MatiereCard({
                 style={{padding:'0.15rem 0.3rem', borderRadius:'4px', background:'var(--bg-tertiary)', color:'white', border:'1px solid var(--accent-primary)', fontSize:'0.7rem', width:'50px', textAlign:'center'}}
                 title="Intervalle en jours avant la prochaine révision"
               />
-              <span title="Facteur de facilité (SM-2)">EF: {cm.easeFactor != null ? cm.easeFactor.toFixed(1) : '2.5'}</span>
+              <span title="Facteur de facilité (FSRS)">EF: {cm.easeFactor != null ? cm.easeFactor.toFixed(1) : '2.5'}</span>
             </div>
           </div>
         </div>

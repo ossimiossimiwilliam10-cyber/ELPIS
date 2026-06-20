@@ -2,8 +2,8 @@ import { fsrs, generatorParameters, Rating, State, createEmptyCard } from 'ts-fs
 
 // 1. Initialisation de l'instance FSRS
 const params = generatorParameters({
-  maximum_interval: 365,
-  request_retention: 0.90, // Taux de rétention cible
+  maximum_interval: 36500, // Standard FSRS: 100 ans, on évite le cap prématuré à 1 an
+  request_retention: 0.90, // Taux de rétention cible optimal
 });
 const f = fsrs(params);
 
@@ -66,25 +66,19 @@ export function evaluateFSRS(card, rating, personalizedDecayMultiplier = 1.0) {
       validCard = createEmptyCard(now);
   }
 
+  // Axe 9 : Vélocité FSRS Pure — on ajuste la stabilité AVANT f.repeat()
+  // pour que le modèle DSR intègre mathématiquement la vélocité dans le calcul
+  // de la prochaine stabilité, difficulté, et intervalle.
+  if (personalizedDecayMultiplier !== 1.0 && validCard.stability > 0) {
+     validCard.stability = Math.max(0.1, validCard.stability * personalizedDecayMultiplier);
+  }
+
   // Évaluation FSRS (calcule les 4 issues possibles)
   const scheduling_cards = f.repeat(validCard, now);
   
   // On récupère le Record correspondant au rating choisi
   const nextRecord = scheduling_cards[rating];
   let newCard = nextRecord.card;
-  
-  // Application de l'Axe 9 (Vélocité) - ajustement du délai d'espacement
-  // BUG #2 fix: Multiplication (pas division) pour respecter la sémantique
-  // > 1.0 = apprenant rapide → intervalles plus longs
-  // < 1.0 = apprenant lent → intervalles plus courts
-  if (personalizedDecayMultiplier !== 1.0 && newCard.scheduled_days > 0) {
-     const adjustedDays = Math.max(1, Math.round(newCard.scheduled_days * personalizedDecayMultiplier));
-     newCard.scheduled_days = adjustedDays;
-     
-     const updatedDue = new Date(now);
-     updatedDue.setDate(updatedDue.getDate() + adjustedDays);
-     newCard.due = updatedDue;
-  }
   
   return newCard;
 }

@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [
     "study",
@@ -22,5 +23,8 @@
     "helmet": "^8.2.0",
     "multer": "^2.2.0",
     "ts-fsrs": "^5.4.1"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
   }
 }

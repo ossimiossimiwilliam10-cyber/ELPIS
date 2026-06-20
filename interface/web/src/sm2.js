@@ -43,6 +43,8 @@ export function getLoadForDate(dateStr, configLocal, subjectName = null) {
   return count;
 }
 
+/** @deprecated FSRS calcule une date d'échéance exacte (due) — ne plus modifier artificiellement.
+ *  Conservé uniquement pour rétrocompatibilité des tests. */
 export function findOptimalInterval(baseDateStr, targetInterval, configLocal, subjectName = null) {
   if (targetInterval <= 1) return targetInterval;
 
@@ -81,6 +83,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal, su
   return bestInterval;
 }
 
+/** @deprecated Remplacé par evaluateFSRS() dans fsrsEngine.js — conservé pour rétrocompatibilité des tests. */
 export function calculateSM2(score, previousInterval, easeFactor, repetitions, configLocal, actualDaysElapsed = -1, subjectName = null, personalizedDecayMultiplier = 1.0) {
   // score: 1 (Fail), 2 (Hard), 3 (Good), 4 (Perfect)
   let newEaseFactor = easeFactor || 2.5;

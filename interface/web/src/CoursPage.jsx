@@ -193,7 +193,7 @@ function CoursPage() {
   };
 
   const getNextReviewDate = (cm) => {
-    // Priorité au champ prochaineRevisionDate calculé par SM-2
+    // Priorité au champ prochaineRevisionDate calculé par FSRS
     if (cm.prochaineRevisionDate) {
       const target = new Date(cm.prochaineRevisionDate + 'T00:00:00');
       if (!isNaN(target.getTime())) {
