@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore from './store';
 import { useToast } from './ToastProvider';
-import { calculateSM2 } from './sm2';
+import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import ExerciceCard from './components/cours/ExerciceCard';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
@@ -227,21 +227,29 @@ function EntrainementPage() {
       setFatigueCounter(0); // Good shape
     }
 
-    const { interval, easeFactor, repetitions, prochaineRevisionDate } = calculateSM2(
-      finalScore,
-      cm.jActuel || 0,
-      cm.easeFactor || 2.5,
-      cm.repetitions || 0,
-      configLocal,
-      actualDaysElapsed,
-      exo.matiereNom,
-      personalizedDecayMultiplier
-    );
+    // --- FSRS : Migration ou récupération de la carte ---
+    let fsrsCard = cm.fsrsCard ? { ...cm.fsrsCard } : migrateToFSRSCard(cm);
+    // Reconvertir les dates sérialisées (JSON → Date)
+    if (typeof fsrsCard.due === 'string') fsrsCard.due = new Date(fsrsCard.due);
+    if (typeof fsrsCard.last_review === 'string') fsrsCard.last_review = new Date(fsrsCard.last_review);
 
-    cm.jActuel = interval;
-    cm.easeFactor = easeFactor;
-    cm.repetitions = repetitions;
-    cm.prochaineRevisionDate = prochaineRevisionDate;
+    // Mapper le score ELPIS (1-4) vers le Rating FSRS
+    const ratingMap = { 1: Rating.Again, 2: Rating.Hard, 3: Rating.Good, 4: Rating.Easy };
+    const fsrsRating = ratingMap[finalScore] || Rating.Good;
+
+    // Évaluation FSRS
+    const newCard = evaluateFSRS(fsrsCard, fsrsRating, personalizedDecayMultiplier);
+
+    // Stocker la carte FSRS complète pour les prochaines itérations
+    cm.fsrsCard = newCard;
+
+    // Rétrocompatibilité : maintenir les champs SM-2 pour l'orchestrateur et le reste de l'app
+    cm.jActuel = newCard.scheduled_days || 1;
+    cm.easeFactor = (10 - newCard.difficulty) / 4 + 1.3; // Approximation EF depuis difficulty FSRS
+    cm.repetitions = newCard.reps;
+    cm.prochaineRevisionDate = newCard.due instanceof Date
+      ? newCard.due.toISOString().split('T')[0]
+      : new Date(newCard.due).toISOString().split('T')[0];
     
     const today = getTodayStr();
     cm.derniereRevision = today;
@@ -259,7 +267,7 @@ function EntrainementPage() {
 
     // Capturer les valeurs avant la fermeture du scope produce
     finalJActuel = cm.jActuel;
-    finalEaseFactor = easeFactor;
+    finalEaseFactor = cm.easeFactor;
     finalEffectiveMinutes = effectiveMinutes;
     });
 
