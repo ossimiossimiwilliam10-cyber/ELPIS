@@ -304,16 +304,16 @@ export default function BulletinPage() {
                             >×</button>
                             <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.85rem', color: 'var(--text-secondary)', paddingRight: '1rem', gap: '0.2rem' }}>
                               <EditableLabel 
-                                text={ev.nom} 
-                                onSave={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'nom', val)} 
-                                style={{ fontWeight: 'bold', color: 'var(--text-primary)', cursor: 'text' }}
+                                value={ev.nom} 
+                                onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'nom', val)} 
+                                placeholder="Nouvelle Éval"
+                                style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}
                               />
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                                 <span>Coef:</span>
                                 <EditableLabel 
-                                  text={String(ev.coefficient)} 
-                                  onSave={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'coefficient', val)} 
-                                  style={{ cursor: 'text' }}
+                                  value={String(ev.coefficient)} 
+                                  onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'coefficient', val)} 
                                 />
                                 <select 
                                   value={ev.type || 'SC'} 
