@@ -75,11 +75,13 @@ describe('Le Chantier des 1000 Tests - Stress Testing Orchestrator', () => {
       `StressMatiere_${i}`, 
       isNew ? 0 : 5, 
       revisionDate,
-      isDue || isNew
+      isDue || isNew,
+      isNew,
+      isDue
     ]);
   }
 
-  test.each(stressScenarios)('Stress Test CM in %s: jActuel=%d, due=%s -> robust scheduling', (matName, jActuel, due, expectedScheduled) => {
+  test.each(stressScenarios)('Stress Test CM in %s: jActuel=%d, due=%s -> robust scheduling', (matName, jActuel, due, expectedScheduled, isNew, isDue) => {
     const derniereRevision = due ? '2026-06-15' : undefined;
 
     const testCrs = {
@@ -96,6 +98,30 @@ describe('Le Chantier des 1000 Tests - Stress Testing Orchestrator', () => {
                     jActuel, 
                     derniereRevision,
                     prochaineRevisionDate: due 
+                  }
+                ],
+                listeTD: [
+                  {
+                    titre: 'StressTD',
+                    dernierePratique: due ? '2026-06-15' : undefined,
+                    difficulte: 'moyen',
+                    nombrePratiques: isNew ? 0 : 2
+                  }
+                ],
+                listeTP: [
+                  {
+                    titre: 'StressTP',
+                    dernierePratique: undefined,
+                    difficulte: 'difficile',
+                    nombrePratiques: 0,
+                    dateTP: isDue ? '2026-06-21' : undefined // Simulate tomorrow
+                  }
+                ],
+                listeAnnales: [
+                  {
+                    titre: 'StressAnnale',
+                    dernierePratique: undefined,
+                    difficulte: 'tres_facile'
                   }
                 ]
               }

@@ -6,6 +6,23 @@
 
 const fs = require('fs');
 const path = require('path');
+const { DEFAULT_CONFIG } = require('./config');
+
+const MAGIC_CONSTANTS = {
+  // Poids des priorités
+  PRIO_MAX_ANKI: 9999,           // La routine Anki passe avant tout
+  PRIO_MAX_RETARD: 999,          // Utilisé pour un retard infini ou un TP dû demain
+  PRIO_WEEKEND_TP: 500,          // Boost massif pour inciter à faire les TP le week-end
+  
+  // Multiplicateurs d'urgence et de synergie
+  BOOST_CRISE_NOTE: 2.0,         // Multiplicateur d'urgence si la note projetée est < 5/20
+  BOOST_PREP_TD: 1.5,            // Multiplicateur pour un CM qui prépare un TD à venir
+  BOOST_ANNALE_URGENT: 5.0,      // Multiplicateur pour une annale si l'examen est < 14 jours
+  BOOST_ANNALE_NORMAL: 3.0,      // Multiplicateur de base pour débloquer une annale
+  
+  // Poids Anti-Décrochage
+  BOOST_INACTIVITE_MAX: 3.0,     // Le boost d'inactivité plafonne à x3 (atteint à J+21)
+};
 const { loadConfig } = require('./config');
 const { loadCours } = require('./cours');
 const {
@@ -186,15 +203,15 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           let inactivityBoost = 1.0;
           if (lastPratiqueMs > 0) {
             const daysInactive = (now.getTime() - lastPratiqueMs) / (1000 * 60 * 60 * 24);
-            // Progression linéaire : neutre avant J7, puis montée graduelle jusqu'à 3.0 à J21
+            // Progression linéaire : neutre avant J7, puis montée graduelle jusqu'à MAGIC_CONSTANTS.BOOST_INACTIVITE_MAX à J21
             if (daysInactive > 7) {
-              inactivityBoost = Math.min(3.0, 1.0 + (daysInactive - 7) / 7);
+              inactivityBoost = Math.min(MAGIC_CONSTANTS.BOOST_INACTIVITE_MAX, 1.0 + (daysInactive - 7) / 7);
             }
           }
 
           let crisisBoost = 1.0;
           if (projectedScoreMap && projectedScoreMap[m.nom] !== undefined && projectedScoreMap[m.nom] < 5.0) {
-            crisisBoost = 2.0;
+            crisisBoost = MAGIC_CONSTANTS.BOOST_CRISE_NOTE;
           }
 
           const examBoost = examBoostOriginal * inactivityBoost * crisisBoost;
@@ -213,7 +230,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             if (!cm.derniereRevision) {
               if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject || newCMCountPerSemester >= maxNewCMPerSemester)) continue;
               doitReviser = true;
-              joursEnRetard = 999;
+              joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
               newCMCountPerMatiere++;
               newCMCountPerSemester++;
             } else {
@@ -231,7 +248,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
                 const nowDate = new Date(todayStr + 'T00:00:00');
                 if (isNaN(revDate.getTime())) {
                   doitReviser = true;
-                  joursEnRetard = 999;
+                  joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
                 } else {
                   const joursEcoules = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
                   if (cm.jActuel > 0 && joursEcoules >= cm.jActuel) {
@@ -314,8 +331,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             const dureeEstimee = avgForStep ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
 
             let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
-            if (isTomorrow) tpPrio = 999;
-            else if (isWeekend) tpPrio += 500;
+            if (isTomorrow) tpPrio = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
+            else if (isWeekend) tpPrio += MAGIC_CONSTANTS.PRIO_WEEKEND_TP;
 
             poolTP.push({
               matiere: m.nom,
@@ -356,7 +373,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
-              const annaleBoost = isUrgent ? 5.0 : 3.0;
+              const annaleBoost = isUrgent ? MAGIC_CONSTANTS.BOOST_ANNALE_URGENT : MAGIC_CONSTANTS.BOOST_ANNALE_NORMAL;
 
               poolAnnales.push({
                 matiere: m.nom,
@@ -385,7 +402,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   // AXE 14 : Corrélation CM -> TD (Preparation Boost)
   for (const td of poolTD) {
     for (const cm of poolCM.filter(c => c.matiere === td.matiere)) {
-      cm.prio *= 1.5;
+      cm.prio *= MAGIC_CONSTANTS.BOOST_PREP_TD;
       if (!cm.raisons.includes("🔗 Préparation TD")) {
         cm.raisons.unshift("🔗 Préparation TD");
       }
@@ -403,7 +420,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
       type: "ANKI",
       titre: "Révision Flashcards",
       dureeMinutes: cfg.defaultDurationAnki || 30,
-      prio: 9999
+      prio: MAGIC_CONSTANTS.PRIO_MAX_ANKI
     });
     tempsRequisMin += (cfg.defaultDurationAnki || 30);
   }

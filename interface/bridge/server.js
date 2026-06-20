@@ -279,7 +279,7 @@ app.post('/api/shutdown', (req, res) => {
 });
 
 // Cache orchestrateur : évite de recalculer à chaque rafraîchissement (10s TTL)
-const orchestratorCache = { rapport: null, configMtime: 0, coursMtime: 0, extraTime: -1, timestamp: 0 };
+const orchestratorCache = new Map();
 const CACHE_TTL_MS = 10_000;
 
 // GET orchestrator report
@@ -293,22 +293,29 @@ app.get('/api/orchestrateur', (req, res) => {
     const configMtime = fs.existsSync(CONFIG_PATH) ? fs.statSync(CONFIG_PATH).mtimeMs : 0;
     const coursMtime = fs.existsSync(COURS_PATH) ? fs.statSync(COURS_PATH).mtimeMs : 0;
     const now = Date.now();
-    const cacheValid = !fillGap && orchestratorCache.rapport
-      && orchestratorCache.configMtime === configMtime
-      && orchestratorCache.coursMtime === coursMtime
-      && orchestratorCache.extraTime === extraTime
-      && (now - orchestratorCache.timestamp) < CACHE_TTL_MS;
+    
+    // Clé de cache robuste basée sur l'ensemble des paramètres (Audit Improvement)
+    const cacheKey = `${configMtime}_${coursMtime}_${extraTime}_${fillGap}`;
+    
+    let cacheEntry = orchestratorCache.get(cacheKey);
+    let cacheValid = cacheEntry && (now - cacheEntry.timestamp) < CACHE_TTL_MS;
 
     const rapport = cacheValid
-      ? orchestratorCache.rapport
+      ? cacheEntry.rapport
       : genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime, fillGap);
 
-    if (!cacheValid && !fillGap) {
-      orchestratorCache.rapport = rapport;
-      orchestratorCache.configMtime = configMtime;
-      orchestratorCache.coursMtime = coursMtime;
-      orchestratorCache.extraTime = extraTime;
-      orchestratorCache.timestamp = now;
+    if (!cacheValid) {
+      orchestratorCache.set(cacheKey, {
+        rapport,
+        timestamp: now
+      });
+      
+      // Nettoyage paresseux des vieilles entrées pour éviter les fuites de mémoire
+      for (const [key, entry] of orchestratorCache.entries()) {
+        if (now - entry.timestamp > CACHE_TTL_MS) {
+          orchestratorCache.delete(key);
+        }
+      }
     }
 
     res.json(rapport);
