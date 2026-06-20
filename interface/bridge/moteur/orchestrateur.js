@@ -38,6 +38,22 @@ const {
 } = require('./intelligence');
 const { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost } = require('./scoring');
 
+/**
+ * Normalise une date string (DD-MM-YYYY ou YYYY-MM-DD) vers le format YYYY-MM-DD.
+ */
+function normalizeDateStr(dateStr) {
+  if (!dateStr) return null;
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return null;
+  if (parts[0].length === 4) {
+    // YYYY-MM-DD
+    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+  } else {
+    // DD-MM-YYYY
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+  }
+}
+
 function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false) {
   const cfg = loadConfig(configPath);
   const crs = loadCours(coursPath);
@@ -305,11 +321,18 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           }
 
           // --- TP ---
-          for (const ex of (m.listeTP || []).filter(e => e.dernierePratique !== todayStr || (e.dateTP && e.dateTP === tomorrowStr))) {
+          for (const ex of (m.listeTP || []).filter(e => {
+            if (e.dernierePratique === todayStr) {
+              // Déjà pratiqué aujourd'hui, ne garder que s'il est dû demain
+              if (!e.dateTP) return false;
+              return normalizeDateStr(e.dateTP) === tomorrowStr;
+            }
+            return true;
+          })) {
             const currentStep = ex.nombrePratiques || 0;
             if (currentStep >= 4) continue;
 
-            const isTomorrow = ex.dateTP && ex.dateTP === tomorrowStr;
+            const isTomorrow = ex.dateTP && normalizeDateStr(ex.dateTP) === tomorrowStr;
             if (!isTomorrow) {
               if (currentStep < 3 && !isWeekend) continue;
               if (currentStep === 3) continue;

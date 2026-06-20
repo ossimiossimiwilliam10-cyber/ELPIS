@@ -176,7 +176,10 @@ function buildVelocityMap(crs, historique) {
 function detectBurnoutRisk(cfg, historique) {
   const restDays = cfg.restDays || [];
 
+  // Night Owl : cohérent avec getTodayString() — on recule de 4h pour aligner
+  // la détection des jours de repos avec le reste de l'application.
   const today = new Date();
+  today.setHours(today.getHours() - 4);
   let daysWithoutRest = 0;
   for (let i = 0; i < 30; i++) {
     const checkDate = new Date(today);
@@ -186,7 +189,7 @@ function detectBurnoutRisk(cfg, historique) {
     daysWithoutRest++;
   }
 
-  const sevenDaysAgo = new Date();
+  const sevenDaysAgo = new Date(today);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const recentHist = (historique || []).filter(h => h.timestamp && new Date(h.timestamp) >= sevenDaysAgo);
   const totalRecentMinutes = recentHist.reduce((acc, h) => acc + (h.dureeMinutes || 30), 0);

@@ -169,7 +169,9 @@ const useStore = create(immer((set, get) => ({
     let restDays = config.restDays || [];
     
     // Calculate how many rest days were taken this week (Mon-Sun)
+    // Night Owl : la période de grâce de 4h s'applique aussi au calcul du jour de la semaine
     const now = new Date();
+    now.setHours(now.getHours() - 4);
     const dayOfWeek = now.getDay() || 7; // 1-7 (Mon-Sun)
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - dayOfWeek + 1);

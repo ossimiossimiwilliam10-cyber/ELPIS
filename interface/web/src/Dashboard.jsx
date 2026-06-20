@@ -67,6 +67,7 @@ function Dashboard() {
   const getRestDaysUsed = () => {
     if (!config || !config.restDays) return 0;
     const now = new Date();
+    now.setHours(now.getHours() - 4); // Night Owl
     const dayOfWeek = now.getDay() || 7;
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - dayOfWeek + 1);
@@ -284,7 +285,7 @@ function Dashboard() {
       dureeMinutes: minutes
     });
     setPendingCMTask(null);
-  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence]);
+  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence, config]);
 
   // Dynamic greeting (must be before early returns)
   const hour = new Date().getHours();

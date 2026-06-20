@@ -100,11 +100,13 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
         if (ratio < 0.3) {
           synergyBoost += 0.2;
         } else if (ratio > 0.8) {
-          synergyBoost -= 0.1;
+          synergyBoost = Math.max(0.5, synergyBoost - 0.1); // Éviter que le boost ne s'annule
         }
       }
     }
   }
+  // Sécurité : le boost de synergie ne doit jamais annuler ni amplifier de façon déraisonnable
+  synergyBoost = Math.max(0.5, Math.min(5.0, synergyBoost));
   base *= synergyBoost;
 
   return base;

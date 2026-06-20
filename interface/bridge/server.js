@@ -63,7 +63,10 @@ function performStartupBackup() {
     if (!fs.existsSync(BACKUPS_DIR)) {
       fs.mkdirSync(BACKUPS_DIR, { recursive: true });
     }
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    // Night Owl : cohérent avec le reste de l'application (période de grâce de 4h)
+    const now = new Date();
+    now.setHours(now.getHours() - 4);
+    const today = now.toISOString().split('T')[0];
 
     const filesToBackup = [
       { src: CONFIG_FILE, name: 'espoir_config' },

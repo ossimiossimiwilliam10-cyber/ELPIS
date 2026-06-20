@@ -6,10 +6,12 @@ const CONFIG_PATH = path.join(ROOT_DIR, 'espoir_config.json');
 
 const DEFAULT_CONFIG = {
   studyStartDate: "07-09-2026",
+  defaultSemesterEndDate: "15-01-2027",
   bedtime: "23:00",
   wakeUpTime: "07:00",
   maxStudyHoursPerDay: 8,
   targetGrade: 14,
+  targetRank: 10,
   summerStudyHoursCompleted: 0,
   maxSubjectsPerDay: 3,
   studyBlockDurationMinutes: 50,
@@ -21,6 +23,7 @@ const DEFAULT_CONFIG = {
   pomoBreak: 5,
   lastActiveDate: "",
   currentStreak: 0,
+  bestStreak: 0,
   defaultDurationNewCM: 120,
   defaultDurationRevCM: 30,
   defaultDurationTD: 20,
