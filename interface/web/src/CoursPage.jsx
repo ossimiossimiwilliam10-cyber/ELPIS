@@ -155,7 +155,7 @@ function CoursPage() {
     mutateAndSave(draft => {
       const m = draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
       if (!m.listeTD) m.listeTD = [];
-      m.listeTD.push({ titre: "Nouvel Exercice de TD", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      m.listeTD.push({ titre: `TD ${m.listeTD.length + 1}`, dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
     });
   };
 
@@ -169,7 +169,7 @@ function CoursPage() {
     mutateAndSave(draft => {
       const m = draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
       if (!m.listeTP) m.listeTP = [];
-      m.listeTP.push({ titre: "Nouvel Exercice de TP", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      m.listeTP.push({ titre: `TP ${m.listeTP.length + 1}`, dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
     });
   };
 
@@ -183,7 +183,7 @@ function CoursPage() {
     mutateAndSave(draft => {
       const m = draft.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
       if (!m.listeAnnales) m.listeAnnales = [];
-      m.listeAnnales.push({ titre: "Nouvelle Annale", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      m.listeAnnales.push({ titre: `Annale ${m.listeAnnales.length + 1}`, dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString() });
     });
   };
 

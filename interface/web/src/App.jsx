@@ -12,6 +12,7 @@ const CoursPage = lazy(() => import('./CoursPage'));
 const EntrainementPage = lazy(() => import('./EntrainementPage'));
 const StatistiquesPage = lazy(() => import('./StatistiquesPage'));
 const BulletinPage = lazy(() => import('./BulletinPage'));
+const PreparationHebdoPage = lazy(() => import('./PreparationHebdoPage'));
 import useStore from './store';
 
 // Mini-fallback pour le chargement paresseux des pages
@@ -192,6 +193,20 @@ function AppInner() {
             >
               <Suspense fallback={<LoadingFallback />}>
                 <BulletinPage />
+              </Suspense>
+            </motion.div>
+          )}
+
+          {activeTab === 'prep_hebdo' && (
+            <motion.div 
+              key="prep_hebdo"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                <PreparationHebdoPage />
               </Suspense>
             </motion.div>
           )}
