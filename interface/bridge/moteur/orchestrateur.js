@@ -127,9 +127,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   // Calculer les engagements fixes du jour
   const todayName = getDayOfWeekString();
   let fixedCommitmentsMin = 0;
+  let matieresSatureesToday = new Set();
   if (Array.isArray(cfg.fixedCommitments)) {
     cfg.fixedCommitments.forEach(c => {
       if (c.day === todayName || c.day === 'Tous les jours') {
+        if (c.matiereLinked) {
+          matieresSatureesToday.add(c.matiereLinked);
+        }
         if (c.start && c.end) {
           const [h1, m1] = c.start.split(':').map(Number);
           const [h2, m2] = c.end.split(':').map(Number);
@@ -275,6 +279,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             let doitReviser = false;
             let joursEnRetard = 0;
             if (!cm.derniereRevision) {
+              if (matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
               if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject || newCMCountPerSemester >= maxNewCMPerSemester)) continue;
               doitReviser = true;
               joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
@@ -337,6 +342,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
           // --- TD ---
           for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
+            if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
             const dureeBase = cfg.defaultDurationTD || 20;
             const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             poolTD.push({
@@ -361,6 +367,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             }
             return true;
           })) {
+            if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
             const currentStep = ex.nombrePratiques || 0;
             if (currentStep >= 4) continue;
 
@@ -427,6 +434,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           // Si une annale a été commencée un jour, elle n'est plus jamais verrouillée
           if (isMastered || isUrgent || hasStartedAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
+              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);

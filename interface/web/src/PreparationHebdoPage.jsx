@@ -6,9 +6,23 @@ import MarkdownModal from './MarkdownModal';
 import ExerciceRow from './components/cours/ExerciceRow';
 
 export default function PreparationHebdoPage() {
-  const { coursConfig, setCoursConfig } = useStore();
+  const { config, setConfig, coursConfig, setCoursConfig } = useStore();
   const [configLocal, setConfigLocal] = useState(coursConfig || { licences: [] });
   const [isSunday, setIsSunday] = useState(new Date().getDay() === 0);
+
+  // Mémoriser toutes les matières existantes pour le menu déroulant
+  const allMatieres = [];
+  if (configLocal.licences) {
+    configLocal.licences.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(ue => {
+          ue.matieres?.forEach(m => {
+            if (!allMatieres.includes(m.nom)) allMatieres.push(m.nom);
+          });
+        });
+      });
+    });
+  }
 
   // MarkdownModal state
   const [mdModal, setMdModal] = useState({ isOpen: false, title: '', initialValue: '', onSave: null });
@@ -186,6 +200,87 @@ export default function PreparationHebdoPage() {
           </div>
         </div>
       )}
+
+      {/* ─── Engagements Fixes de la Semaine ─── */}
+      <div style={{ background: 'rgba(15, 23, 42, 0.4)', borderRadius: '8px', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '2rem' }}>
+        <h3 style={{ margin: 0, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f43f5e' }}>
+          <span>⏰</span> Engagements de la Semaine
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+          Renseignez vos heures de cours, TP ou travail prévus. L'algorithme les déduira de votre temps libre et adaptera ses révisions.
+        </p>
+        
+        <button 
+          onClick={() => setConfig({...config, fixedCommitments: [...(config?.fixedCommitments||[]), {day: 'Lundi', start: '08:00', end: '10:00', matiereLinked: ''}]})}
+          style={{marginBottom: '1rem', padding: '0.6rem', background: 'rgba(244, 63, 94, 0.2)', color: '#f43f5e', border: '1px solid rgba(244, 63, 94, 0.4)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold'}}
+        >
+          + Ajouter un Engagement
+        </button>
+
+        <div style={{display: 'flex', flexDirection: 'column', gap: '0.8rem'}}>
+          {(config?.fixedCommitments || []).map((commitment, idx) => (
+            <div key={idx} style={{display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '8px', flexWrap: 'wrap'}}>
+              <select 
+                value={commitment.day}
+                onChange={e => {
+                  const newComs = [...(config?.fixedCommitments || [])];
+                  newComs[idx].day = e.target.value;
+                  setConfig({...config, fixedCommitments: newComs});
+                }}
+                style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
+              >
+                {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche', 'Tous les jours'].map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+              <input 
+                type="time" 
+                value={commitment.start}
+                onChange={e => {
+                  const newComs = [...(config?.fixedCommitments || [])];
+                  newComs[idx].start = e.target.value;
+                  setConfig({...config, fixedCommitments: newComs});
+                }}
+                style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
+              />
+              <span style={{color: 'var(--text-secondary)'}}>à</span>
+              <input 
+                type="time" 
+                value={commitment.end}
+                onChange={e => {
+                  const newComs = [...(config?.fixedCommitments || [])];
+                  newComs[idx].end = e.target.value;
+                  setConfig({...config, fixedCommitments: newComs});
+                }}
+                style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
+              />
+              
+              {/* Dropdown Matière Liée */}
+              <select
+                value={commitment.matiereLinked || ''}
+                onChange={e => {
+                  const newComs = [...(config?.fixedCommitments || [])];
+                  newComs[idx].matiereLinked = e.target.value;
+                  setConfig({...config, fixedCommitments: newComs});
+                }}
+                style={{padding: '0.3rem', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', flexGrow: 1}}
+              >
+                <option value="">-- Aucune matière spécifique --</option>
+                {allMatieres.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+
+              <button 
+                onClick={() => {
+                  const newComs = config.fixedCommitments.filter((_, i) => i !== idx);
+                  setConfig({...config, fixedCommitments: newComs});
+                }}
+                style={{background: 'transparent', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', fontSize: '1.2rem', padding: '0 0.5rem'}}
+                title="Supprimer"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {matieresADeficit.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px dashed var(--bg-tertiary)' }}>

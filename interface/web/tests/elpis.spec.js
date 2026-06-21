@@ -93,15 +93,18 @@ test.describe('ELPIS E2E Tests', () => {
     await expect(statsSection).toBeVisible({ timeout: 10000 });
   });
 
-  test('devrait afficher l\'interface des Engagements Fixes et Heures de sommeil', async ({ page }) => {
+  test('devrait afficher l\'interface des Heures de sommeil', async ({ page }) => {
     await page.goto('/');
     await page.click('nav button:has-text("Configuration")');
     // Vérifie la présence des champs Heure de Coucher et Réveil
     await expect(page.locator('label', { hasText: 'Heure de Coucher (24h)' })).toBeVisible();
     await expect(page.locator('label', { hasText: 'Heure de Réveil (24h)' })).toBeVisible();
-    
-    // Vérifie la présence de la section Engagements Fixes
-    await expect(page.locator('h2', { hasText: /Engagements Fixes/i })).toBeVisible();
+  });
+
+  test('devrait afficher la section Engagements dans Préparation Hebdo', async ({ page }) => {
+    await page.goto('/');
+    await page.click('nav button:has-text("Préparation Hebdo")');
+    await expect(page.locator('h3', { hasText: /Engagements de la Semaine/i })).toBeVisible();
     await expect(page.locator('button', { hasText: '+ Ajouter un Engagement' })).toBeVisible();
   });
 
@@ -131,7 +134,7 @@ test.describe('ELPIS E2E Tests', () => {
     });
     await page.goto('/');
     await expect(page.locator('h2', { hasText: /Bonjour|Bon après-midi|Bonsoir/i })).toBeVisible();
-    await page.click('nav button:has-text("Configuration")');
+    await page.click('nav button:has-text("Préparation Hebdo")');
     await expect(page.locator('input[type="time"]').first()).toBeVisible();
   });
 
