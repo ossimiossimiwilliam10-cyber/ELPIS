@@ -5,6 +5,7 @@ import Dashboard from './Dashboard';
 import Sidebar from './Sidebar';
 import GlobalSearchModal from './GlobalSearchModal';
 import GlobalChrono from './components/GlobalChrono';
+import DisclaimerModal from './components/DisclaimerModal';
 import { ToastProvider, useToast } from './ToastProvider';
 
 // Code splitting : pages lourdes chargées à la demande
@@ -28,6 +29,7 @@ const LoadingFallback = () => (
 function AppInner() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(!sessionStorage.getItem('elpisDisclaimerShown'));
   const { addToast } = useToast();
   
   const { config, coursConfig, loading, error, initData, setConfig, activeTab, setActiveTab, pendingTasksCount } = useStore();
@@ -158,8 +160,15 @@ function AppInner() {
     </div>
   );
 
+  const handleCloseDisclaimer = () => {
+    sessionStorage.setItem('elpisDisclaimerShown', 'true');
+    setShowDisclaimer(false);
+  };
+
   return (
     <div className="app-layout">
+      {showDisclaimer && <DisclaimerModal onClose={handleCloseDisclaimer} />}
+      
       {/* Mobile Header */}
       <div className="mobile-header">
         <div className="mobile-header-title">ELPIS</div>
