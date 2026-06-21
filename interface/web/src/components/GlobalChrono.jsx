@@ -221,25 +221,8 @@ export default function GlobalChrono() {
   if (!isVisible) {
     return (
       <button 
+        className="global-timer-hidden-btn"
         onClick={() => setIsVisible(true)}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 9999,
-          background: 'var(--accent-primary, #3b82f6)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '50%',
-          width: '40px',
-          height: '40px',
-          cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '1.2rem'
-        }}
         title="Afficher le chrono"
       >
         ⏱️
@@ -250,17 +233,11 @@ export default function GlobalChrono() {
   // Normal draggable floating state
   return (
     <motion.div
+      className="global-timer-widget"
       drag
       dragMomentum={false}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 9999,
-        cursor: 'grab'
-      }}
       whileDrag={{ cursor: 'grabbing', scale: 1.05 }}
     >
       {chronoContent}

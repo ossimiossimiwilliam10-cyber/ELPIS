@@ -1,4 +1,4 @@
-function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount }) {
+function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount, isMobileMenuOpen }) {
   const navGroups = [
     {
       title: "Quotidien",
@@ -26,7 +26,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
   ];
 
   return (
-    <div className="sidebar glass-panel">
+    <div className={`sidebar glass-panel ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
         <h1>ELPIS</h1>
         <p className="subtitle">Compagnon Intelligent</p>

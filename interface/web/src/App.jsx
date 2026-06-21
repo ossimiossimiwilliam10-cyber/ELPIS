@@ -27,6 +27,7 @@ const LoadingFallback = () => (
 
 function AppInner() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { addToast } = useToast();
   
   const { config, coursConfig, loading, error, initData, setConfig, activeTab, setActiveTab, pendingTasksCount } = useStore();
@@ -159,13 +160,34 @@ function AppInner() {
 
   return (
     <div className="app-layout">
+      {/* Mobile Header */}
+      <div className="mobile-header">
+        <div className="mobile-header-title">ELPIS</div>
+        <button 
+          className="hamburger-btn" 
+          onClick={() => setIsMobileMenuOpen(true)}
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`} 
+        onClick={() => setIsMobileMenuOpen(false)}
+      ></div>
+
       <Sidebar 
         activeTab={activeTab} 
-        setActiveTab={(t) => setActiveTab(t)} 
+        setActiveTab={(t) => {
+          setActiveTab(t);
+          setIsMobileMenuOpen(false); // Fermer le menu sur mobile après un clic
+        }} 
         theme={theme}
         setTheme={setTheme}
         streak={config?.currentStreak || 0}
         pendingTasksCount={pendingTasksCount}
+        isMobileMenuOpen={isMobileMenuOpen}
       />
 
       <main className="main-content">
