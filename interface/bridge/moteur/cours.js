@@ -67,6 +67,7 @@ function sanitizeCours(c) {
         ue.ects = Math.max(0, Math.min(180, ue.ects ?? 0));
         if (!ue.matieres) ue.matieres = [];
         for (const m of ue.matieres) {
+          m.coefficient = Math.max(1, Math.min(10, m.coefficient ?? 1));
           m.cm_h = Math.max(0, Math.min(500, m.cm_h ?? 0));
           m.td_h = Math.max(0, Math.min(500, m.td_h ?? 0));
           m.tp_h = Math.max(0, Math.min(500, m.tp_h ?? 0));
@@ -119,11 +120,90 @@ function loadCours(filePath = COURS_PATH) {
   }
 }
 
+/**
+ * Deep merge une licence du frontend dans l'existant, en préservant
+ * les données FSRS et l'historique de pratique sur les exercices.
+ */
+function deepMergeLicence(existingLicence, newLicence) {
+  const merged = { ...existingLicence, ...newLicence };
+  if (!newLicence.semestres || !Array.isArray(newLicence.semestres)) {
+    merged.semestres = existingLicence.semestres || [];
+    return merged;
+  }
+
+  merged.semestres = newLicence.semestres.map((newSem, si) => {
+    const existingSem = (existingLicence.semestres && existingLicence.semestres[si]) || {};
+    const mergedSem = { ...existingSem, ...newSem };
+    if (!newSem.ues || !Array.isArray(newSem.ues)) {
+      mergedSem.ues = existingSem.ues || [];
+      return mergedSem;
+    }
+
+    mergedSem.ues = newSem.ues.map((newUE, ui) => {
+      const existingUE = (existingSem.ues && existingSem.ues[ui]) || {};
+      const mergedUE = { ...existingUE, ...newUE };
+      if (!newUE.matieres || !Array.isArray(newUE.matieres)) {
+        mergedUE.matieres = existingUE.matieres || [];
+        return mergedUE;
+      }
+
+      mergedUE.matieres = newUE.matieres.map((newMat, mi) => {
+        const existingMat = (existingUE.matieres && existingUE.matieres[mi]) || {};
+        // Deep merge: on préserve les propriétés FSRS (fsrsCard, tempsMoyen, etc.)
+        // du existant, sauf si le nouveau les écrase explicitement
+        const mergedMat = { ...existingMat, ...newMat };
+        // Fusion récursive pour les listes d'exercices
+        if (newMat.listeCM) {
+          mergedMat.listeCM = newMat.listeCM.map((newCM, ci) => {
+            const existingCM = (existingMat.listeCM && existingMat.listeCM[ci]) || {};
+            return { ...existingCM, ...newCM };
+          });
+        }
+        if (newMat.listeTD) {
+          mergedMat.listeTD = newMat.listeTD.map((newTD, ti) => {
+            const existingTD = (existingMat.listeTD && existingMat.listeTD[ti]) || {};
+            return { ...existingTD, ...newTD };
+          });
+        }
+        if (newMat.listeTP) {
+          mergedMat.listeTP = newMat.listeTP.map((newTP, pi) => {
+            const existingTP = (existingMat.listeTP && existingMat.listeTP[pi]) || {};
+            return { ...existingTP, ...newTP };
+          });
+        }
+        if (newMat.listeAnnales) {
+          mergedMat.listeAnnales = newMat.listeAnnales.map((newAnn, ai) => {
+            const existingAnn = (existingMat.listeAnnales && existingMat.listeAnnales[ai]) || {};
+            return { ...existingAnn, ...newAnn };
+          });
+        }
+        return mergedMat;
+      });
+      return mergedUE;
+    });
+    return mergedSem;
+  });
+  return merged;
+}
+
 function saveCours(coursConfig, filePath = COURS_PATH) {
-  // Fusion superficielle : le frontend envoie toujours l'objet complet.
+  // Deep merge: fuse au niveau licences/semestres/UEs/matières pour préserver les données
+  // que le frontend n'envoie pas (ex: listes d'exercices avec historique FSRS)
   const existing = loadCours(filePath);
-  const merged = JSON.parse(JSON.stringify({ ...existing, ...coursConfig }));
-  const cleaned = sanitizeCours(merged);
+
+  // Si le frontend n'envoie pas de licences, on garde l'existant
+  if (!coursConfig.licences || !Array.isArray(coursConfig.licences)) {
+    console.error('[VALIDATION] saveCours: "licences" manquant ou invalide. Sauvegarde annulée.');
+    return false;
+  }
+
+  // Deep merge: pour chaque licence du nouveau payload, fusionner dans l'existant
+  const mergedLicences = coursConfig.licences.map((newLicence, li) => {
+    const existingLicence = (existing.licences && existing.licences[li]) || {};
+    return deepMergeLicence(existingLicence, newLicence);
+  });
+
+  const cleaned = sanitizeCours({ licences: mergedLicences });
 
   // Refuser d'écrire une structure corrompue
   if (!validateCoursSchema(cleaned)) {

@@ -220,8 +220,18 @@ app.post('/api/open/anki', (req, res) => {
   const { spawn } = require('child_process');
   const pathModule = require('path');
   
+  // Non-Windows : chercher dans le PATH
+  if (process.platform !== 'win32') {
+    const child = spawn('anki', [], { detached: true, stdio: 'ignore' });
+    child.on('error', (err) => {
+      console.error("Erreur lancement Anki:", err.message);
+    });
+    child.unref();
+    return res.json({ success: true, message: "Anki lancé avec succès." });
+  }
+
   const ankiPaths = [
-    pathModule.join(process.env.LOCALAPPDATA, 'Programs', 'Anki', 'anki.exe'),
+    pathModule.join(process.env.LOCALAPPDATA || '', 'Programs', 'Anki', 'anki.exe'),
     pathModule.join(process.env.PROGRAMFILES || 'C:\\Program Files', 'Anki', 'anki.exe'),
     pathModule.join(process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', 'Anki', 'anki.exe')
   ];
@@ -292,8 +302,16 @@ app.post('/api/upload/pdf', (req, res, next) => {
   });
 });
 
-// POST shutdown
+// POST shutdown — protégé par vérification d'origine
 app.post('/api/shutdown', (req, res) => {
+  const origin = req.get('origin') || req.get('referer') || '';
+  const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`];
+  const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';
+  
+  if (!isLocalhost && !allowedOrigins.some(o => origin.startsWith(o))) {
+    return res.status(403).json({ error: "Arrêt non autorisé depuis cette origine." });
+  }
+  
   res.json({ success: true, message: "Arrêt du serveur." });
   setTimeout(() => process.exit(0), 1000);
 });
@@ -329,12 +347,12 @@ app.get('/api/orchestrateur', (req, res) => {
         rapport,
         timestamp: now
       });
-      
-      // Nettoyage paresseux des vieilles entrées pour éviter les fuites de mémoire
-      for (const [key, entry] of orchestratorCache.entries()) {
-        if (now - entry.timestamp > CACHE_TTL_MS) {
-          orchestratorCache.delete(key);
-        }
+    }
+    
+    // Nettoyage périodique des vieilles entrées (tous les appels, pas seulement sur miss)
+    for (const [key, entry] of orchestratorCache.entries()) {
+      if (now - entry.timestamp > CACHE_TTL_MS) {
+        orchestratorCache.delete(key);
       }
     }
 

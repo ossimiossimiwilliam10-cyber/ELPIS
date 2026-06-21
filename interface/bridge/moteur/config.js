@@ -37,7 +37,8 @@ const DEFAULT_CONFIG = {
   maxNewCMPerSubjectPerDay: 1,
   maxNewCMPerSemesterPerDay: 3,
   antiEnnuiMultiplier: 2.0,
-  restDays: []
+  restDays: [],
+  dernierePratiqueAnki: ""
 };
 
 /**
@@ -99,6 +100,10 @@ function sanitize(c) {
   c.maxNewCMPerSubjectPerDay = Math.max(1, c.maxNewCMPerSubjectPerDay ?? 1);
   c.maxNewCMPerSemesterPerDay = Math.max(1, c.maxNewCMPerSemesterPerDay ?? 3);
   c.antiEnnuiMultiplier = Math.max(1.0, c.antiEnnuiMultiplier ?? 2.0);
+  c.pomoWork = Math.max(5, Math.min(120, c.pomoWork ?? 25));
+  c.pomoBreak = Math.max(1, Math.min(60, c.pomoBreak ?? 5));
+  c.currentStreak = Math.max(0, c.currentStreak ?? 0);
+  c.bestStreak = Math.max(0, c.bestStreak ?? 0);
   
   if (c.theme !== "light" && c.theme !== "dark") c.theme = "dark";
   

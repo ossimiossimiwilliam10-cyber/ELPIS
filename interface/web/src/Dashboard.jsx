@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -61,6 +61,7 @@ function Dashboard() {
   // CM modal state
   const [cmModalOpen, setCmModalOpen] = useState(false);
   const [pendingCMTask, setPendingCMTask] = useState(null);
+  const cmModalLockRef = useRef(false); // prevents double-open race condition
 
   const recommendedDailyHours = useWorkloadEngine();
 
@@ -130,6 +131,12 @@ function Dashboard() {
     
     // For CM tasks, open the mini-modal to capture real time and retention score
     if (tache.type === 'CM') {
+      // Prevent race condition: if modal is already open, ignore subsequent clicks
+      if (cmModalLockRef.current) {
+        toast.info("Termine d'abord le CM en cours avant d'en commencer un autre.");
+        return;
+      }
+      cmModalLockRef.current = true;
       setPendingCMTask(tache);
       setCmModalOpen(true);
       return;
@@ -286,6 +293,7 @@ function Dashboard() {
       dureeMinutes: minutes
     });
     setPendingCMTask(null);
+    cmModalLockRef.current = false;
   }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence]);
 
   // Dynamic greeting (must be before early returns)
@@ -832,7 +840,7 @@ function Dashboard() {
       {/* === CM Completion Modal === */}
       <CMCompletionModal
         isOpen={cmModalOpen}
-        onClose={() => { setCmModalOpen(false); setPendingCMTask(null); }}
+        onClose={() => { setCmModalOpen(false); setPendingCMTask(null); cmModalLockRef.current = false; }}
         onSubmit={handleCMComplete}
         taskTitle={pendingCMTask?.titre || ''}
         defaultMinutes={pendingCMTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)}

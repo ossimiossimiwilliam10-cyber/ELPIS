@@ -255,7 +255,7 @@ function buildProjectedScoreMap(crs, velocityMap) {
           }
           if (m.listeAnnales) {
             m.listeAnnales.forEach(a => {
-              if (a.nombrePratiques > 0 && a.derniereNote !== undefined && a.derniereNote !== null) {
+              if (a.nombrePratiques > 0 && a.derniereNote !== undefined && a.derniereNote !== null && a.derniereNote !== "" && !isNaN(parseFloat(a.derniereNote))) {
                 pastGrades.push(parseFloat(a.derniereNote));
               }
             });

@@ -129,7 +129,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   // 2. Calculer le temps déjà travaillé aujourd'hui
   let tempsDejaTravailleMin = 0;
-  if (cfg.dernierePratiqueAnki === todayStr) {
+  if (cfg.dernierePratiqueAnki && cfg.dernierePratiqueAnki === todayStr) {
     tempsDejaTravailleMin += (cfg.defaultDurationAnki || 30);
   }
 
@@ -140,13 +140,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           for (const cm of (m.listeCM || [])) {
             if (cm.derniereRevision === todayStr) {
               const dureeBase = (cm.jActuel === 0) ? (cfg.defaultDurationNewCM || 120) : (cfg.defaultDurationRevCM || 30);
-              tempsDejaTravailleMin += cm.tempsMoyen ? cm.tempsMoyen : dureeBase;
+              tempsDejaTravailleMin += (cm.tempsMoyen != null && cm.tempsMoyen > 0) ? cm.tempsMoyen : dureeBase;
             }
           }
           for (const td of (m.listeTD || [])) {
             if (td.dernierePratique === todayStr) {
               const dureeBase = cfg.defaultDurationTD || 20;
-              tempsDejaTravailleMin += td.tempsMoyen ? td.tempsMoyen : (dureeBase * getDifficultyMultiplier(td.difficulte));
+              tempsDejaTravailleMin += (td.tempsMoyen != null && td.tempsMoyen > 0) ? td.tempsMoyen : (dureeBase * getDifficultyMultiplier(td.difficulte));
             }
           }
           for (const tp of (m.listeTP || [])) {
@@ -159,14 +159,14 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
                 cfg.defaultDurationTP_Etape4 || 30
               ];
               const dureeBase = TP_STEP_DURATIONS[stepIndex] || 30;
-              const avgForStep = (tp.tempsMoyenEtapes && tp.tempsMoyenEtapes[stepIndex]) ? tp.tempsMoyenEtapes[stepIndex] : (tp.tempsMoyen || null);
-              tempsDejaTravailleMin += avgForStep ? avgForStep : (dureeBase * getDifficultyMultiplier(tp.difficulte));
+              const avgForStep = (tp.tempsMoyenEtapes && tp.tempsMoyenEtapes[stepIndex] != null) ? tp.tempsMoyenEtapes[stepIndex] : (tp.tempsMoyen != null ? tp.tempsMoyen : null);
+              tempsDejaTravailleMin += (avgForStep != null && avgForStep > 0) ? avgForStep : (dureeBase * getDifficultyMultiplier(tp.difficulte));
             }
           }
           for (const ann of (m.listeAnnales || [])) {
             if (ann.dernierePratique === todayStr) {
               const dureeBase = cfg.defaultDurationAnnale || 60;
-              tempsDejaTravailleMin += ann.tempsMoyen ? ann.tempsMoyen : (dureeBase * getDifficultyMultiplier(ann.difficulte));
+              tempsDejaTravailleMin += (ann.tempsMoyen != null && ann.tempsMoyen > 0) ? ann.tempsMoyen : (dureeBase * getDifficultyMultiplier(ann.difficulte));
             }
           }
         }
@@ -198,7 +198,10 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
       let matiereIndexDansSemestre = 0;
       let newCMCountPerSemester = 0;
       for (const ue of (s.ues || [])) {
+        // Peupler _ueMatieres pour la détection de synergies inter-matières
+        const ueMatiereNames = (ue.matieres || []).map(m => m.nom).filter(Boolean);
         for (const m of (ue.matieres || [])) {
+          m._ueMatieres = ueMatiereNames;
           const examData = getSubjectExamBoost(m, examUrgencyMap);
           const examBoostOriginal = examData.boost;
           const daysToExam = examData.daysToExam;
@@ -284,7 +287,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               const retardPondere = Math.min(joursEnRetard, 10) * 0.5;
               const prioCM = (1 + retardPondere) * examBoost;
               const dureeBase = (cm.jActuel === 0) ? (cfg.defaultDurationNewCM || 120) : (cfg.defaultDurationRevCM || 30);
-              const dureeEstimee = cm.tempsMoyen ? cm.tempsMoyen : dureeBase;
+              const dureeEstimee = (cm.tempsMoyen != null && cm.tempsMoyen > 0) ? cm.tempsMoyen : dureeBase;
 
               poolCM.push({
                 matiere: m.nom,
@@ -308,7 +311,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           // --- TD ---
           for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
             const dureeBase = cfg.defaultDurationTD || 20;
-            const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+            const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             poolTD.push({
               matiere: m.nom,
               type: "TD",
@@ -348,12 +351,12 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             ];
             const dureeBase = TP_STEP_DURATIONS[currentStep] || 30;
             let avgForStep = null;
-            if (ex.tempsMoyenEtapes && ex.tempsMoyenEtapes.length > currentStep && ex.tempsMoyenEtapes[currentStep]) {
+            if (ex.tempsMoyenEtapes && ex.tempsMoyenEtapes.length > currentStep && ex.tempsMoyenEtapes[currentStep] != null && ex.tempsMoyenEtapes[currentStep] > 0) {
               avgForStep = ex.tempsMoyenEtapes[currentStep];
-            } else if (ex.tempsMoyen && !ex.tempsMoyenEtapes) {
+            } else if (ex.tempsMoyen != null && ex.tempsMoyen > 0 && !ex.tempsMoyenEtapes) {
               avgForStep = ex.tempsMoyen;
             }
-            const dureeEstimee = avgForStep ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+            const dureeEstimee = (avgForStep != null && avgForStep > 0) ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
 
             let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
             if (isTomorrow) tpPrio = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
@@ -398,7 +401,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           if (isMastered || isUrgent || hasStartedAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
               const dureeBase = cfg.defaultDurationAnnales || 60;
-              const dureeEstimee = ex.tempsMoyen ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+              const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
               const annaleBoost = isUrgent ? MAGIC_CONSTANTS.BOOST_ANNALE_URGENT : MAGIC_CONSTANTS.BOOST_ANNALE_NORMAL;
 
@@ -441,7 +444,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const taches = [];
   let tempsRequisMin = 0;
 
-  if (cfg.dernierePratiqueAnki !== todayStr) {
+  if (!cfg.dernierePratiqueAnki || cfg.dernierePratiqueAnki !== todayStr) {
     taches.push({
       matiere: "Routine",
       type: "ANKI",

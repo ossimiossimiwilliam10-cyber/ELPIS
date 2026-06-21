@@ -90,17 +90,22 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
     }
   }
 
-  // AXE 13: Synergies Inter-Matières
+  // AXE 13: Synergies Inter-Matières (détection automatique par UE partagée)
   let synergyBoost = 1.0;
-  if (matiere && matiere.synergies && velocityMap) {
-    for (const syn of matiere.synergies) {
-      const v = velocityMap[syn];
-      if (v && v.totalCMs > 0) {
-        const ratio = v.masteredCMs / v.totalCMs;
-        if (ratio < 0.3) {
-          synergyBoost += 0.2;
-        } else if (ratio > 0.8) {
-          synergyBoost = Math.max(0.5, synergyBoost - 0.1); // Éviter que le boost ne s'annule
+  if (matiere && typeof matiere === 'object' && matiere.nom && velocityMap) {
+    // Chercher les matières de la même UE pour les synergies implicites
+    // (patron: les matières d'une même UE sont naturellement synergiques)
+    if (matiere._ueMatieres) {
+      for (const synName of matiere._ueMatieres) {
+        if (synName === matiere.nom) continue;
+        const v = velocityMap[synName];
+        if (v && v.totalCMs > 0) {
+          const ratio = v.masteredCMs / v.totalCMs;
+          if (ratio < 0.3) {
+            synergyBoost += 0.2;
+          } else if (ratio > 0.8) {
+            synergyBoost = Math.max(0.5, synergyBoost - 0.1);
+          }
         }
       }
     }
@@ -138,9 +143,9 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
     }
   }
 
-  // Si le coeff est >= 3 et que l'examen est dans les 14 jours (boost 1.5),
+  // Si le coeff est >= 3 et que l'examen est dans les 14 jours (boost ~1.5),
   // on force le boost à 2.0 pour casser la parité !
-  if (coeff >= 3 && baseBoost === 1.5) {
+  if (coeff >= 3 && Math.abs(baseBoost - 1.5) < 0.01) {
     baseBoost = 2.0;
   }
 

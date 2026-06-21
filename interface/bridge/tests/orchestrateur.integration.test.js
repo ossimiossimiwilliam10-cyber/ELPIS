@@ -8,6 +8,7 @@ import * as path from 'path';
 const tempDir = path.join(__dirname, 'temp_test_data');
 const tempConfigPath = path.join(tempDir, 'espoir_config.json');
 const tempHistPath = path.join(tempDir, 'espoir_historique.json');
+const tempCrsPath = path.join(tempDir, 'espoir_cours.json');
 
 beforeAll(() => {
   if (!fs.existsSync(tempDir)) {
@@ -54,9 +55,6 @@ afterAll(() => {
   if (fs.existsSync(tempCrsPath)) fs.unlinkSync(tempCrsPath);
   if (fs.existsSync(tempDir)) fs.rmdirSync(tempDir);
 });
-
-// We don't need to mock cours anymore, we will write it to disk
-const tempCrsPath = path.join(tempDir, 'espoir_cours.json');
 
 // ── Scenarios ──────────────────────────────────────────────────────────────
 describe('Orchestrator Deep Integration with FSRS Logic', () => {

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import useStore from './store';
 import { parseDateLocal } from './parseDateLocal';
 
@@ -10,6 +10,7 @@ const getDaysBetween = (d1, d2) => {
 
 export function useWorkloadEngine() {
   const { config, coursConfig, historique, setConfig } = useStore();
+  const lastUpdateRef = useRef(0); // throttle updates to prevent infinite loops
 
   useEffect(() => {
     if (!config || !coursConfig) return;
@@ -83,13 +84,16 @@ export function useWorkloadEngine() {
     // Convert to hours with 1 decimal
     const recommendedHours = Math.max(0.5, Math.round((cappedMinutes / 60) * 10) / 10);
 
-    // Update config transparently so the C++ orchestrator uses it
-    if (config.maxStudyHoursPerDay !== recommendedHours && recommendedHours > 0) {
+    // Update config transparently so the orchestrator uses it
+    // Throttle: only update once per 60 seconds to prevent cascading re-renders
+    const now = Date.now();
+    if (config.maxStudyHoursPerDay !== recommendedHours && recommendedHours > 0 && (now - lastUpdateRef.current) > 60000) {
+      lastUpdateRef.current = now;
       setConfig({ ...config, maxStudyHoursPerDay: recommendedHours });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config?.targetGrade, config?.targetRank, config?.defaultSemesterEndDate, coursConfig, historique]);
+  }, [config?.targetGrade, config?.targetRank, config?.defaultSemesterEndDate, config?.studyStartDate, coursConfig, historique]);
 
   return config?.maxStudyHoursPerDay || 0;
 }

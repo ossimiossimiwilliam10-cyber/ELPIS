@@ -220,7 +220,7 @@ const useStore = create(immer((set, get) => ({
   // Check and update streak logic
   checkStreak: () => {
     const config = get().config;
-    if (!config) return;
+    if (!config || Object.keys(config).length === 0) return; // Guard against empty config
 
     // Use local date to avoid UTC timezone shift near midnight
     const d = new Date();
@@ -229,9 +229,9 @@ const useStore = create(immer((set, get) => ({
     const today = d.getFullYear() + '-' + 
       String(d.getMonth() + 1).padStart(2, '0') + '-' + 
       String(d.getDate()).padStart(2, '0');
-    let streak = config.currentStreak || 0;
+    let streak = Number.isFinite(config.currentStreak) ? config.currentStreak : 0;
     let lastActive = config.lastActiveDate || "";
-    let bestStreak = config.bestStreak || 0;
+    let bestStreak = Number.isFinite(config.bestStreak) ? config.bestStreak : 0;
 
     let updated = false;
 

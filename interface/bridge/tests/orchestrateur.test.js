@@ -8,13 +8,23 @@ vi.mock('fs', () => ({
 import * as fs from 'fs';
 vi.mock('../moteur/config', () => ({
   loadConfig: () => ({
-    heuresTravailJour: 2,
     maxStudyHoursPerDay: 8,
     maxSubjectsPerDay: 4,
-    restDays: [new Date().toISOString().split('T')[0]], // Rest day today? No, we want NO rest day to test time.
-    // Wait, if it's a rest day, tempsDispoMin is 0. Let's make it yesterday so it's not today.
     restDays: [new Date(Date.now() - 86400000).toISOString().split('T')[0]],
-    bedtime: '23:00'
+    bedtime: '23:00',
+    defaultDurationNewCM: 120,
+    defaultDurationRevCM: 30,
+    defaultDurationTD: 20,
+    defaultDurationTP: 30,
+    defaultDurationAnnales: 60,
+    defaultDurationAnki: 30,
+    defaultDurationTP_Etape1: 45,
+    defaultDurationTP_Etape2: 180,
+    defaultDurationTP_Etape3: 90,
+    defaultDurationTP_Etape4: 30,
+    maxNewCMPerSubjectPerDay: 5,
+    maxNewCMPerSemesterPerDay: 50,
+    antiEnnuiMultiplier: 2.0
   })
 }));
 
