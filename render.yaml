@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: elpis-app
+    env: node
+    buildCommand: "cd interface/web && npm install && npm run build && cd ../bridge && npm install"
+    startCommand: "cd interface/bridge && node server.js"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false

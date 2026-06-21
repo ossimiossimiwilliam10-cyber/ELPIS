@@ -18,9 +18,11 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
+    "mongodb": "^7.3.0",
     "multer": "^2.2.0",
     "ts-fsrs": "^5.4.1"
   },

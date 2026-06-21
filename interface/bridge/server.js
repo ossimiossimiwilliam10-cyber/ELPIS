@@ -9,6 +9,7 @@ const multer = require('multer');
 const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
 const { genererRapportQuotidien } = require('./moteur/orchestrateur');
+const { initMongo, syncFromMongoToLocal, syncToMongo } = require('./mongoAdapter');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -148,6 +149,9 @@ app.post('/api/config', (req, res) => {
     if (!success) {
       return res.status(500).json({ error: "Erreur sauvegarde configuration." });
     }
+    // MAJ Async sur MongoDB
+    syncToMongo('config', req.body).catch(console.error);
+    
     res.json({ success: true, message: "Configuration mise à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur: " + err.message });
@@ -177,6 +181,9 @@ app.post('/api/cours', (req, res) => {
     if (!success) {
       return res.status(500).json({ error: "Erreur sauvegarde des cours." });
     }
+    // MAJ Async sur MongoDB
+    syncToMongo('cours', req.body).catch(console.error);
+    
     res.json({ success: true, message: "Cours mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur: " + err.message });
@@ -209,6 +216,9 @@ app.post('/api/historique', (req, res) => {
     if (!success) {
       return res.status(500).json({ error: "Erreur sauvegarde historique." });
     }
+    // MAJ Async sur MongoDB
+    syncToMongo('historique', trimmed).catch(console.error);
+    
     res.json({ success: true, message: "Historique mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur sauvegarde historique." });
@@ -378,7 +388,20 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Une erreur interne est survenue.", details: err.message });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`ELPIS Bridge démarré sur http://0.0.0.0:${PORT}`);
-  console.log(`Moteur Node.js natif — plus de dépendance C++ !`);
-});
+async function startServer() {
+  // 1. Initialiser MongoDB
+  const isMongoEnabled = await initMongo();
+  
+  // 2. Si MongoDB est actif, télécharger les données AVANT de démarrer le serveur
+  if (isMongoEnabled) {
+    await syncFromMongoToLocal(CONFIG_FILE, COURS_FILE, HISTORIQUE_FILE);
+  }
+
+  // 3. Démarrer le serveur Express
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`ELPIS Bridge démarré sur http://0.0.0.0:${PORT}`);
+    console.log(`Moteur Node.js natif — plus de dépendance C++ !`);
+  });
+}
+
+startServer().catch(console.error);
