@@ -6,8 +6,6 @@ services:
     buildCommand: "cd interface/web && npm install && npm run build && cd ../bridge && npm install"
     startCommand: "cd interface/bridge && node server.js"
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: NODE_VERSION
         value: 20
       - key: MONGODB_URI
