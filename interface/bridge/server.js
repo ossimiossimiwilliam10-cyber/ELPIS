@@ -14,6 +14,9 @@ const { initMongo, syncFromMongoToLocal, syncToMongo } = require('./mongoAdapter
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Nécessaire pour que express-rate-limit fonctionne derrière le proxy de Render
+app.set('trust proxy', 1);
+
 // Sécurité : HTTP headers
 app.use(helmet());
 
