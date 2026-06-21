@@ -343,10 +343,11 @@ app.get('/api/orchestrateur', (req, res) => {
 
     const configMtime = fs.existsSync(CONFIG_PATH) ? fs.statSync(CONFIG_PATH).mtimeMs : 0;
     const coursMtime = fs.existsSync(COURS_PATH) ? fs.statSync(COURS_PATH).mtimeMs : 0;
+    const histMtime = fs.existsSync(HISTORIQUE_FILE) ? fs.statSync(HISTORIQUE_FILE).mtimeMs : 0;
     const now = Date.now();
     
     // Clé de cache robuste basée sur l'ensemble des paramètres (Audit Improvement)
-    const cacheKey = `${configMtime}_${coursMtime}_${extraTime}_${fillGap}`;
+    const cacheKey = `${configMtime}_${coursMtime}_${histMtime}_${extraTime}_${fillGap}`;
     
     let cacheEntry = orchestratorCache.get(cacheKey);
     let cacheValid = cacheEntry && (now - cacheEntry.timestamp) < CACHE_TTL_MS;

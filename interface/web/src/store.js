@@ -6,7 +6,7 @@ import debounce from 'lodash/debounce';
 const API_URL = '/api';
 
 // Auto-save functions using debounce
-const debouncedSaveConfig = debounce(async (config) => {
+const debouncedSaveConfig = debounce(async (config, get) => {
   try {
     await fetch(`${API_URL}/config`, {
       method: 'POST',
@@ -14,6 +14,7 @@ const debouncedSaveConfig = debounce(async (config) => {
       body: JSON.stringify(config)
     });
     console.log('Auto-saved config');
+    if (get) get().fetchOrchestrator();
   } catch (e) {
     console.error('Failed to auto-save config', e);
   }
@@ -33,7 +34,7 @@ const debouncedSaveCours = debounce(async (coursConfig, get) => {
   }
 }, 500);
 
-const debouncedSaveHistorique = debounce(async (historique) => {
+const debouncedSaveHistorique = debounce(async (historique, get) => {
   try {
     await fetch(`${API_URL}/historique`, {
       method: 'POST',
@@ -41,6 +42,7 @@ const debouncedSaveHistorique = debounce(async (historique) => {
       body: JSON.stringify(historique)
     });
     console.log('Auto-saved historique');
+    if (get) get().fetchOrchestrator();
   } catch (e) {
     console.error('Failed to auto-save historique', e);
   }
@@ -156,7 +158,7 @@ const useStore = create(immer((set, get) => ({
     // Merge with current state to never lose streak/lastActiveDate
     const merged = { ...get().config, ...newConfig };
     set({ config: merged });
-    debouncedSaveConfig(merged);
+    debouncedSaveConfig(merged, get);
   },
 
   activateRestDay: async () => {
@@ -212,7 +214,7 @@ const useStore = create(immer((set, get) => ({
   addHistoriqueEntry: (entry) => {
     const newHist = [...get().historique, { ...entry, timestamp: new Date().toISOString() }];
     set({ historique: newHist });
-    debouncedSaveHistorique(newHist);
+    debouncedSaveHistorique(newHist, get);
     // Update streak on every completed task
     get().checkStreak();
   },
@@ -261,7 +263,7 @@ const useStore = create(immer((set, get) => ({
     if (updated) {
       const newConfig = { ...config, lastActiveDate: today, currentStreak: streak, bestStreak };
       set({ config: newConfig });
-      debouncedSaveConfig(newConfig);
+      debouncedSaveConfig(newConfig, get);
     }
   }
 
