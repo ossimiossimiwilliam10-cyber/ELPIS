@@ -198,16 +198,33 @@ function buildVelocityMap(crs, historique) {
 function detectBurnoutRisk(cfg, historique) {
   const restDays = cfg.restDays || [];
 
-  // Night Owl : cohérent avec getTodayString() — on recule de 4h pour aligner
-  // la détection des jours de repos avec le reste de l'application.
+  // Night Owl : cohérent avec getTodayString()
   const today = new Date();
   today.setHours(today.getHours() - 4);
+  
+  // Un jour est un jour de "travail" s'il a un historique ou s'il n'est pas dans restDays
+  // Mais pour un nouvel utilisateur, historique est vide. On ne doit pas supposer 30j de travail.
+  // On compte les jours d'affilée travaillés en regardant l'historique et la config.
   let daysWithoutRest = 0;
   for (let i = 0; i < 30; i++) {
     const checkDate = new Date(today);
     checkDate.setDate(checkDate.getDate() - i);
     const dateStr = checkDate.getFullYear() + '-' + String(checkDate.getMonth() + 1).padStart(2, '0') + '-' + String(checkDate.getDate()).padStart(2, '0');
+    
+    // S'il a explicitement demandé du repos ce jour-là, on break
     if (restDays.includes(dateStr)) break;
+    
+    // A-t-il travaillé ce jour là ?
+    const workedThatDay = (historique || []).some(h => {
+        if (!h.timestamp) return false;
+        const hDate = new Date(h.timestamp);
+        hDate.setHours(hDate.getHours() - 4);
+        return hDate.getFullYear() + '-' + String(hDate.getMonth() + 1).padStart(2, '0') + '-' + String(hDate.getDate()).padStart(2, '0') === dateStr;
+    });
+
+    // Si pas travaillé et pas aujourd'hui, c'est un jour de repos implicite
+    if (!workedThatDay && i > 0) break; 
+    
     daysWithoutRest++;
   }
 
