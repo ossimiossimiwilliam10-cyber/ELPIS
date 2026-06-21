@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.45% </span>
+                <span class="strong">61.79% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>163/261</span>
+                <span class='fraction'>165/267</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">53.2% </span>
+                <span class="strong">52.8% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>141/265</span>
+                <span class='fraction'>141/267</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.62% </span>
+                <span class="strong">60% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>17/29</span>
+                <span class='fraction'>18/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.69% </span>
+                <span class="strong">67.43% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>147/214</span>
+                <span class='fraction'>147/218</span>
             </div>
         
             
@@ -459,7 +459,20 @@
 <a name='L394'></a><a href='#L394'>394</a>
 <a name='L395'></a><a href='#L395'>395</a>
 <a name='L396'></a><a href='#L396'>396</a>
-<a name='L397'></a><a href='#L397'>397</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -485,6 +498,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -855,6 +879,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * INTELLIGENCE MODULE v2 — Fonctions d'analyse avancée
  * Extraites de l'orchestrateur pour modularité et testabilité.
@@ -884,11 +910,22 @@ function <span class="fstat-no" title="function not covered" >normalizeDateStr(<
 }
 &nbsp;
 /**
+ * Parses a YYYY-MM-DD date string into a local Date object at 00:00:00.
+ * Prevents timezone shift bugs (unlike string + 'T00:00:00' which is parsed as UTC).
+ */
+function <span class="fstat-no" title="function not covered" >parseDateLocal(</span>dateStr) {
+<span class="cstat-no" title="statement not covered" >  if (!dateStr) <span class="cstat-no" title="statement not covered" >return new Date(NaN);</span></span>
+  const parts = <span class="cstat-no" title="statement not covered" >dateStr.split('-');</span>
+<span class="cstat-no" title="statement not covered" >  if (parts.length !== 3) <span class="cstat-no" title="statement not covered" >return new Date(NaN);</span></span>
+<span class="cstat-no" title="statement not covered" >  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0, 0);</span>
+}
+&nbsp;
+/**
  * Calcule la moyenne pondérée d'une matière à partir de ses évaluations.
  * Ne prend en compte que les évaluations déjà notées.
  */
-function <span class="fstat-no" title="function not covered" >getMatiereAverage(</span>matiere) {
-<span class="cstat-no" title="statement not covered" >  if (<span class="branch-0 cbranch-no" title="branch not covered" >!matiere </span>|| <span class="branch-1 cbranch-no" title="branch not covered" >!matiere.evaluations </span>|| !Array.isArray(matiere.evaluations)) return null;</span>
+function getMatiereAverage(matiere) {
+  if (!matiere || !matiere.evaluations || !Array.isArray(matiere.evaluations)) return null;
   let totalScore = 0;
   let totalCoef = 0;
   matiere.evaluations.forEach(ev =&gt; {
@@ -1214,10 +1251,10 @@ function buildExamUrgencyMap(crs) {
 <span class="cstat-no" title="statement not covered" >            for (const ev of subj.evaluations) {</span>
 <span class="cstat-no" title="statement not covered" >              if (!ev.date) continue;</span>
               const normDate = normalizeDateStr(ev.date);
-              const evalDate = <span class="cstat-no" title="statement not covered" >normDate ? new Date(normDate + 'T00:00:00') : new Date(NaN);</span>
+              const evalDate = <span class="cstat-no" title="statement not covered" >parseDateLocal(normDate);</span>
               <span class="missing-if-branch" title="else path not taken" >E</span>if (isNaN(evalDate.getTime())) continue;
               const diffDays = Math.ceil((evalDate - today) / (1000 * 60 * 60 * 24));
-              <span class="missing-if-branch" title="if path not taken" >I</span>if (diffDays &gt;= 0 &amp;&amp; diffDays &lt; minDays) <span class="cstat-no" title="statement not covered" >minDays = diffDays;</span>
+              <span class="missing-if-branch" title="else path not taken" >E</span>if (diffDays &gt;= 0 &amp;&amp; diffDays &lt; minDays) minDays = diffDays;
             }
           }
 &nbsp;
@@ -1249,7 +1286,9 @@ function buildExamUrgencyMap(crs) {
   detectBurnoutRisk,
   buildProjectedScoreMap,
   buildCognitiveLoadMap,
-  buildExamUrgencyMap
+  buildExamUrgencyMap,
+  normalizeDateStr,
+  parseDateLocal
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -1258,7 +1297,7 @@ function buildExamUrgencyMap(crs) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-21T18:35:09.593Z
+                at 2026-06-21T18:42:36.020Z
             </div>
         <script src="prettify.js"></script>
         <script>

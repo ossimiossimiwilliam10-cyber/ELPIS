@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">67.04% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>56/84</span>
+                <span class='fraction'>59/88</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.37% </span>
+                <span class="strong">61.61% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>63/101</span>
+                <span class='fraction'>61/99</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/3</span>
+                <span class='fraction'>2/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70.12% </span>
+                <span class="strong">72.15% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>54/77</span>
+                <span class='fraction'>57/79</span>
             </div>
         
             
@@ -218,7 +218,11 @@
 <a name='L153'></a><a href='#L153'>153</a>
 <a name='L154'></a><a href='#L154'>154</a>
 <a name='L155'></a><a href='#L155'>155</a>
-<a name='L156'></a><a href='#L156'>156</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -267,9 +271,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">62x</span>
 <span class="cline-any cline-yes">62x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">52x</span>
 <span class="cline-any cline-yes">52x</span>
+<span class="cline-any cline-yes">51x</span>
+<span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-yes">51x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -354,9 +360,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">329x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -422,14 +430,16 @@ function <span class="fstat-no" title="function not covered" >getPrioScore(</spa
     const matiereKey = <span class="cstat-no" title="statement not covered" >matiereNom.toLowerCase().trim();</span>
     let boostData = examUrgencyMap[matiereKey];
     <span class="missing-if-branch" title="if path not taken" >I</span>if (boostData === undefined) {
-<span class="cstat-no" title="statement not covered" >      for (const [subjKey, data] of Object.entries(examUrgencyMap)) {</span>
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (matiereKey === subjKey || matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
+      // Prioritize longest match first to avoid "Physique" overriding "Physique Avancée"
+      const entries = Object.entries(examUrgencyMap).sort((a, b) =&gt; b[0].length - a[0].length);
+      for (const [subjKey, data] of entries) {
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
           boostData = data;
           break;
         }
       }
     }
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (boostData) base *= boostData.multiplier;
+<span class="cstat-no" title="statement not covered" >    if (boostData) base *= boostData.multiplier;</span>
   }
 &nbsp;
   // Grade deficit boost (enhanced with compensation awareness)
@@ -509,9 +519,11 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
 <span class="cstat-no" title="statement not covered" >    baseBoost = examUrgencyMap[matiereKey].multiplier;</span>
 <span class="cstat-no" title="statement not covered" >    daysToExam = examUrgencyMap[matiereKey].daysToExam;</span>
   } else {
-    for (const [subjKey, data] of Object.entries(examUrgencyMap)) {
-<span class="cstat-no" title="statement not covered" >      if (<span class="branch-0 cbranch-no" title="branch not covered" >matiereKey === subjKey </span>|| matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {</span>
-        baseBoost = data.multiplier;
+    // Prioritize longest match first
+    const entries = Object.entries(examUrgencyMap).sort(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >b[0].length - a[0].length)</span>;
+    for (const [subjKey, data] of entries) {
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (matiereKey.startsWith(subjKey) || <span class="branch-1 cbranch-no" title="branch not covered" >subjKey.startsWith(matiereKey))</span> {
+<span class="cstat-no" title="statement not covered" >        baseBoost = data.multiplier;</span>
 <span class="cstat-no" title="statement not covered" >        daysToExam = data.daysToExam;</span>
 <span class="cstat-no" title="statement not covered" >        break;</span>
       }
@@ -535,7 +547,7 @@ module.exports = { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-21T18:35:09.593Z
+                at 2026-06-21T18:42:36.020Z
             </div>
         <script src="prettify.js"></script>
         <script>
