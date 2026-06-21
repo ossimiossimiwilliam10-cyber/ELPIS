@@ -40,22 +40,22 @@ function GlobalSearchModal() {
         s.ues?.forEach((u, uIndex) => {
           u.matieres?.forEach((m, mIndex) => {
             m.listeCM?.forEach((cm, cmIndex) => {
-              if (cm.titre.toLowerCase().includes(lowerQ) || (cm.notes && cm.notes.toLowerCase().includes(lowerQ))) {
+              if ((cm.titre || '').toLowerCase().includes(lowerQ) || (cm.notes && cm.notes.toLowerCase().includes(lowerQ))) {
                 res.push({ type: 'CM', titre: cm.titre, matiere: m.nom, lIndex, sIndex, uIndex, mIndex, itemIndex: cmIndex });
               }
             });
             m.listeTD?.forEach((td, tdIndex) => {
-              if (td.titre.toLowerCase().includes(lowerQ) || (td.notes && td.notes.toLowerCase().includes(lowerQ))) {
+              if ((td.titre || '').toLowerCase().includes(lowerQ) || (td.notes && td.notes.toLowerCase().includes(lowerQ))) {
                 res.push({ type: 'TD', titre: td.titre, matiere: m.nom, lIndex, sIndex, uIndex, mIndex, itemIndex: tdIndex });
               }
             });
             m.listeTP?.forEach((tp, tpIndex) => {
-              if (tp.titre.toLowerCase().includes(lowerQ) || (tp.notes && tp.notes.toLowerCase().includes(lowerQ))) {
+              if ((tp.titre || '').toLowerCase().includes(lowerQ) || (tp.notes && tp.notes.toLowerCase().includes(lowerQ))) {
                 res.push({ type: 'TP', titre: tp.titre, matiere: m.nom, lIndex, sIndex, uIndex, mIndex, itemIndex: tpIndex });
               }
             });
             m.listeAnnales?.forEach((annale, aIndex) => {
-              if (annale.titre.toLowerCase().includes(lowerQ) || (annale.notes && annale.notes.toLowerCase().includes(lowerQ))) {
+              if ((annale.titre || '').toLowerCase().includes(lowerQ) || (annale.notes && annale.notes.toLowerCase().includes(lowerQ))) {
                 res.push({ type: 'ANNALE', titre: annale.titre, matiere: m.nom, lIndex, sIndex, uIndex, mIndex, itemIndex: aIndex });
               }
             });

@@ -220,13 +220,25 @@ app.post('/api/open/anki', (req, res) => {
   const { spawn } = require('child_process');
   const pathModule = require('path');
   
-  const ankiPath = pathModule.join(process.env.LOCALAPPDATA, 'Programs', 'Anki', 'anki.exe');
+  const ankiPaths = [
+    pathModule.join(process.env.LOCALAPPDATA, 'Programs', 'Anki', 'anki.exe'),
+    pathModule.join(process.env.PROGRAMFILES || 'C:\\Program Files', 'Anki', 'anki.exe'),
+    pathModule.join(process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', 'Anki', 'anki.exe')
+  ];
   
-  if (!fs.existsSync(ankiPath)) {
+  let validPath = null;
+  for (const p of ankiPaths) {
+    if (fs.existsSync(p)) {
+      validPath = p;
+      break;
+    }
+  }
+  
+  if (!validPath) {
     return res.status(404).json({ error: "Anki n'est pas installé ou introuvable." });
   }
   
-  const child = spawn(ankiPath, [], {
+  const child = spawn(validPath, [], {
     detached: true,
     stdio: 'ignore',
   });
@@ -241,21 +253,26 @@ app.post('/api/open/anki', (req, res) => {
 
 // POST open file (PDF or other)
 app.post('/api/open/file', (req, res) => {
-  const { exec } = require('child_process');
+  const { spawn } = require('child_process');
   const filepath = req.body.filepath;
   
   if (!filepath) {
     return res.status(400).json({ error: "Chemin du fichier manquant." });
   }
 
-  // Use 'start' command on Windows to open file with default application
-  exec(`start "" "${filepath}"`, (error) => {
-    if (error) {
-      console.error("Erreur ouverture fichier:", error.message);
-      return res.status(500).json({ error: "Impossible d'ouvrir le fichier." });
-    }
-    res.json({ success: true, message: "Fichier ouvert." });
+  // Use spawn with cmd.exe to prevent command injection vulnerabilities
+  const child = spawn('cmd.exe', ['/c', 'start', '""', filepath], {
+    detached: true,
+    windowsHide: true,
+    stdio: 'ignore'
   });
+  
+  child.on('error', (err) => {
+    console.error("Erreur ouverture fichier:", err.message);
+  });
+  
+  child.unref();
+  res.json({ success: true, message: "Fichier ouvert." });
 });
 
 // POST upload pdf

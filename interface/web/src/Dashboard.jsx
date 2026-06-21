@@ -151,7 +151,7 @@ function Dashboard() {
             ue.matieres.forEach(matiere => {
               if (matiere.nom !== tache.matiere) return;
               if (tache.type === 'TD') {
-                matiere.listeTD.forEach(td => {
+                matiere.listeTD?.forEach(td => {
                   if (td.titre !== tache.titre) return;
                   td.dernierePratique = today;
                   td.nombrePratiques = (td.nombrePratiques || 0) + 1;
@@ -159,7 +159,7 @@ function Dashboard() {
                   taskFound = true;
                 });
               } else if (tache.type === 'TP') {
-                matiere.listeTP.forEach(tp => {
+                matiere.listeTP?.forEach(tp => {
                   if (tp.titre !== tache.titre) return;
                   tp.dernierePratique = today;
                   tp.nombrePratiques = (tp.nombrePratiques || 0) + 1;

@@ -59,8 +59,8 @@ export default function BulletinPage() {
     mutateConfig(draft => {
       let val = value;
       if (field === 'coefficient') {
-        val = parseFloat(value.replace(',', '.'));
-        if (isNaN(val) || val <= 0) val = 1;
+        val = parseFloat(String(value).replace(',', '.'));
+        if (isNaN(val) || val < 0) val = 1;
       }
       draft.licences[currentLicenceIndex].semestres[semIndex].ues[ueIndex].matieres[matIndex].evaluations[evalIndex][field] = val;
     });
@@ -87,7 +87,7 @@ export default function BulletinPage() {
     let totalCoef = 0;
     evaluations.forEach(ev => {
       if (ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
-        const c = ev.coefficient || 1;
+        const c = ev.coefficient !== undefined ? Number(ev.coefficient) : 1;
         totalScore += ev.note * c;
         totalCoef += c;
       }
@@ -106,7 +106,7 @@ export default function BulletinPage() {
       ue.matieres?.forEach(m => {
         const avg = getSubjectAverage(m.evaluations);
         if (avg !== null) {
-          const coef = m.coefficient || 1;
+          const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
           ueSumWeight += coef;
           ueSumNotes += avg * coef;
         }
@@ -210,7 +210,7 @@ export default function BulletinPage() {
         ue.matieres?.forEach(m => {
           const avg = getSubjectAverage(m.evaluations);
           if (avg !== null) {
-            const coef = m.coefficient || 1;
+            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
             ueSumWeight += coef;
             ueSumNotes += avg * coef;
           }
@@ -244,7 +244,7 @@ export default function BulletinPage() {
                      siblingUe.matieres?.forEach(m => {
                        const avg = getSubjectAverage(m.evaluations);
                        if (avg !== null) {
-                         const coef = m.coefficient || 1;
+                         const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
                          ueSumWeight += coef;
                          ueSumNotes += avg * coef;
                        }
@@ -275,7 +275,7 @@ export default function BulletinPage() {
               <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {ue.matieres?.map((matiere, matIndex) => {
                   const avg = getSubjectAverage(matiere.evaluations);
-                  const coef = matiere.coefficient || 1;
+                  const coef = matiere.coefficient !== undefined ? Number(matiere.coefficient) : 1;
                   const projected = intelligence?.projectedScoreMap?.[matiere.nom];
                   return (
                     <div key={matIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)' }}>
