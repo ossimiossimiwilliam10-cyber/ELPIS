@@ -5,6 +5,7 @@ const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
+const pdfParse = require('pdf-parse');
 
 const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
@@ -301,9 +302,8 @@ app.post('/api/open/file', (req, res) => {
   res.json({ success: true, message: "Fichier ouvert." });
 });
 
-// POST upload pdf
 app.post('/api/upload/pdf', (req, res, next) => {
-  upload.single('pdf')(req, res, (err) => {
+  upload.single('pdf')(req, res, async (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
         return res.status(413).json({ error: "Fichier trop volumineux (50 MB maximum)." });
@@ -313,8 +313,33 @@ app.post('/api/upload/pdf', (req, res, next) => {
     if (!req.file) {
       return res.status(400).json({ error: "Aucun fichier reçu." });
     }
-    // Renvoie l'URL relative pour accéder au fichier
-    res.json({ success: true, url: `/documents/${req.file.filename}` });
+    const url = `/documents/${req.file.filename}`;
+    
+    // Scan text in PDF
+    let suggestedExercises = [];
+    try {
+      if (req.file.mimetype === 'application/pdf') {
+        const dataBuffer = fs.readFileSync(req.file.path);
+        const pdfData = await pdfParse(dataBuffer);
+        const text = pdfData.text;
+        const regex = /(?:exercice|exercise|ex|exo|question|q|prob|problem|set)\s*(?:n°|#)?\s*(\d+(?:\.\d+)?)/gi;
+        const matches = [...text.matchAll(regex)];
+        
+        const uniqueTitles = new Set();
+        matches.forEach(m => {
+           let title = m[0].replace(/\s+/g, ' ').trim();
+           // Format like "Exercice 1"
+           title = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
+           uniqueTitles.add(title);
+        });
+        
+        suggestedExercises = Array.from(uniqueTitles);
+      }
+    } catch (parseErr) {
+      console.error("Erreur scan PDF:", parseErr);
+    }
+
+    res.json({ success: true, url, suggestedExercises });
   });
 });
 

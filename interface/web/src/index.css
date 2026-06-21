@@ -1186,6 +1186,46 @@ input:focus, select:focus {
   50% { transform: translateY(-10px) scale(1.05); }
 }
 
+/* ============================================
+   MOBILE RESPONSIVE & PWA TOUCH OPTIMIZATIONS
+   ============================================ */
+@media (max-width: 768px) {
+  /* Increase touch targets for buttons and inputs */
+  button, 
+  .btn-primary, 
+  .btn-secondary, 
+  select, 
+  input[type="text"], 
+  input[type="number"], 
+  input[type="time"], 
+  input[type="date"] {
+    min-height: 44px;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+
+  /* Optimize flex layouts */
+  .cm-item, .td-item, .tp-item, .annale-item {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  
+  .cm-item > button, .td-item > button, .tp-item > button, .annale-item > button {
+    align-self: flex-start;
+  }
+
+  /* Prevent pull-to-refresh on scrollable areas if needed, better scrolling */
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  /* Sidebar mobile toggle logic is usually handled in JS, but ensure sidebar takes full width if open */
+  .sidebar {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
 /* === CHRONO BLINK (Anti-oubli) === */
 .chrono-paused-blink {
   animation: chrono-blink 2s ease-in-out infinite;

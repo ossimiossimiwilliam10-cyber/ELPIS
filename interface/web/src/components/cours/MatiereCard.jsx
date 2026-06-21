@@ -64,6 +64,48 @@ export default function MatiereCard({
     input.click();
   };
 
+  const handleScanPdfFor = (typeListKey, defaultPathArray) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/pdf';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('pdf', file);
+      
+      try {
+        const res = await fetch('/api/upload/pdf', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (data.suggestedExercises && data.suggestedExercises.length > 0) {
+            const msg = `L'IA a détecté ${data.suggestedExercises.length} exercices dans ce PDF :\n- ` + data.suggestedExercises.slice(0, 10).join('\n- ') + (data.suggestedExercises.length > 10 ? `\n... et ${data.suggestedExercises.length - 10} autres` : '') + `\n\nVoulez-vous les ajouter automatiquement à la liste ?`;
+            if (window.confirm(msg)) {
+               const currentItems = [...(matiere[typeListKey] || [])];
+               data.suggestedExercises.forEach(titre => {
+                  currentItems.push({ titre, dernierePratique: "", nombrePratiques: 0, notes: "", dateAjout: new Date().toISOString(), pdfPath: data.url });
+               });
+               updateField(defaultPathArray, currentItems);
+               return;
+            }
+          }
+          alert(`PDF uploadé (${data.url}), mais aucun exercice n'a pu être extrait automatiquement. Vous pouvez ajouter les exercices manuellement et lier ce document.`);
+        } else {
+          alert("Erreur lors de l'upload: " + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erreur réseau lors de l'upload et scan.");
+      }
+    };
+    input.click();
+  };
+
   return (
     <div style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0}}>
       {/* MATIERE HEADER */}
@@ -213,6 +255,7 @@ export default function MatiereCard({
         <span style={{fontSize:'0.9rem', color:'var(--success-color)'}}>{matiere.listeTD?.length || 0} TD</span>
         <div style={{display:'flex', gap:'0.5rem'}}>
           <button onClick={() => addTDManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>+ Manuel</button>
+          <button onClick={() => handleScanPdfFor('listeTD', ['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD'])} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>📄 Scanner PDF</button>
         </div>
       </div>
       {matiere.listeTD?.map((td, tdIndex) => (
@@ -264,6 +307,7 @@ export default function MatiereCard({
         <span style={{fontSize:'0.9rem', color:'var(--warning-color)'}}>{matiere.listeTP?.length || 0} TP</span>
         <div style={{display:'flex', gap:'0.5rem'}}>
           <button onClick={() => addTPManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>+ Manuel</button>
+          <button onClick={() => handleScanPdfFor('listeTP', ['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP'])} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>📄 Scanner PDF</button>
         </div>
       </div>
       {matiere.listeTP?.map((tp, tpIndex) => (
@@ -327,6 +371,7 @@ export default function MatiereCard({
         <span style={{fontSize:'0.9rem', color:'#ef4444'}}>{matiere.listeAnnales?.length || 0} Annales</span>
         <div style={{display:'flex', gap:'0.5rem'}}>
           <button onClick={() => actions.addAnnaleManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'#ef4444', border:'1px solid rgba(239, 68, 68, 0.4)'}}>+ Manuel</button>
+          <button onClick={() => handleScanPdfFor('listeAnnales', ['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales'])} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'#ef4444', border:'1px solid rgba(239, 68, 68, 0.4)'}}>📄 Scanner PDF</button>
         </div>
       </div>
       {matiere.listeAnnales?.map((annale, aIndex) => (

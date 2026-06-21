@@ -434,6 +434,14 @@ function Dashboard() {
         >
           Exporter PDF
         </button>
+        <button 
+          className="btn-secondary" 
+          onClick={exportToICal} 
+          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#60a5fa', borderColor: 'rgba(96, 165, 250, 0.4)'}}
+          title="Exporter le planning au format iCalendar (.ics)"
+        >
+          📅 Exporter iCal
+        </button>
       </div>
 
       <div className="dashboard-grid">

@@ -1,8 +1,16 @@
+import { useToast } from '../../ToastProvider';
+
 export default function EditableLabel({ value, onRename, placeholder, style }) {
+  const { toast } = useToast();
+
   const handleRename = () => {
     const newName = window.prompt("Nouveau nom :", value || '');
-    if (newName !== null && newName.trim() !== '') {
-      onRename(newName.trim());
+    if (newName !== null) {
+      if (newName.trim() === '') {
+        toast.error("Le nom ne peut pas être vide.");
+      } else {
+        onRename(newName.trim());
+      }
     }
   };
 
