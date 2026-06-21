@@ -3,6 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('ELPIS E2E Tests', () => {
 
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem('elpisDisclaimerShown', 'true');
+    });
+    
     await page.route('/api/**', async route => {
       const url = route.request().url();
       if (url.includes('/config')) {
