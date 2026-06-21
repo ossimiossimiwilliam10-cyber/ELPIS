@@ -2,6 +2,7 @@ services:
   - type: web
     name: elpis-app
     env: node
+    plan: free
     buildCommand: "cd interface/web && npm install && npm run build && cd ../bridge && npm install"
     startCommand: "cd interface/bridge && node server.js"
     envVars:
