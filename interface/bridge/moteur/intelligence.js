@@ -27,6 +27,17 @@ function normalizeDateStr(dateStr) {
 }
 
 /**
+ * Parses a YYYY-MM-DD date string into a local Date object at 00:00:00.
+ * Prevents timezone shift bugs (unlike string + 'T00:00:00' which is parsed as UTC).
+ */
+function parseDateLocal(dateStr) {
+  if (!dateStr) return new Date(NaN);
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return new Date(NaN);
+  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0, 0);
+}
+
+/**
  * Calcule la moyenne pondérée d'une matière à partir de ses évaluations.
  * Ne prend en compte que les évaluations déjà notées.
  */
@@ -357,7 +368,7 @@ function buildExamUrgencyMap(crs) {
             for (const ev of subj.evaluations) {
               if (!ev.date) continue;
               const normDate = normalizeDateStr(ev.date);
-              const evalDate = normDate ? new Date(normDate + 'T00:00:00') : new Date(NaN);
+              const evalDate = parseDateLocal(normDate);
               if (isNaN(evalDate.getTime())) continue;
               const diffDays = Math.ceil((evalDate - today) / (1000 * 60 * 60 * 24));
               if (diffDays >= 0 && diffDays < minDays) minDays = diffDays;
@@ -392,5 +403,7 @@ module.exports = {
   detectBurnoutRisk,
   buildProjectedScoreMap,
   buildCognitiveLoadMap,
-  buildExamUrgencyMap
+  buildExamUrgencyMap,
+  normalizeDateStr,
+  parseDateLocal
 };

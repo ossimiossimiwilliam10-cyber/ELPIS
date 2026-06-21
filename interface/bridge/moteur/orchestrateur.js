@@ -46,12 +46,17 @@ function normalizeDateStr(dateStr) {
   const parts = dateStr.split('-');
   if (parts.length !== 3) return null;
   if (parts[0].length === 4) {
-    // YYYY-MM-DD
     return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
   } else {
-    // DD-MM-YYYY
     return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
   }
+}
+
+function parseDateLocal(dateStr) {
+  if (!dateStr) return new Date(NaN);
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return new Date(NaN);
+  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0, 0);
 }
 
 function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false) {
@@ -211,7 +216,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   // Base de parité
   const studyStartStr = normalizeDateStr(cfg.studyStartDate);
-  const studyStart = studyStartStr ? new Date(studyStartStr + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
+  const studyStart = parseDateLocal(studyStartStr);
   const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
   const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
 
@@ -242,7 +247,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           const checkDate = (dStr) => {
             const norm = normalizeDateStr(dStr);
             if (norm) {
-              const d = new Date(norm + 'T00:00:00').getTime();
+              const d = parseDateLocal(norm).getTime();
               if (d > lastPratiqueMs) lastPratiqueMs = d;
             }
           };
@@ -288,8 +293,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
             } else {
               const targetDateStr = normalizeDateStr(cm.prochaineRevisionDate);
               if (targetDateStr) {
-                const targetDate = new Date(targetDateStr + 'T00:00:00');
-                const nowDate = new Date(todayStr + 'T00:00:00');
+                const targetDate = parseDateLocal(targetDateStr);
+                const nowDate = parseDateLocal(todayStr);
                 const joursEcoules = Math.floor((nowDate - targetDate) / (1000 * 60 * 60 * 24));
                 if (joursEcoules >= (fillGap ? -3 : 0)) {
                   doitReviser = true;
@@ -297,8 +302,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
                 }
               } else {
                 const normRev = normalizeDateStr(cm.derniereRevision);
-                const revDate = normRev ? new Date(normRev + 'T00:00:00') : new Date(NaN);
-                const nowDate = new Date(todayStr + 'T00:00:00');
+                const revDate = parseDateLocal(normRev);
+                const nowDate = parseDateLocal(todayStr);
                 if (isNaN(revDate.getTime())) {
                   doitReviser = true;
                   joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;

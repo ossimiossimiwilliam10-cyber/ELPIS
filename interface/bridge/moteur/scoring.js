@@ -47,8 +47,10 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
     const matiereKey = matiereNom.toLowerCase().trim();
     let boostData = examUrgencyMap[matiereKey];
     if (boostData === undefined) {
-      for (const [subjKey, data] of Object.entries(examUrgencyMap)) {
-        if (matiereKey === subjKey || matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
+      // Prioritize longest match first to avoid "Physique" overriding "Physique Avancée"
+      const entries = Object.entries(examUrgencyMap).sort((a, b) => b[0].length - a[0].length);
+      for (const [subjKey, data] of entries) {
+        if (matiereKey.includes(subjKey) || subjKey.includes(matiereKey)) {
           boostData = data;
           break;
         }
@@ -134,8 +136,10 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
     baseBoost = examUrgencyMap[matiereKey].multiplier;
     daysToExam = examUrgencyMap[matiereKey].daysToExam;
   } else {
-    for (const [subjKey, data] of Object.entries(examUrgencyMap)) {
-      if (matiereKey === subjKey || matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
+    // Prioritize longest match first
+    const entries = Object.entries(examUrgencyMap).sort((a, b) => b[0].length - a[0].length);
+    for (const [subjKey, data] of entries) {
+      if (matiereKey.includes(subjKey) || subjKey.includes(matiereKey)) {
         baseBoost = data.multiplier;
         daysToExam = data.daysToExam;
         break;
