@@ -81,6 +81,77 @@ describe('Scoring Engine - getPrioScore', () => {
     expect(prioAnnale).toBeGreaterThanOrEqual(3.0);
   });
 
+  test('AXE 5: Remaining Weight Factor boosts priority if remainingRatio >= 0.4', () => {
+    const ex = { nombrePratiques: 0, difficulte: 'moyen' };
+    const matiere = { nom: 'Maths', coefficient: 1, evaluations: [] };
+    const rwMap = { 'Maths': { remainingRatio: 0.8 } }; // Boost: 1 + (0.8 - 0.4)*1 = 1.4
+
+    const prioWithRW = getPrioScore(ex, null, matiere, rwMap, null);
+    const prioWithoutRW = getPrioScore(ex, null, matiere, {}, null);
+
+    expect(prioWithRW).toBeCloseTo(prioWithoutRW * 1.4);
+  });
+
+  test('AXE 8: Compensation reduces pressure if UE is compensable and deficit < 2', () => {
+    const ex = { nombrePratiques: 0, difficulte: 'moyen' };
+    const matiere = { nom: 'Maths', coefficient: 1, evaluations: [] };
+    const compMap = { 'Maths': { compensable: true, deficit: 1 } }; 
+
+    const prioWithComp = getPrioScore(ex, null, matiere, null, compMap);
+    const prioWithoutComp = getPrioScore(ex, null, matiere, null, {});
+
+    expect(prioWithComp).toBeCloseTo(prioWithoutComp * 0.7);
+  });
+
+  test('AXE 13: Synergies Inter-Matières boosts priority if related subject ratio < 0.3', () => {
+    const ex = { nombrePratiques: 0, difficulte: 'moyen' };
+    const matiere = { nom: 'Maths', _ueMatieres: ['Maths', 'Physique'] };
+    const velocityMap = { 'Physique': { totalCMs: 10, masteredCMs: 1 } }; // ratio 0.1 < 0.3 => boost +0.2
+
+    const prioWithSynergy = getPrioScore(ex, null, matiere, null, null, velocityMap);
+    const prioWithoutSynergy = getPrioScore(ex, null, matiere, null, null, {});
+
+    expect(prioWithSynergy).toBeCloseTo(prioWithoutSynergy * 1.2);
+  });
+
+  test('AXE 13: Synergies Inter-Matières reduces priority if related subject ratio > 0.8', () => {
+    const ex = { nombrePratiques: 0, difficulte: 'moyen' };
+    const matiere = { nom: 'Maths', _ueMatieres: ['Maths', 'Physique'] };
+    const velocityMap = { 'Physique': { totalCMs: 10, masteredCMs: 9 } }; // ratio 0.9 > 0.8 => boost -0.1
+
+    const prioWithSynergy = getPrioScore(ex, null, matiere, null, null, velocityMap);
+    const prioWithoutSynergy = getPrioScore(ex, null, matiere, null, null, {});
+
+    expect(prioWithSynergy).toBeCloseTo(prioWithoutSynergy * 0.9);
+  });
+
+  test('Grade deficit boost: grade < 12 boosts priority', () => {
+    const ex = { nombrePratiques: 0, difficulte: 'moyen' };
+    // getMatiereAverage relies on evaluations
+    const matiere = { nom: 'Maths', coefficient: 2, evaluations: [{note: 10, coefficient: 1}] };
+    // boost = 1.0 + ((12-10)/10)*2 = 1.4
+
+    const prioWithDeficit = getPrioScore(ex, null, matiere, null, null, null);
+    expect(prioWithDeficit).toBeCloseTo(1.4);
+  });
+
+  test('Grade deficit boost: grade >= 15 reduces priority', () => {
+    const ex = { nombrePratiques: 0, difficulte: 'moyen' };
+    const matiere = { nom: 'Maths', coefficient: 1, evaluations: [{note: 16, coefficient: 1}] };
+    // grade >= 15 => boost = 0.8
+
+    const prioHighGrade = getPrioScore(ex, null, matiere, null, null, null);
+    expect(prioHighGrade).toBeCloseTo(0.8);
+  });
+
+  test('difficulty multiplier variations', () => {
+    const ex1 = { difficulte: 'assez_difficile' };
+    expect(getPrioScore(ex1, null, null)).toBeCloseTo(1.2);
+
+    const ex2 = { difficulte: 'tres_facile' };
+    expect(getPrioScore(ex2, null, null)).toBeCloseTo(0.6);
+  });
+
   const diffMultiplier = {
     'tres_facile': 0.5,
     'facile': 0.8,

@@ -44,7 +44,33 @@ describe('Intelligence Engine - buildExamUrgencyMap (Axe 1)', () => {
     expect(map['physique'].multiplier).toBe(2.0);
     expect(map['chimie'].multiplier).toBe(1.5);
     expect(map['bio'].multiplier).toBe(1.5); // <= 21 days is 1.5
-    expect(map['histoire']).toBeUndefined();
+  });
+
+  test('uses evaluation date if examDates is not present or farther away', () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const evalDate = new Date(today);
+    evalDate.setDate(today.getDate() + 5);
+    const evalDateStr = evalDate.toISOString().split('T')[0];
+
+    const crs = {
+      licences: [{
+        semestres: [{
+          ues: [{
+            matieres: [{
+              nom: 'Histoire',
+              evaluations: [{ date: evalDateStr, note: 10, coefficient: 1 }]
+            }]
+          }]
+        }]
+      }]
+    };
+    const map = buildExamUrgencyMap(crs);
+    expect(map['histoire']).toBeDefined();
+    expect(map['histoire'].daysToExam).toBeGreaterThanOrEqual(4);
+    expect(map['histoire'].daysToExam).toBeLessThanOrEqual(6);
+    expect(map['histoire'].multiplier).toBe(2.0); // <= 7 days is 2.0
   });
 });
 
