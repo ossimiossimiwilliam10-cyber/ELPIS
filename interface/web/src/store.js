@@ -91,6 +91,7 @@ const useStore = create(immer((set, get) => ({
     matiereNom: null,
     isRunning: false,
     elapsedSeconds: 0,
+    lastTickDate: null
   },
 
   startGlobalChrono: (exo) => set({
@@ -99,21 +100,45 @@ const useStore = create(immer((set, get) => ({
       titre: exo.titre,
       matiereNom: exo.matiereNom,
       isRunning: true,
-      elapsedSeconds: 0
+      elapsedSeconds: 0,
+      lastTickDate: Date.now()
     }
   }),
-  toggleGlobalChrono: () => set(state => ({
-    globalChrono: { ...state.globalChrono, isRunning: !state.globalChrono.isRunning }
-  })),
+  toggleGlobalChrono: () => set(state => {
+    const isRunning = !state.globalChrono.isRunning;
+    return {
+      globalChrono: { 
+        ...state.globalChrono, 
+        isRunning,
+        lastTickDate: isRunning ? Date.now() : null
+      }
+    };
+  }),
   resetGlobalChrono: () => set(state => ({
-    globalChrono: { ...state.globalChrono, isRunning: false, elapsedSeconds: 0, exoId: null, titre: null, matiereNom: null }
+    globalChrono: { ...state.globalChrono, isRunning: false, elapsedSeconds: 0, exoId: null, titre: null, matiereNom: null, lastTickDate: null }
   })),
   tickGlobalChrono: () => set(state => {
-    if (state.globalChrono.isRunning) {
-      return { globalChrono: { ...state.globalChrono, elapsedSeconds: state.globalChrono.elapsedSeconds + 1 } };
+    if (state.globalChrono.isRunning && state.globalChrono.lastTickDate) {
+      const now = Date.now();
+      const diffSeconds = Math.floor((now - state.globalChrono.lastTickDate) / 1000);
+      if (diffSeconds > 0) {
+        return { 
+          globalChrono: { 
+            ...state.globalChrono, 
+            elapsedSeconds: state.globalChrono.elapsedSeconds + diffSeconds,
+            lastTickDate: now
+          } 
+        };
+      }
     }
     return state;
   }),
+  setGlobalChronoTime: (seconds) => set(state => ({
+    globalChrono: {
+      ...state.globalChrono,
+      elapsedSeconds: seconds
+    }
+  })),
 
 
   updatePendingTasksCount: async () => {

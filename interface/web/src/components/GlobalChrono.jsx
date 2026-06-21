@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import useStore from '../store';
 
 export default function GlobalChrono() {
-  const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono } = useStore();
+  const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useStore();
   const { isRunning, elapsedSeconds, titre, matiereNom, exoId } = globalChrono;
   
   const [isVisible, setIsVisible] = useState(true);
@@ -86,6 +86,16 @@ export default function GlobalChrono() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
+  const handleEditTime = () => {
+    const input = window.prompt("Saisir le temps en minutes (ex: 15.5 pour 15m30s) :", (elapsedSeconds / 60).toFixed(1));
+    if (input !== null) {
+      const mins = parseFloat(input.replace(',', '.'));
+      if (!isNaN(mins) && mins >= 0) {
+        setGlobalChronoTime(Math.floor(mins * 60));
+      }
+    }
+  };
+
   // The actual UI content of the chrono
   const chronoContent = (
     <div 
@@ -158,14 +168,18 @@ export default function GlobalChrono() {
             {titre}
           </div>
         )}
-        <div style={{
+        <div 
+          onClick={handleEditTime}
+          title="Modifier manuellement le temps (en minutes)"
+          style={{
           fontFamily: 'monospace', 
           fontSize: '1.4rem', 
           fontWeight: 'bold', 
           color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)',
           textAlign: 'center',
           userSelect: 'none',
-          letterSpacing: '1px'
+          letterSpacing: '1px',
+          cursor: 'pointer'
         }}>
           {formatTime(elapsedSeconds)}
         </div>
