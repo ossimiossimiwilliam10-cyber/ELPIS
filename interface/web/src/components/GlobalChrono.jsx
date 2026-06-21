@@ -171,7 +171,7 @@ export default function GlobalChrono() {
         </div>
       </div>
 
-      {!pipWindow ? (
+      {!pipWindow && typeof window !== 'undefined' && 'documentPictureInPicture' in window ? (
         <button
           onClick={openPip}
           style={{

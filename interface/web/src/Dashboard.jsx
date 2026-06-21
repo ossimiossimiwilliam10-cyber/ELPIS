@@ -383,7 +383,7 @@ function Dashboard() {
               : "Tu as tout terminé pour aujourd'hui. Bravo !"}
           </p>
         </div>
-        <div className="welcome-stats" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+        <div className="welcome-stats">
           <div className="welcome-stat">
             <div className="welcome-stat-value" style={{color: 'var(--success-color)'}}>{recommendedDailyHours}h</div>
             <div className="welcome-stat-label"><InfoTooltip content="Calculé dynamiquement par le moteur de charge selon tes coefficients et les jours restants avant l'examen.">Cible IA <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
@@ -396,11 +396,11 @@ function Dashboard() {
             <div className="welcome-stat-value">{Math.round(tempsRequisMin/60 * 10)/10}h</div>
             <div className="welcome-stat-label"><InfoTooltip content="Temps total estimé par l'Orchestrateur pour accomplir toutes les tâches planifiées aujourd'hui.">Requis <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
           </div>
-          <div className="welcome-stat" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem' }}>
+          <div className="welcome-stat welcome-stat-circular">
             <CircularProgress percent={globalPercent} />
             <div className="welcome-stat-label"><InfoTooltip content="Pourcentage global d'avancement (tous cours et exercices confondus).">Global <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
           </div>
-          <div className="welcome-stat" style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div className="welcome-stat welcome-stat-streak">
             <div className="welcome-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#F59E0B' }}>
               <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 4s ease-in-out infinite' }}>🔥</span> 
               <span style={{ fontSize: '2.4rem' }}>{config?.currentStreak || 0}</span>
@@ -410,7 +410,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div style={{display:'flex', justifyContent:'flex-end', marginBottom:'1rem', gap: '1rem'}}>
+      <div className="dashboard-actions">
         {statut !== "REPOS" && !isRestDayToday && (
           <button 
             className="btn-secondary" 
@@ -593,7 +593,7 @@ function Dashboard() {
                                   {t.moment === 'soir' && <span style={{marginLeft: '0.5rem', background: 'rgba(167, 139, 250, 0.15)', color: '#a78bfa', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>🌙 Soir</span>}
                                 </div>
                               </div>
-                              <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flexShrink: 0}}>
+                              <div className="todo-item-actions">
                                 <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.8rem'}}>
                                   ~{t.dureeMinutes || 0} min
                                 </div>

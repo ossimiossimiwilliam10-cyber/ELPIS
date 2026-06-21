@@ -547,6 +547,75 @@ input:focus, select:focus {
   }
 }
 
+/* === RESPONSIVE DASHBOARD & STATS === */
+.welcome-stats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.welcome-stat-circular {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.welcome-stat-streak {
+  border-left: 1px solid rgba(255,255,255,0.1);
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.dashboard-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+.todo-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .welcome-stats {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .welcome-stat {
+    flex: 1 1 40%;
+    text-align: center;
+  }
+  .welcome-stat-circular {
+    flex: 1 1 100%;
+  }
+  .welcome-stat-streak {
+    flex: 1 1 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+  .dashboard-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .todo-item {
+    flex-wrap: wrap;
+  }
+  .todo-item-actions {
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  .cm-item, .td-item, .tp-item, .annale-item {
+    flex-wrap: wrap;
+  }
+}
+
 .status-badge {
   display: inline-block;
   padding: 0.3rem 0.8rem;
