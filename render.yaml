@@ -9,4 +9,4 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: MONGODB_URI
-        sync: false
+        value: "mongodb+srv://Elpisdb:dbElpis12548256%40%7C%7B%23%7C@cluster0.j3pygdy.mongodb.net/?appName=Cluster0"
