@@ -473,7 +473,7 @@ function StatistiquesPage() {
                       labelFormatter={(days) => `Après ${days} jour${days > 1 ? 's' : ''}`}
                     />
                     <Legend verticalAlign="top" height={30} />
-                    {forgettingCurveData.refLevels.map((level, i) => (
+                    {forgettingCurveData.refLevels.map((level) => (
                       <Line 
                         key={level.label}
                         type="monotone"

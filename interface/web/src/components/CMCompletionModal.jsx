@@ -17,12 +17,14 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
   const [score, setScore] = useState(null);
   const overlayRef = useRef(null);
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setMinutes(defaultMinutes || 30);
       setScore(null);
     }
-  }, [isOpen, defaultMinutes]);
+  }
 
   const handleOverlayClick = (e) => {
     if (e.target === overlayRef.current) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import useStore from './store';
 import { produce } from 'immer';
 import EditableLabel from './components/cours/EditableLabel';

@@ -1,6 +1,6 @@
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
+
 import MatiereCard from './components/cours/MatiereCard';
 
 // Mock recharts to avoid rendering issues in jsdom

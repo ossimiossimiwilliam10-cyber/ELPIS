@@ -71,8 +71,9 @@ function EntrainementPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursConfig, dailyFillGap]);
 
-  // Derive local state from orchestratorData
-  useEffect(() => {
+  const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
+  if (orchestratorData !== prevOrchestratorData) {
+    setPrevOrchestratorData(orchestratorData);
     if (orchestratorData) {
       if (orchestratorData.tachesDuJour) {
         setTachesOrchestrateur(orchestratorData.tachesDuJour);
@@ -80,15 +81,16 @@ function EntrainementPage() {
       setTempsDejaTravaille(orchestratorData.tempsDejaTravailleMin || 0);
       setTempsDispoMin(orchestratorData.tempsDispoMin || 0);
     }
-  }, [orchestratorData]);
+  }
 
   // Resynchroniser le state local quand le parent change
-  useEffect(() => {
+  const [prevCoursConfig, setPrevCoursConfig] = useState(null);
+  if (coursConfig !== prevCoursConfig) {
+    setPrevCoursConfig(coursConfig);
     if (coursConfig && coursConfig.licences) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConfigLocal(coursConfig);
     }
-  }, [coursConfig]);
+  }
 
   // Filtered exercises directly matching the orchestrator
   const strategicExercices = useMemo(() => {
@@ -200,12 +202,12 @@ function EntrainementPage() {
       if (ratio < 0.5 && finalScore < 4) finalScore += 1;
     }
 
-    let actualDaysElapsed = -1;
     if (cm.derniereRevision) {
-      const todayStrLocal = getTodayStr();
-      const revDate = new Date(cm.derniereRevision + 'T00:00:00');
-      const nowDate = new Date(todayStrLocal + 'T00:00:00');
-      actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
+      // Pour une éventuelle logique future basée sur actualDaysElapsed
+      // const todayStrLocal = getTodayStr();
+      // const revDate = new Date(cm.derniereRevision + 'T00:00:00');
+      // const nowDate = new Date(todayStrLocal + 'T00:00:00');
+      // actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
     }
 
     // AXE 9: Personalized Decay Multiplier

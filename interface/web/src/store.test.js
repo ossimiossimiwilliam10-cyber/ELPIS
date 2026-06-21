@@ -17,7 +17,7 @@ describe('Zustand Store Tests', () => {
     generateMatiereActions.push([`Matiere_${i}`, i]);
   }
 
-  test.each(generateMatiereActions)('add and update note for %s with value %d', (matiereName, val) => {
+  test.each(generateMatiereActions)('add and update note for %s', (matiereName) => {
     useStore.setState({
       coursConfig: {
         licences: [{

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, test } from 'vitest';
 import { evaluateFSRS, migrateToFSRSCard, Rating, State } from './fsrsEngine';
 
 // ============================================================
@@ -212,8 +212,6 @@ describe('FSRS round-trip', () => {
     for (let i = 0; i < 3; i++) {
       fsrsCard = evaluateFSRS(fsrsCard, Rating.Good);
     }
-    const stabilityBefore = fsrsCard.stability;
-    
     // 1 Again
     fsrsCard = evaluateFSRS(fsrsCard, Rating.Again);
     // Stability should decrease or stay low after Again
@@ -252,7 +250,7 @@ describe('DEEP LOGIC: FSRS Curve Evolution over Time', () => {
     curveScenarios.push([s, velocity, isFastLearner]);
   }
 
-  test.each(curveScenarios)('Student %d (fast: %s) curve validates logical FSRS bounds', (studentId, velocity, isFastLearner) => {
+  test.each(curveScenarios)('Student %d (fast: %s) curve validates logical FSRS bounds', (studentId, velocity) => {
     let card = migrateToFSRSCard({ jActuel: 0, titre: 'Deep Logic CM' });
     
     // Day 1: Learn

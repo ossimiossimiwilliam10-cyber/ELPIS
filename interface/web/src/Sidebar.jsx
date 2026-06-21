@@ -5,6 +5,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
       tabs: [
         { id: 'dashboard', label: 'Accueil', icon: '🏠', badge: pendingTasksCount },
         { id: 'entrainement', label: 'Session du Jour', icon: '🎯' },
+        { id: 'revisions_avancees', label: 'Avance & Bonus', icon: pendingTasksCount > 0 ? '🔒' : '🚀' },
       ]
     },
     {

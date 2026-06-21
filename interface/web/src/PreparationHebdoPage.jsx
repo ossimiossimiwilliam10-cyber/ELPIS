@@ -22,9 +22,11 @@ export default function PreparationHebdoPage() {
   }, []);
 
   // Resynchroniser le state local quand le store change
-  useEffect(() => {
+  const [prevCoursConfig, setPrevCoursConfig] = useState(null);
+  if (coursConfig !== prevCoursConfig) {
+    setPrevCoursConfig(coursConfig);
     if (coursConfig) setConfigLocal(coursConfig);
-  }, [coursConfig]);
+  }
 
   const mutateAndSave = (recipe) => {
     setConfigLocal(prev => {

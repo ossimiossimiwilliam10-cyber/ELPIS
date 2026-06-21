@@ -104,12 +104,13 @@ function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursConfig, extraTime, dailyFillGap, fetchOrchestrator]);
 
-  // Derive orderedTaches from orchestratorData when it changes
-  useEffect(() => {
+  const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
+  if (orchestratorData !== prevOrchestratorData) {
+    setPrevOrchestratorData(orchestratorData);
     if (orchestratorData?.tachesDuJour) {
       setOrderedTaches(orchestratorData.tachesDuJour);
     }
-  }, [orchestratorData]);
+  }
 
   const handleAddExtraTime = () => {
     const newTime = extraTime + 30;
@@ -285,7 +286,7 @@ function Dashboard() {
       dureeMinutes: minutes
     });
     setPendingCMTask(null);
-  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence, config]);
+  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence]);
 
   // Dynamic greeting (must be before early returns)
   const hour = new Date().getHours();

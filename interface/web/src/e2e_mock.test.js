@@ -1,5 +1,4 @@
-import { describe, test, expect, vi } from 'vitest';
-import fsrsEngine from './fsrsEngine'; // wait, it's just named evaluateFSRS
+import { describe, test, expect } from 'vitest';
 import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 
 describe('Massive E2E FSRS Simulation (100 Scenarios)', () => {

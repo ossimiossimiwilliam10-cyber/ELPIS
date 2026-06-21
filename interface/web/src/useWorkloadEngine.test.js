@@ -12,7 +12,7 @@ describe('Workload Engine Hook', () => {
     scenarios.push([10 + (i % 10), i * 10, i * 2]);
   }
 
-  test.each(scenarios)('calculates correct recommended hours for target %d, elapsed %d, remaining %d', (target, elapsed, remaining) => {
+  test.each(scenarios)('calculates correct recommended hours for target %d, elapsed %d, remaining %d', (target) => {
     // We mock the store state inside the test
     useStore.setState({
       coursConfig: {
