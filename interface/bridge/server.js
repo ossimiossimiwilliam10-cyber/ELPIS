@@ -145,8 +145,11 @@ app.get('/api/config', (req, res) => {
 // POST update config
 app.post('/api/config', (req, res) => {
   try {
-    if (!req.body || typeof req.body !== 'object') {
-      return res.status(400).json({ error: "Données de configuration invalides." });
+    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+      return res.status(400).json({ error: "Données de configuration invalides. Objet attendu." });
+    }
+    if (req.body.targetGrade !== undefined && typeof req.body.targetGrade !== 'number') {
+      return res.status(400).json({ error: "targetGrade doit être un nombre." });
     }
     const success = saveConfig(req.body);
     if (!success) {
@@ -174,11 +177,11 @@ app.get('/api/cours', (req, res) => {
 // POST update courses
 app.post('/api/cours', (req, res) => {
   try {
-    if (!req.body || typeof req.body !== 'object') {
-      return res.status(400).json({ error: "Données de cours invalides." });
+    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+      return res.status(400).json({ error: "Données de cours invalides. Objet attendu." });
     }
-    if (!req.body.licences && !req.body.semestres) {
-      return res.status(400).json({ error: "Structure de cours invalide (licences ou semestres requis)." });
+    if (!Array.isArray(req.body.licences)) {
+      return res.status(400).json({ error: "Structure de cours invalide ('licences' doit être un tableau)." });
     }
     const success = saveCours(req.body);
     if (!success) {

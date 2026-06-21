@@ -117,4 +117,18 @@ test.describe('ELPIS E2E Tests', () => {
     }
   });
 
+  test('devrait simuler un engagement fixe et vérifier la stabilité', async ({ page }) => {
+    await page.route('/api/config', async route => {
+      await route.fulfill({ json: { 
+        targetGrade: 15, 
+        currentStreak: 5, 
+        fixedCommitments: [{ day: 'Tous les jours', start: '08:00', end: '12:00' }] 
+      }});
+    });
+    await page.goto('/');
+    await expect(page.locator('h2', { hasText: /Bonjour|Bon après-midi|Bonsoir/i })).toBeVisible();
+    await page.click('nav button:has-text("Configuration")');
+    await expect(page.locator('input[type="time"]').first()).toBeVisible();
+  });
+
 });

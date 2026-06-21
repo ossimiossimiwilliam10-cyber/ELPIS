@@ -124,8 +124,35 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const maxSubjectsPerDay = cfg.maxSubjectsPerDay || 4;
   let tempsLibreMin = heuresTravailJour * 60;
 
+  // Calculer les engagements fixes du jour
+  const todayName = getDayOfWeekString();
+  let fixedCommitmentsMin = 0;
+  if (Array.isArray(cfg.fixedCommitments)) {
+    cfg.fixedCommitments.forEach(c => {
+      if (c.day === todayName || c.day === 'Tous les jours') {
+        if (c.start && c.end) {
+          const [h1, m1] = c.start.split(':').map(Number);
+          const [h2, m2] = c.end.split(':').map(Number);
+          if (!isNaN(h1) && !isNaN(m1) && !isNaN(h2) && !isNaN(m2)) {
+            let startMin = h1 * 60 + m1;
+            let endMin = h2 * 60 + m2;
+            if (endMin >= startMin) {
+              fixedCommitmentsMin += (endMin - startMin);
+            } else {
+              fixedCommitmentsMin += (24 * 60 - startMin) + endMin;
+            }
+          }
+        }
+      }
+    });
+  }
+
+  tempsLibreMin -= fixedCommitmentsMin;
+  if (tempsLibreMin < 0) tempsLibreMin = 0;
+  
   tempsLibreMin += extraTimeMin;
   rapport.tempsDispoMin = tempsLibreMin;
+  rapport.fixedCommitmentsMin = fixedCommitmentsMin;
 
   // 2. Calculer le temps déjà travaillé aujourd'hui
   let tempsDejaTravailleMin = 0;
