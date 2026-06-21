@@ -61,10 +61,14 @@ function AppInner() {
       const lastNotified = localStorage.getItem('elpisLastNotified');
       
       if (lastNotified !== today) {
-        new Notification("ELPIS - Objectif 10/10", {
-          body: `Vous avez ${pendingTasksCount} tâche(s) en attente aujourd'hui. C'est le moment de garder votre Streak ! 🔥`,
-          icon: '/vite.svg'
-        });
+        try {
+          new Notification("ELPIS - Objectif 10/10", {
+            body: `Vous avez ${pendingTasksCount} tâche(s) en attente aujourd'hui. C'est le moment de garder votre Streak ! 🔥`,
+            icon: '/vite.svg'
+          });
+        } catch (e) {
+          console.warn("Notifications non supportées ou bloquées", e);
+        }
         localStorage.setItem('elpisLastNotified', today);
       }
     }
@@ -311,6 +315,31 @@ function AppInner() {
                       />
                     </div>
                   </div>
+
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem'}}>
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px'}}>
+                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
+                        Heure de Coucher (24h)
+                      </label>
+                      <input 
+                        type="time"
+                        value={config?.bedtime || "23:00"}
+                        onChange={e => setConfig({...config, bedtime: e.target.value})}
+                        style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
+                      />
+                    </div>
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px'}}>
+                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
+                        Heure de Réveil (24h)
+                      </label>
+                      <input 
+                        type="time"
+                        value={config?.wakeUpTime || "07:00"}
+                        onChange={e => setConfig({...config, wakeUpTime: e.target.value})}
+                        style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Paramètres de l'Orchestrateur */}
@@ -406,6 +435,76 @@ function AppInner() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Engagements Fixes */}
+                <div className="card glass-panel" style={{display: 'flex', flexDirection: 'column'}}>
+                  <h2 style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f43f5e'}}>
+                    <span>⏰</span> Engagements Fixes
+                  </h2>
+                  <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem'}}>
+                    Renseigne tes heures de cours ou de travail. Elles seront déduites de ton temps libre.
+                  </p>
+                  <button 
+                    onClick={() => setConfig({...config, fixedCommitments: [...(config?.fixedCommitments||[]), {day: 'Lundi', start: '08:00', end: '10:00'}]})}
+                    style={{marginBottom: '1rem', padding: '0.6rem', background: 'rgba(244, 63, 94, 0.2)', color: '#f43f5e', border: '1px solid rgba(244, 63, 94, 0.4)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold'}}
+                  >
+                    + Ajouter un Engagement
+                  </button>
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '0.8rem'}}>
+                    {(config?.fixedCommitments || []).map((commitment, idx) => (
+                      <div key={idx} style={{display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '8px', flexWrap: 'wrap'}}>
+                        <select 
+                          value={commitment.day}
+                          onChange={e => {
+                            const newComs = [...(config?.fixedCommitments || [])];
+                            newComs[idx].day = e.target.value;
+                            setConfig({...config, fixedCommitments: newComs});
+                          }}
+                          style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
+                        >
+                          {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche', 'Tous les jours'].map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                        <input 
+                          type="time" 
+                          value={commitment.start}
+                          onChange={e => {
+                            const newComs = [...(config?.fixedCommitments || [])];
+                            newComs[idx].start = e.target.value;
+                            setConfig({...config, fixedCommitments: newComs});
+                          }}
+                          style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
+                        />
+                        <span style={{color: 'var(--text-secondary)'}}>à</span>
+                        <input 
+                          type="time" 
+                          value={commitment.end}
+                          onChange={e => {
+                            const newComs = [...(config?.fixedCommitments || [])];
+                            newComs[idx].end = e.target.value;
+                            setConfig({...config, fixedCommitments: newComs});
+                          }}
+                          style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
+                        />
+                        <button 
+                          onClick={() => {
+                            const newComs = [...(config?.fixedCommitments || [])];
+                            newComs.splice(idx, 1);
+                            setConfig({...config, fixedCommitments: newComs});
+                          }}
+                          style={{marginLeft: 'auto', background: 'transparent', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', fontSize: '1.2rem'}}
+                          title="Supprimer cet engagement"
+                        >
+                          ❌
+                        </button>
+                      </div>
+                    ))}
+                    {(!config?.fixedCommitments || config?.fixedCommitments.length === 0) && (
+                      <div style={{color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic', textAlign: 'center', padding: '1rem'}}>
+                        Aucun engagement fixe défini.
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

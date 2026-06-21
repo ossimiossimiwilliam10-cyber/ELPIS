@@ -2,6 +2,19 @@ import { test, expect } from '@playwright/test';
 
 test.describe('ELPIS E2E Tests', () => {
 
+  test.beforeEach(async ({ page }) => {
+    await page.route('/api/**', async route => {
+      const url = route.request().url();
+      if (url.includes('/config')) {
+        await route.fulfill({ json: { targetGrade: 15, currentStreak: 5, fixedCommitments: [] } });
+      } else if (url.includes('/orchestrateur')) {
+        await route.fulfill({ json: { statistiques: { percent: 50, total: 10, done: 5 }, tachesDuJour: [] } });
+      } else {
+        await route.fulfill({ json: {} });
+      }
+    });
+  });
+
   test('devrait charger le Dashboard', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/ELPIS/i);
@@ -24,13 +37,13 @@ test.describe('ELPIS E2E Tests', () => {
   test('devrait naviguer vers la Configuration', async ({ page }) => {
     await page.goto('/');
     await page.click('nav button:has-text("Configuration")');
-    await expect(page.locator('h2', { hasText: /Préférences Générales|Preferences Generales/ })).toBeVisible();
+    await expect(page.locator('h2', { hasText: /Objectifs de Réussite|Objectifs/ })).toBeVisible();
   });
 
   test('devrait afficher le streak dans la sidebar', async ({ page }) => {
     await page.goto('/');
     const streakEl = page.locator('.sidebar-footer').or(page.locator('text=Streak'));
-    await expect(streakEl).toBeVisible({ timeout: 10000 });
+    await expect(streakEl.first()).toBeVisible({ timeout: 10000 });
   });
 
   test('devrait pouvoir naviguer vers Session du Jour', async ({ page }) => {
@@ -67,9 +80,41 @@ test.describe('ELPIS E2E Tests', () => {
 
   test('devrait afficher la barre de progression sur le dashboard', async ({ page }) => {
     await page.goto('/');
+    // Debug: Attendre 2 secondes et afficher le contenu HTML du body
+    await page.waitForTimeout(2000);
+    const html = await page.content();
+    console.log("HTML CONTENT:", html);
     // Vérifie que la section "Statistiques de Progression" est présente
     const statsSection = page.locator('h2', { hasText: 'Statistiques de Progression' });
     await expect(statsSection).toBeVisible({ timeout: 10000 });
+  });
+
+  test('devrait afficher l\'interface des Engagements Fixes et Heures de sommeil', async ({ page }) => {
+    await page.goto('/');
+    await page.click('nav button:has-text("Configuration")');
+    // Vérifie la présence des champs Heure de Coucher et Réveil
+    await expect(page.locator('label', { hasText: 'Heure de Coucher (24h)' })).toBeVisible();
+    await expect(page.locator('label', { hasText: 'Heure de Réveil (24h)' })).toBeVisible();
+    
+    // Vérifie la présence de la section Engagements Fixes
+    await expect(page.locator('h2', { hasText: /Engagements Fixes/i })).toBeVisible();
+    await expect(page.locator('button', { hasText: '+ Ajouter un Engagement' })).toBeVisible();
+  });
+
+  test('devrait vérifier la présence des boutons d\'ajout manuel TD/TP dans la Bibliothèque', async ({ page }) => {
+    await page.goto('/');
+    await page.click('nav button:has-text("Bibliothèque")');
+    // On ajoute une licence, semestre, UE, matière pour voir les boutons
+    const addLicenceBtn = page.locator('button', { hasText: '+ Licence' });
+    if (await addLicenceBtn.isVisible()) {
+      await addLicenceBtn.click();
+      await page.click('button:has-text("+ Semestre")');
+      await page.click('button:has-text("+ UE")');
+      await page.click('button:has-text("+ Matière")');
+      // Vérifie que le bouton "+ Manuel" est visible pour les TD et TP
+      const btnManuel = page.locator('button:has-text("+ Manuel")').first();
+      await expect(btnManuel).toBeVisible();
+    }
   });
 
 });

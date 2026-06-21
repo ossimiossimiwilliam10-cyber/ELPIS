@@ -709,7 +709,7 @@ function Dashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             
             {/* Burnout Risk */}
-            {intelligence.burnoutRisk && intelligence.burnoutRisk.riskLevel !== 'none' && (
+            {intelligence?.burnoutRisk && intelligence.burnoutRisk.riskLevel !== 'none' && (
               <div style={{ 
                 background: intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.15)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
                 border: `1px solid ${intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.3)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
@@ -723,7 +723,7 @@ function Dashboard() {
             )}
 
             {/* Velocity Insights */}
-            {intelligence.velocityMap && (() => {
+            {intelligence?.velocityMap && (() => {
               const slowSubjects = Object.entries(intelligence.velocityMap).filter(([, v]) => v.isSlowLearner);
               if (slowSubjects.length === 0) return null;
               return (
@@ -742,7 +742,7 @@ function Dashboard() {
             })()}
 
             {/* Cognitive Load Summary */}
-            {intelligence.cognitiveLoadMap && (() => {
+            {intelligence?.cognitiveLoadMap && (() => {
               const heavy = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'heavy');
               const light = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'light');
               if (heavy.length === 0 && light.length === 0) return null;
@@ -758,7 +758,7 @@ function Dashboard() {
             })()}
 
             {/* Remaining Weight */}
-            {intelligence.remainingWeightMap && (() => {
+            {intelligence?.remainingWeightMap && (() => {
               const highRemaining = Object.entries(intelligence.remainingWeightMap)
                 .filter(([, v]) => v.remainingRatio === 1 && v.totalCoef > 0)
                 .sort((a, b) => b[1].totalCoef - a[1].totalCoef);
@@ -778,7 +778,7 @@ function Dashboard() {
             })()}
 
             {/* All clear */}
-            {intelligence.burnoutRisk?.riskLevel === 'none' && (
+            {intelligence?.burnoutRisk?.riskLevel === 'none' && (
               <div style={{ background: 'rgba(52, 211, 153, 0.08)', padding: '0.8rem 1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>✅ Burnout : Aucun risque détecté</span>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>

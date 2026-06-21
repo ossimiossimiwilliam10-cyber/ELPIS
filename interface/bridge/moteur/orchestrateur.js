@@ -179,8 +179,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   if (tempsLibreMin < 0) tempsLibreMin = 0;
 
   // Base de parité
-  const studyStartRaw = cfg.studyStartDate ? cfg.studyStartDate.split('-').reverse().join('-') : null;
-  const studyStart = studyStartRaw ? new Date(studyStartRaw + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
+  const studyStartStr = normalizeDateStr(cfg.studyStartDate);
+  const studyStart = studyStartStr ? new Date(studyStartStr + 'T00:00:00') : new Date(now.getFullYear(), 0, 1);
   const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
   const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
 
@@ -206,8 +206,9 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           // Bouclier Anti-Décrochage
           let lastPratiqueMs = 0;
           const checkDate = (dStr) => {
-            if (dStr) {
-              const d = new Date(dStr + 'T00:00:00').getTime();
+            const norm = normalizeDateStr(dStr);
+            if (norm) {
+              const d = new Date(norm + 'T00:00:00').getTime();
               if (d > lastPratiqueMs) lastPratiqueMs = d;
             }
           };
@@ -250,7 +251,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
               newCMCountPerMatiere++;
               newCMCountPerSemester++;
             } else {
-              const targetDateStr = cm.prochaineRevisionDate;
+              const targetDateStr = normalizeDateStr(cm.prochaineRevisionDate);
               if (targetDateStr) {
                 const targetDate = new Date(targetDateStr + 'T00:00:00');
                 const nowDate = new Date(todayStr + 'T00:00:00');
@@ -260,7 +261,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
                   joursEnRetard = joursEcoules;
                 }
               } else {
-                const revDate = new Date(cm.derniereRevision + 'T00:00:00');
+                const normRev = normalizeDateStr(cm.derniereRevision);
+                const revDate = normRev ? new Date(normRev + 'T00:00:00') : new Date(NaN);
                 const nowDate = new Date(todayStr + 'T00:00:00');
                 if (isNaN(revDate.getTime())) {
                   doitReviser = true;

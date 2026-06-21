@@ -49,8 +49,8 @@ const debouncedSaveHistorique = debounce(async (historique) => {
 
 const useStore = create(immer((set, get) => ({
   // --- STATE ---
-  config: null,
-  coursConfig: null,
+  config: {},
+  coursConfig: { licences: [] },
   historique: [],
   loading: true,
   error: null,

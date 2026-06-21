@@ -15,6 +15,17 @@ function getDayOfWeekString() {
   return DAYS_OF_WEEK[new Date().getDay()];
 }
 
+function normalizeDateStr(dateStr) {
+  if (!dateStr) return null;
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return null;
+  if (parts[0].length === 4) {
+    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+  } else {
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+  }
+}
+
 /**
  * Calcule la moyenne pondérée d'une matière à partir de ses évaluations.
  * Ne prend en compte que les évaluations déjà notées.
@@ -345,7 +356,8 @@ function buildExamUrgencyMap(crs) {
           if (subj.evaluations && Array.isArray(subj.evaluations)) {
             for (const ev of subj.evaluations) {
               if (!ev.date) continue;
-              const evalDate = new Date(ev.date + 'T00:00:00');
+              const normDate = normalizeDateStr(ev.date);
+              const evalDate = normDate ? new Date(normDate + 'T00:00:00') : new Date(NaN);
               if (isNaN(evalDate.getTime())) continue;
               const diffDays = Math.ceil((evalDate - today) / (1000 * 60 * 60 * 24));
               if (diffDays >= 0 && diffDays < minDays) minDays = diffDays;
