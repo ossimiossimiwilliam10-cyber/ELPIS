@@ -1,0 +1,55 @@
+name: ELPIS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test-and-build:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: |
+          interface/web/package-lock.json
+          interface/bridge/package-lock.json
+
+    # --- FRONTEND (React / Vite) ---
+    - name: Install Frontend Dependencies
+      working-directory: ./interface/web
+      run: npm ci
+
+    - name: Lint Frontend
+      working-directory: ./interface/web
+      run: npx eslint .
+
+    - name: Test Frontend (Vitest)
+      working-directory: ./interface/web
+      run: npx vitest run
+
+    - name: Build Frontend
+      working-directory: ./interface/web
+      run: npm run build
+
+    # --- BACKEND (Node / Bridge) ---
+    - name: Install Backend Dependencies
+      working-directory: ./interface/bridge
+      run: npm ci
+
+    - name: Test Backend (Vitest)
+      working-directory: ./interface/bridge
+      run: npx vitest run --coverage
