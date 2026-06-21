@@ -14,49 +14,58 @@ vi.mock('recharts', () => ({
 }));
 
 describe('MatiereCard UI Component', () => {
-  const uiScenarios = [];
-  for (let i = 0; i < 50; i++) {
-    uiScenarios.push([`Matiere ${i}`, i % 2 === 0 ? 10 : 15, i * 2]);
-  }
+  const defaultMatiere = {
+    nom: 'Maths',
+    coefficient: 2,
+    evaluations: [],
+    listeCM: [{ titre: 'CM 1' }],
+    listeTD: [{ titre: 'TD 1' }],
+    listeTP: [{ titre: 'TP 1' }],
+    listeAnnales: [{ titre: 'Annale 1' }]
+  };
 
-  test.each(uiScenarios)('renders correctly for %s with score %d and %d CMs', (nom, note, nbCM) => {
-    const matiere = {
-      nom,
-      coefficient: 2,
-      evaluations: [{ note, coefficient: 1 }],
-      listeCM: Array(nbCM).fill({ titre: 'CM' }),
-      listeTD: [],
-      listeTP: [],
-      listeAnnales: []
-    };
+  const defaultActions = {
+    deleteMatiere: vi.fn(),
+    updateField: vi.fn(),
+    addCM: vi.fn(),
+    deleteCM: vi.fn(),
+    addTDManuel: vi.fn(),
+    deleteTD: vi.fn(),
+    addTPManuel: vi.fn(),
+    deleteTP: vi.fn(),
+    addAnnaleManuel: vi.fn(),
+    deleteAnnale: vi.fn(),
+    setModalConfig: vi.fn(),
+    getNextReviewDate: vi.fn(),
+    setConfigLocal: vi.fn(),
+    setCoursConfig: vi.fn()
+  };
 
-    const actions = {
-      deleteMatiere: vi.fn(),
-      updateField: vi.fn(),
-      addCM: vi.fn(),
-      deleteCM: vi.fn(),
-      addTDManuel: vi.fn(),
-      deleteTD: vi.fn(),
-      addTPManuel: vi.fn(),
-      deleteTP: vi.fn(),
-      setModalConfig: vi.fn(),
-      getNextReviewDate: vi.fn(),
-      setConfigLocal: vi.fn(),
-      setCoursConfig: vi.fn()
-    };
+  test('calls addCM when button clicked', () => {
+    const { getByText } = render(<MatiereCard matiere={defaultMatiere} actions={defaultActions} />);
+    getByText('+ CM').click();
+    expect(defaultActions.addCM).toHaveBeenCalled();
+  });
 
-    render(
+  test('calls addTDManuel when button clicked', () => {
+    const { getAllByText } = render(<MatiereCard matiere={defaultMatiere} actions={defaultActions} />);
+    getAllByText('+ Manuel')[0].click(); // TD
+    expect(defaultActions.addTDManuel).toHaveBeenCalled();
+  });
+
+  test('handles synergies logic', () => {
+    const { getByText } = render(
       <MatiereCard 
-        matiere={matiere} 
-        allMatiereNames={[]}
-        lIndex={0} sIndex={0} uIndex={0} mIndex={0}
-        actions={actions}
+        matiere={defaultMatiere} 
+        allMatiereNames={['Maths', 'Physique']} 
+        actions={defaultActions} 
       />
     );
-
-    // It should render the name
-    expect(screen.getByText(nom)).toBeDefined();
-    // Verify it rendered the correct number of CMs (it displays "X CM")
-    expect(screen.getByText(new RegExp(`${nbCM}\\s*CM`))).toBeDefined();
+    const phyBtn = getByText('Physique');
+    phyBtn.click();
+    expect(defaultActions.updateField).toHaveBeenCalledWith(
+      ['licences', undefined, 'semestres', undefined, 'ues', undefined, 'matieres', undefined, 'synergies'],
+      ['Physique']
+    );
   });
 });

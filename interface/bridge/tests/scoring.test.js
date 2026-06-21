@@ -36,6 +36,23 @@ describe('Scoring Engine - getSubjectExamBoost', () => {
     // Overridden by extreme priority logic in getSubjectExamBoost
     expect(r.boost).toBeGreaterThan(1.5);
   });
+
+  test('fuzzy matches exam subject by prefix', () => {
+    const matiere = { nom: 'Physique Avancée' };
+    const map = { 'physique': { multiplier: 1.2, daysToExam: 15 } };
+    const r = getSubjectExamBoost(matiere, map);
+    expect(r.boost).toBeCloseTo(1.2);
+    expect(r.daysToExam).toBe(15);
+  });
+
+  test('forces baseBoost to 2.0 if coeff >= 3 and multiplier is exactly 1.5', () => {
+    const matiere = { nom: 'Electronique', coefficient: 3 };
+    const map = { 'electronique': { multiplier: 1.5, daysToExam: 10 } };
+    const r = getSubjectExamBoost(matiere, map);
+    // Base boost becomes 2.0, then * (1 + 0.2) = 2.4
+    expect(r.boost).toBeCloseTo(2.4);
+    expect(r.daysToExam).toBe(10);
+  });
 });
 
 describe('Scoring Engine - getPrioScore', () => {

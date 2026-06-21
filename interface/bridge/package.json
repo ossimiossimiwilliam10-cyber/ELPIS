@@ -27,6 +27,7 @@
     "ts-fsrs": "^5.4.1"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.9",
     "vitest": "^4.1.9"
   }
 }
