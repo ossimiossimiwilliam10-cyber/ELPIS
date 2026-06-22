@@ -366,6 +366,52 @@ function Dashboard() {
     show: { opacity: 1, x: 0 }
   };
 
+  const exportToICal = () => {
+    if (!orchestratorData || !orchestratorData.tachesDuJour || orchestratorData.tachesDuJour.length === 0) {
+      alert("Aucune tâche à exporter.");
+      return;
+    }
+
+    let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ELPIS//Planning//FR\n";
+    let currentBlockStart = new Date();
+    currentBlockStart.setHours(8, 0, 0, 0);
+
+    orchestratorData.tachesDuJour.forEach((tache, index) => {
+      const durationStr = typeof tache.dureeEstimee === 'number' ? tache.dureeEstimee : parseInt(tache.dureeEstimee) || 30;
+      const endBlock = new Date(currentBlockStart.getTime() + durationStr * 60000);
+
+      const formatICSDate = (date) => {
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
+      };
+
+      const title = tache.type === 'ANKI' ? 'Révisions (Anki)' : `[${tache.type}] ${tache.titre || 'Tâche'}`;
+      const description = tache.type === 'ANKI' ? `Révisions programmées` : `Matière : ${tache.matiereNom || tache.matiere || 'N/A'}`;
+
+      icsContent += "BEGIN:VEVENT\n";
+      icsContent += `UID:${Date.now()}-${index}@elpis.app\n`;
+      icsContent += `DTSTAMP:${formatICSDate(new Date())}\n`;
+      icsContent += `DTSTART:${formatICSDate(currentBlockStart)}\n`;
+      icsContent += `DTEND:${formatICSDate(endBlock)}\n`;
+      icsContent += `SUMMARY:${title}\n`;
+      icsContent += `DESCRIPTION:${description}\n`;
+      icsContent += "END:VEVENT\n";
+
+      currentBlockStart = new Date(endBlock.getTime() + 5 * 60000);
+    });
+
+    icsContent += "END:VCALENDAR";
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `elpis_planning_${new Date().toISOString().split('T')[0]}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <motion.div 
       className="dashboard"
