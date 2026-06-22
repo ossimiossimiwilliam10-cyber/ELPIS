@@ -65,9 +65,9 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const rapport = {};
 
   const todayStr = getTodayString();
-  const now = new Date();
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
 
-  const tomorrowDate = new Date();
+  const tomorrowDate = new Date(now);
   tomorrowDate.setHours(tomorrowDate.getHours() - 4); // aligner avec la période de grâce (Night Owl)
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   const tomorrowStr = tomorrowDate.getFullYear() + '-' + String(tomorrowDate.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrowDate.getDate()).padStart(2, '0');

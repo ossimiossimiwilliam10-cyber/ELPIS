@@ -6,13 +6,15 @@
 const DAYS_OF_WEEK = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 function getTodayString() {
-  const d = new Date();
+  const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
   d.setHours(d.getHours() - 4);
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
 function getDayOfWeekString() {
-  return DAYS_OF_WEEK[new Date().getDay()];
+  const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+  d.setHours(d.getHours() - 4); // Apply Night Owl offset to the day of week too
+  return DAYS_OF_WEEK[d.getDay()];
 }
 
 function normalizeDateStr(dateStr) {
