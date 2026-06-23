@@ -162,62 +162,30 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   rapport.tempsDispoMin = tempsLibreMin;
   rapport.fixedCommitmentsMin = fixedCommitmentsMin;
 
-  // 2. Calculer le temps déjà travaillé aujourd'hui
+  // 2. Calculer le temps déjà travaillé aujourd'hui depuis l'historique
   let tempsDejaTravailleMin = 0;
-  if (cfg.dernierePratiqueAnki && cfg.dernierePratiqueAnki === todayStr) {
-    let ankiTime = 0;
-    if (historique && Array.isArray(historique)) {
-      const todayEntries = historique.filter(h => {
-        if (h.type !== 'ANKI' || !h.timestamp) return false;
-        const d = new Date(h.timestamp);
-        d.setHours(d.getHours() - 4);
-        const dStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        return dStr === todayStr;
-      });
-      ankiTime = todayEntries.reduce((sum, h) => sum + (h.dureeMinutes || 0), 0);
-    }
-    tempsDejaTravailleMin += (ankiTime > 0 ? ankiTime : (cfg.defaultDurationAnki || 30));
-  }
+  if (historique && Array.isArray(historique)) {
+    const todayEntries = historique.filter(h => {
+      if (!h.timestamp) return false;
+      const d = new Date(h.timestamp);
+      d.setHours(d.getHours() - 4);
+      const dStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      return dStr === todayStr;
+    });
 
-  for (const l of (crs.licences || [])) {
-    for (const s of (l.semestres || [])) {
-      for (const ue of (s.ues || [])) {
-        for (const m of (ue.matieres || [])) {
-          for (const cm of (m.listeCM || [])) {
-            if (cm.derniereRevision === todayStr) {
-              const dureeBase = (cm.jActuel === 0) ? (cfg.defaultDurationNewCM || 120) : (cfg.defaultDurationRevCM || 30);
-              tempsDejaTravailleMin += (cm.tempsMoyen != null && cm.tempsMoyen > 0) ? cm.tempsMoyen : dureeBase;
-            }
-          }
-          for (const td of (m.listeTD || [])) {
-            if (td.dernierePratique === todayStr) {
-              const dureeBase = cfg.defaultDurationTD || 20;
-              tempsDejaTravailleMin += (td.tempsMoyen != null && td.tempsMoyen > 0) ? td.tempsMoyen : (dureeBase * getDifficultyMultiplier(td.difficulte));
-            }
-          }
-          for (const tp of (m.listeTP || [])) {
-            if (tp.dernierePratique === todayStr) {
-              const stepIndex = Math.max(0, (tp.nombrePratiques || 1) - 1);
-              const TP_STEP_DURATIONS = [
-                cfg.defaultDurationTP_Etape1 || 45,
-                cfg.defaultDurationTP_Etape2 || 180,
-                cfg.defaultDurationTP_Etape3 || 90,
-                cfg.defaultDurationTP_Etape4 || 30
-              ];
-              const dureeBase = TP_STEP_DURATIONS[stepIndex] || 30;
-              const avgForStep = (tp.tempsMoyenEtapes && tp.tempsMoyenEtapes[stepIndex] != null) ? tp.tempsMoyenEtapes[stepIndex] : (tp.tempsMoyen != null ? tp.tempsMoyen : null);
-              tempsDejaTravailleMin += (avgForStep != null && avgForStep > 0) ? avgForStep : (dureeBase * getDifficultyMultiplier(tp.difficulte));
-            }
-          }
-          for (const ann of (m.listeAnnales || [])) {
-            if (ann.dernierePratique === todayStr) {
-              const dureeBase = cfg.defaultDurationAnnale || 60;
-              tempsDejaTravailleMin += (ann.tempsMoyen != null && ann.tempsMoyen > 0) ? ann.tempsMoyen : (dureeBase * getDifficultyMultiplier(ann.difficulte));
-            }
-          }
-        }
+    tempsDejaTravailleMin = todayEntries.reduce((sum, h) => {
+      let mins = h.dureeMinutes;
+      if (mins == null || isNaN(mins)) {
+        // Fallback for older entries missing dureeMinutes
+        if (h.type === 'ANKI') mins = cfg.defaultDurationAnki || 30;
+        else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
+        else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
+        else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
+        else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnale || 60;
+        else mins = 30;
       }
-    }
+      return sum + mins;
+    }, 0);
   }
 
   rapport.tempsDejaTravailleMin = tempsDejaTravailleMin;

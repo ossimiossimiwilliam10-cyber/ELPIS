@@ -97,6 +97,14 @@ describe('Orchestrateur - Extreme Coverage', () => {
     crs.licences[0].semestres[0].ues[0].matieres[0].listeAnnales.push({ titre: 'ANN1', dernierePratique: '2026-06-21', difficulte: 'moyen' });
     fs.writeFileSync(CRS_PATH, JSON.stringify(crs));
 
+    fs.writeFileSync(HIST_PATH, JSON.stringify([
+      { type: 'ANKI', timestamp: '2026-06-21T10:00:00Z', dureeMinutes: 25 },
+      { type: 'CM', timestamp: '2026-06-21T10:30:00Z', dureeMinutes: 120 },
+      { type: 'TD', timestamp: '2026-06-21T11:00:00Z', dureeMinutes: 20 },
+      { type: 'TP', timestamp: '2026-06-21T11:30:00Z', dureeMinutes: 45 },
+      { type: 'ANNALE', timestamp: '2026-06-21T12:00:00Z', dureeMinutes: 60 }
+    ]));
+
     const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
     expect(r.tempsDejaTravailleMin).toBe(270);
   });
