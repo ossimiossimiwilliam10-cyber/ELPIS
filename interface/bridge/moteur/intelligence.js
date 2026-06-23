@@ -33,10 +33,13 @@ function normalizeDateStr(dateStr) {
  * Prevents timezone shift bugs (unlike string + 'T00:00:00' which is parsed as UTC).
  */
 function parseDateLocal(dateStr) {
-  if (!dateStr) return new Date(NaN);
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return new Date(NaN);
-  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0, 0);
+  if (!dateStr || typeof dateStr !== 'string') return new Date(NaN);
+  const trimmed = dateStr.trim();
+  const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoMatch) return new Date(+isoMatch[1], +isoMatch[2] - 1, +isoMatch[3]);
+  const legacyMatch = trimmed.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (legacyMatch) return new Date(+legacyMatch[3], +legacyMatch[2] - 1, +legacyMatch[1]);
+  return new Date(NaN);
 }
 
 /**
@@ -233,7 +236,18 @@ function detectBurnoutRisk(cfg, historique) {
   const sevenDaysAgo = new Date(today);
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const recentHist = (historique || []).filter(h => h.timestamp && new Date(h.timestamp) >= sevenDaysAgo);
-  const totalRecentMinutes = recentHist.reduce((acc, h) => acc + (h.dureeMinutes || 30), 0);
+  const totalRecentMinutes = recentHist.reduce((acc, h) => {
+    let mins = h.dureeMinutes;
+    if (mins == null || isNaN(mins)) {
+      if (h.type === 'ANKI') mins = cfg.defaultDurationAnki || 30;
+      else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
+      else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
+      else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
+      else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnale || 60;
+      else mins = 30;
+    }
+    return acc + mins;
+  }, 0);
   const avgDailyMinutes = totalRecentMinutes / 7;
 
   const bedtimeHour = cfg.bedtime ? parseInt(cfg.bedtime.split(':')[0]) : 23;

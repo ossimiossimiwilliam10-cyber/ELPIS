@@ -52,7 +52,18 @@ export function useWorkloadEngine() {
                 const entryDate = new Date(h.timestamp);
                 return studyStart ? entryDate >= studyStart : true;
               });
-              hoursDone = subjectHistory.reduce((sum, h) => sum + ((h.dureeMinutes || 0) / 60), 0);
+              hoursDone = subjectHistory.reduce((sum, h) => {
+                let mins = h.dureeMinutes;
+                if (mins == null || isNaN(mins)) {
+                  if (h.type === 'ANKI') mins = config.defaultDurationAnki || 30;
+                  else if (h.type === 'CM') mins = config.defaultDurationRevCM || 30;
+                  else if (h.type === 'TD') mins = config.defaultDurationTD || 20;
+                  else if (h.type === 'TP') mins = config.defaultDurationTP_Etape1 || 45;
+                  else if (h.type === 'ANNALE') mins = config.defaultDurationAnnale || 60;
+                  else mins = 30;
+                }
+                return sum + (mins / 60);
+              }, 0);
             }
             
             let remainingEffortHours = Math.max(0, requiredEffortHours - hoursDone);

@@ -79,6 +79,7 @@ export default function PreparationHebdoPage() {
 
   // ─── Supprimer un exercice ───
   const deleteEx = (l, s, u, m, type, exIndex) => {
+    if (!window.confirm(`Supprimer cet exercice de ${type} ?`)) return;
     mutateAndSave(draft => {
       const mat = draft.licences[l].semestres[s].ues[u].matieres[m];
       if (type === 'TD') mat.listeTD?.splice(exIndex, 1);
@@ -95,6 +96,10 @@ export default function PreparationHebdoPage() {
     input.onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
+      if (file.size > 25 * 1024 * 1024) {
+        alert("Ce fichier est trop volumineux. La limite est de 25 Mo.");
+        return;
+      }
       const formData = new FormData();
       formData.append('pdf', file);
       try {

@@ -52,10 +52,13 @@ function normalizeDateStr(dateStr) {
 }
 
 function parseDateLocal(dateStr) {
-  if (!dateStr) return new Date(NaN);
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return new Date(NaN);
-  return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10), 0, 0, 0, 0);
+  if (!dateStr || typeof dateStr !== 'string') return new Date(NaN);
+  const trimmed = dateStr.trim();
+  const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoMatch) return new Date(+isoMatch[1], +isoMatch[2] - 1, +isoMatch[3]);
+  const legacyMatch = trimmed.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (legacyMatch) return new Date(+legacyMatch[3], +legacyMatch[2] - 1, +legacyMatch[1]);
+  return new Date(NaN);
 }
 
 function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false) {

@@ -351,6 +351,7 @@ function AppInner() {
                     <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px'}}>
                       <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
                         Heure de Coucher (24h)
+                        <span style={{display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginTop:'0.2rem', fontWeight:'normal'}}>L'affichage AM/PM dépend du navigateur (ex: 11:00 PM = 23:00).</span>
                       </label>
                       <input 
                         type="time"
