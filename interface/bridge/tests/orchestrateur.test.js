@@ -5,7 +5,6 @@ vi.mock('fs', () => ({
   existsSync: vi.fn(() => false)
 }));
 
-import * as fs from 'fs';
 vi.mock('../moteur/config', () => ({
   loadConfig: () => ({
     maxStudyHoursPerDay: 8,

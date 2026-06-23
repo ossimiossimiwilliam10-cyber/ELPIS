@@ -53,7 +53,7 @@ afterAll(() => {
   if (fs.existsSync(tempConfigPath)) fs.unlinkSync(tempConfigPath);
   if (fs.existsSync(tempHistPath)) fs.unlinkSync(tempHistPath);
   if (fs.existsSync(tempCrsPath)) fs.unlinkSync(tempCrsPath);
-  if (fs.existsSync(tempDir)) fs.rmdirSync(tempDir);
+  if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
 });
 
 // ── Scenarios ──────────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@ import { describe, test, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 
 import MatiereCard from './components/cours/MatiereCard';
+import { ToastProvider } from './ToastProvider';
 
 // Mock recharts to avoid rendering issues in jsdom
 vi.mock('recharts', () => ({
@@ -42,24 +43,26 @@ describe('MatiereCard UI Component', () => {
   };
 
   test('calls addCM when button clicked', () => {
-    const { getByText } = render(<MatiereCard matiere={defaultMatiere} actions={defaultActions} />);
+    const { getByText } = render(<ToastProvider><MatiereCard matiere={defaultMatiere} actions={defaultActions} /></ToastProvider>);
     getByText('+ CM').click();
     expect(defaultActions.addCM).toHaveBeenCalled();
   });
 
   test('calls addTDManuel when button clicked', () => {
-    const { getAllByText } = render(<MatiereCard matiere={defaultMatiere} actions={defaultActions} />);
+    const { getAllByText } = render(<ToastProvider><MatiereCard matiere={defaultMatiere} actions={defaultActions} /></ToastProvider>);
     getAllByText('+ Manuel')[0].click(); // TD
     expect(defaultActions.addTDManuel).toHaveBeenCalled();
   });
 
   test('handles synergies logic', () => {
     const { getByText } = render(
+      <ToastProvider>
       <MatiereCard 
         matiere={defaultMatiere} 
         allMatiereNames={['Maths', 'Physique']} 
         actions={defaultActions} 
       />
+      </ToastProvider>
     );
     const phyBtn = getByText('Physique');
     phyBtn.click();

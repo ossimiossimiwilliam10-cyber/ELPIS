@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ExerciceRow from './ExerciceRow';
+import { ToastProvider } from '../../ToastProvider';
 
 describe('ExerciceRow', () => {
   const defaultProps = {
@@ -13,24 +14,24 @@ describe('ExerciceRow', () => {
   };
 
   it('renders correctly', () => {
-    render(<ExerciceRow {...defaultProps} />);
+    render(<ToastProvider><ExerciceRow {...defaultProps} /></ToastProvider>);
     expect(screen.getByText('Exo 1')).toBeInTheDocument();
   });
 
   it('calls onDelete when delete button is clicked', () => {
-    render(<ExerciceRow {...defaultProps} />);
+    render(<ToastProvider><ExerciceRow {...defaultProps} /></ToastProvider>);
     fireEvent.click(screen.getByTitle('Supprimer'));
     expect(defaultProps.onDelete).toHaveBeenCalled();
   });
 
   it('calls onUploadPdf when pdf button is clicked', () => {
-    render(<ExerciceRow {...defaultProps} />);
+    render(<ToastProvider><ExerciceRow {...defaultProps} /></ToastProvider>);
     fireEvent.click(screen.getByText('📄'));
     expect(defaultProps.onUploadPdf).toHaveBeenCalled();
   });
 
   it('renders date picker for TP', () => {
-    render(<ExerciceRow {...defaultProps} type="TP" exercice={{ ...defaultProps.exercice, dateTP: '2023-01-01' }} />);
+    render(<ToastProvider><ExerciceRow {...defaultProps} type="TP" exercice={{ ...defaultProps.exercice, dateTP: '2023-01-01' }} /></ToastProvider>);
     expect(screen.getByText('📅 Date du TP :')).toBeInTheDocument();
     
     // Check if input is rendered and works
@@ -40,7 +41,7 @@ describe('ExerciceRow', () => {
   });
 
   it('handles difficulty changes', () => {
-    render(<ExerciceRow {...defaultProps} />);
+    render(<ToastProvider><ExerciceRow {...defaultProps} /></ToastProvider>);
     const stars = screen.getAllByText('★');
     fireEvent.click(stars[3]); // 4th star
     expect(defaultProps.onUpdate).toHaveBeenCalledWith('difficulteInitiale', 4);

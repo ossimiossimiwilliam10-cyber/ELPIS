@@ -1,11 +1,8 @@
 import { describe, test, expect } from 'vitest';
 import {
   buildExamUrgencyMap,
-  getTodayString,
   detectBurnoutRisk,
-  buildVelocityMap,
   buildCompensationMap,
-  buildRemainingWeightMap,
   buildProjectedScoreMap,
   buildCognitiveLoadMap
 } from '../moteur/intelligence';
@@ -102,7 +99,7 @@ describe('Intelligence Engine - detectBurnoutRisk (Axe 12)', () => {
     scenarios.push([i, 250, 'medium']);
   }
 
-  test.each(scenarios)('detects burnout risk for %d days at %d mins: expects %s', (days, mins, expectedRisk) => {
+  test.each(scenarios)('detects burnout risk for %d days at %d mins: expects %s', (days, mins, _expectedRisk) => {
     const today = new Date();
     const restDay = new Date(today);
     restDay.setDate(restDay.getDate() - days - 1); // rest was before the streak

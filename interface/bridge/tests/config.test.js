@@ -1,8 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { vi } from 'vitest';
-
 // We test the pure functions by importing them directly
 import { DEFAULT_CONFIG, validateConfigSchema, sanitize, loadConfig, saveConfig } from '../moteur/config';
 
@@ -21,7 +19,7 @@ afterEach(() => {
   if (fs.existsSync(testConfigPath)) fs.unlinkSync(testConfigPath);
   const tmp = testConfigPath + '.tmp';
   if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
-  if (fs.existsSync(testDir)) fs.rmdirSync(testDir, { recursive: true });
+  if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
 });
 
 describe('Config Module - DEFAULT_CONFIG', () => {

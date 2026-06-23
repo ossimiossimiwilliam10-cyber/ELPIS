@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from '../App';
 
@@ -32,8 +32,10 @@ vi.mock('../store', () => {
 });
 
 describe('App', () => {
-  it('renders the app with sidebar', () => {
-    render(<App />);
+  it('renders the app with sidebar', async () => {
+    await act(async () => {
+      render(<App />);
+    });
     expect(screen.getAllByText('ELPIS').length).toBeGreaterThan(0);
   });
 });

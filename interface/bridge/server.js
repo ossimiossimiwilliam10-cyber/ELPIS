@@ -214,7 +214,7 @@ app.get('/api/historique', (req, res) => {
     } else {
       res.json([]);
     }
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Erreur lecture historique." });
   }
 });
@@ -235,7 +235,7 @@ app.post('/api/historique', (req, res) => {
     syncToMongo('historique', trimmed).catch(console.error);
     
     res.json({ success: true, message: "Historique mis à jour." });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Erreur sauvegarde historique." });
   }
 });

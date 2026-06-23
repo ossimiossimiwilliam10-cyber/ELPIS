@@ -6,7 +6,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { DEFAULT_CONFIG } = require('./config');
 
 const MAGIC_CONSTANTS = {
   // Poids des priorités

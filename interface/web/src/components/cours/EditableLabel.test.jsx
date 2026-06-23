@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import EditableLabel from './EditableLabel';
+import { ToastProvider } from '../../ToastProvider';
 
 describe('EditableLabel Component', () => {
   let promptSpy;
@@ -12,12 +13,12 @@ describe('EditableLabel Component', () => {
   });
 
   it('renders the provided value correctly', () => {
-    render(<EditableLabel value="Examen Final" onRename={() => {}} />);
+    render(<ToastProvider><EditableLabel value="Examen Final" onRename={() => {}} /></ToastProvider>);
     expect(screen.getByText('Examen Final')).toBeDefined();
   });
 
   it('renders the placeholder when value is empty', () => {
-    render(<EditableLabel value="" placeholder="Nouveau Nom" onRename={() => {}} />);
+    render(<ToastProvider><EditableLabel value="" placeholder="Nouveau Nom" onRename={() => {}} /></ToastProvider>);
     expect(screen.getByText('Nouveau Nom')).toBeDefined();
   });
 
@@ -26,7 +27,7 @@ describe('EditableLabel Component', () => {
     // Simuler que l'utilisateur tape "Nouveau Titre" dans le prompt
     promptSpy.mockReturnValue('Nouveau Titre');
 
-    render(<EditableLabel value="Ancien Titre" onRename={mockOnRename} />);
+    render(<ToastProvider><EditableLabel value="Ancien Titre" onRename={mockOnRename} /></ToastProvider>);
     
     // Trouver le bouton avec l'emoji ✏️
     const editButton = screen.getByTitle('Renommer');
@@ -41,7 +42,7 @@ describe('EditableLabel Component', () => {
     // Simuler l'annulation (Cancel) du prompt
     promptSpy.mockReturnValue(null);
 
-    render(<EditableLabel value="Ancien Titre" onRename={mockOnRename} />);
+    render(<ToastProvider><EditableLabel value="Ancien Titre" onRename={mockOnRename} /></ToastProvider>);
     
     const editButton = screen.getByTitle('Renommer');
     fireEvent.click(editButton);
@@ -53,7 +54,7 @@ describe('EditableLabel Component', () => {
     const mockOnRename = vi.fn();
     promptSpy.mockReturnValue('    '); // Seulement des espaces
 
-    render(<EditableLabel value="Ancien Titre" onRename={mockOnRename} />);
+    render(<ToastProvider><EditableLabel value="Ancien Titre" onRename={mockOnRename} /></ToastProvider>);
     
     const editButton = screen.getByTitle('Renommer');
     fireEvent.click(editButton);

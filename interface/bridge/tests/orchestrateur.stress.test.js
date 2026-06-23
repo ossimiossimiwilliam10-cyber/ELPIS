@@ -2,8 +2,6 @@ import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import { genererRapportQuotidien } from '../moteur/orchestrateur';
 import * as fs from 'fs';
 import * as path from 'path';
-import { vi } from 'vitest';
-
 // ── No Mocks! Real Files! ──────────────────────────────────────────────────
 
 const tempDir = path.join(__dirname, 'temp_stress_data');
@@ -50,7 +48,7 @@ afterAll(() => {
   if (fs.existsSync(tempConfigPath)) fs.unlinkSync(tempConfigPath);
   if (fs.existsSync(tempHistPath)) fs.unlinkSync(tempHistPath);
   if (fs.existsSync(tempCrsPath)) fs.unlinkSync(tempCrsPath);
-  if (fs.existsSync(tempDir)) fs.rmdirSync(tempDir);
+  if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
 });
 
 // ── Scenarios ──────────────────────────────────────────────────────────────

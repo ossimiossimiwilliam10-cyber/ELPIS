@@ -17,7 +17,7 @@ afterEach(() => {
   if (fs.existsSync(testCoursPath)) fs.unlinkSync(testCoursPath);
   const tmp = testCoursPath + '.tmp';
   if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
-  if (fs.existsSync(testDir)) fs.rmdirSync(testDir, { recursive: true });
+  if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
 });
 
 const validCours = {
