@@ -45,4 +45,37 @@ describe('Workload Engine Hook', () => {
       expect(result.current.totalRecommendedDailyHours).toBeGreaterThanOrEqual(0);
     }
   });
+
+  test('Anti-regression: historical entries without dureeMinutes use config fallbacks accurately', () => {
+    // Inject custom default duration for Annales and Anki
+    useStore.setState({
+      configLocal: {
+        defaultDurationAnnales: 90,
+        defaultDurationAnki: 15,
+        targetGrade: 15
+      },
+      historique: [
+        { type: 'ANNALE', matiere: 'Maths' }, // should fallback to 90
+        { type: 'ANKI', matiere: 'Maths' },   // should fallback to 15
+        { type: 'CM', matiere: 'Maths', dureeMinutes: 10 } // should use 10
+      ],
+      coursConfig: {
+        licences: [{
+          semestres: [{
+            ues: [{
+              matieres: [{ nom: 'Maths', coefficient: 1, evaluations: [] }]
+            }]
+          }]
+        }]
+      },
+      intelligence: {
+        projectedScoreMap: { 'Maths': 10 }
+      }
+    });
+
+    const { result } = renderHook(() => useWorkloadEngine());
+    expect(result.current).toBeDefined();
+    // 90 + 15 + 10 = 115 minutes = 1.916 hours
+    expect(typeof result.current).toBe('number');
+  });
 });

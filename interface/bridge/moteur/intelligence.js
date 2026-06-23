@@ -145,7 +145,7 @@ function buildRemainingWeightMap(crs) {
 /**
  * AXE 10 : Study Velocity.
  */
-function buildVelocityMap(crs, historique) {
+function buildVelocityMap(crs, historique, cfg = {}) {
   const map = {};
   if (!historique || historique.length === 0) return map;
 
@@ -164,7 +164,18 @@ function buildVelocityMap(crs, historique) {
         for (const m of (ue.matieres || [])) {
           const mHist = histByMatiere[m.nom] || [];
           const cmSessions = mHist.filter(h => h.type === 'CM');
-          const totalMinutes = mHist.reduce((acc, h) => acc + (h.dureeMinutes || 30), 0);
+          const totalMinutes = mHist.reduce((acc, h) => {
+            let mins = h.dureeMinutes;
+            if (mins == null || isNaN(mins)) {
+              if (h.type === 'ANKI') mins = cfg.defaultDurationAnki || 30;
+              else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
+              else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
+              else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
+              else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnales || 60;
+              else mins = 30;
+            }
+            return acc + mins;
+          }, 0);
           const masteredCMs = (m.listeCM || []).filter(cm => cm.easeFactor && cm.easeFactor >= 2.5 && (cm.repetitions || 0) > 0).length;
           const totalCMs = (m.listeCM || []).length;
 
@@ -243,7 +254,7 @@ function detectBurnoutRisk(cfg, historique) {
       else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
       else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
       else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
-      else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnale || 60;
+      else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnales || 60;
       else mins = 30;
     }
     return acc + mins;

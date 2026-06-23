@@ -90,7 +90,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   // Construire les maps d'intelligence
   const compensationMap = buildCompensationMap(crs);
   const remainingWeightMap = buildRemainingWeightMap(crs);
-  const velocityMap = buildVelocityMap(crs, historique);
+  const velocityMap = buildVelocityMap(crs, historique, cfg);
   const cognitiveLoadMap = buildCognitiveLoadMap(crs);
   const burnoutRisk = detectBurnoutRisk(cfg, historique);
   const projectedScoreMap = buildProjectedScoreMap(crs, velocityMap);
@@ -184,7 +184,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
         else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
         else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
         else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
-        else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnale || 60;
+        else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnales || 60;
         else mins = 30;
       }
       return sum + mins;

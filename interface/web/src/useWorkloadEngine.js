@@ -59,7 +59,7 @@ export function useWorkloadEngine() {
                   else if (h.type === 'CM') mins = config.defaultDurationRevCM || 30;
                   else if (h.type === 'TD') mins = config.defaultDurationTD || 20;
                   else if (h.type === 'TP') mins = config.defaultDurationTP_Etape1 || 45;
-                  else if (h.type === 'ANNALE') mins = config.defaultDurationAnnale || 60;
+                  else if (h.type === 'ANNALE') mins = config.defaultDurationAnnales || 60;
                   else mins = 30;
                 }
                 return sum + (mins / 60);

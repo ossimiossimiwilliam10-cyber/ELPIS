@@ -191,3 +191,34 @@ describe('Intelligence Engine - buildCognitiveLoadMap', () => {
     expect(map['Bio'].cognitiveLoad).toBe('light');
   });
 });
+
+describe('Intelligence Engine - parseDateLocal (Anti-régression)', () => {
+  const { parseDateLocal } = require('../moteur/intelligence');
+
+  test('handles valid ISO format YYYY-MM-DD', () => {
+    const d = parseDateLocal('2026-06-23');
+    expect(isNaN(d.getTime())).toBe(false);
+    expect(d.getFullYear()).toBe(2026);
+    expect(d.getMonth()).toBe(5); // 0-indexed
+    expect(d.getDate()).toBe(23);
+  });
+
+  test('handles legacy French format DD-MM-YYYY without crashing', () => {
+    const d = parseDateLocal('23-06-2026');
+    expect(isNaN(d.getTime())).toBe(false);
+    expect(d.getFullYear()).toBe(2026);
+    expect(d.getMonth()).toBe(5);
+    expect(d.getDate()).toBe(23);
+  });
+
+  test('returns invalid date for malformed strings', () => {
+    const d = parseDateLocal('invalid-date');
+    expect(isNaN(d.getTime())).toBe(true);
+  });
+
+  test('handles empty or null gracefully', () => {
+    expect(isNaN(parseDateLocal('').getTime())).toBe(true);
+    expect(isNaN(parseDateLocal(null).getTime())).toBe(true);
+  });
+});
+

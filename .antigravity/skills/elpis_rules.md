@@ -4,6 +4,7 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 
 ## 1. Méthodologie : Test-Driven (TDD) Obligatoire
 *   **Ne jamais assumer que le code fonctionne sans test.**
+*   **Anti-régression obligatoire :** Systématiquement, lors de la détection et de la correction d'un bug (notamment dans l'algorithme), un test unitaire spécifique "anti-régression" DOIT être créé pour valider la correction et garantir que ce bug ne réapparaisse plus jamais.
 *   Si tu modifies `orchestrateur.js`, `scoring.js` ou `intelligence.js`, tu **DOIS** lancer `npx vitest run` dans `interface/bridge`.
 *   Si tu modifies l'UI, tu **DOIS** t'assurer que les composants passent dans `interface/web/src/__tests__`.
 *   Tolérance zéro pour la baisse de couverture.
