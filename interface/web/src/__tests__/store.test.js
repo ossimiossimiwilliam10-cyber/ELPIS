@@ -119,4 +119,23 @@ describe('useStore', () => {
 
     vi.useRealTimers();
   });
+
+  it('Anti-regression: globalChrono ticks do not pollute useStore main state and remain isolated in useChronoStore', () => {
+    // 1. Initial State
+    const mainStoreInitial = useStore.getState();
+    const chronoInitial = useChronoStore.getState();
+
+    // 2. Modify chrono store
+    useChronoStore.setState({ globalChrono: { ...chronoInitial.globalChrono, isRunning: true, lastTickDate: Date.now() } });
+    useChronoStore.getState().tickGlobalChrono();
+
+    // 3. Verify main store was untouched
+    const mainStoreAfterTick = useStore.getState();
+    
+    // The main store reference should be strictly identical, meaning no re-render trigger would fire
+    expect(mainStoreAfterTick).toBe(mainStoreInitial);
+    
+    // The chrono store should have advanced
+    expect(useChronoStore.getState().globalChrono).not.toBe(chronoInitial.globalChrono);
+  });
 });

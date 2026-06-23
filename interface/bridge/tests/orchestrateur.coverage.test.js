@@ -140,4 +140,35 @@ describe('Orchestrateur - Extreme Coverage', () => {
     expect(r.tachesDuJour.filter(t => t.type === 'TD').length).toBeLessThanOrEqual(1);
     expect(r.tachesDuJour.filter(t => t.type === 'TP').length).toBeLessThanOrEqual(1);
   });
+
+  test('Anti-regression: tempsDejaTravailleMin calculates exact minutes from history regardless of moving averages or default durations', () => {
+    // Configure default durations to 1000 each, which would cause massive bloat if the old bug was present
+    fs.writeFileSync(CFG_PATH, JSON.stringify({
+      defaultDurationAnki: 1000,
+      defaultDurationNewCM: 1000,
+      defaultDurationRevCM: 1000,
+      defaultDurationTD: 1000,
+      defaultDurationTP_Etape1: 1000,
+      defaultDurationAnnales: 1000
+    }));
+
+    // Add tasks that were revised/completed today.
+    // In the old bug, their default durations or moving averages would be summed.
+    const crs = getBaseCours();
+    crs.licences[0].semestres[0].ues[0].matieres[0].listeCM.push({ titre: 'CM1', jActuel: 0, derniereRevision: '2026-06-21', tempsMoyen: 500 });
+    crs.licences[0].semestres[0].ues[0].matieres[0].listeTD.push({ titre: 'TD1', dernierePratique: '2026-06-21', tempsMoyen: 500 });
+    fs.writeFileSync(CRS_PATH, JSON.stringify(crs));
+
+    // The ONLY source of truth must be the history file.
+    // We only completed two tasks today: 12 minutes and 8 minutes. Total = 20 minutes.
+    fs.writeFileSync(HIST_PATH, JSON.stringify([
+      { type: 'CM', timestamp: '2026-06-21T10:30:00Z', dureeMinutes: 12 },
+      { type: 'TD', timestamp: '2026-06-21T11:00:00Z', dureeMinutes: 8 }
+    ]));
+
+    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
+    // If the old bug was active, this would be 1000 (from tempsMoyen) or 2000 (from default configs).
+    // It MUST be exactly 20.
+    expect(r.tempsDejaTravailleMin).toBe(20);
+  });
 });
