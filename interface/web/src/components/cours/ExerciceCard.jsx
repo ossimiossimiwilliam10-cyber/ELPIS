@@ -9,6 +9,8 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
   const { toast } = useToast();
   const [note, setNote] = useState('');
+  const [isEditingTime, setIsEditingTime] = useState(false);
+  const [manualTime, setManualTime] = useState(null);
 
   const getTPStepName = (etape) => {
     switch(etape) {
@@ -45,6 +47,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
     if (isThisExoActive) {
       toggleGlobalChrono();
     } else {
+      setManualTime(null);
       if (exo.type === 'ANKI') {
         try {
           const res = await fetch('/api/open/anki', { method: 'POST' });
@@ -72,9 +75,23 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
     if (isThisExoActive) {
       resetGlobalChrono();
     }
-    // Convert elapsed seconds to minutes, rounding up to nearest minute. Minimum 1 minute if started.
-    const elapsedMinutes = elapsedSeconds > 0 ? Math.max(1, Math.ceil(elapsedSeconds / 60)) : 0;
-    callback(exo, ...args, elapsedMinutes);
+    
+    let finalMinutes = manualTime !== null 
+      ? manualTime 
+      : (elapsedSeconds > 0 ? Math.max(1, Math.ceil(elapsedSeconds / 60)) : 0);
+
+    if (finalMinutes === 0 && exo.type === 'ANKI') {
+      const input = window.prompt(`Temps passé sur Anki (en minutes) ? Laissez vide pour utiliser le temps moyen (${Math.round(exo.tempsMoyen || 30)} min).`, "");
+      if (input !== null && input.trim() !== "") {
+        const parsed = parseInt(input);
+        if (!isNaN(parsed) && parsed >= 0) {
+          finalMinutes = parsed;
+        }
+      }
+    }
+
+    callback(exo, ...args, finalMinutes);
+    setManualTime(null);
   };
 
   const handleOpenPdf = async () => {
@@ -154,9 +171,41 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
           >
             {isRunning ? '⏸' : '▶'}
           </button>
-          <span style={{fontFamily: 'monospace', fontSize: '1.2rem', fontWeight: 'bold', color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)'}}>
-            {formatTime(elapsedSeconds)}
-          </span>
+          {isEditingTime ? (
+            <input 
+              type="number" 
+              autoFocus
+              onBlur={e => {
+                const mins = parseInt(e.target.value);
+                if (!isNaN(mins) && mins >= 0) {
+                  setManualTime(mins);
+                }
+                setIsEditingTime(false);
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') e.target.blur();
+              }}
+              defaultValue={manualTime !== null ? manualTime : (elapsedSeconds > 0 ? Math.ceil(elapsedSeconds / 60) : 0)}
+              style={{
+                width: '60px',
+                background: 'var(--bg-primary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--accent-primary)',
+                borderRadius: '4px',
+                textAlign: 'center',
+                fontFamily: 'monospace',
+                fontSize: '1.2rem'
+              }}
+            />
+          ) : (
+            <span 
+              onClick={() => setIsEditingTime(true)}
+              title="Cliquez pour modifier manuellement le temps (minutes)"
+              style={{cursor: 'pointer', fontFamily: 'monospace', fontSize: '1.2rem', fontWeight: 'bold', color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)'}}
+            >
+              {manualTime !== null ? `${manualTime.toString().padStart(2, '0')}:00` : formatTime(elapsedSeconds)}
+            </span>
+          )}
         </div>
         {exo.tempsMoyen && (
           <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>
