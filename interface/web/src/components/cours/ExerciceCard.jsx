@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import useStore from '../../store';
+import useStore, { useChronoStore } from '../../store';
 import { useToast } from '../../ToastProvider';
 import InfoTooltip from '../InfoTooltip';
 import { DIFFICULTY_LEVELS } from '../../constants';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
-  const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useStore();
+  const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
   const { toast } = useToast();
   const [note, setNote] = useState('');
   const [isEditingTime, setIsEditingTime] = useState(false);

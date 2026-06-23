@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import useStore from '../store';
+import useStore, { useChronoStore } from '../store';
 
 export default function GlobalChrono() {
-  const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useStore();
+  const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useChronoStore();
   const { isRunning, elapsedSeconds, titre, matiereNom, exoId } = globalChrono;
   
   const [isVisible, setIsVisible] = useState(true);

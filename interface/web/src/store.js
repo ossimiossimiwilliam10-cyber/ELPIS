@@ -84,61 +84,7 @@ const useStore = create(immer((set, get) => ({
     }
   },
 
-  // --- CHRONO STATE ---
-  globalChrono: {
-    exoId: null, // Identifiant de l'exercice (titre ou id)
-    titre: null,
-    matiereNom: null,
-    isRunning: false,
-    elapsedSeconds: 0,
-    lastTickDate: null
-  },
-
-  startGlobalChrono: (exo) => set({
-    globalChrono: {
-      exoId: exo.id || exo.titre, // fallback sur le titre si id n'existe pas
-      titre: exo.titre,
-      matiereNom: exo.matiereNom,
-      isRunning: true,
-      elapsedSeconds: 0,
-      lastTickDate: Date.now()
-    }
-  }),
-  toggleGlobalChrono: () => set(state => {
-    const isRunning = !state.globalChrono.isRunning;
-    return {
-      globalChrono: { 
-        ...state.globalChrono, 
-        isRunning,
-        lastTickDate: isRunning ? Date.now() : null
-      }
-    };
-  }),
-  resetGlobalChrono: () => set(state => ({
-    globalChrono: { ...state.globalChrono, isRunning: false, elapsedSeconds: 0, exoId: null, titre: null, matiereNom: null, lastTickDate: null }
-  })),
-  tickGlobalChrono: () => set(state => {
-    if (state.globalChrono.isRunning && state.globalChrono.lastTickDate) {
-      const now = Date.now();
-      const diffSeconds = Math.floor((now - state.globalChrono.lastTickDate) / 1000);
-      if (diffSeconds > 0) {
-        return { 
-          globalChrono: { 
-            ...state.globalChrono, 
-            elapsedSeconds: state.globalChrono.elapsedSeconds + diffSeconds,
-            lastTickDate: now
-          } 
-        };
-      }
-    }
-    return state;
-  }),
-  setGlobalChronoTime: (seconds) => set(state => ({
-    globalChrono: {
-      ...state.globalChrono,
-      elapsedSeconds: seconds
-    }
-  })),
+  // --- CHRONO STATE MOVED TO useChronoStore TO PREVENT RE-RENDERS ---
 
 
   updatePendingTasksCount: async () => {
@@ -295,3 +241,59 @@ const useStore = create(immer((set, get) => ({
 })));
 
 export default useStore;
+
+export const useChronoStore = create((set) => ({
+  globalChrono: {
+    exoId: null,
+    titre: null,
+    matiereNom: null,
+    isRunning: false,
+    elapsedSeconds: 0,
+    lastTickDate: null
+  },
+  startGlobalChrono: (exo) => set({
+    globalChrono: {
+      exoId: exo.id || exo.titre,
+      titre: exo.titre,
+      matiereNom: exo.matiereNom,
+      isRunning: true,
+      elapsedSeconds: 0,
+      lastTickDate: Date.now()
+    }
+  }),
+  toggleGlobalChrono: () => set(state => {
+    const isRunning = !state.globalChrono.isRunning;
+    return {
+      globalChrono: { 
+        ...state.globalChrono, 
+        isRunning,
+        lastTickDate: isRunning ? Date.now() : null
+      }
+    };
+  }),
+  resetGlobalChrono: () => set(state => ({
+    globalChrono: { ...state.globalChrono, isRunning: false, elapsedSeconds: 0, exoId: null, titre: null, matiereNom: null, lastTickDate: null }
+  })),
+  tickGlobalChrono: () => set(state => {
+    if (state.globalChrono.isRunning && state.globalChrono.lastTickDate) {
+      const now = Date.now();
+      const diffSeconds = Math.floor((now - state.globalChrono.lastTickDate) / 1000);
+      if (diffSeconds > 0) {
+        return { 
+          globalChrono: { 
+            ...state.globalChrono, 
+            elapsedSeconds: state.globalChrono.elapsedSeconds + diffSeconds,
+            lastTickDate: now
+          } 
+        };
+      }
+    }
+    return state;
+  }),
+  setGlobalChronoTime: (seconds) => set(state => ({
+    globalChrono: {
+      ...state.globalChrono,
+      elapsedSeconds: seconds
+    }
+  }))
+}));

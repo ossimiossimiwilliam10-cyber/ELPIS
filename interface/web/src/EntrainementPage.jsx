@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import useStore from './store';
+import useStore, { useChronoStore } from './store';
 import { useToast } from './ToastProvider';
 import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import ExerciceCard from './components/cours/ExerciceCard';
@@ -48,7 +48,8 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 };
 
 function EntrainementPage() {
-  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, resetGlobalChrono, dailyFillGap, setDailyFillGap, intelligence, orchestratorData, fetchOrchestrator } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, dailyFillGap, setDailyFillGap, intelligence, orchestratorData, fetchOrchestrator } = useStore();
+  const { resetGlobalChrono } = useChronoStore();
   const { toast } = useToast();
   const [fatigueCounter, setFatigueCounter] = useState(0);
 

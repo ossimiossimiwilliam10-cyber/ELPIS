@@ -2,13 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import RevisionsAvanceesPage from './RevisionsAvanceesPage';
-import useStore from './store';
+import useStore, { useChronoStore } from './store';
 
 // Mock du store
 vi.mock('./store', () => {
   return {
     __esModule: true,
     default: vi.fn(),
+    useChronoStore: vi.fn()
   };
 });
 
@@ -59,9 +60,14 @@ describe('RevisionsAvanceesPage', () => {
       config: {},
       intelligence: {},
       pendingTasksCount: 0,
-      globalChrono: { isRunning: false, elapsedSeconds: 0, exoId: null },
       setCoursConfig: vi.fn(),
       addHistoriqueEntry: vi.fn()
+    });
+    useChronoStore.mockReturnValue({
+      globalChrono: { isRunning: false, elapsedSeconds: 0, exoId: null },
+      startGlobalChrono: vi.fn(),
+      toggleGlobalChrono: vi.fn(),
+      resetGlobalChrono: vi.fn()
     });
   });
 
@@ -107,7 +113,6 @@ describe('RevisionsAvanceesPage', () => {
       config: {},
       intelligence: {},
       pendingTasksCount: 2,
-      globalChrono: { isRunning: false, elapsedSeconds: 0, exoId: null },
       setCoursConfig: vi.fn(),
       addHistoriqueEntry: vi.fn()
     });

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import useStore from '../store';
+import useStore, { useChronoStore } from '../store';
 
 // Mock fetch globally
 globalThis.fetch = vi.fn();
@@ -38,21 +38,21 @@ describe('useStore', () => {
   });
 
   it('handles global chrono start and toggle', () => {
-    const store = useStore.getState();
+    const store = useChronoStore.getState();
     store.startGlobalChrono({ titre: 'Exo Test', matiereNom: 'Maths' });
     
-    let currentState = useStore.getState();
+    let currentState = useChronoStore.getState();
     expect(currentState.globalChrono.isRunning).toBe(true);
     expect(currentState.globalChrono.titre).toBe('Exo Test');
     expect(currentState.globalChrono.matiereNom).toBe('Maths');
 
     // Toggle pause
     currentState.toggleGlobalChrono();
-    expect(useStore.getState().globalChrono.isRunning).toBe(false);
+    expect(useChronoStore.getState().globalChrono.isRunning).toBe(false);
 
     // Toggle resume
-    useStore.getState().toggleGlobalChrono();
-    expect(useStore.getState().globalChrono.isRunning).toBe(true);
+    useChronoStore.getState().toggleGlobalChrono();
+    expect(useChronoStore.getState().globalChrono.isRunning).toBe(true);
   });
 
   it('fetches initial data successfully', async () => {
