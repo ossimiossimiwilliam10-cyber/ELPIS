@@ -234,7 +234,9 @@ export default function MatiereCard({
                       currentCM.jActuel = newJ;
                       currentCM.prochaineRevisionDate = null;
                       if (newJ > 0 && (!currentCM.derniereRevision || currentCM.derniereRevision === "")) {
-                        currentCM.derniereRevision = new Date().toISOString().split('T')[0];
+                        const d = new Date();
+                        d.setHours(d.getHours() - 4);
+                        currentCM.derniereRevision = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                       }
                     });
                     setCoursConfig(newConf);

@@ -76,7 +76,9 @@ function sanitizeCours(c) {
           for (const cm of m.listeCM) {
             cm.jActuel = Math.max(0, Math.min(3000, cm.jActuel ?? 0));
             if (cm.jActuel > 0 && (!cm.derniereRevision || cm.derniereRevision === "")) {
-              cm.derniereRevision = new Date().toISOString().split('T')[0];
+              const d = new Date();
+              d.setHours(d.getHours() - 4);
+              cm.derniereRevision = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
             }
           }
           

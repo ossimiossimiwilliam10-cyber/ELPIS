@@ -209,5 +209,13 @@
         "action": "Terminé",
         "dureeMinutes": 15,
         "timestamp": "2026-06-18T12:54:05.661Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Révision Flashcards",
+        "matiere": "Routine",
+        "action": "Terminé",
+        "dureeMinutes": 30,
+        "timestamp": "2026-06-23T09:47:39.039Z"
     }
 ]
