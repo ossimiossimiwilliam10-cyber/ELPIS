@@ -165,7 +165,18 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   // 2. Calculer le temps déjà travaillé aujourd'hui
   let tempsDejaTravailleMin = 0;
   if (cfg.dernierePratiqueAnki && cfg.dernierePratiqueAnki === todayStr) {
-    tempsDejaTravailleMin += (cfg.defaultDurationAnki || 30);
+    let ankiTime = 0;
+    if (historique && Array.isArray(historique)) {
+      const todayEntries = historique.filter(h => {
+        if (h.type !== 'ANKI' || !h.timestamp) return false;
+        const d = new Date(h.timestamp);
+        d.setHours(d.getHours() - 4);
+        const dStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        return dStr === todayStr;
+      });
+      ankiTime = todayEntries.reduce((sum, h) => sum + (h.dureeMinutes || 0), 0);
+    }
+    tempsDejaTravailleMin += (ankiTime > 0 ? ankiTime : (cfg.defaultDurationAnki || 30));
   }
 
   for (const l of (crs.licences || [])) {
