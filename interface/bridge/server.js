@@ -39,6 +39,14 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
+// Désactiver le cache du navigateur pour toutes les routes API (Safari iOS PWA fix)
+app.use('/api/', (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
+  next();
+});
 const ROOT_DIR = path.join(__dirname, '..', '..');
 const CONFIG_FILE = path.join(ROOT_DIR, 'espoir_config.json');
 const COURS_FILE = path.join(ROOT_DIR, 'espoir_cours.json');
