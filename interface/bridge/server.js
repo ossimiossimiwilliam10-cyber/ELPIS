@@ -11,6 +11,7 @@ const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
 const { genererRapportQuotidien } = require('./moteur/orchestrateur');
 const { initMongo, syncFromMongoToLocal, syncToMongo } = require('./mongoAdapter');
+const { callDeepSeek } = require('./aiAdapter');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -51,6 +52,7 @@ const ROOT_DIR = path.join(__dirname, '..', '..');
 const CONFIG_FILE = path.join(ROOT_DIR, 'espoir_config.json');
 const COURS_FILE = path.join(ROOT_DIR, 'espoir_cours.json');
 const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
+const CHAT_FILE = path.join(ROOT_DIR, 'espoir_chat.json');
 const BACKUPS_DIR = path.join(ROOT_DIR, 'backups');
 const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
 
@@ -410,6 +412,52 @@ app.get('/api/orchestrateur', (req, res) => {
   } catch (err) {
     console.error("Erreur orchestrateur:", err);
     res.status(500).json({ error: "Erreur génération rapport: " + err.message });
+  }
+});
+
+// --- ROUTES IA COACH ---
+app.get('/api/chat', (req, res) => {
+  try {
+    if (fs.existsSync(CHAT_FILE)) {
+      const data = fs.readFileSync(CHAT_FILE, 'utf-8');
+      res.json(JSON.parse(data));
+    } else {
+      res.json([]);
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: "messages requis" });
+    }
+    
+    // Call DeepSeek
+    const aiResponseContent = await callDeepSeek(messages, ROOT_DIR);
+    
+    // Append the AI response to the history
+    const finalMessages = [...messages, { role: 'assistant', content: aiResponseContent }];
+    
+    // Save to disk
+    atomicWriteFileSync(CHAT_FILE, JSON.stringify(finalMessages, null, 2));
+    
+    res.json({ content: aiResponseContent });
+  } catch (err) {
+    console.error("Erreur DeepSeek:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/chat', (req, res) => {
+  try {
+    atomicWriteFileSync(CHAT_FILE, JSON.stringify([]));
+    res.json({ message: "Historique vidé" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

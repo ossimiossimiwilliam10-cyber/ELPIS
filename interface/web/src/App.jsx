@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import GlobalSearchModal from './GlobalSearchModal';
 import GlobalChrono from './components/GlobalChrono';
 import DisclaimerModal from './components/DisclaimerModal';
+import AICoachSidebar from './components/AICoachSidebar';
 import { ToastProvider, useToast } from './ToastProvider';
 
 // Code splitting : pages lourdes chargées à la demande
@@ -556,6 +557,7 @@ function AppInner() {
       
       <GlobalSearchModal />
       <GlobalChrono />
+      <AICoachSidebar />
     </div>
   );
 }
