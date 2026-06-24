@@ -75,4 +75,28 @@ describe('Orchestrateur - genererRapportQuotidien', () => {
     expect(r.intelligence).toHaveProperty('burnoutRisk');
     expect(r.intelligence).toHaveProperty('projectedScoreMap');
   });
+
+  test('Anti-regression: Time-awareness properly assigns moments based on current hour', () => {
+    const originalGetHours = Date.prototype.getHours;
+    
+    // Test Soir
+    Date.prototype.getHours = vi.fn(() => 20);
+    const rSoir = genererRapportQuotidien('dummyCfg', 'dummyCrs');
+    if (rSoir.tachesDuJour && rSoir.tachesDuJour.length > 0) {
+      for (const t of rSoir.tachesDuJour) {
+        expect(t.moment).toBe('soir');
+      }
+    }
+
+    // Test Aprem
+    Date.prototype.getHours = vi.fn(() => 15);
+    const rAprem = genererRapportQuotidien('dummyCfg', 'dummyCrs');
+    if (rAprem.tachesDuJour && rAprem.tachesDuJour.length > 0) {
+      for (const t of rAprem.tachesDuJour) {
+        expect(t.moment).not.toBe('matin');
+      }
+    }
+
+    Date.prototype.getHours = originalGetHours;
+  });
 });

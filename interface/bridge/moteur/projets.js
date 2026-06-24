@@ -7,12 +7,12 @@ const PROJETS_FILE = path.join(ROOT_DIR, 'espoir_projets.json');
 /**
  * Charge les projets personnels depuis le fichier JSON.
  */
-function loadProjets() {
+function loadProjets(filePath = PROJETS_FILE) {
   try {
-    if (!fs.existsSync(PROJETS_FILE)) {
+    if (!fs.existsSync(filePath)) {
       return []; // Retourne un tableau vide si le fichier n'existe pas encore
     }
-    const raw = fs.readFileSync(PROJETS_FILE, 'utf8');
+    const raw = fs.readFileSync(filePath, 'utf8');
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
   } catch (e) {
@@ -23,15 +23,17 @@ function loadProjets() {
 
 /**
  * Sauvegarde les projets personnels dans le fichier JSON.
- * @param {Array} projets - Le tableau de projets
  */
-function saveProjets(projets) {
+function saveProjets(projetsData, filePath = PROJETS_FILE) {
+  if (!Array.isArray(projetsData)) {
+    console.error("saveProjets: Données invalides (pas un tableau)");
+    return false;
+  }
+
   try {
-    if (!Array.isArray(projets)) {
-      console.warn("saveProjets: Données invalides (pas un tableau)");
-      return false;
-    }
-    fs.writeFileSync(PROJETS_FILE, JSON.stringify(projets, null, 2), 'utf8');
+    const tmp = filePath + '.tmp';
+    fs.writeFileSync(tmp, JSON.stringify(projetsData, null, 2), 'utf8');
+    fs.renameSync(tmp, filePath);
     return true;
   } catch (e) {
     console.error("Erreur lors de la sauvegarde des projets:", e.message);

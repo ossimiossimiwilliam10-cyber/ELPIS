@@ -552,6 +552,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   taches.length = 0;
   taches.push(...heavyTasks, ...mediumTasks, ...lightTasks);
 
+  const currentHour = new Date().getHours();
   let accumulatedTime = 0;
   for (const t of taches) {
     let percentBefore = accumulatedTime / (tempsRequisMin || 1);
@@ -559,9 +560,16 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     let percentAfter = accumulatedTime / (tempsRequisMin || 1);
     let midPercent = (percentBefore + percentAfter) / 2.0;
 
-    if (midPercent <= 0.35) t.moment = 'matin';
-    else if (midPercent <= 0.70) t.moment = 'aprem';
-    else t.moment = 'soir';
+    if (currentHour < 12) {
+      if (midPercent <= 0.35) t.moment = 'matin';
+      else if (midPercent <= 0.70) t.moment = 'aprem';
+      else t.moment = 'soir';
+    } else if (currentHour < 18) {
+      if (midPercent <= 0.50) t.moment = 'aprem';
+      else t.moment = 'soir';
+    } else {
+      t.moment = 'soir';
+    }
   }
 
   rapport.tempsRequisMin = tempsRequisMin;

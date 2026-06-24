@@ -19,16 +19,14 @@ describe('Projets Module', () => {
   });
 
   beforeEach(() => {
-    if (fs.existsSync(TEMP_PROJETS_FILE)) {
-      fs.unlinkSync(TEMP_PROJETS_FILE);
-    }
+    const targetFile = path.join(__dirname, 'espoir_projets.json');
+    if (fs.existsSync(targetFile)) fs.unlinkSync(targetFile);
   });
 
   test('loadProjets > returns empty array if file does not exist', () => {
-    const targetFile = path.join(__dirname, 'espoir_projets.json');
-    if (fs.existsSync(targetFile)) fs.unlinkSync(targetFile);
+    if (fs.existsSync(TEMP_PROJETS_FILE)) fs.unlinkSync(TEMP_PROJETS_FILE);
     
-    const data = loadProjets();
+    const data = loadProjets(TEMP_PROJETS_FILE);
     expect(data).toEqual([]);
   });
 
@@ -37,17 +35,17 @@ describe('Projets Module', () => {
       { id: 1, titre: "Projet Alpha", phases: [{nom: "Recherche", active: true}] }
     ];
     
-    const result = saveProjets(fakeProjets);
+    const result = saveProjets(fakeProjets, TEMP_PROJETS_FILE);
     expect(result).toBe(true);
 
-    const data = loadProjets();
+    const data = loadProjets(TEMP_PROJETS_FILE);
     expect(data.length).toBe(1);
     expect(data[0].titre).toBe("Projet Alpha");
   });
 
   test('saveProjets > rejects invalid (non-array) data', () => {
     const invalidData = { id: 1, titre: "Projet" };
-    const result = saveProjets(invalidData);
+    const result = saveProjets(invalidData, TEMP_PROJETS_FILE);
     expect(result).toBe(false);
   });
 });
