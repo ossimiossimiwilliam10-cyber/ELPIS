@@ -43,3 +43,7 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 *   **Ancrage Temporel :** Ne jamais laisser un LLM deviner la date ou l'heure. Il faut TOUJOURS injecter `new Date().toLocaleString()` dans le *System Prompt* pour éviter les hallucinations temporelles.
 *   **Concision :** Pour les interfaces de type "Chat" (comme la Sidebar), le prompt doit explicitement brider la verbosité du modèle (ex: "Réponds en 2 ou 3 phrases maximum"). Un chat n'est pas un rapport.
 *   **Choix du Modèle :** Toujours privilégier les modèles de pointe (versions "Pro", "V4", etc.) pour garantir la meilleure qualité de raisonnement du coach, en mettant à jour la variable `DEEPSEEK_MODEL` dans le `.env`.
+
+## 8. Optimisation des Coûts (FinOps)
+*   **Troncature du Contexte (Token Limits) :** Toujours limiter strictement la taille des historiques ou logs envoyés aux APIs LLM (ex: `slice(-15000)` ou via un tokenizer). Ne JAMAIS envoyer une base de données entière dans le prompt système pour éviter des coûts exponentiels (Token Bloat).
+*   **Limitation de l'Output :** Toujours exiger une réponse concise pour minimiser les tokens de complétion (les plus coûteux).
