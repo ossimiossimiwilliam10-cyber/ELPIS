@@ -2340,6 +2340,384 @@
                     ]
                 }
             ]
+        },
+        {
+            "nom": "Licence 1 Physique - Sciences pour l'ingénieur PORTAIL",
+            "semestres": [
+                {
+                    "nom": "Semestre 1",
+                    "ues": [
+                        {
+                            "nom": "UE PHYSIQUE 1",
+                            "ects": 9,
+                            "matieres": [
+                                {
+                                    "nom": "Mécanique 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 17,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Optique 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 7.234,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Électromagnétisme 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 10.75,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Physique Expérimentale 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 16.1,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "PILS Physique",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 0.5,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Sciences et enjeux environnementaux",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Sciences & enjeux environnementaux",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 11.293,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE MATHS 1",
+                            "ects": 6,
+                            "matieres": [
+                                {
+                                    "nom": "Mathématiques pour les sciences 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 15.25,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "PILS - Mathématiques pour les sciences",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 0.389,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE CHIMIE 1",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Architecture de la matière 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 17.3,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Transformation de la matière 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 7.6,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "PILS Chimie",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 0,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE MTU",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "MTU",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 8.89,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE TP-Option",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Chimie expérimentale 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 9.6,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Langues 1",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Anglais Lansad",
+                                    "coefficient": 1,
+                                    "evaluations": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "nom": "Semestre 2",
+                    "ues": [
+                        {
+                            "nom": "UE PHYSIQUE 2",
+                            "ects": 9,
+                            "matieres": [
+                                {
+                                    "nom": "Mécanique 2-A",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 18.375,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Électromagnétisme 2",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 8.5,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Méthodes Maths pour Phy",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 11.5,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Physique expérimentale 2",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 16.4,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE MATHS & INFO 2",
+                            "ects": 9,
+                            "matieres": [
+                                {
+                                    "nom": "Mathématiques pour les sciences 2",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 14.125,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "nom": "Informatique",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 17.403,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE CHIMIE 2",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Liaisons et Molécules",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 6.25,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE PPP: Explorer",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Explorer",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 17.185,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Soutien OS",
+                            "ects": 0,
+                            "matieres": [
+                                {
+                                    "nom": "OS Renforcement Phy",
+                                    "coefficient": 1,
+                                    "evaluations": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Langues 2",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Anglais Lansad",
+                                    "coefficient": 1,
+                                    "evaluations": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Option S2",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Géodynamique",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 8.649,
+                                            "type": "SC"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

@@ -124,6 +124,34 @@ export default function BulletinPage() {
     semesterAverages.push({ nom: sem.nom, avg: semAvg });
   });
 
+  // AXE 16: Super Moyenne Générale Universitaire (Pondérée par ECTS)
+  let globalSumNotes = 0;
+  let globalSumECTS = 0;
+
+  activeConfig.licences.forEach(lic => {
+    lic.semestres?.forEach(sem => {
+      sem.ues?.forEach(ue => {
+        let ueSumWeight = 0;
+        let ueSumNotes = 0;
+        ue.matieres?.forEach(m => {
+          const avg = getSubjectAverage(m.evaluations);
+          if (avg !== null) {
+            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+            ueSumWeight += coef;
+            ueSumNotes += avg * coef;
+          }
+        });
+        const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
+        if (ueAvg !== null) {
+          const ects = ue.ects || 0;
+          globalSumNotes += ueAvg * ects;
+          globalSumECTS += ects;
+        }
+      });
+    });
+  });
+
+  const globalAvg = globalSumECTS > 0 ? (globalSumNotes / globalSumECTS).toFixed(2) : '--';
 
   const toggleUE = (idx) => {
     setExpandedUEs(prev => ({ ...prev, [idx]: prev[idx] !== undefined ? !prev[idx] : true }));
@@ -131,6 +159,28 @@ export default function BulletinPage() {
 
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem' }}>
+      
+      {/* BANNIERE SUPER MOYENNE GENERALE */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
+        border: '1px solid rgba(168, 85, 247, 0.3)',
+        borderRadius: '16px',
+        padding: '1.5rem',
+        marginBottom: '2rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+      }}>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-secondary)' }}>Moyenne Universitaire Globale</h2>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Pondérée sur l'ensemble de tes {globalSumECTS} crédits ECTS acquis</div>
+        </div>
+        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: globalAvg >= 10 ? '#4ade80' : '#f87171', textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
+          {globalAvg}<span style={{fontSize: '1.2rem', color:'var(--text-muted)'}}>/20</span>
+        </div>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '2rem', marginBottom: '1rem' }}>📝 Espace Bulletin</h1>
