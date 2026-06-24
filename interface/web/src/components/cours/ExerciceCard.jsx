@@ -4,6 +4,7 @@ import useStore, { useChronoStore } from '../../store';
 import { useToast } from '../../ToastProvider';
 import InfoTooltip from '../InfoTooltip';
 import { DIFFICULTY_LEVELS } from '../../constants';
+import { parseTimeInput } from '../../utils/timeParser';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
@@ -83,8 +84,8 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
     if (finalMinutes === 0 && exo.type === 'ANKI') {
       const input = window.prompt(`Temps passé sur Anki (en minutes) ? Laissez vide pour utiliser le temps moyen (${Math.round(exo.tempsMoyen || 30)} min).`, "");
       if (input !== null && input.trim() !== "") {
-        const parsed = parseInt(input);
-        if (!isNaN(parsed) && parsed >= 0) {
+        const parsed = parseTimeInput(input);
+        if (parsed !== null) {
           finalMinutes = parsed;
         }
       }
@@ -173,11 +174,11 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
           </button>
           {isEditingTime ? (
             <input 
-              type="number" 
+              type="text" 
               autoFocus
               onBlur={e => {
-                const mins = parseInt(e.target.value);
-                if (!isNaN(mins) && mins >= 0) {
+                const mins = parseTimeInput(e.target.value);
+                if (mins !== null && mins >= 0) {
                   setManualTime(mins);
                 }
                 setIsEditingTime(false);

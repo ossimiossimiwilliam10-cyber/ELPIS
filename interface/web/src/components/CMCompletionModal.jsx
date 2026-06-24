@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { parseTimeInput } from '../utils/timeParser';
+
 const SCORE_LABELS = [
   { value: 1, label: 'Échec', short: '1', color: '#ef4444', desc: 'Oubli total (Again)' },
   { value: 2, label: 'Difficile', short: '2', color: '#f59e0b', desc: 'Avec effort (Hard)' },
@@ -18,6 +20,7 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
   const overlayRef = useRef(null);
 
   const [prevIsOpen, setPrevIsOpen] = useState(false);
+
   if (isOpen !== prevIsOpen) {
     setPrevIsOpen(isOpen);
     if (isOpen) {
@@ -26,71 +29,70 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
     }
   }
 
-  const handleOverlayClick = (e) => {
-    if (e.target === overlayRef.current) {
+  // Handle Enter to submit, Escape to close
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+      // If pressing Enter and a score is selected, submit
+      if (e.key === 'Enter' && score !== null) {
+        onSubmit({ minutes: parseTimeInput(minutes) || 1, sm2Score: score });
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose, onSubmit, minutes, score]);
+
+  const handleSubmit = () => {
+    if (score !== null) {
+      onSubmit({ minutes: parseTimeInput(minutes) || 1, sm2Score: score });
       onClose();
     }
   };
 
-  const handleSubmit = () => {
-    if (score === null) return;
-    // Map score 1-4 directement pour FSRS
-    onSubmit({ minutes: Math.max(1, Math.round(minutes)), sm2Score: score });
-    onClose();
-  };
-
-  // Échap pour fermer
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === 'Escape' && isOpen) onClose();
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [isOpen, onClose]);
-
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          ref={overlayRef}
-          className="modal-overlay"
-          onClick={handleOverlayClick}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+        <div 
           style={{
             position: 'fixed',
-            inset: 0,
+            top: 0, left: 0, right: 0, bottom: 0,
             background: 'rgba(0, 0, 0, 0.6)',
             backdropFilter: 'blur(4px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: 1000
           }}
         >
-          <motion.div
-            className="modal-content glass-panel"
+          <div 
+            ref={overlayRef}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} 
+            onClick={onClose} 
+          />
+          
+          <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
             style={{
               background: 'var(--bg-secondary)',
               border: '1px solid var(--bg-tertiary)',
               borderRadius: '16px',
               padding: '2rem',
-              maxWidth: '440px',
               width: '90%',
-              boxShadow: '0 25px 50px rgba(0,0,0,0.4)',
+              maxWidth: '450px',
+              position: 'relative',
+              zIndex: 1001,
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
             }}
           >
-            <h3 style={{ marginTop: 0, marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1.3rem' }}>
-              ✅ CM terminé
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.4 }}>
-              <strong style={{ color: 'var(--accent-primary)' }}>{taskTitle}</strong> — pour que l'algorithme SM-2 reste précis, indique ton temps réel et ton niveau de rétention.
+            <h2 style={{ marginTop: 0, marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1.4rem' }}>
+              Valider le CM
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+              {taskTitle}
             </p>
 
             {/* Temps passé */}
@@ -99,11 +101,20 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
                 ⏱️ Temps réel passé (minutes)
               </label>
               <input
-                type="number"
-                min="1"
-                max="480"
+                type="text"
                 value={minutes}
-                onChange={(e) => setMinutes(parseInt(e.target.value) || 1)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setMinutes(val); // Keep string in state while typing
+                }}
+                onBlur={(e) => {
+                  const parsed = parseTimeInput(e.target.value);
+                  if (parsed !== null && parsed > 0) {
+                    setMinutes(parsed);
+                  } else {
+                    setMinutes(1);
+                  }
+                }}
                 style={{
                   width: '100%',
                   padding: '0.7rem',
@@ -185,7 +196,7 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
               </button>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );
