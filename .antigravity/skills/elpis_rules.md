@@ -27,4 +27,8 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 *   Ne jamais inclure de styles inline bruts si une classe utilitaire ou un composant existe.
 *   **Saisie du Temps (Smart Time Parsing)** : Ne jamais utiliser un simple `parseInt` pour les inputs de durée. Toujours utiliser une fonction robuste capable de convertir les formats complexes (ex: "35:44", "35m44s", "35.5") en décimales (ex: 35.73) pour conserver la précision.
 
+## 5. Frontière IA vs Algorithme (Le Coach Virtuel)
+*   **Cœur 100% Algorithmique :** L'IA ne doit **JAMAIS** être utilisée pour des tâches complexes de fond (configuration, déblocage de tâches, calcul de FSRS, orchestration). Le moteur doit rester purement mathématique et déterministe.
+*   **L'IA comme "Façade" (Coach) :** L'IA doit agir exclusivement comme un "Petit Agent" flottant dans l'interface (à l'image du chronomètre global). Son unique rôle est de lire les résultats algorithmiques et de formuler des commentaires contextuels et d'encouragement au fil de la journée.
+
 > **Directive d'Initialisation :** À chaque début de session complexe, relis ce fichier ainsi que l'`algorithm_evaluation.md` pour te re-contextualiser immédiatement au niveau "Élite".
