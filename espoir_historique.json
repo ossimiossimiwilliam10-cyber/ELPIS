@@ -233,5 +233,14 @@
         "action": "Terminé (Note: 9/20)",
         "dureeMinutes": 83,
         "timestamp": "2026-06-24T11:46:48.906Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 3 : Les pièges du \"Frenglish\"",
+        "matiere": "Anglais Lansad - Semestre impair",
+        "action": "Révisé (J1)",
+        "dureeMinutes": 16,
+        "easeFactor": 3.2704740075,
+        "timestamp": "2026-06-24T14:08:20.699Z"
     }
 ]

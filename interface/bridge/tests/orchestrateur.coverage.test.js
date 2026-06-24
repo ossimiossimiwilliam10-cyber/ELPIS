@@ -125,7 +125,7 @@ describe('Orchestrateur - Extreme Coverage', () => {
 
     const cmTask = r.tachesDuJour.find(t => t.type === 'CM' && t.titre === 'CM_PREP');
     expect(cmTask).toBeDefined();
-    expect(cmTask.raisons).toContain('🔗 Préparation TD');
+    expect(cmTask.raisons).toContain('🔗 Pour préparer le TD');
   });
 
   test('Branch: FillGap mode', () => {

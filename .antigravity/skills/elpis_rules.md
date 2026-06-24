@@ -46,3 +46,8 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 
 ## 8. Mémoire Absolue (Omniscience)
 *   **Omniscience du Coach (No Truncation) :** Ne **JAMAIS** tronquer ou filtrer l'historique FSRS envoyé à l'IA. Le coach doit avoir accès à l'intégralité du fichier JSON brut, depuis le premier jour. Les modèles "Pro" ont une fenêtre de contexte suffisante (>128k tokens) pour digérer des années de données et fournir un coaching parfaitement personnalisé.
+
+## 9. Ton et Vocabulaire (Copywriting)
+*   **Tutoiement respectueux :** Toujours tutoyer l'utilisateur ("ton historique", "tes révisions") de façon motivante et claire, sans jamais être familier ou infantilisant (niveau étudiant universitaire L2).
+*   **Vulgarisation Algorithmique :** Bannir le jargon trop technique ou pompeux dans l'interface utilisateur. Utiliser des mots simples et clairs (ex: "Planificateur" au lieu d'"Orchestrateur", "Vitesse d'apprentissage" au lieu de "Vélocité", "Urgence" au lieu de "MODE CRISE"). Ne pas mentionner les détails internes comme "Axe X".
+*   **Simplicité et Grammaire :** Les phrases doivent être courtes, grammaticalement parfaites, et faciles à lire entre deux sessions de travail.

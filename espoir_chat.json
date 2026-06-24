@@ -1,26 +1,10 @@
 [
   {
     "role": "user",
-    "content": "Bonjour ! "
+    "content": "Bonjour Coach ! "
   },
   {
     "role": "assistant",
-    "content": "Salut ! Bon boulot ce matin sur l'annale de Programmation et ta session Anki. 10 jours de streak, c'est solide, garde le rythme. Cet après-midi, un bloc sur les CM d'Anglais (chapitre 3 ou 4) ou une révision d'Algèbre seraient parfaits pour consolider ta dynamique."
-  },
-  {
-    "role": "user",
-    "content": "J'ai eu combien déjà ? "
-  },
-  {
-    "role": "assistant",
-    "content": "Tu as eu 9/20 à l'annale de Programmation. C'est une base honnête ; en revoyant tes erreurs, tu peux facilement viser la moyenne la prochaine fois."
-  },
-  {
-    "role": "user",
-    "content": "Tu penses que j'aurai quel niveau en septembre ? "
-  },
-  {
-    "role": "assistant",
-    "content": "À ce rythme et avec une régularité parfaite jusqu'à la rentrée, tu pourrais largement viser la tête de classe. En septembre, tu auras déjà une avance sur presque tout le monde et une base solide en Programmation et Archi. Seul le travail en continu fera la différence."
+    "content": "Bonjour ! Série impressionnante de 10 jours, bravo. J’ai vu ton 9/20 en programmation ce matin, c’est un super signal pour cibler les deux chapitres plus faibles. Qu’est-ce que tu prévois pour cet après-midi ?"
   }
 ]

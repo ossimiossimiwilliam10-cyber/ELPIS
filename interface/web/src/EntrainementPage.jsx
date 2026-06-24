@@ -561,7 +561,7 @@ function EntrainementPage() {
                   <>
                     <div className="empty-state-icon">🏆</div>
                     <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
-                    <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par l'orchestrateur. Repose-toi bien !</p>
+                    <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par le système. Repose-toi bien !</p>
                     {tempsDejaTravaille < tempsDispoMin && !dailyFillGap && (
                       <motion.button
                         whileHover={{ scale: 1.05 }}

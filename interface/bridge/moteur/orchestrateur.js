@@ -253,11 +253,11 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
           const examBoost = examBoostOriginal * inactivityBoost * crisisBoost;
           const baseRaisons = [];
-          if (inactivityBoost > 1.0) baseRaisons.push("🛡️ Anti-Décrochage");
-          if (crisisBoost > 1.0) baseRaisons.push("🚨 MODE CRISE (< 5/20)");
+          if (inactivityBoost > 1.0) baseRaisons.push("🛡️ Reprise en main");
+          if (crisisBoost > 1.0) baseRaisons.push("🚨 Urgence (Note < 5)");
           
           if (daysToExam < 60) baseRaisons.push("⏳ Examen Proche");
-          else if (examBoostOriginal > 1.0) baseRaisons.push("🔥 Fort Coeff");
+          else if (examBoostOriginal > 1.0) baseRaisons.push("🔥 Coefficient Élevé");
 
           // --- CM ---
           let newCMCountPerMatiere = 0;
@@ -454,8 +454,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   for (const td of poolTD) {
     for (const cm of poolCM.filter(c => c.matiere === td.matiere)) {
       cm.prio *= MAGIC_CONSTANTS.BOOST_PREP_TD;
-      if (!cm.raisons.includes("🔗 Préparation TD")) {
-        cm.raisons.unshift("🔗 Préparation TD");
+      if (!cm.raisons.includes("🔗 Pour préparer le TD")) {
+        cm.raisons.unshift("🔗 Pour préparer le TD");
       }
     }
   }

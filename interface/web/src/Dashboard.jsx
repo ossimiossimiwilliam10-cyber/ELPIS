@@ -347,7 +347,7 @@ function Dashboard() {
         style={{textAlign:'center', marginTop:'3rem'}}
       >
         <h2>{greeting} ! Bienvenue sur ELPIS</h2>
-        <p style={{color:'var(--text-secondary)'}}>Configure tes objectifs et tes cours pour activer l'Orchestrateur.</p>
+        <p style={{color:'var(--text-secondary)'}}>Configure tes objectifs et tes cours pour activer le Planificateur.</p>
       </motion.div>
     );
   }
@@ -440,7 +440,7 @@ function Dashboard() {
           </div>
           <div className="welcome-stat">
             <div className="welcome-stat-value">{Math.round(tempsRequisMin/60 * 10)/10}h</div>
-            <div className="welcome-stat-label"><InfoTooltip content="Temps total estimé par l'Orchestrateur pour accomplir toutes les tâches planifiées aujourd'hui.">Requis <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
+            <div className="welcome-stat-label"><InfoTooltip content="Temps total estimé par le système pour accomplir toutes tes tâches du jour.">Requis <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
           </div>
           <div className="welcome-stat welcome-stat-circular">
             <CircularProgress percent={globalPercent} />

@@ -27,10 +27,25 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Les pièges du \"Frenglish\"",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-06-24",
+                                            "easeFactor": 3.2704740075,
+                                            "repetitions": 1,
+                                            "fsrsCard": {
+                                                "due": "2026-06-24T10:18:20.693Z",
+                                                "stability": 2.3065,
+                                                "difficulty": 2.11810397,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 1,
+                                                "state": 1,
+                                                "last_review": "2026-06-24T10:08:20.693Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-06-24",
+                                            "tempsMoyen": 16,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 4 : Étude de cas : La Nanocar Race",

@@ -280,9 +280,9 @@ function StatistiquesPage() {
         >
           <div style={{display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap'}}>
             <div style={{flex: '1 1 350px'}}>
-              <h3 style={{marginBottom: '1rem', color: '#a78bfa'}}>🧠 Projections IA (Orchestrateur)</h3>
-              <p style={{color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem'}}>
-                Notes projetées calculées par l'Orchestrateur (Axe 11). Ces projections croisent ton historique, ta vélocité d'apprentissage et ta maîtrise des CM.
+              <h3 style={{marginBottom: '1rem', color: '#a78bfa'}}>🧠 Projections de Moyenne</h3>
+              <p style={{color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5'}}>
+                Ces notes sont des estimations basées sur ton rythme de travail, tes notes d'annales et ta maîtrise des cours (CM/TD).
               </p>
               
               <div style={{display: 'flex', gap: '1rem', alignItems: 'stretch', flexWrap: 'wrap'}}>
@@ -315,9 +315,9 @@ function StatistiquesPage() {
               <div style={{marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', borderLeft: '3px solid #a78bfa'}}>
                 <span style={{fontSize: '1.2rem', marginRight: '0.5rem'}}>💡</span>
                 <span style={{fontSize: '0.95rem', color: 'var(--text-primary)'}}>
-                  {projectedScores.avg >= 14 ? "Excellent potentiel ! Continue sur cette lancée, l'Orchestrateur confirme une trajectoire solide." :
-                   projectedScores.avg >= 10 ? "Bon potentiel détecté. Concentre-toi sur les matières fragiles pour sécuriser ta moyenne." :
-                   "Les projections sont en dessous de 10. L'Orchestrateur détecte des lacunes — priorise les CM et les Annales."}
+                  {projectedScores.avg >= 14 ? "Excellent potentiel ! Continue sur cette lancée, tu es sur la bonne voie." :
+                   projectedScores.avg >= 10 ? "Tu as la moyenne, mais ne relâche pas tes efforts. Révise les points clés pour sécuriser tes acquis." :
+                   "Les estimations sont en dessous de 10. Concentre-toi sur tes CM en retard et pratique des annales pour remonter la pente."}
                 </span>
               </div>
             </div>

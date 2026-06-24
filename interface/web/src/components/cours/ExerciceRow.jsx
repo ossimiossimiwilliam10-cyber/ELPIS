@@ -85,7 +85,7 @@ export default function ExerciceRow({
       {/* Difficulté */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.2rem', flexShrink: 0 }}>
         <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
-          <InfoTooltip content="Définit la fréquence d'apparition dans ton planning. Plus il y a d'étoiles, plus l'Orchestrateur te le proposera souvent." width={200}>
+          <InfoTooltip content="Définit la fréquence d'apparition dans ton planning. Plus il y a d'étoiles, plus le système te le proposera souvent." width={200}>
             Difficulté <span style={{fontSize:'0.65rem'}}>ℹ️</span>
           </InfoTooltip>
         </span>

@@ -135,7 +135,7 @@ export default function MatiereCard({
           <span style={{fontSize:'1rem', marginTop: '4px'}} title="Synergies inter-matières">🔗</span>
           <div style={{flex:1}}>
             <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '6px'}}>
-              <InfoTooltip content="Lier deux matières crée des ponts cognitifs. L'Orchestrateur tentera de planifier des sessions mixtes (Interleaving) pour stimuler la mémorisation transversale." width={260}>
+              <InfoTooltip content="Lier deux matières crée des ponts cognitifs. Le système tentera de planifier des sessions mixtes (Interleaving) pour stimuler la mémorisation transversale." width={260}>
                 Matières liées (Synergies) : <span style={{fontSize:'0.75rem'}}>ℹ️</span>
               </InfoTooltip>
             </div>
