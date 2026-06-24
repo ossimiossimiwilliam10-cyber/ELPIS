@@ -9,6 +9,7 @@ const pdfParse = require('pdf-parse');
 
 const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
+const { loadProjets, saveProjets } = require('./moteur/projets');
 const { genererRapportQuotidien } = require('./moteur/orchestrateur');
 const { initMongo, syncFromMongoToLocal, syncToMongo } = require('./mongoAdapter');
 const { callDeepSeek } = require('./aiAdapter');
@@ -202,6 +203,35 @@ app.post('/api/cours', (req, res) => {
     syncToMongo('cours', req.body).catch(console.error);
     
     res.json({ success: true, message: "Cours mis à jour." });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur serveur: " + err.message });
+  }
+});
+
+// GET projets
+app.get('/api/projets', (req, res) => {
+  try {
+    const projets = loadProjets();
+    res.json(projets);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lecture des projets: " + err.message });
+  }
+});
+
+// POST projets
+app.post('/api/projets', (req, res) => {
+  try {
+    if (!Array.isArray(req.body)) {
+      return res.status(400).json({ error: "Les projets doivent être un tableau." });
+    }
+    const success = saveProjets(req.body);
+    if (!success) {
+      return res.status(500).json({ error: "Erreur sauvegarde des projets." });
+    }
+    // MAJ Async sur MongoDB
+    syncToMongo('projets', req.body).catch(console.error);
+    
+    res.json({ success: true, message: "Projets mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur: " + err.message });
   }

@@ -53,6 +53,7 @@ const useStore = create(immer((set, get) => ({
   // --- STATE ---
   config: {},
   coursConfig: { licences: [] },
+  projets: [],
   historique: [],
   loading: true,
   error: null,
@@ -95,7 +96,7 @@ const useStore = create(immer((set, get) => ({
   initData: async () => {
     set({ loading: true, error: null });
     try {
-      const [resConfig, resCours, resHist] = await Promise.all([
+      const [resConfig, resCours, resHist, resProjets] = await Promise.all([
         fetch(`${API_URL}/config`).then(async r => {
           if (!r.ok) throw new Error(`Erreur chargement config (${r.status})`);
           return r.json();
@@ -104,13 +105,15 @@ const useStore = create(immer((set, get) => ({
           if (!r.ok) throw new Error(`Erreur chargement cours (${r.status})`);
           return r.json();
         }),
-        fetch(`${API_URL}/historique`).then(r => r.ok ? r.json() : [])
+        fetch(`${API_URL}/historique`).then(r => r.ok ? r.json() : []),
+        fetch(`${API_URL}/projets`).then(r => r.ok ? r.json() : [])
       ]);
 
       set({ 
         config: resConfig, 
         coursConfig: resCours, 
         historique: Array.isArray(resHist) ? resHist : [],
+        projets: Array.isArray(resProjets) ? resProjets : [],
         loading: false 
       });
 
@@ -130,6 +133,20 @@ const useStore = create(immer((set, get) => ({
     const merged = { ...get().config, ...newConfig };
     set({ config: merged });
     debouncedSaveConfig(merged, get);
+  },
+
+  // Update projets state and save
+  setProjets: async (newProjets) => {
+    set({ projets: newProjets });
+    try {
+      await fetch(`${API_URL}/projets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newProjets)
+      });
+    } catch (err) {
+      console.error("Erreur de sauvegarde des projets:", err);
+    }
   },
 
   activateRestDay: async () => {

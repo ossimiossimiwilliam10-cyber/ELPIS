@@ -13,7 +13,8 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
       tabs: [
         { id: 'cours', label: 'Bibliothèque', icon: '📚' },
         { id: 'prep_hebdo', label: 'Préparation Hebdo', icon: '📅' },
-        { id: 'bulletin', label: 'Bulletin & Notes', icon: '📝' }
+        { id: 'bulletin', label: 'Bulletin & Notes', icon: '📝' },
+        { id: 'projets', label: 'Projets Personnels', icon: '💡' }
       ]
     },
     {
