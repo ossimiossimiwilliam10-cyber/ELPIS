@@ -34,3 +34,7 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 *   **L'IA comme "Façade" (Coach) :** L'IA doit agir exclusivement comme un "Petit Agent" flottant dans l'interface (à l'image du chronomètre global). Son unique rôle est de lire les résultats algorithmiques et de formuler des commentaires contextuels et d'encouragement au fil de la journée.
 
 > **Directive d'Initialisation :** À chaque début de session complexe, relis ce fichier ainsi que l'`algorithm_evaluation.md` pour te re-contextualiser immédiatement au niveau "Élite".
+
+## 6. Sécurité et Configuration Externe
+*   **Pas de Hardcoding :** Les clés API, les URLs de services externes et **les noms des modèles IA** (ex: `deepseek-chat`) ne doivent JAMAIS être codés en dur dans les fichiers source (ex: `aiAdapter.js`).
+*   **Utilisation de `.env` :** Toute configuration variable doit être injectée via `process.env`. Le code doit toujours prévoir une valeur par défaut cohérente (fallback) si la variable d'environnement facultative n'est pas fournie.

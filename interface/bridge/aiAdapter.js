@@ -66,6 +66,8 @@ ${contextStr}
   const payloadMessages = [systemPrompt, ...messages];
 
   try {
+    const modelName = process.env.DEEPSEEK_MODEL || "deepseek-chat";
+
     const response = await fetch(DEEPSEEK_API_URL, {
       method: 'POST',
       headers: {
@@ -73,7 +75,7 @@ ${contextStr}
         'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
+        model: modelName,
         messages: payloadMessages,
         max_tokens: 1000,
         temperature: 0.7
