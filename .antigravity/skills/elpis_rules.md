@@ -44,6 +44,5 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 *   **Concision :** Pour les interfaces de type "Chat" (comme la Sidebar), le prompt doit explicitement brider la verbosité du modèle (ex: "Réponds en 2 ou 3 phrases maximum"). Un chat n'est pas un rapport.
 *   **Choix du Modèle :** Toujours privilégier les modèles de pointe (versions "Pro", "V4", etc.) pour garantir la meilleure qualité de raisonnement du coach, en mettant à jour la variable `DEEPSEEK_MODEL` dans le `.env`.
 
-## 8. Optimisation des Coûts (FinOps)
-*   **Filtrage Temporel du Contexte :** Ne pas utiliser de limites de caractères arbitraires ou brutes (`slice`) qui risquent de corrompre le JSON. Il faut analyser intelligemment les données et filtrer par date (ex: les 30 derniers jours) avant de les envoyer au LLM. Le but est d'avoir un contexte utile tout en évitant d'envoyer plusieurs années de données.
-*   **Limitation de l'Output :** Toujours exiger une réponse concise pour minimiser les tokens de complétion (les plus coûteux).
+## 8. Mémoire Absolue (Omniscience)
+*   **Omniscience du Coach (No Truncation) :** Ne **JAMAIS** tronquer ou filtrer l'historique FSRS envoyé à l'IA. Le coach doit avoir accès à l'intégralité du fichier JSON brut, depuis le premier jour. Les modèles "Pro" ont une fenêtre de contexte suffisante (>128k tokens) pour digérer des années de données et fournir un coaching parfaitement personnalisé.
