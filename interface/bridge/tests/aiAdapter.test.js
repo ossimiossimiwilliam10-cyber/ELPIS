@@ -13,16 +13,16 @@ describe('AI Adapter', () => {
   test('buildAIContext assembles context from JSON files', () => {
     vi.spyOn(fs, 'existsSync').mockReturnValue(true);
     vi.spyOn(fs, 'readFileSync').mockImplementation((filePath) => {
-      if (filePath.includes('espoir_config.json')) return '{"targetGrade": 15}';
-      if (filePath.includes('espoir_cours.json')) return '{"licences": []}';
-      if (filePath.includes('espoir_historique.json')) return '[{"type": "CM"}]';
+      if (filePath.endsWith('espoir_config.json')) return '{"targetGrade": 15}';
+      if (filePath.endsWith('espoir_cours.json')) return '{"licences": []}';
+      if (filePath.endsWith('espoir_historique.json')) return `[{"type": "CM", "timestamp": "${new Date().toISOString()}"}]`;
       return '';
     });
 
     const context = buildAIContext('/fake/data/dir');
     expect(context).toContain('{"targetGrade": 15}');
     expect(context).toContain('{"licences": []}');
-    expect(context).toContain('[{"type": "CM"}]');
+    expect(context).toContain('"type": "CM"');
   });
 
   test('buildAIContext handles missing files gracefully', () => {

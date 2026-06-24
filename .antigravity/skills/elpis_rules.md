@@ -45,5 +45,5 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 *   **Choix du Modèle :** Toujours privilégier les modèles de pointe (versions "Pro", "V4", etc.) pour garantir la meilleure qualité de raisonnement du coach, en mettant à jour la variable `DEEPSEEK_MODEL` dans le `.env`.
 
 ## 8. Optimisation des Coûts (FinOps)
-*   **Troncature du Contexte (Token Limits) :** Toujours limiter strictement la taille des historiques ou logs envoyés aux APIs LLM (ex: `slice(-15000)` ou via un tokenizer). Ne JAMAIS envoyer une base de données entière dans le prompt système pour éviter des coûts exponentiels (Token Bloat).
+*   **Filtrage Temporel du Contexte :** Ne pas utiliser de limites de caractères arbitraires ou brutes (`slice`) qui risquent de corrompre le JSON. Il faut analyser intelligemment les données et filtrer par date (ex: les 30 derniers jours) avant de les envoyer au LLM. Le but est d'avoir un contexte utile tout en évitant d'envoyer plusieurs années de données.
 *   **Limitation de l'Output :** Toujours exiger une réponse concise pour minimiser les tokens de complétion (les plus coûteux).

@@ -16,7 +16,25 @@ function buildAIContext(dataDir) {
 
     const config = fs.existsSync(configPath) ? fs.readFileSync(configPath, 'utf-8') : '{}';
     const cours = fs.existsSync(coursPath) ? fs.readFileSync(coursPath, 'utf-8') : '{}';
-    const hist = fs.existsSync(histPath) ? fs.readFileSync(histPath, 'utf-8') : '[]';
+    let histString = '[]';
+    if (fs.existsSync(histPath)) {
+      try {
+        const rawHist = fs.readFileSync(histPath, 'utf-8');
+        const histArray = JSON.parse(rawHist);
+        
+        // Filtrer pour ne garder que les 30 derniers jours
+        const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+        const recentHist = histArray.filter(entry => {
+          if (!entry.timestamp) return false;
+          return new Date(entry.timestamp).getTime() >= thirtyDaysAgo;
+        });
+        
+        histString = JSON.stringify(recentHist, null, 2);
+      } catch (e) {
+        console.error("Erreur de parsing historique, fallback au fichier brut:", e);
+        histString = fs.readFileSync(histPath, 'utf-8').slice(-15000); // Fallback
+      }
+    }
 
     return `
 === CONTEXTE DE L'APPLICATION ELPIS ===
@@ -26,8 +44,8 @@ ${config}
 [Cours (Structure)]
 ${cours}
 
-[Historique Récents (100 dernières entrées)]
-${hist.slice(-15000)} // Limite empirique pour éviter un contexte trop lourd si l'historique est immense.
+[Historique Récents (30 derniers jours)]
+${histString}
 =======================================
 `;
   } catch (err) {
