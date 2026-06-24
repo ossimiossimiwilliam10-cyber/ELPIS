@@ -68,6 +68,7 @@ function buildCompensationMap(crs) {
   if (!crs || !crs.licences) return map;
 
   for (const l of (crs.licences || [])) {
+    if (l.archived) continue;
     for (const s of (l.semestres || [])) {
       const ueData = [];
       for (const ue of (s.ues || [])) {
@@ -120,6 +121,7 @@ function buildRemainingWeightMap(crs) {
   if (!crs || !crs.licences) return map;
 
   for (const l of (crs.licences || [])) {
+    if (l.archived) continue;
     for (const s of (l.semestres || [])) {
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
@@ -159,6 +161,7 @@ function buildVelocityMap(crs, historique, cfg = {}) {
   if (!crs || !crs.licences) return map;
 
   for (const l of (crs.licences || [])) {
+    if (l.archived) continue;
     for (const s of (l.semestres || [])) {
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
@@ -299,6 +302,7 @@ function buildProjectedScoreMap(crs, velocityMap) {
   if (!crs || !crs.licences) return map;
 
   for (const l of crs.licences) {
+    if (l.archived) continue;
     for (const s of (l.semestres || [])) {
       for (const u of (s.ues || [])) {
         for (const m of (u.matieres || [])) {
@@ -350,6 +354,7 @@ function buildCognitiveLoadMap(crs) {
   if (!crs || !crs.licences) return map;
 
   for (const l of (crs.licences || [])) {
+    if (l.archived) continue;
     for (const s of (l.semestres || [])) {
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
@@ -385,6 +390,7 @@ function buildExamUrgencyMap(crs) {
   today.setHours(0, 0, 0, 0);
 
   for (const l of (crs.licences || [])) {
+    if (l.archived) continue;
     for (const s of (l.semestres || [])) {
       for (const ue of (s.ues || [])) {
         for (const subj of (ue.matieres || [])) {

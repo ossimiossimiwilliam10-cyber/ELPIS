@@ -21,6 +21,7 @@ export function useWorkloadEngine() {
 
     // 1. Calculate per-subject requirement
     coursConfig.licences?.forEach(l => {
+      if (l.archived) return; // Skip archived licences for workload calculation
       l.semestres?.forEach(s => {
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {

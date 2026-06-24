@@ -211,6 +211,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const maxNewCMPerSemester = cfg.maxNewCMPerSemesterPerDay !== undefined ? cfg.maxNewCMPerSemesterPerDay : 3;
 
   for (const l of (crs.licences || [])) {
+    if (l.archived) continue;
     for (const s of (l.semestres || [])) {
       let matiereIndexDansSemestre = 0;
       let newCMCountPerSemester = 0;
