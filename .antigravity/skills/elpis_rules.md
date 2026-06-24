@@ -38,3 +38,7 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 ## 6. Sécurité et Configuration Externe
 *   **Pas de Hardcoding :** Les clés API, les URLs de services externes et **les noms des modèles IA** (ex: `deepseek-chat`) ne doivent JAMAIS être codés en dur dans les fichiers source (ex: `aiAdapter.js`).
 *   **Utilisation de `.env` :** Toute configuration variable doit être injectée via `process.env`. Le code doit toujours prévoir une valeur par défaut cohérente (fallback) si la variable d'environnement facultative n'est pas fournie.
+
+## 7. Prompt Engineering (Règles d'or pour l'IA)
+*   **Ancrage Temporel :** Ne jamais laisser un LLM deviner la date ou l'heure. Il faut TOUJOURS injecter `new Date().toLocaleString()` dans le *System Prompt* pour éviter les hallucinations temporelles.
+*   **Concision :** Pour les interfaces de type "Chat" (comme la Sidebar), le prompt doit explicitement brider la verbosité du modèle (ex: "Réponds en 2 ou 3 phrases maximum"). Un chat n'est pas un rapport.
