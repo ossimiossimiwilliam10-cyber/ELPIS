@@ -42,3 +42,4 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 ## 7. Prompt Engineering (Règles d'or pour l'IA)
 *   **Ancrage Temporel :** Ne jamais laisser un LLM deviner la date ou l'heure. Il faut TOUJOURS injecter `new Date().toLocaleString()` dans le *System Prompt* pour éviter les hallucinations temporelles.
 *   **Concision :** Pour les interfaces de type "Chat" (comme la Sidebar), le prompt doit explicitement brider la verbosité du modèle (ex: "Réponds en 2 ou 3 phrases maximum"). Un chat n'est pas un rapport.
+*   **Choix du Modèle :** Toujours privilégier les modèles de pointe (versions "Pro", "V4", etc.) pour garantir la meilleure qualité de raisonnement du coach, en mettant à jour la variable `DEEPSEEK_MODEL` dans le `.env`.
