@@ -39,8 +39,8 @@ export default function GlobalChrono() {
     }
     try {
       const pip = await window.documentPictureInPicture.requestWindow({
-        width: 320,
-        height: 120,
+        width: 200,
+        height: 200,
       });
 
       // Copy styles
@@ -102,19 +102,22 @@ export default function GlobalChrono() {
       className={!isRunning && elapsedSeconds > 0 ? "chrono-paused-blink" : ""}
       style={{
       display: 'flex',
+      flexDirection: pipWindow ? 'column' : 'row',
+      justifyContent: 'center',
       alignItems: 'center',
-      gap: '0.8rem',
+      gap: pipWindow ? '0.5rem' : '0.8rem',
       background: 'var(--bg-secondary, #1e293b)',
-      padding: '0.75rem 1rem',
-      borderRadius: '16px',
+      padding: pipWindow ? '1.5rem' : '0.75rem 1rem',
+      borderRadius: pipWindow ? '50%' : '16px',
       boxShadow: pipWindow ? 'none' : '0 8px 24px rgba(0,0,0,0.4)',
-      border: pipWindow ? 'none' : '1px solid rgba(255,255,255,0.1)',
+      border: pipWindow ? '2px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.1)',
       backdropFilter: 'blur(10px)',
-      width: '100%',
+      width: pipWindow ? '180px' : '100%',
+      height: pipWindow ? '180px' : 'auto',
       maxWidth: '300px',
       boxSizing: 'border-box'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', order: pipWindow ? 2 : 1 }}>
         <button 
           onClick={toggleGlobalChrono}
           style={{
@@ -154,7 +157,7 @@ export default function GlobalChrono() {
         </button>
       </div>
       
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: '80px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: '80px', order: pipWindow ? 1 : 2 }}>
         {exoId && (
           <div style={{
             fontSize: '0.7rem', 
@@ -173,7 +176,7 @@ export default function GlobalChrono() {
           title="Modifier manuellement le temps (en minutes)"
           style={{
           fontFamily: 'monospace', 
-          fontSize: '1.4rem', 
+          fontSize: pipWindow ? '1.8rem' : '1.4rem', 
           fontWeight: 'bold', 
           color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)',
           textAlign: 'center',
