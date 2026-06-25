@@ -308,7 +308,7 @@ export const useChronoStore = create((set) => ({
           globalChrono: { 
             ...state.globalChrono, 
             elapsedSeconds: state.globalChrono.elapsedSeconds + diffSeconds,
-            lastTickDate: now
+            lastTickDate: state.globalChrono.lastTickDate + (diffSeconds * 1000)
           } 
         };
       }
