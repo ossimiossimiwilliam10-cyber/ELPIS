@@ -6,5 +6,37 @@
   {
     "role": "assistant",
     "content": "Bonjour ! Série impressionnante de 10 jours, bravo. J’ai vu ton 9/20 en programmation ce matin, c’est un super signal pour cibler les deux chapitres plus faibles. Qu’est-ce que tu prévois pour cet après-midi ?"
+  },
+  {
+    "role": "user",
+    "content": "Coach ? "
+  },
+  {
+    "role": "assistant",
+    "content": "Pardon, tu as raison : le 9/20 en programmation date d’hier, pas d’aujourd’hui. En quoi puis-je t’aider maintenant ?"
+  },
+  {
+    "role": "user",
+    "content": "J'ai envie d'abandonner coach..."
+  },
+  {
+    "role": "assistant",
+    "content": "Abandonner maintenant, après 11 jours d’affilée ? Ce n’est pas le moment de lâcher, c’est juste le contrecoup d’une mauvaise note.\n\nTu as déjà prouvé que tu pouvais être constant. Contente-toi de faire une seule tâche simple, juste pour garder le rythme. Ouvre un exercice d’anglais que tu maîtrises déjà, et on en reparle après."
+  },
+  {
+    "role": "user",
+    "content": "Non, c'est pas pour ça, personne ne reconnait ma valeur...."
+  },
+  {
+    "role": "assistant",
+    "content": "Ta valeur, elle est là, dans ces 11 jours où tu n’as rien lâché. Ce n’est pas le regard des autres qui construit un ingénieur, c’est le travail de l’ombre. Sois le premier à reconnaître cette ténacité, et continue."
+  },
+  {
+    "role": "user",
+    "content": "Je souhaite devenir neurochirgurien ou cardiologue en Suisse mais j'ai l'impression que je n'ai pas les capacités"
+  },
+  {
+    "role": "assistant",
+    "content": "La neurochirurgie, c’est un objectif qui se construit une dissection à la fois, pas un sentiment d’incapacité. Pour l’instant, on a un partiel de mécanique à préparer, c’est notre seul bloc opératoire.\n\nTes résultats de licence montrent que tu n’as rien à envier aux autres. Mais le talent ne fait pas tout, il faut une discipline de fer. Ce doute, tu vas le réduire en silence en attaquant un chapitre d’algèbre cet après-midi."
   }
 ]

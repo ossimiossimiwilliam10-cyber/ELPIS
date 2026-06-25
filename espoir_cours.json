@@ -1188,11 +1188,26 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Changements de référentiels et composition des mouvements",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0,
-                                            "pdfPath": "/documents/doc-1781853405307-982385010.pdf"
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-06-25",
+                                            "easeFactor": 2.5219573225,
+                                            "repetitions": 1,
+                                            "pdfPath": "/documents/doc-1781853405307-982385010.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-06-25T08:36:38.879Z",
+                                                "stability": 1.2931,
+                                                "difficulty": 5.11217071,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 1,
+                                                "last_review": "2026-06-25T08:30:38.879Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-06-25",
+                                            "tempsMoyen": 63,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 4 : Cinématique des solides en contact",
