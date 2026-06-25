@@ -77,7 +77,7 @@ export function useWorkloadEngine() {
             // D. Calculate days left
             let examDateStr = (m.examDates && m.examDates.length > 0 && m.examDates[0]) 
               ? m.examDates[0] 
-              : (config.defaultSemesterEndDate || "2027-01-15");
+              : (s.dateFin || "2027-01-15");
             const examDate = parseDateLocal(examDateStr);
 
             // If date is invalid or exam is passed, remaining effort for this subject is 0
@@ -110,7 +110,7 @@ export function useWorkloadEngine() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config?.targetGrade, config?.targetRank, config?.defaultSemesterEndDate, config?.studyStartDate, coursConfig, historique]);
+  }, [config?.targetGrade, config?.targetRank, config?.studyStartDate, coursConfig, historique]);
 
   return config?.maxStudyHoursPerDay || 0;
 }

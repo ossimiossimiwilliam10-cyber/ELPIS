@@ -441,6 +441,14 @@ function buildExamUrgencyMap(crs) {
             }
           }
 
+          if (minDays === Infinity && s.dateFin) {
+            const df = parseDateLocal(normalizeDateStr(s.dateFin));
+            if (!isNaN(df.getTime())) {
+              const diffDays = Math.ceil((df - today) / (1000 * 60 * 60 * 24));
+              if (diffDays >= 0) minDays = diffDays;
+            }
+          }
+
           if (minDays === Infinity) continue;
 
           let multiplier = 1.0;

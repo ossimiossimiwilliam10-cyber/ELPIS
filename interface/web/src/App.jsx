@@ -141,7 +141,7 @@ function AppInner() {
     if (window.confirm("ATTENTION : Supprimer toutes les données ? Cette action est IRREVERSIBLE.")) {
       if (window.confirm("Derniere chance ! Confirmez la suppression totale ?")) {
         try {
-          const emptyConfig = { studyStartDate: "07-09-2026", defaultSemesterEndDate: "15-01-2027", bedtime: "23:00", wakeUpTime: "07:00", targetGrade: 14, targetRank: 10, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0, bestStreak: 0 };
+          const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", targetGrade: 14, targetRank: 10, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0, bestStreak: 0 };
           useStore.getState().setConfig(emptyConfig);
           const emptyCours = { licences: [] };
           useStore.getState().setCoursConfig(emptyCours);
@@ -350,17 +350,6 @@ function AppInner() {
                       </select>
                     </div>
 
-                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px'}}>
-                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
-                        Fin de Semestre
-                      </label>
-                      <input 
-                        type="date"
-                        value={config.defaultSemesterEndDate || "2027-01-15"}
-                        onChange={e => setConfig({...config, defaultSemesterEndDate: e.target.value})}
-                        style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)', fontSize: '0.85rem'}}
-                      />
-                    </div>
                   </div>
 
                   <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem'}}>
