@@ -70,6 +70,9 @@ describe('useStore', () => {
       if (url.includes('/orchestrateur')) {
         return Promise.resolve({ ok: true, json: () => Promise.resolve({ intelligence: {}, tachesDuJour: [] }) });
       }
+      if (url.endsWith('/projets')) {
+        return Promise.resolve({ ok: true, json: () => Promise.resolve([]) });
+      }
       return Promise.reject(new Error('not found'));
     });
 
@@ -77,7 +80,9 @@ describe('useStore', () => {
     await store.initData();
 
     const finalState = useStore.getState();
+    console.log("FINAL CONFIG IS: ", finalState.config, " ERROR: ", finalState.error);
     expect(finalState.loading).toBe(false);
+    expect(finalState.error).toBeNull();
     expect(finalState.config.targetGrade).toBe(15);
     expect(finalState.coursConfig.licences[0].nom).toBe('L1');
     expect(finalState.historique.length).toBe(1);
@@ -108,7 +113,7 @@ describe('useStore', () => {
       }
     });
 
-    useStore.getState().checkStreak();
+    useStore.getState().checkStreak(true);
 
     // The date logic in store.js uses the local timezone and subtracts 4 hours.
     // For predictability in the test, we'll just check if currentStreak increased.

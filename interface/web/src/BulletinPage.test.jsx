@@ -77,7 +77,7 @@ describe('BulletinPage', () => {
     // Droit Civil: 14 * 2 = 28
     // Droit Const: 8 * 1 = 8
     // Total = 36 / 3 = 12.00
-    expect(screen.getByText('12.00')).toBeDefined();
+    expect(screen.getAllByText('12.00').length).toBeGreaterThan(0);
   });
 
   it('renders compensable badge if UE average is < 10 but semester average is >= 10', () => {

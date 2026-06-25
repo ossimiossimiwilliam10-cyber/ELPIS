@@ -117,8 +117,8 @@ const useStore = create(immer((set, get) => ({
         loading: false 
       });
 
-      // Call streak check immediately after load
-      get().checkStreak();
+      // Call streak check immediately after load (passif)
+      get().checkStreak(false);
       // Fetch orchestrator data (intelligence + tasks) once after init
       get().fetchOrchestrator();
 
@@ -203,12 +203,12 @@ const useStore = create(immer((set, get) => ({
     const newHist = [...get().historique, { ...entry, timestamp: new Date().toISOString() }];
     set({ historique: newHist });
     debouncedSaveHistorique(newHist, get);
-    // Update streak on every completed task
-    get().checkStreak();
+    // Update streak on every completed task (actif)
+    get().checkStreak(true);
   },
 
   // Check and update streak logic
-  checkStreak: () => {
+  checkStreak: (isActivity = false) => {
     const config = get().config;
     if (!config || Object.keys(config).length === 0) return; // Guard against empty config
 
@@ -224,23 +224,31 @@ const useStore = create(immer((set, get) => ({
     let bestStreak = Number.isFinite(config.bestStreak) ? config.bestStreak : 0;
 
     let updated = false;
+    let newLastActive = lastActive;
 
     if (lastActive !== today) {
+      let diffDays = 999;
       if (lastActive) {
         const [ly, lm, ld] = lastActive.split('-').map(Number);
         const lastDate = new Date(ly, lm - 1, ld);
         const todayDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        const diffTime = todayDate - lastDate;
-        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+        diffDays = Math.round((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+      }
+
+      if (isActivity) {
         if (diffDays === 1) {
           streak += 1;
         } else {
           streak = 1;
         }
+        newLastActive = today;
+        updated = true;
       } else {
-        streak = 1;
+        if (diffDays > 1 && streak > 0) {
+          streak = 0;
+          updated = true;
+        }
       }
-      updated = true;
     }
 
     if (streak > bestStreak) {
@@ -249,7 +257,7 @@ const useStore = create(immer((set, get) => ({
     }
 
     if (updated) {
-      const newConfig = { ...config, lastActiveDate: today, currentStreak: streak, bestStreak };
+      const newConfig = { ...config, lastActiveDate: newLastActive, currentStreak: streak, bestStreak };
       set({ config: newConfig });
       debouncedSaveConfig(newConfig, get);
     }
