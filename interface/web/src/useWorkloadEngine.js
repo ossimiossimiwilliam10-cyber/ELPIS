@@ -23,6 +23,11 @@ export function useWorkloadEngine() {
     coursConfig.licences?.forEach(l => {
       if (l.archived) return; // Skip archived licences for workload calculation
       l.semestres?.forEach(s => {
+        if (s.archived) return; // Skip manually archived semesters
+        if (s.dateFin) {
+          const df = parseDateLocal(s.dateFin);
+          if (df && df < today) return; // Skip automatically archived semesters
+        }
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {
             // A. Base Effort

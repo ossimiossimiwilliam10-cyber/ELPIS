@@ -213,6 +213,11 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   for (const l of (crs.licences || [])) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
+      if (s.archived) continue;
+      if (s.dateFin) {
+        const df = parseDateLocal(normalizeDateStr(s.dateFin));
+        if (df && df < now) continue;
+      }
       let matiereIndexDansSemestre = 0;
       let newCMCountPerSemester = 0;
       for (const ue of (s.ues || [])) {

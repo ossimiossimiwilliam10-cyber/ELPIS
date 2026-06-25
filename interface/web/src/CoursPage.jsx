@@ -313,7 +313,30 @@ function CoursPage() {
                       placeholder="Nom du semestre"
                       style={{fontSize:'1.4rem', fontWeight:'bold', flex: 1}}
                     />
-                    <div style={{display:'flex', gap:'0.5rem', marginLeft:'1rem'}}>
+                    <div style={{display:'flex', gap:'1rem', alignItems:'center', flexWrap:'wrap', marginLeft:'1rem'}}>
+                      <div style={{display:'flex', alignItems:'center', gap:'0.5rem', background:'var(--bg-tertiary)', padding:'0.2rem 0.6rem', borderRadius:'6px'}}>
+                        <label style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>Date Fin :</label>
+                        <input 
+                          type="date" 
+                          value={semestre.dateFin || ''} 
+                          onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'dateFin'], e.target.value)}
+                          style={{background:'transparent', border:'none', color:'var(--text-primary)', outline:'none', fontSize:'0.9rem'}}
+                        />
+                      </div>
+                      <button 
+                        onClick={() => updateField(['licences', lIndex, 'semestres', sIndex, 'archived'], !semestre.archived)}
+                        style={{
+                          background: semestre.archived ? 'var(--error-color)' : 'var(--bg-tertiary)',
+                          color: semestre.archived ? '#fff' : 'var(--text-primary)',
+                          border: 'none',
+                          padding: '0.4rem 0.8rem',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem'
+                        }}
+                      >
+                        {semestre.archived ? '✅ Archivé' : '📦 Archiver'}
+                      </button>
                       <button className="btn-secondary" onClick={() => addUE(lIndex, sIndex)}>+ UE</button>
                       <button onClick={() => deleteSemestre(lIndex, sIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1.2rem'}} title="Supprimer">🗑️</button>
                     </div>

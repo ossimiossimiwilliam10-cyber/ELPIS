@@ -42,6 +42,16 @@ function parseDateLocal(dateStr) {
   return new Date(NaN);
 }
 
+function isSemesterArchived(s) {
+  if (s.archived) return true;
+  if (s.dateFin) {
+    const df = parseDateLocal(normalizeDateStr(s.dateFin));
+    const now = new Date();
+    if (df && df < now) return true;
+  }
+  return false;
+}
+
 /**
  * Calcule la moyenne pondérée d'une matière à partir de ses évaluations.
  * Ne prend en compte que les évaluations déjà notées.
@@ -70,6 +80,7 @@ function buildCompensationMap(crs) {
   for (const l of (crs.licences || [])) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
+      if (isSemesterArchived(s)) continue;
       const ueData = [];
       for (const ue of (s.ues || [])) {
         let ueSumWeight = 0;
@@ -123,6 +134,7 @@ function buildRemainingWeightMap(crs) {
   for (const l of (crs.licences || [])) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
+      if (isSemesterArchived(s)) continue;
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
           if (!m.evaluations || !Array.isArray(m.evaluations)) continue;
@@ -163,6 +175,7 @@ function buildVelocityMap(crs, historique, cfg = {}) {
   for (const l of (crs.licences || [])) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
+      if (isSemesterArchived(s)) continue;
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
           const mHist = histByMatiere[m.nom] || [];
@@ -304,6 +317,7 @@ function buildProjectedScoreMap(crs, velocityMap) {
   for (const l of crs.licences) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
+      if (isSemesterArchived(s)) continue;
       for (const u of (s.ues || [])) {
         for (const m of (u.matieres || [])) {
           let baseScore = 10;
@@ -356,6 +370,7 @@ function buildCognitiveLoadMap(crs) {
   for (const l of (crs.licences || [])) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
+      if (isSemesterArchived(s)) continue;
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
           let totalEF = 0;
@@ -392,6 +407,7 @@ function buildExamUrgencyMap(crs) {
   for (const l of (crs.licences || [])) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
+      if (isSemesterArchived(s)) continue;
       for (const ue of (s.ues || [])) {
         for (const subj of (ue.matieres || [])) {
           if (!subj.nom) continue;
