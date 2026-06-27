@@ -611,6 +611,12 @@ const musicStorage = multer.diskStorage({
     cb(null, destDir);
   },
   filename: function (req, file, cb) {
+    const category = req.body.category;
+    const destDir = path.join(ROOT_DIR, 'music', category);
+    const filePath = path.join(destDir, file.originalname);
+    if (fs.existsSync(filePath)) {
+      return cb(new Error(`Le fichier '${file.originalname}' existe déjà dans cette catégorie.`));
+    }
     cb(null, file.originalname); // Garde le nom original de la musique
   }
 });
