@@ -31,10 +31,10 @@ app.use(cors({
 
 app.use(express.json());
 
-// Sécurité : Rate Limiting (100 requêtes max par IP toutes les 15 minutes)
+// Sécurité : Rate Limiting (500 requêtes max par IP toutes les 15 minutes)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   message: { error: "Trop de requêtes, veuillez réessayer plus tard." },
   standardHeaders: true,
   legacyHeaders: false,
@@ -527,7 +527,7 @@ app.get('/api/music/recommendation', (req, res) => {
     const hour = now.getHours();
     
     let category = 'calm';
-    if (hour >= 21 || rapport.pendingTasksCount > 5) {
+    if (hour >= 21 || (rapport.tachesDuJour?.length || 0) > 5) {
       category = 'motivational';
     } else {
       category = 'calm';

@@ -604,7 +604,7 @@ function EntrainementPage() {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => {
                               setDailyFillGap(true);
-                              toast("Recherche de tâches supplémentaires en cours...", "info");
+                              toast.info("Recherche de tâches supplémentaires en cours...");
                             }}
                             className="btn-primary"
                             style={{ background: 'var(--accent-primary)', padding: '1rem 2rem', fontSize: '1.1rem' }}

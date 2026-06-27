@@ -56,12 +56,15 @@ function BackgroundMusicPlayer() {
 
   // Gérer l'Autoplay "FIFA style" à la première interaction globale
   const interactionDone = useRef(false);
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+
   useEffect(() => {
     if (interactionDone.current) return;
     
     const handleFirstInteraction = () => {
       interactionDone.current = true;
-      if (audioRef.current && !isPlaying && musicData && musicData.url) {
+      if (audioRef.current && !isPlayingRef.current && musicData && musicData.url) {
         audioRef.current.play()
           .then(() => setIsPlaying(true))
           .catch(e => console.log("Autoplay interactif bloqué:", e));

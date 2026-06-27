@@ -173,6 +173,13 @@ const useStore = create(immer((set, get) => ({
     }).length;
 
     if (restDaysThisWeek < 1 && !restDays.includes(todayStr)) {
+      // Purge des jours de repos de plus de 30 jours pour éviter la croissance indéfinie
+      const thirtyDaysAgo = new Date(now);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      restDays = restDays.filter(d => {
+        const date = new Date(d + 'T00:00:00');
+        return date >= thirtyDaysAgo;
+      });
       restDays = [...restDays, todayStr];
       const newConfig = { ...config, restDays };
       set({ config: newConfig });

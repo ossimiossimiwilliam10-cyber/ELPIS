@@ -563,7 +563,7 @@ function Dashboard() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={async () => {
-                      toast("Génération de nouvelles tâches en cours...", "info");
+                      toast.info("Génération de nouvelles tâches en cours...");
                       await fetchOrchestrator({ fillGap: true, extraTime });
                     }}
                     className="btn-primary"
@@ -603,7 +603,7 @@ function Dashboard() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       setDailyFillGap(true);
-                      toast("Recherche de tâches supplémentaires en cours...", "info");
+                      toast.info("Recherche de tâches supplémentaires en cours...");
                     }}
                     className="btn-primary"
                     style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}

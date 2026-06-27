@@ -89,7 +89,7 @@ export default function RevisionsAvanceesPage() {
 
   const handleNextExo = () => {
      // Si l'utilisateur clique sur "Passer", on pourrait potentiellement marquer l'exo comme ignoré temporairement
-     toast("Passé à un autre exercice (bientôt disponible)", "info");
+     toast.info("Passé à un autre exercice (bientôt disponible)");
   };
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
@@ -155,7 +155,7 @@ export default function RevisionsAvanceesPage() {
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30),
       easeFactor: finalEaseFactor
     });
-    toast("Exercice validé ! Un nouveau est prêt.", "success");
+    toast.success("Exercice validé ! Un nouveau est prêt.");
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
@@ -241,7 +241,7 @@ export default function RevisionsAvanceesPage() {
       action: actionLabel,
       dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration
     });
-    toast("Exercice validé ! Un nouveau est prêt.", "success");
+    toast.success("Exercice validé ! Un nouveau est prêt.");
   };
 
   if (pendingTasksCount > 0) {
