@@ -13,6 +13,7 @@ import { ToastProvider, useToast } from './ToastProvider';
 // Code splitting : pages lourdes chargées à la demande
 const CoursPage = lazy(() => import('./CoursPage'));
 const EntrainementPage = lazy(() => import('./EntrainementPage'));
+import MusicSettingsModal from './components/MusicSettingsModal';
 const StatistiquesPage = lazy(() => import('./StatistiquesPage'));
 const BulletinPage = lazy(() => import('./BulletinPage'));
 const PreparationHebdoPage = lazy(() => import('./PreparationHebdoPage'));
@@ -556,6 +557,18 @@ function AppInner() {
               <Suspense fallback={<LoadingFallback />}>
                 <EntrainementPage />
               </Suspense>
+            </motion.div>
+          )}
+
+          {activeTab === 'musique' && (
+            <motion.div 
+              key="musique"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <MusicSettingsModal onClose={() => setActiveTab('dashboard')} />
             </motion.div>
           )}
         </AnimatePresence>

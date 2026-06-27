@@ -22,6 +22,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
       tabs: [
         { id: 'statistiques', label: 'Statistiques', icon: '📈' },
         { id: 'config', label: 'Configuration', icon: '⚙️' },
+        { id: 'musique', label: 'Musique', icon: '🎵' },
       ]
     }
   ];
