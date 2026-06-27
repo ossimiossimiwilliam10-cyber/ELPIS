@@ -19,3 +19,9 @@ rapports_analyse/
 # Scripts de dÃ©ploiement locaux
 start_elpis.bat
 Lancer ELPIS.vbs
+
+# Musiques uploadées par l'utilisateur
+music/**/*.mp3
+music/**/*.wav
+music/**/*.ogg
+music/**/*.m4a

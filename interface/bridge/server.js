@@ -617,14 +617,6 @@ const musicStorage = multer.diskStorage({
     cb(null, tmpDir);
   },
   filename: function (req, file, cb) {
-    const categories = ['calm', 'motivational'];
-    for (const cat of categories) {
-      const destDir = path.join(ROOT_DIR, 'music', cat);
-      const filePath = path.join(destDir, file.originalname);
-      if (fs.existsSync(filePath)) {
-        return cb(new Error(`Le fichier '${file.originalname}' existe déjà dans le système (catégorie: ${cat}).`));
-      }
-    }
     cb(null, 'tmp_' + Date.now() + '_' + Buffer.from(file.originalname, 'latin1').toString('utf8').replace(/[^a-zA-Z0-9.\-_]/g, '_'));
   }
 });
@@ -684,6 +676,23 @@ app.post('/api/music/upload', uploadMusic.array('files', 10), async (req, res) =
 
     if (req.files) {
       for (const file of req.files) {
+        // 1. Vérification du doublon par nom de fichier (globale)
+        let nameConflict = false;
+        const categories = ['calm', 'motivational'];
+        for (const cat of categories) {
+          if (fs.existsSync(path.join(ROOT_DIR, 'music', cat, file.originalname))) {
+            nameConflict = true;
+            break;
+          }
+        }
+
+        if (nameConflict) {
+          ignored.push(file.originalname);
+          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+          continue;
+        }
+
+        // 2. Vérification du doublon par empreinte MD5
         const hex = await calculateMD5(file.path);
 
         if (hashes[hex]) {
@@ -754,7 +763,7 @@ app.use((req, res) => {
 // Sécurité / Robustesse : Global Error Handler
 app.use((err, req, res, next) => {
   console.error("Erreur serveur non gérée:", err.stack);
-  res.status(500).json({ error: "Une erreur interne est survenue.", details: err.message });
+  res.status(500).json({ error: err.message || "Une erreur interne est survenue." });
 });
 
 async function startServer() {

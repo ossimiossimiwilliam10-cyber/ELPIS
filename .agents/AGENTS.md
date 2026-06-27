@@ -15,3 +15,7 @@
 - **Validation des chemins de fichiers (Anti-Path-Traversal)** : Ne jamais utiliser directement un chemin de fichier fourni par l'utilisateur (req.body, req.query, etc.) pour des opérations fs ou child_process. Toujours utiliser path.resolve() pour obtenir le chemin absolu et vérifier strictement qu'il commence par le répertoire de base autorisé en utilisant resolvedPath.startsWith(allowedDir). Si le chemin sort du périmètre, renvoyer immédiatement une erreur HTTP 403.
 
 - **Rejet des doublons à l'upload** : Ne jamais configurer de système d'upload de fichiers (ex: via multer) qui écrase silencieusement un fichier existant de même nom. Avant d'écrire le fichier sur le disque, vérifier systématiquement avec fs.existsSync() si le fichier de destination existe déjà. Si le fichier existe, stopper l'opération et renvoyer une erreur explicite au client.
+
+- **Validation dans Multer** : Ne jamais utiliser cb(new Error(...)) à l'intérieur des fonctions destination ou filename de multer.diskStorage pour des règles métier (comme "le fichier existe déjà"). Laisser multer uploader tous les fichiers dans un dossier temporaire et effectuer les vérifications métier dans le contrôleur de la route.
+
+- **Transparence des erreurs** : Le Global Error Handler du backend doit toujours exposer le message d'erreur réel (err.message) au frontend dans le champ principal 'error' renvoyé en JSON. Ne jamais masquer une erreur métier interceptée derrière un message générique statique.
