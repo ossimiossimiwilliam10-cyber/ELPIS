@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../ToastProvider';
 
 export default function MusicSettingsModal({ onClose }) {
-  const [musics, setMusics] = useState({ calm: [], focus: [], motivational: [] });
+  const [musics, setMusics] = useState({ calm: [], motivational: [] });
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
 
@@ -111,7 +111,7 @@ export default function MusicSettingsModal({ onClose }) {
             <div style={{ textAlign: 'center', padding: '2rem' }}>Chargement...</div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
-              {['calm', 'focus', 'motivational'].map(cat => (
+              {['calm', 'motivational'].map(cat => (
                 <div key={cat} style={{
                   backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', padding: '1rem',
                   display: 'flex', flexDirection: 'column', border: '1px solid var(--border-color)'
@@ -121,7 +121,7 @@ export default function MusicSettingsModal({ onClose }) {
                     marginBottom: '1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem'
                   }}>
                     <h3 style={{ margin: 0, fontSize: '1.1rem', textTransform: 'capitalize' }}>
-                      {cat === 'calm' ? '🧘 Calm' : cat === 'focus' ? '🧠 Focus' : '🔥 Motivational'}
+                      {cat === 'calm' ? '🧘 Calm' : '🔥 Motivational'}
                     </h3>
                     <div style={{ position: 'relative' }}>
                       <label style={{

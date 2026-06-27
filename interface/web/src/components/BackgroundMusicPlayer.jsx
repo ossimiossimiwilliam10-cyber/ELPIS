@@ -93,7 +93,6 @@ function BackgroundMusicPlayer() {
 
   const categoryEmoji = {
     'calm': '🧘',
-    'focus': '🧠',
     'motivational': '🔥'
   }[musicData.category] || '🎵';
 

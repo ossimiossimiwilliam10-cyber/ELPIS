@@ -509,13 +509,11 @@ app.get('/api/music/recommendation', (req, res) => {
     const now = new Date();
     const hour = now.getHours();
     
-    let category = 'focus';
+    let category = 'calm';
     if (hour >= 21 || rapport.pendingTasksCount > 5) {
       category = 'motivational';
-    } else if (rapport.pendingTasksCount === 0) {
-      category = 'calm';
     } else {
-      category = 'focus';
+      category = 'calm';
     }
 
     const musicDir = path.join(ROOT_DIR, 'music', category);
@@ -540,7 +538,7 @@ app.get('/api/music/recommendation', (req, res) => {
 const musicStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const category = req.body.category;
-    if (!['calm', 'focus', 'motivational'].includes(category)) {
+    if (!['calm', 'motivational'].includes(category)) {
       return cb(new Error("Catégorie invalide"));
     }
     const destDir = path.join(ROOT_DIR, 'music', category);
@@ -558,7 +556,7 @@ const uploadMusic = multer({
 
 app.get('/api/music/list', (req, res) => {
   try {
-    const categories = ['calm', 'focus', 'motivational'];
+    const categories = ['calm', 'motivational'];
     const result = {};
     categories.forEach(cat => {
       const dir = path.join(ROOT_DIR, 'music', cat);
@@ -585,7 +583,7 @@ app.post('/api/music/upload', uploadMusic.array('files', 10), (req, res) => {
 app.delete('/api/music/:category/:filename', (req, res) => {
   try {
     const { category, filename } = req.params;
-    if (!['calm', 'focus', 'motivational'].includes(category)) return res.status(400).json({ error: "Catégorie invalide" });
+    if (!['calm', 'motivational'].includes(category)) return res.status(400).json({ error: "Catégorie invalide" });
     
     // Security to prevent directory traversal
     const safeFilename = path.basename(filename);
