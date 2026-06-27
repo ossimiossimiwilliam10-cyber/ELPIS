@@ -445,6 +445,31 @@ app.get('/api/orchestrateur', (req, res) => {
   }
 });
 
+// POST force-task
+app.post('/api/orchestrator/force-task', (req, res) => {
+  try {
+    const { CONFIG_PATH } = require('./moteur/config');
+    const { COURS_PATH } = require('./moteur/cours');
+    const { genererTacheSpecifique } = require('./moteur/orchestrateur');
+    
+    const options = {
+      matiere: req.body.matiere || 'all',
+      type: req.body.type || 'all',
+      dureeMin: parseInt(req.body.dureeMin) || 0
+    };
+    
+    const task = genererTacheSpecifique(CONFIG_PATH, COURS_PATH, options);
+    if (!task) {
+      return res.status(404).json({ error: "Aucune tâche trouvée pour ces critères." });
+    }
+    
+    res.json({ task });
+  } catch (err) {
+    console.error("Erreur force-task:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- ROUTES IA COACH ---
 app.get('/api/chat', (req, res) => {
   try {
