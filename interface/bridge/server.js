@@ -516,12 +516,20 @@ app.get('/api/music/recommendation', (req, res) => {
       category = 'calm';
     }
 
-    const musicDir = path.join(ROOT_DIR, 'music', category);
-    if (!fs.existsSync(musicDir)) {
-      return res.json({ url: null, category });
+    let musicDir = path.join(ROOT_DIR, 'music', category);
+    const getFiles = (dir) => fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg')) : [];
+    
+    let files = getFiles(musicDir);
+    if (files.length === 0) {
+      // Fallback vers l'autre catégorie si l'actuelle est vide
+      const fallbackCategory = category === 'calm' ? 'motivational' : 'calm';
+      const fallbackDir = path.join(ROOT_DIR, 'music', fallbackCategory);
+      files = getFiles(fallbackDir);
+      if (files.length > 0) {
+        category = fallbackCategory;
+      }
     }
     
-    const files = fs.readdirSync(musicDir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg'));
     if (files.length === 0) {
       return res.json({ url: null, category });
     }
