@@ -89,7 +89,27 @@ function BackgroundMusicPlayer() {
     }
   };
 
-  if (!musicData || !musicData.url) return null;
+  if (!musicData || !musicData.url) {
+    return (
+      <>
+        <button 
+          onClick={() => setShowSettings(true)}
+          style={{
+            position: 'fixed', bottom: '20px', right: '20px',
+            background: 'var(--bg-tertiary)', color: 'var(--text-primary)',
+            border: '1px solid var(--border-color)', borderRadius: '50px',
+            padding: '0.8rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem',
+            cursor: 'pointer', zIndex: 1000, boxShadow: '0 8px 32px var(--shadow-color)',
+            backdropFilter: 'blur(10px)', transition: 'all 0.3s ease'
+          }}
+          title="Gérer la bibliothèque musicale"
+        >
+          <span>🎵</span> Ajouter de la musique
+        </button>
+        {showSettings && <MusicSettingsModal onClose={() => { setShowSettings(false); fetchNextTrack(); }} />}
+      </>
+    );
+  }
 
   const categoryEmoji = {
     'calm': '🧘',
@@ -195,7 +215,7 @@ function BackgroundMusicPlayer() {
         </div>
       )}
 
-      {showSettings && <MusicSettingsModal onClose={() => setShowSettings(false)} />}
+      {showSettings && <MusicSettingsModal onClose={() => { setShowSettings(false); fetchNextTrack(); }} />}
     </div>
   );
 }
