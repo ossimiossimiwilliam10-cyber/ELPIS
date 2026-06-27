@@ -491,6 +491,51 @@ app.delete('/api/chat', (req, res) => {
   }
 });
 
+app.use('/music', express.static(path.join(ROOT_DIR, 'music')));
+
+app.get('/api/music/recommendation', (req, res) => {
+  try {
+    const { genererRapportQuotidien } = require('./moteur/orchestrateur');
+    const { loadConfig } = require('./moteur/config');
+    const { loadCours } = require('./moteur/cours');
+    const config = loadConfig();
+    const cours = loadCours();
+    let historique = [];
+    try {
+      historique = JSON.parse(fs.readFileSync(HISTORIQUE_FILE, 'utf8') || '[]');
+    } catch(e) {}
+    
+    const rapport = genererRapportQuotidien(config, cours, 0, false, historique);
+    const now = new Date();
+    const hour = now.getHours();
+    
+    let category = 'focus';
+    if (hour >= 21 || rapport.pendingTasksCount > 5) {
+      category = 'motivational';
+    } else if (rapport.pendingTasksCount === 0) {
+      category = 'calm';
+    } else {
+      category = 'focus';
+    }
+
+    const musicDir = path.join(ROOT_DIR, 'music', category);
+    if (!fs.existsSync(musicDir)) {
+      return res.json({ url: null, category });
+    }
+    
+    const files = fs.readdirSync(musicDir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg'));
+    if (files.length === 0) {
+      return res.json({ url: null, category });
+    }
+    
+    const randomFile = files[Math.floor(Math.random() * files.length)];
+    res.json({ url: `/music/${category}/${encodeURIComponent(randomFile)}`, category, title: randomFile.replace(/\.[^/.]+$/, "") });
+  } catch (err) {
+    console.error("Music API error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Serve React build
 const REACT_BUILD_DIR = path.join(ROOT_DIR, 'interface', 'web', 'dist');
 app.use(express.static(REACT_BUILD_DIR));

@@ -7,6 +7,7 @@ import GlobalSearchModal from './GlobalSearchModal';
 import GlobalChrono from './components/GlobalChrono';
 import DisclaimerModal from './components/DisclaimerModal';
 import AICoachSidebar from './components/AICoachSidebar';
+import BackgroundMusicPlayer from './components/BackgroundMusicPlayer';
 import { ToastProvider, useToast } from './ToastProvider';
 
 // Code splitting : pages lourdes chargées à la demande
@@ -170,6 +171,7 @@ function AppInner() {
   return (
     <div className="app-layout">
       {showDisclaimer && <DisclaimerModal onClose={handleCloseDisclaimer} />}
+      <BackgroundMusicPlayer />
       
       {/* Mobile Header */}
       <div className="mobile-header">
