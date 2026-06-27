@@ -617,11 +617,13 @@ const musicStorage = multer.diskStorage({
     cb(null, tmpDir);
   },
   filename: function (req, file, cb) {
-    const category = req.body.category;
-    const destDir = path.join(ROOT_DIR, 'music', category);
-    const filePath = path.join(destDir, file.originalname);
-    if (fs.existsSync(filePath)) {
-      return cb(new Error(`Le fichier '${file.originalname}' existe déjà dans cette catégorie.`));
+    const categories = ['calm', 'motivational'];
+    for (const cat of categories) {
+      const destDir = path.join(ROOT_DIR, 'music', cat);
+      const filePath = path.join(destDir, file.originalname);
+      if (fs.existsSync(filePath)) {
+        return cb(new Error(`Le fichier '${file.originalname}' existe déjà dans le système (catégorie: ${cat}).`));
+      }
     }
     cb(null, 'tmp_' + Date.now() + '_' + Buffer.from(file.originalname, 'latin1').toString('utf8').replace(/[^a-zA-Z0-9.\-_]/g, '_'));
   }
