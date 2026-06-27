@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const os = require('os');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
@@ -610,9 +612,9 @@ const musicStorage = multer.diskStorage({
     if (!['calm', 'motivational'].includes(category)) {
       return cb(new Error("Catégorie invalide"));
     }
-    const destDir = path.join(ROOT_DIR, 'music', category);
-    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
-    cb(null, destDir);
+    const tmpDir = path.join(os.tmpdir(), 'elpis_music_tmp');
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+    cb(null, tmpDir);
   },
   filename: function (req, file, cb) {
     const category = req.body.category;
@@ -621,7 +623,7 @@ const musicStorage = multer.diskStorage({
     if (fs.existsSync(filePath)) {
       return cb(new Error(`Le fichier '${file.originalname}' existe déjà dans cette catégorie.`));
     }
-    cb(null, file.originalname); // Garde le nom original de la musique
+    cb(null, 'tmp_' + Date.now() + '_' + Buffer.from(file.originalname, 'latin1').toString('utf8').replace(/[^a-zA-Z0-9.\-_]/g, '_'));
   }
 });
 const uploadMusic = multer({
@@ -653,10 +655,67 @@ app.get('/api/music/list', (req, res) => {
   }
 });
 
-app.post('/api/music/upload', uploadMusic.array('files', 10), (req, res) => {
+const calculateMD5 = (filePath) => {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('md5');
+    const stream = fs.createReadStream(filePath);
+    stream.on('data', data => hash.update(data));
+    stream.on('end', () => resolve(hash.digest('hex')));
+    stream.on('error', reject);
+  });
+};
+
+app.post('/api/music/upload', uploadMusic.array('files', 10), async (req, res) => {
   try {
-    res.json({ message: "Musiques uploadées avec succès" });
+    const category = req.body.category;
+    const destDir = path.join(ROOT_DIR, 'music', category);
+    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+    const hashesFile = path.join(ROOT_DIR, 'music', 'music_hashes.json');
+    let hashes = {};
+    if (fs.existsSync(hashesFile)) {
+      hashes = JSON.parse(fs.readFileSync(hashesFile, 'utf8'));
+    }
+
+    const imported = [];
+    const ignored = [];
+
+    if (req.files) {
+      for (const file of req.files) {
+        const hex = await calculateMD5(file.path);
+
+        if (hashes[hex]) {
+          ignored.push(file.originalname);
+          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+        } else {
+          const finalPath = path.join(destDir, file.originalname);
+          try {
+            fs.renameSync(file.path, finalPath);
+          } catch(e) {
+            fs.copyFileSync(file.path, finalPath);
+            fs.unlinkSync(file.path);
+          }
+          hashes[hex] = category + '/' + file.originalname;
+          imported.push(file.originalname);
+        }
+      }
+    }
+
+    fs.writeFileSync(hashesFile, JSON.stringify(hashes, null, 2));
+
+    let msg = `${imported.length} musique(s) importée(s).`;
+    if (ignored.length > 0) {
+      msg += ` ${ignored.length} doublon(s) ignoré(s) (contenu identique).`;
+    }
+
+    res.json({ message: msg, imported, ignored });
   } catch (err) {
+    if (req.files) {
+      req.files.forEach(f => {
+        if(fs.existsSync(f.path)) fs.unlinkSync(f.path);
+      });
+    }
+    console.error("Erreur upload:", err);
     res.status(500).json({ error: err.message });
   }
 });

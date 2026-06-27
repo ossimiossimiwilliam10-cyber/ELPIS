@@ -43,7 +43,12 @@ export default function MusicSettingsModal({ onClose }) {
       });
 
       if (res.ok) {
-        addToast("Musiques ajoutées avec succès !", "success");
+        const data = await res.json();
+        if (data.ignored && data.ignored.length > 0) {
+          addToast(data.message, "info");
+        } else {
+          addToast(data.message || "Musiques ajoutées avec succès !", "success");
+        }
         fetchMusics();
       } else {
         const err = await res.json();
