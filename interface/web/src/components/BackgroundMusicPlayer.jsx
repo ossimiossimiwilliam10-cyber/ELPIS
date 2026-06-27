@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import useStore from '../store';
+import useStore, { useChronoStore } from '../store';
 import MusicSettingsModal from './MusicSettingsModal';
 
 function BackgroundMusicPlayer() {
@@ -11,10 +11,21 @@ function BackgroundMusicPlayer() {
   const [showSettings, setShowSettings] = useState(false);
   const audioRef = useRef(null);
   const { pendingTasksCount } = useStore(); // On peut écouter la charge de travail si on veut re-fetch à chaque changement majeur
+  const { globalChrono } = useChronoStore();
 
-  const fetchNextTrack = async () => {
+  const getRequestedCategory = () => {
+    if (globalChrono.isRunning && globalChrono.type) {
+      if (globalChrono.type === 'CM') return 'calm';
+      return 'motivational';
+    }
+    return null;
+  };
+
+  const fetchNextTrack = async (forceCategory = null) => {
     try {
-      const res = await fetch('/api/music/recommendation');
+      const cat = forceCategory || getRequestedCategory();
+      const url = cat ? `/api/music/recommendation?category=${cat}` : '/api/music/recommendation';
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         if (data.url) {
@@ -42,6 +53,19 @@ function BackgroundMusicPlayer() {
     fetchNextTrack();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Détection de changement de contexte (chrono)
+  const prevCategoryRef = useRef(null);
+  useEffect(() => {
+    const currentRequested = getRequestedCategory();
+    if (currentRequested !== prevCategoryRef.current) {
+      prevCategoryRef.current = currentRequested;
+      // Si la musique en cours n'est pas de la bonne catégorie, on change
+      if (currentRequested && musicData && musicData.category !== currentRequested) {
+        fetchNextTrack(currentRequested);
+      }
+    }
+  }, [globalChrono.isRunning, globalChrono.type, musicData]);
 
   useEffect(() => {
     if (audioRef.current) {

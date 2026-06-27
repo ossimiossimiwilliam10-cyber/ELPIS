@@ -567,10 +567,14 @@ app.get('/api/music/recommendation', (req, res) => {
     const hour = now.getHours();
     
     let category = 'calm';
-    if (hour >= 21 || (rapport.tachesDuJour?.length || 0) > 5) {
-      category = 'motivational';
+    if (req.query.category && ['calm', 'motivational'].includes(req.query.category)) {
+      category = req.query.category;
     } else {
-      category = 'calm';
+      if (hour >= 21 || (rapport.tachesDuJour?.length || 0) > 5) {
+        category = 'motivational';
+      } else {
+        category = 'calm';
+      }
     }
 
     let musicDir = path.join(ROOT_DIR, 'music', category);

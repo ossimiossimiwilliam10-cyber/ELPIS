@@ -279,6 +279,7 @@ export const useChronoStore = create((set) => ({
     exoId: null,
     titre: null,
     matiereNom: null,
+    type: null,
     isRunning: false,
     elapsedSeconds: 0,
     lastTickDate: null
@@ -288,6 +289,7 @@ export const useChronoStore = create((set) => ({
       exoId: exo.id || exo.titre,
       titre: exo.titre,
       matiereNom: exo.matiereNom,
+      type: exo.type || (exo.titre?.includes('Projet') ? 'Projet' : 'Exercice'),
       isRunning: true,
       elapsedSeconds: 0,
       lastTickDate: Date.now()
@@ -304,7 +306,7 @@ export const useChronoStore = create((set) => ({
     };
   }),
   resetGlobalChrono: () => set(state => ({
-    globalChrono: { ...state.globalChrono, isRunning: false, elapsedSeconds: 0, exoId: null, titre: null, matiereNom: null, lastTickDate: null }
+    globalChrono: { ...state.globalChrono, isRunning: false, elapsedSeconds: 0, exoId: null, titre: null, matiereNom: null, type: null, lastTickDate: null }
   })),
   tickGlobalChrono: () => set(state => {
     if (state.globalChrono.isRunning && state.globalChrono.lastTickDate) {

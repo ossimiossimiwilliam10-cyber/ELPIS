@@ -13,3 +13,5 @@
 - **Système de Toast (Notifications)** : Le hook `useToast()` retourne un objet, pas une fonction. Ne **jamais** appeler `toast("message", "type")` directement. Il faut impérativement utiliser ses méthodes spécifiques : `toast.success("...")`, `toast.error("...")`, `toast.info("...")`, ou `toast.warning("...")`.
 
 - **Validation des chemins de fichiers (Anti-Path-Traversal)** : Ne jamais utiliser directement un chemin de fichier fourni par l'utilisateur (req.body, req.query, etc.) pour des opérations fs ou child_process. Toujours utiliser path.resolve() pour obtenir le chemin absolu et vérifier strictement qu'il commence par le répertoire de base autorisé en utilisant resolvedPath.startsWith(allowedDir). Si le chemin sort du périmètre, renvoyer immédiatement une erreur HTTP 403.
+
+- **Rejet des doublons à l'upload** : Ne jamais configurer de système d'upload de fichiers (ex: via multer) qui écrase silencieusement un fichier existant de même nom. Avant d'écrire le fichier sur le disque, vérifier systématiquement avec fs.existsSync() si le fichier de destination existe déjà. Si le fichier existe, stopper l'opération et renvoyer une erreur explicite au client.
