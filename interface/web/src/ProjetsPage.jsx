@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import useStore from './store';
+import useStore, { useChronoStore } from './store';
 
 const API_URL = '/api';
 
 function ProjetsPage() {
   const { projets, setProjets, pendingTasksCount, historique } = useStore();
+  const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
   const [newProjectTitle, setNewProjectTitle] = useState('');
+  const [newProjectDateFin, setNewProjectDateFin] = useState('');
   const [newPhaseName, setNewPhaseName] = useState('');
   const [activeProjectForPhase, setActiveProjectForPhase] = useState(null);
 
@@ -29,16 +31,30 @@ function ProjetsPage() {
     const newProject = {
       id: Date.now().toString(),
       titre: newProjectTitle.trim(),
+      dateFin: newProjectDateFin || null,
       phases: []
     };
     setProjets([...projets, newProject]);
     setNewProjectTitle('');
+    setNewProjectDateFin('');
   };
 
   const handleLogTime = async (projetId) => {
-    const minStr = window.prompt("Combien de minutes as-tu travaillé sur ce projet ?");
+    let finalMinutes = 0;
+    if (globalChrono.exoId === projetId && globalChrono.elapsedSeconds > 0) {
+      finalMinutes = Math.max(1, Math.ceil(globalChrono.elapsedSeconds / 60));
+    }
+
+    const defaultInput = finalMinutes > 0 ? finalMinutes.toString() : "";
+    const minStr = window.prompt("Combien de minutes as-tu travaillé sur ce projet ?", defaultInput);
+    if (!minStr) return;
+    
     const min = parseInt(minStr, 10);
     if (isNaN(min) || min <= 0) return;
+
+    if (globalChrono.exoId === projetId) {
+      resetGlobalChrono();
+    }
 
     const newHistoryEntry = {
       date: new Date().toISOString(),
@@ -64,6 +80,22 @@ function ProjetsPage() {
   const handleDeleteProject = (id) => {
     if (window.confirm("Supprimer ce projet ?")) {
       setProjets(projets.filter(p => p.id !== id));
+      if (globalChrono.exoId === id) resetGlobalChrono();
+    }
+  };
+
+  const handleUpdateDateFin = (id, newDate) => {
+    setProjets(projets.map(p => p.id === id ? { ...p, dateFin: newDate } : p));
+  };
+
+  const handleDeletePhase = (projectId, phaseId) => {
+    if (window.confirm("Supprimer cette phase ?")) {
+      setProjets(projets.map(p => {
+        if (p.id === projectId) {
+          return { ...p, phases: p.phases.filter(ph => ph.id !== phaseId) };
+        }
+        return p;
+      }));
     }
   };
 
@@ -144,6 +176,13 @@ function ProjetsPage() {
             value={newProjectTitle}
             onChange={e => setNewProjectTitle(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAddProject()}
+            style={{ flex: 2 }}
+          />
+          <input
+            type="date"
+            className="search-input"
+            value={newProjectDateFin}
+            onChange={e => setNewProjectDateFin(e.target.value)}
             style={{ flex: 1 }}
           />
           <button className="primary-button" onClick={handleAddProject}>+ Créer</button>
@@ -167,15 +206,44 @@ function ProjetsPage() {
               </button>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                <h2 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', maxWidth: '80%', wordBreak: 'break-word' }}>{projet.titre}</h2>
-                <button 
-                  className="primary-button" 
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                  onClick={() => handleLogTime(projet.id)}
-                  title="Ajouter du temps de travail"
-                >
-                  + Temps
-                </button>
+                <h2 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', maxWidth: '75%', wordBreak: 'break-word', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {projet.titre}
+                  <input 
+                    type="date" 
+                    value={projet.dateFin || ''} 
+                    onChange={(e) => handleUpdateDateFin(projet.id, e.target.value)} 
+                    style={{ background: 'transparent', border: 'none', color: 'var(--warning-color)', fontSize: '0.9rem', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }} 
+                    title="Date de fin"
+                  />
+                </h2>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    onClick={() => {
+                      if (globalChrono.exoId === projet.id) {
+                        toggleGlobalChrono();
+                      } else {
+                        startGlobalChrono({ id: projet.id, titre: projet.titre, matiereNom: "Projet" });
+                      }
+                    }}
+                    style={{
+                      background: (globalChrono.exoId === projet.id && globalChrono.isRunning) ? '#ef4444' : '#10B981',
+                      color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                      transition: 'background 0.2s', fontSize: '0.9rem'
+                    }}
+                    title={(globalChrono.exoId === projet.id && globalChrono.isRunning) ? "Mettre en pause" : "Démarrer chrono"}
+                  >
+                    {(globalChrono.exoId === projet.id && globalChrono.isRunning) ? '⏸' : '▶'}
+                  </button>
+                  <button 
+                    className="primary-button" 
+                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                    onClick={() => handleLogTime(projet.id)}
+                    title="Ajouter du temps de travail"
+                  >
+                    + Temps
+                  </button>
+                </div>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -194,9 +262,18 @@ function ProjetsPage() {
                       onChange={() => handleTogglePhase(projet.id, phase.id)}
                       style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
                     />
-                    <span style={{ textDecoration: phase.complete ? 'line-through' : 'none', color: phase.complete ? 'var(--text-secondary)' : 'var(--text-primary)' }}>
+                    <span style={{ textDecoration: phase.complete ? 'line-through' : 'none', color: phase.complete ? 'var(--text-secondary)' : 'var(--text-primary)', flex: 1 }}>
                       {idx + 1}. {phase.nom}
                     </span>
+                    <button 
+                      onClick={() => handleDeletePhase(projet.id, phase.id)}
+                      style={{ background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', padding: '0 0.5rem', opacity: 0.6 }}
+                      title="Supprimer la phase"
+                      onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
+                    >
+                      ×
+                    </button>
                   </div>
                 ))}
               </div>
