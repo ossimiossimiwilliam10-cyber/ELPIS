@@ -197,14 +197,6 @@ function ProjetsPage() {
 
           return (
             <motion.div key={projet.id} className="glass-panel" style={{ padding: '1.5rem', position: 'relative' }} layout>
-              <button 
-                onClick={() => handleDeleteProject(projet.id)}
-                style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', fontSize: '1.2rem' }}
-                title="Supprimer le projet"
-              >
-                ×
-              </button>
-              
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                 <h2 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', maxWidth: '75%', wordBreak: 'break-word', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   {projet.titre}
@@ -279,7 +271,7 @@ function ProjetsPage() {
               </div>
 
               {activeProjectForPhase === projet.id ? (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
                   <input 
                     type="text" 
                     className="search-input" 
@@ -295,7 +287,7 @@ function ProjetsPage() {
               ) : (
                 <button 
                   className="secondary-button" 
-                  style={{ width: '100%', marginTop: '0.5rem', borderStyle: 'dashed' }}
+                  style={{ width: '100%', marginBottom: '1rem', borderStyle: 'dashed' }}
                   onClick={() => {
                     setActiveProjectForPhase(projet.id);
                     setNewPhaseName('');
@@ -304,6 +296,15 @@ function ProjetsPage() {
                   + Ajouter une phase
                 </button>
               )}
+
+              <button 
+                className="secondary-button" 
+                style={{ width: '100%', color: 'var(--danger-color)', borderColor: 'var(--danger-color)', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center' }}
+                onClick={() => handleDeleteProject(projet.id)}
+                title="Supprimer ce projet"
+              >
+                🗑️ Supprimer le projet
+              </button>
             </motion.div>
           );
         })}
