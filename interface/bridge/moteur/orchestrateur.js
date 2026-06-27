@@ -37,30 +37,7 @@ const {
 } = require('./intelligence');
 const { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost } = require('./scoring');
 
-/**
- * Normalise une date string (DD-MM-YYYY ou YYYY-MM-DD) vers le format YYYY-MM-DD.
- */
-function normalizeDateStr(dateStr) {
-  if (!dateStr) return null;
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return null;
-  if (parts[0].length === 4) {
-    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-  } else {
-    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-  }
-}
-
-function parseDateLocal(dateStr) {
-  if (!dateStr || typeof dateStr !== 'string') return new Date(NaN);
-  const trimmed = dateStr.trim();
-  const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (isoMatch) return new Date(+isoMatch[1], +isoMatch[2] - 1, +isoMatch[3]);
-  const legacyMatch = trimmed.match(/^(\d{2})-(\d{2})-(\d{4})$/);
-  if (legacyMatch) return new Date(+legacyMatch[3], +legacyMatch[2] - 1, +legacyMatch[1]);
-  return new Date(NaN);
-}
-
+const { normalizeDateStr, parseDateLocal } = require('./utils');
 
 function buildTaskPools({
   crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,

@@ -21,7 +21,19 @@ const PORT = process.env.PORT || 3001;
 app.set('trust proxy', 1);
 
 // Sécurité : HTTP headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https:", "http:"],
+      fontSrc: ["'self'", "https:", "data:"],
+      mediaSrc: ["'self'", "data:", "blob:"]
+    }
+  }
+}));
 
 // Sécurité : CORS restrictif (Vite dev server + soi-même)
 app.use(cors({
@@ -341,6 +353,17 @@ app.post('/api/open/file', (req, res) => {
     return res.status(400).json({ error: "Chemin du fichier manquant." });
   }
 
+  // Sécurité: Si nous sommes en production, l'ouverture locale n'a pas de sens
+  if (process.env.ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "L'ouverture de fichiers locaux est désactivée en mode sécurisé/production." });
+  }
+
+  // Anti-Path-Traversal: vérifier que le chemin résolu reste dans le dossier autorisé (DOCUMENTS_DIR)
+  const resolvedPath = path.resolve(filepath);
+  if (!resolvedPath.startsWith(path.resolve(DOCUMENTS_DIR))) {
+    return res.status(403).json({ error: "Accès refusé. Le fichier est en dehors du répertoire autorisé." });
+  }
+
   // Use spawn with cmd.exe to prevent command injection vulnerabilities
   const child = spawn('cmd.exe', ['/c', 'start', '""', filepath], {
     detached: true,
@@ -376,7 +399,7 @@ app.post('/api/upload/pdf', (req, res, next) => {
         const dataBuffer = fs.readFileSync(req.file.path);
         const pdfData = await pdfParse(dataBuffer);
         const text = pdfData.text;
-        const regex = /(?:exercice|exercise|ex|exo|question|q|prob|problem|set)\s*(?:n°|#)?\s*(\d+(?:\.\d+)?)/gi;
+        const regex = /(?:exercice|exercise|ex|exo|question|q|prob|problem|problème|partie|sujet|td|tp)\s*(?:n°|n|#)?\s*(\d+(?:\.\d+)?)/gi;
         const matches = [...text.matchAll(regex)];
         
         const uniqueTitles = new Set();
@@ -399,6 +422,9 @@ app.post('/api/upload/pdf', (req, res, next) => {
 
 // POST shutdown — protégé par vérification d'origine
 app.post('/api/shutdown', (req, res) => {
+  if (process.env.ADMIN_PASSWORD) {
+    return res.status(403).json({ error: "L'arrêt de l'application est désactivé en mode sécurisé/production." });
+  }
   const origin = req.get('origin') || req.get('referer') || '';
   const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`];
   const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';
