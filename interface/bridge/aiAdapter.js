@@ -14,19 +14,65 @@ function buildAIContext(dataDir) {
     const coursPath = path.join(dataDir, 'data', 'espoir_cours.json');
     const histPath = path.join(dataDir, 'data', 'espoir_historique.json');
 
-    const config = fs.existsSync(configPath) ? fs.readFileSync(configPath, 'utf-8') : '{}';
-    const cours = fs.existsSync(coursPath) ? fs.readFileSync(coursPath, 'utf-8') : '{}';
-    const histString = fs.existsSync(histPath) ? fs.readFileSync(histPath, 'utf-8') : '[]';
+    let config = '{}';
+    let cours = '{}';
+    let histString = '[]';
+
+    if (fs.existsSync(configPath)) config = fs.readFileSync(configPath, 'utf-8');
+    
+    // Synthesize Cours (Remove heavy arrays to save tokens)
+    if (fs.existsSync(coursPath)) {
+      try {
+        const rawCours = JSON.parse(fs.readFileSync(coursPath, 'utf-8'));
+        const cleanCours = { ...rawCours };
+        if (cleanCours.licences) {
+          cleanCours.licences.forEach(l => {
+            if (l.semestres) {
+              l.semestres.forEach(s => {
+                if (s.ues) {
+                  s.ues.forEach(u => {
+                    if (u.matieres) {
+                      u.matieres.forEach(m => {
+                        delete m.listeAnnales; // Too heavy
+                        if (m.listeCM && m.listeCM.length === 0) delete m.listeCM;
+                        if (m.listeTD && m.listeTD.length === 0) delete m.listeTD;
+                        if (m.listeTP && m.listeTP.length === 0) delete m.listeTP;
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+        cours = JSON.stringify(cleanCours);
+      } catch (e) {
+        cours = fs.readFileSync(coursPath, 'utf-8');
+      }
+    }
+
+    // Synthesize Historique (Keep only last 7 days)
+    if (fs.existsSync(histPath)) {
+      try {
+        const rawHist = JSON.parse(fs.readFileSync(histPath, 'utf-8'));
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const filteredHist = rawHist.filter(h => new Date(h.timestamp) >= sevenDaysAgo);
+        histString = JSON.stringify(filteredHist);
+      } catch (e) {
+        histString = '[]';
+      }
+    }
 
     return `
 === CONTEXTE DE L'APPLICATION ELPIS ===
 [Configuration]
 ${config}
 
-[Cours (Structure)]
+[Cours (Structure essentielle)]
 ${cours}
 
-[Historique Complet]
+[Historique (7 derniers jours)]
 ${histString}
 =======================================
 `;

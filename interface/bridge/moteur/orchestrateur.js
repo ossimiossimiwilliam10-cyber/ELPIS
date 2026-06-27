@@ -61,146 +61,11 @@ function parseDateLocal(dateStr) {
   return new Date(NaN);
 }
 
-function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false) {
-  const cfg = loadConfig(configPath);
-  const crs = loadCours(coursPath);
-  const rapport = {};
 
-  const todayStr = getTodayString();
-  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
-
-  const tomorrowDate = new Date(now);
-  tomorrowDate.setHours(tomorrowDate.getHours() - 4); // aligner avec la période de grâce (Night Owl)
-  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-  const tomorrowStr = tomorrowDate.getFullYear() + '-' + String(tomorrowDate.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrowDate.getDate()).padStart(2, '0');
-  const dayOfWeek = now.getDay();
-  const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-  // Charger l'historique
-  let historique = [];
-  try {
-    const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
-    if (fs.existsSync(histPath)) {
-      historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));
-    }
-  } catch (e) {
-    console.error("Erreur lecture historique:", e);
-  }
-
-  // Construire les maps d'intelligence
-  const compensationMap = buildCompensationMap(crs);
-  const remainingWeightMap = buildRemainingWeightMap(crs);
-  const velocityMap = buildVelocityMap(crs, historique, cfg);
-  const cognitiveLoadMap = buildCognitiveLoadMap(crs);
-  const burnoutRisk = detectBurnoutRisk(cfg, historique);
-  const projectedScoreMap = buildProjectedScoreMap(crs, velocityMap);
-
-  rapport.intelligence = {
-    compensationMap,
-    remainingWeightMap,
-    velocityMap,
-    cognitiveLoadMap,
-    burnoutRisk,
-    projectedScoreMap
-  };
-
-  // Anti-Burnout
-  if (burnoutRisk.shouldForceRest) {
-    rapport.statut = "REPOS";
-    rapport.tachesDuJour = [];
-    rapport.tempsRequisMin = 0;
-    rapport.tempsDispoMin = 0;
-    rapport.message = `🛡️ Anti-Burnout activé : ${burnoutRisk.reason}`;
-    return rapport;
-  }
-
-  // Mode repos
-  if (cfg.restDays && cfg.restDays.includes(todayStr)) {
-    rapport.statut = "REPOS";
-    rapport.tachesDuJour = [];
-    rapport.tempsRequisMin = 0;
-    rapport.tempsDispoMin = 0;
-    rapport.message = "Jour de repos imposé. Recharge tes batteries !";
-    return rapport;
-  }
-
-  const examUrgencyMap = buildExamUrgencyMap(crs);
-
-  // 1. Calculate available time
-  const heuresTravailJour = Math.max(1, cfg.maxStudyHoursPerDay || 8);
-  const maxSubjectsPerDay = cfg.maxSubjectsPerDay || 4;
-  let tempsLibreMin = heuresTravailJour * 60;
-
-  // Calculer les engagements fixes du jour
-  const todayName = getDayOfWeekString();
-  let fixedCommitmentsMin = 0;
-  let matieresSatureesToday = new Set();
-  if (Array.isArray(cfg.fixedCommitments)) {
-    cfg.fixedCommitments.forEach(c => {
-      if (c.day === todayName || c.day === 'Tous les jours') {
-        if (c.matiereLinked) {
-          matieresSatureesToday.add(c.matiereLinked);
-        }
-        if (c.start && c.end) {
-          const [h1, m1] = c.start.split(':').map(Number);
-          const [h2, m2] = c.end.split(':').map(Number);
-          if (!isNaN(h1) && !isNaN(m1) && !isNaN(h2) && !isNaN(m2)) {
-            let startMin = h1 * 60 + m1;
-            let endMin = h2 * 60 + m2;
-            if (endMin >= startMin) {
-              fixedCommitmentsMin += (endMin - startMin);
-            } else {
-              fixedCommitmentsMin += (24 * 60 - startMin) + endMin;
-            }
-          }
-        }
-      }
-    });
-  }
-
-  tempsLibreMin -= fixedCommitmentsMin;
-  if (tempsLibreMin < 0) tempsLibreMin = 0;
-  
-  tempsLibreMin += extraTimeMin;
-  rapport.tempsDispoMin = tempsLibreMin;
-  rapport.fixedCommitmentsMin = fixedCommitmentsMin;
-
-  // 2. Calculer le temps déjà travaillé aujourd'hui depuis l'historique
-  let tempsDejaTravailleMin = 0;
-  if (historique && Array.isArray(historique)) {
-    const todayEntries = historique.filter(h => {
-      if (!h.timestamp) return false;
-      const d = new Date(h.timestamp);
-      d.setHours(d.getHours() - 4);
-      const dStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-      return dStr === todayStr;
-    });
-
-    tempsDejaTravailleMin = todayEntries.reduce((sum, h) => {
-      let mins = h.dureeMinutes;
-      if (mins == null || isNaN(mins)) {
-        // Fallback for older entries missing dureeMinutes
-        if (h.type === 'ANKI') mins = cfg.defaultDurationAnki || 30;
-        else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
-        else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
-        else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
-        else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnales || 60;
-        else mins = 30;
-      }
-      return sum + mins;
-    }, 0);
-  }
-
-  rapport.tempsDejaTravailleMin = tempsDejaTravailleMin;
-  tempsLibreMin -= tempsDejaTravailleMin;
-  if (tempsLibreMin < 0) tempsLibreMin = 0;
-
-  // Base de parité
-  const studyStartStr = normalizeDateStr(cfg.studyStartDate);
-  const studyStart = parseDateLocal(studyStartStr);
-  const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
-  const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
-
+function buildTaskPools({
+  crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
+  compensationMap, velocityMap, projectedScoreMap, matieresSatureesToday, fillGap, now, parityJour
+}) {
   // Pools
   const poolCM = [];
   const poolTD = [];
@@ -449,6 +314,154 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
       }
     }
   }
+  return { poolCM, poolTD, poolTP, poolAnnales };
+}
+
+function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false) {
+  const cfg = loadConfig(configPath);
+  const crs = loadCours(coursPath);
+  const rapport = {};
+
+  const todayStr = getTodayString();
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+
+  const tomorrowDate = new Date(now);
+  tomorrowDate.setHours(tomorrowDate.getHours() - 4); // aligner avec la période de grâce (Night Owl)
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowStr = tomorrowDate.getFullYear() + '-' + String(tomorrowDate.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrowDate.getDate()).padStart(2, '0');
+  const dayOfWeek = now.getDay();
+  const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+  // Charger l'historique
+  let historique = [];
+  try {
+    const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
+    if (fs.existsSync(histPath)) {
+      historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));
+    }
+  } catch (e) {
+    console.error("Erreur lecture historique:", e);
+  }
+
+  // Construire les maps d'intelligence
+  const compensationMap = buildCompensationMap(crs);
+  const remainingWeightMap = buildRemainingWeightMap(crs);
+  const velocityMap = buildVelocityMap(crs, historique, cfg);
+  const cognitiveLoadMap = buildCognitiveLoadMap(crs);
+  const burnoutRisk = detectBurnoutRisk(cfg, historique);
+  const projectedScoreMap = buildProjectedScoreMap(crs, velocityMap);
+
+  rapport.intelligence = {
+    compensationMap,
+    remainingWeightMap,
+    velocityMap,
+    cognitiveLoadMap,
+    burnoutRisk,
+    projectedScoreMap
+  };
+
+  // Anti-Burnout
+  if (burnoutRisk.shouldForceRest) {
+    rapport.statut = "REPOS";
+    rapport.tachesDuJour = [];
+    rapport.tempsRequisMin = 0;
+    rapport.tempsDispoMin = 0;
+    rapport.message = `🛡️ Anti-Burnout activé : ${burnoutRisk.reason}`;
+    return rapport;
+  }
+
+  // Mode repos
+  if (cfg.restDays && cfg.restDays.includes(todayStr)) {
+    rapport.statut = "REPOS";
+    rapport.tachesDuJour = [];
+    rapport.tempsRequisMin = 0;
+    rapport.tempsDispoMin = 0;
+    rapport.message = "Jour de repos imposé. Recharge tes batteries !";
+    return rapport;
+  }
+
+  const examUrgencyMap = buildExamUrgencyMap(crs);
+
+  // 1. Calculate available time
+  const heuresTravailJour = Math.max(1, cfg.maxStudyHoursPerDay || 8);
+  const maxSubjectsPerDay = cfg.maxSubjectsPerDay || 4;
+  let tempsLibreMin = heuresTravailJour * 60;
+
+  // Calculer les engagements fixes du jour
+  const todayName = getDayOfWeekString();
+  let fixedCommitmentsMin = 0;
+  let matieresSatureesToday = new Set();
+  if (Array.isArray(cfg.fixedCommitments)) {
+    cfg.fixedCommitments.forEach(c => {
+      if (c.day === todayName || c.day === 'Tous les jours') {
+        if (c.matiereLinked) {
+          matieresSatureesToday.add(c.matiereLinked);
+        }
+        if (c.start && c.end) {
+          const [h1, m1] = c.start.split(':').map(Number);
+          const [h2, m2] = c.end.split(':').map(Number);
+          if (!isNaN(h1) && !isNaN(m1) && !isNaN(h2) && !isNaN(m2)) {
+            let startMin = h1 * 60 + m1;
+            let endMin = h2 * 60 + m2;
+            if (endMin >= startMin) {
+              fixedCommitmentsMin += (endMin - startMin);
+            } else {
+              fixedCommitmentsMin += (24 * 60 - startMin) + endMin;
+            }
+          }
+        }
+      }
+    });
+  }
+
+  tempsLibreMin -= fixedCommitmentsMin;
+  if (tempsLibreMin < 0) tempsLibreMin = 0;
+  
+  tempsLibreMin += extraTimeMin;
+  rapport.tempsDispoMin = tempsLibreMin;
+  rapport.fixedCommitmentsMin = fixedCommitmentsMin;
+
+  // 2. Calculer le temps déjà travaillé aujourd'hui depuis l'historique
+  let tempsDejaTravailleMin = 0;
+  if (historique && Array.isArray(historique)) {
+    const todayEntries = historique.filter(h => {
+      if (!h.timestamp) return false;
+      const d = new Date(h.timestamp);
+      d.setHours(d.getHours() - 4);
+      const dStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      return dStr === todayStr;
+    });
+
+    tempsDejaTravailleMin = todayEntries.reduce((sum, h) => {
+      let mins = h.dureeMinutes;
+      if (mins == null || isNaN(mins)) {
+        // Fallback for older entries missing dureeMinutes
+        if (h.type === 'ANKI') mins = cfg.defaultDurationAnki || 30;
+        else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
+        else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
+        else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
+        else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnales || 60;
+        else mins = 30;
+      }
+      return sum + mins;
+    }, 0);
+  }
+
+  rapport.tempsDejaTravailleMin = tempsDejaTravailleMin;
+  tempsLibreMin -= tempsDejaTravailleMin;
+  if (tempsLibreMin < 0) tempsLibreMin = 0;
+
+  // Base de parité
+  const studyStartStr = normalizeDateStr(cfg.studyStartDate);
+  const studyStart = parseDateLocal(studyStartStr);
+  const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
+  const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
+
+  const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
+    crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
+    compensationMap, velocityMap, projectedScoreMap, matieresSatureesToday, fillGap, now, parityJour
+  });
+
 
   // 3. Tri par priorité décroissante
   poolAnnales.sort((a, b) => b.prio - a.prio);
@@ -640,100 +653,16 @@ function genererTacheSpecifique(configPath, coursPath, options) {
     }
   }
 
-  for (const l of (crs.licences || [])) {
-    if (l.archived) continue;
-    for (const s of (l.semestres || [])) {
-      if (s.archived) continue;
-      if (s.dateFin) {
-        const df = parseDateLocal(normalizeDateStr(s.dateFin));
-        if (df && df < now) continue;
-      }
-      for (const ue of (s.ues || [])) {
-        for (const m of (ue.matieres || [])) {
-          if (matiere !== 'all' && m.nom !== matiere) continue;
-          
-          m._ueMatieres = (ue.matieres || []).map(mat => mat.nom).filter(Boolean);
-          const examData = getSubjectExamBoost(m, examUrgencyMap);
-          const daysToExam = examData.daysToExam;
-          const baseRaisons = examData.boost > 1.0 ? ["🎯 Examen proche"] : [];
+  const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
+    crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
+    compensationMap, velocityMap, projectedScoreMap: {}, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: 0
+  });
 
-          // CM
-          if (type === 'all' || type === 'CM') {
-            for (const ex of (m.listeCM || []).filter(e => e.derniereRevision !== todayStr)) {
-              const dureeBase = ex.derniereRevision ? (cfg.defaultDurationRevCM || 30) : (cfg.defaultDurationNewCM || 120);
-              const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
-              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
-              candidates.push({
-                matiere: m.nom, type: "CM", titre: ex.titre, dureeMinutes: Math.round(dureeEstimee),
-                prio: basePrio, raisons: [...baseRaisons, ex.derniereRevision ? "🔄 Révision" : "📖 Nouveau Cours"]
-              });
-            }
-          }
-
-          // TD
-          if (type === 'all' || type === 'TD') {
-            for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
-              const dureeBase = cfg.defaultDurationTD || 20;
-              const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
-              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
-              candidates.push({
-                matiere: m.nom, type: "TD", titre: ex.titre, dureeMinutes: Math.round(dureeEstimee),
-                prio: basePrio, raisons: [...baseRaisons, "📝 Entraînement TD"]
-              });
-            }
-          }
-
-          // TP
-          if (type === 'all' || type === 'TP') {
-            for (const ex of (m.listeTP || []).filter(e => {
-              if (e.dernierePratique === todayStr) {
-                if (!e.dateTP) return false;
-                return normalizeDateStr(e.dateTP) === tomorrowStr;
-              }
-              return true;
-            })) {
-              const currentStep = ex.nombrePratiques || 0;
-              if (currentStep >= 4) continue;
-              const isTomorrow = ex.dateTP && normalizeDateStr(ex.dateTP) === tomorrowStr;
-              if (!isTomorrow && currentStep < 3 && !isWeekend) continue;
-              if (!isTomorrow && currentStep === 3) continue;
-
-              const TP_STEP_DURATIONS = [cfg.defaultDurationTP_Etape1 || 45, cfg.defaultDurationTP_Etape2 || 180, cfg.defaultDurationTP_Etape3 || 90, cfg.defaultDurationTP_Etape4 || 30];
-              const dureeBase = TP_STEP_DURATIONS[currentStep] || 30;
-              let avgForStep = null;
-              if (ex.tempsMoyenEtapes && ex.tempsMoyenEtapes.length > currentStep && ex.tempsMoyenEtapes[currentStep] > 0) avgForStep = ex.tempsMoyenEtapes[currentStep];
-              else if (ex.tempsMoyen > 0 && !ex.tempsMoyenEtapes) avgForStep = ex.tempsMoyen;
-              const dureeEstimee = (avgForStep != null && avgForStep > 0) ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
-              
-              let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
-              if (isTomorrow) tpPrio = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
-              else if (isWeekend) tpPrio += MAGIC_CONSTANTS.PRIO_WEEKEND_TP;
-
-              candidates.push({
-                matiere: m.nom, type: "TP", titre: ex.titre, dureeMinutes: Math.round(dureeEstimee),
-                prio: tpPrio, etape: currentStep + 1, raisons: [...baseRaisons, `💻 Projet Etape ${currentStep+1}`]
-              });
-            }
-          }
-
-          // Annales
-          if (type === 'all' || type === 'ANNALE') {
-            for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
-              const dureeBase = cfg.defaultDurationAnnales || 60;
-              const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
-              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
-              const isUrgent = daysToExam <= 21;
-              const annaleBoost = isUrgent ? MAGIC_CONSTANTS.BOOST_ANNALE_URGENT : MAGIC_CONSTANTS.BOOST_ANNALE_NORMAL;
-              
-              candidates.push({
-                matiere: m.nom, type: "ANNALE", titre: ex.titre, dureeMinutes: Math.round(dureeEstimee),
-                prio: basePrio * annaleBoost, raisons: [...baseRaisons, "🎓 Annale d'Examen"]
-              });
-            }
-          }
-        }
-      }
-    }
+  const allPools = [...poolCM, ...poolTD, ...poolTP, ...poolAnnales];
+  for (const task of allPools) {
+    if (matiere !== 'all' && task.matiere !== matiere) continue;
+    if (type !== 'all' && task.type !== type) continue;
+    candidates.push(task);
   }
 
   if (candidates.length === 0) return null;

@@ -31,6 +31,16 @@ app.use(cors({
 
 app.use(express.json());
 
+// Sécurité : Basic Auth (Point 2)
+if (process.env.ADMIN_PASSWORD) {
+  const basicAuth = require('express-basic-auth');
+  app.use(basicAuth({
+    users: { 'admin': process.env.ADMIN_PASSWORD },
+    challenge: true,
+    realm: 'ELPIS Secure Area'
+  }));
+}
+
 // Sécurité : Rate Limiting (500 requêtes max par IP toutes les 15 minutes)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -62,9 +72,13 @@ function atomicWriteFileSync(filePath, data) {
   const tmpPath = filePath + '.tmp';
   try {
     fs.writeFileSync(tmpPath, data, 'utf8');
-    // On Windows, renameSync requires the target to not exist
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    fs.renameSync(tmpPath, filePath);
+    try {
+      fs.renameSync(tmpPath, filePath);
+    } catch (renameErr) {
+      // Fallback robuste en cas de lock ou de cross-device
+      fs.copyFileSync(tmpPath, filePath);
+      fs.unlinkSync(tmpPath);
+    }
     return true;
   } catch (err) {
     console.error(`Erreur écriture atomique ${filePath}:`, err.message);
@@ -397,9 +411,9 @@ app.post('/api/shutdown', (req, res) => {
   setTimeout(() => process.exit(0), 1000);
 });
 
-// Cache orchestrateur : évite de recalculer à chaque rafraîchissement (10s TTL)
+// Cache orchestrateur : évite de recalculer à chaque rafraîchissement (60s TTL)
 const orchestratorCache = new Map();
-const CACHE_TTL_MS = 10_000;
+const CACHE_TTL_MS = 60_000;
 
 // GET orchestrator report
 app.get('/api/orchestrateur', (req, res) => {
@@ -576,7 +590,13 @@ const musicStorage = multer.diskStorage({
 });
 const uploadMusic = multer({
   storage: musicStorage,
-  limits: { fileSize: 30 * 1024 * 1024 } // 30 MB max
+  limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB max
+  fileFilter: function (req, file, cb) {
+    if (!file.mimetype.startsWith('audio/')) {
+      return cb(new Error("Format de fichier invalide, audio attendu."));
+    }
+    cb(null, true);
+  }
 });
 
 app.get('/api/music/list', (req, res) => {

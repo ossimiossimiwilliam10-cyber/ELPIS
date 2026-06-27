@@ -21,8 +21,8 @@ describe('AI Adapter', () => {
 
     const context = buildAIContext('/fake/data/dir');
     expect(context).toContain('{"targetGrade": 15}');
-    expect(context).toContain('{"licences": []}');
-    expect(context).toContain('"type": "CM"');
+    expect(context).toContain('{"licences":[]}');
+    expect(context).toContain('"type":"CM"');
   });
 
   test('buildAIContext handles missing files gracefully', () => {
