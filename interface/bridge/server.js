@@ -616,7 +616,7 @@ const musicStorage = multer.diskStorage({
 });
 const uploadMusic = multer({
   storage: musicStorage,
-  limits: { fileSize: 30 * 1024 * 1024 }, // 30 MB max
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500 MB max pour les grosses OSTs
   fileFilter: function (req, file, cb) {
     if (!file.mimetype.startsWith('audio/')) {
       return cb(new Error("Format de fichier invalide, audio attendu."));
