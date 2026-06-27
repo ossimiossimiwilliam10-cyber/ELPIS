@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useStore from '../store';
+import MusicSettingsModal from './MusicSettingsModal';
 
 function BackgroundMusicPlayer() {
   const [musicData, setMusicData] = useState(null);
@@ -7,6 +8,7 @@ function BackgroundMusicPlayer() {
   const [volume, setVolume] = useState(0.2); // Volume par défaut bas pour ne pas agresser
   const [isHovered, setIsHovered] = useState(false);
   const [error, setError] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
   const audioRef = useRef(null);
   const { pendingTasksCount } = useStore(); // On peut écouter la charge de travail si on veut re-fetch à chaque changement majeur
 
@@ -184,8 +186,17 @@ function BackgroundMusicPlayer() {
           >
             ⏭
           </button>
+          <button 
+            onClick={() => setShowSettings(true)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', marginLeft: '0.5rem', color: 'var(--text-secondary)' }}
+            title="Gérer les musiques"
+          >
+            ⚙️
+          </button>
         </div>
       )}
+
+      {showSettings && <MusicSettingsModal onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

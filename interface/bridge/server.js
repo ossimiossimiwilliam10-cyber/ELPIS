@@ -536,6 +536,72 @@ app.get('/api/music/recommendation', (req, res) => {
   }
 });
 
+// -- Music Upload & Management --
+const musicStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const category = req.body.category;
+    if (!['calm', 'focus', 'motivational'].includes(category)) {
+      return cb(new Error("Catégorie invalide"));
+    }
+    const destDir = path.join(ROOT_DIR, 'music', category);
+    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+    cb(null, destDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // Garde le nom original de la musique
+  }
+});
+const uploadMusic = multer({
+  storage: musicStorage,
+  limits: { fileSize: 30 * 1024 * 1024 } // 30 MB max
+});
+
+app.get('/api/music/list', (req, res) => {
+  try {
+    const categories = ['calm', 'focus', 'motivational'];
+    const result = {};
+    categories.forEach(cat => {
+      const dir = path.join(ROOT_DIR, 'music', cat);
+      if (fs.existsSync(dir)) {
+        result[cat] = fs.readdirSync(dir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg'));
+      } else {
+        result[cat] = [];
+      }
+    });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/music/upload', uploadMusic.array('files', 10), (req, res) => {
+  try {
+    res.json({ message: "Musiques uploadées avec succès" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/music/:category/:filename', (req, res) => {
+  try {
+    const { category, filename } = req.params;
+    if (!['calm', 'focus', 'motivational'].includes(category)) return res.status(400).json({ error: "Catégorie invalide" });
+    
+    // Security to prevent directory traversal
+    const safeFilename = path.basename(filename);
+    const targetPath = path.join(ROOT_DIR, 'music', category, safeFilename);
+    
+    if (fs.existsSync(targetPath)) {
+      fs.unlinkSync(targetPath);
+      res.json({ message: "Fichier supprimé" });
+    } else {
+      res.status(404).json({ error: "Fichier introuvable" });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Serve React build
 const REACT_BUILD_DIR = path.join(ROOT_DIR, 'interface', 'web', 'dist');
 app.use(express.static(REACT_BUILD_DIR));
