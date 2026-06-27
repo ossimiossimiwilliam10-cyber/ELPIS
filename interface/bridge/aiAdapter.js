@@ -10,9 +10,9 @@ const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
  */
 function buildAIContext(dataDir) {
   try {
-    const configPath = path.join(dataDir, 'espoir_config.json');
-    const coursPath = path.join(dataDir, 'espoir_cours.json');
-    const histPath = path.join(dataDir, 'espoir_historique.json');
+    const configPath = path.join(dataDir, 'data', 'espoir_config.json');
+    const coursPath = path.join(dataDir, 'data', 'espoir_cours.json');
+    const histPath = path.join(dataDir, 'data', 'espoir_historique.json');
 
     const config = fs.existsSync(configPath) ? fs.readFileSync(configPath, 'utf-8') : '{}';
     const cours = fs.existsSync(coursPath) ? fs.readFileSync(coursPath, 'utf-8') : '{}';

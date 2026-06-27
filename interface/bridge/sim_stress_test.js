@@ -169,14 +169,17 @@ for (let day = 0; day < 12; day++) {
 }
 
 // ─── 4. Écriture des fichiers temporaires ───
-fs.writeFileSync(path.join(SIM_DIR, 'espoir_config.json'), JSON.stringify(config, null, 2));
-fs.writeFileSync(path.join(SIM_DIR, 'espoir_cours.json'), JSON.stringify(cours, null, 2));
-fs.writeFileSync(path.join(SIM_DIR, 'espoir_historique.json'), JSON.stringify(historique, null, 2));
+if (!fs.existsSync(path.join(SIM_DIR, 'data'))) {
+  fs.mkdirSync(path.join(SIM_DIR, 'data'));
+}
+fs.writeFileSync(path.join(SIM_DIR, 'data', 'espoir_config.json'), JSON.stringify(config, null, 2));
+fs.writeFileSync(path.join(SIM_DIR, 'data', 'espoir_cours.json'), JSON.stringify(cours, null, 2));
+fs.writeFileSync(path.join(SIM_DIR, 'data', 'espoir_historique.json'), JSON.stringify(historique, null, 2));
 
 // ─── 5. Exécution ───
 const rapport = genererRapportQuotidien(
-  path.join(SIM_DIR, 'espoir_config.json'),
-  path.join(SIM_DIR, 'espoir_cours.json'),
+  path.join(SIM_DIR, 'data', 'espoir_config.json'),
+  path.join(SIM_DIR, 'data', 'espoir_cours.json'),
   0,
   false
 );

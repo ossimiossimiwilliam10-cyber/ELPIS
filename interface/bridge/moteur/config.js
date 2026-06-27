@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT_DIR = path.join(__dirname, '..', '..', '..');
-const CONFIG_PATH = path.join(ROOT_DIR, 'espoir_config.json');
+const CONFIG_PATH = path.join(ROOT_DIR, 'data', 'espoir_config.json');
 
 const DEFAULT_CONFIG = {
   studyStartDate: "07-09-2026",

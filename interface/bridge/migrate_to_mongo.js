@@ -12,9 +12,9 @@ if (!MONGODB_URI) {
 }
 
 const ROOT_DIR = path.join(__dirname, '..', '..');
-const CONFIG_FILE = path.join(ROOT_DIR, 'espoir_config.json');
-const COURS_FILE = path.join(ROOT_DIR, 'espoir_cours.json');
-const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
+const CONFIG_FILE = path.join(ROOT_DIR, 'data', 'espoir_config.json');
+const COURS_FILE = path.join(ROOT_DIR, 'data', 'espoir_cours.json');
+const HISTORIQUE_FILE = path.join(ROOT_DIR, 'data', 'espoir_historique.json');
 
 async function migrate() {
   console.log("⏳ Connexion à MongoDB...");

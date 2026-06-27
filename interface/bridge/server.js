@@ -50,10 +50,10 @@ app.use('/api/', (req, res, next) => {
   next();
 });
 const ROOT_DIR = path.join(__dirname, '..', '..');
-const CONFIG_FILE = path.join(ROOT_DIR, 'espoir_config.json');
-const COURS_FILE = path.join(ROOT_DIR, 'espoir_cours.json');
-const HISTORIQUE_FILE = path.join(ROOT_DIR, 'espoir_historique.json');
-const CHAT_FILE = path.join(ROOT_DIR, 'espoir_chat.json');
+const CONFIG_FILE = path.join(ROOT_DIR, 'data', 'espoir_config.json');
+const COURS_FILE = path.join(ROOT_DIR, 'data', 'espoir_cours.json');
+const HISTORIQUE_FILE = path.join(ROOT_DIR, 'data', 'espoir_historique.json');
+const CHAT_FILE = path.join(ROOT_DIR, 'data', 'espoir_chat.json');
 const BACKUPS_DIR = path.join(ROOT_DIR, 'backups');
 const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
 

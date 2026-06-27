@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT_DIR = process.env.ELPIS_ROOT || path.join(__dirname, '../../../../');
-const PROJETS_FILE = path.join(ROOT_DIR, 'espoir_projets.json');
+const PROJETS_FILE = path.join(ROOT_DIR, 'data', 'espoir_projets.json');
 
 /**
  * Charge les projets personnels depuis le fichier JSON.
