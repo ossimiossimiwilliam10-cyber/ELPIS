@@ -55,14 +55,17 @@ function BackgroundMusicPlayer() {
   };
 
   // Gérer l'Autoplay "FIFA style" à la première interaction globale
+  const interactionDone = useRef(false);
   useEffect(() => {
+    if (interactionDone.current) return;
+    
     const handleFirstInteraction = () => {
+      interactionDone.current = true;
       if (audioRef.current && !isPlaying && musicData && musicData.url) {
         audioRef.current.play()
           .then(() => setIsPlaying(true))
           .catch(e => console.log("Autoplay interactif bloqué:", e));
       }
-      // On retire l'écouteur après la première interaction
       document.removeEventListener('click', handleFirstInteraction);
       document.removeEventListener('keydown', handleFirstInteraction);
     };
@@ -74,7 +77,7 @@ function BackgroundMusicPlayer() {
       document.removeEventListener('click', handleFirstInteraction);
       document.removeEventListener('keydown', handleFirstInteraction);
     };
-  }, [isPlaying, musicData]);
+  }, [musicData]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;

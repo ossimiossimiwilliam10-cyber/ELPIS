@@ -496,16 +496,8 @@ app.use('/music', express.static(path.join(ROOT_DIR, 'music')));
 app.get('/api/music/recommendation', (req, res) => {
   try {
     const { genererRapportQuotidien } = require('./moteur/orchestrateur');
-    const { loadConfig } = require('./moteur/config');
-    const { loadCours } = require('./moteur/cours');
-    const config = loadConfig();
-    const cours = loadCours();
-    let historique = [];
-    try {
-      historique = JSON.parse(fs.readFileSync(HISTORIQUE_FILE, 'utf8') || '[]');
-    } catch(e) {}
     
-    const rapport = genererRapportQuotidien(config, cours, 0, false, historique);
+    const rapport = genererRapportQuotidien(CONFIG_FILE, COURS_FILE, 0, false);
     const now = new Date();
     const hour = now.getHours();
     

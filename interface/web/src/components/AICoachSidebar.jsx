@@ -77,8 +77,8 @@ export default function AICoachSidebar() {
         onClick={() => setIsOpen(true)}
         style={{
           position: 'fixed',
-          bottom: '2rem',
-          right: '2rem',
+          bottom: '100px',
+          right: '20px',
           width: '60px',
           height: '60px',
           borderRadius: '50%',
