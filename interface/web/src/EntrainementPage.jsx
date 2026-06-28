@@ -67,41 +67,14 @@ function EntrainementPage() {
   const [tempsDejaTravaille, setTempsDejaTravaille] = useState(0);
   const [tempsDispoMin, setTempsDispoMin] = useState(0);
 
-  const [showCustomTargetForm, setShowCustomTargetForm] = useState(false);
-  const [customMatiere, setCustomMatiere] = useState('all');
-  const [customType, setCustomType] = useState('all');
-  const [customDuration, setCustomDuration] = useState(30);
-  const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
-
-  const handleCustomTargetRequest = async () => {
-    setIsGeneratingCustom(true);
-    try {
-      const res = await fetch('/api/orchestrator/force-task', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          matiere: customMatiere,
-          type: customType,
-          dureeMin: customDuration
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error || "Erreur de génération");
-      } else if (data.task) {
-        setTachesOrchestrateur([data.task]);
-        setShowCustomTargetForm(false);
-        toast.success("Cible acquise ! L'entraînement est configuré.");
-      }
-    } catch (err) {
-      toast.error("Impossible de joindre l'orchestrateur.");
-    } finally {
-      setIsGeneratingCustom(false);
-    }
-  };
-
   useEffect(() => {
-    fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 });
+    const store = useStore.getState();
+    if (store.forcedTask) {
+      setTachesOrchestrateur([store.forcedTask]);
+      store.setForcedTask(null);
+    } else {
+      fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coursConfig, dailyFillGap]);
 
@@ -596,7 +569,6 @@ function EntrainementPage() {
                     <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
                     <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par le système. Repose-toi bien !</p>
                     
-                    {!showCustomTargetForm ? (
                       <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                         {!dailyFillGap && (
                           <motion.button
@@ -615,92 +587,13 @@ function EntrainementPage() {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => setShowCustomTargetForm(true)}
+                          onClick={() => useStore.getState().setActiveTab('revisions_avancees')}
                           className="btn-secondary"
                           style={{ padding: '1rem 2rem', fontSize: '1.1rem', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
                         >
-                          🎯 Choisir ma prochaine cible
+                          🎯 Aller dans Avance & Bonus
                         </motion.button>
                       </div>
-                    ) : (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        style={{
-                          marginTop: '2rem',
-                          background: 'var(--bg-tertiary)',
-                          padding: '1.5rem',
-                          borderRadius: '16px',
-                          border: '1px solid var(--border-color)',
-                          textAlign: 'left',
-                          width: '100%',
-                          maxWidth: '400px'
-                        }}
-                      >
-                        <h4 style={{ marginBottom: '1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span>🎯</span> Ciblage manuel
-                        </h4>
-                        
-                        <div style={{ marginBottom: '1rem' }}>
-                          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Matière</label>
-                          <select 
-                            value={customMatiere} 
-                            onChange={e => setCustomMatiere(e.target.value)}
-                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'white', border: '1px solid var(--border-color)' }}
-                          >
-                            <option value="all">Toutes les matières</option>
-                            {/* We can extract all subjects from configLocal */}
-                            {configLocal.licences?.flatMap(l => l.semestres?.flatMap(s => s.ues?.flatMap(u => u.matieres?.map(m => (
-                              <option key={m.nom} value={m.nom}>{m.nom}</option>
-                            )))))}
-                          </select>
-                        </div>
-
-                        <div style={{ marginBottom: '1rem' }}>
-                          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Type d'exercice</label>
-                          <select 
-                            value={customType} 
-                            onChange={e => setCustomType(e.target.value)}
-                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'white', border: '1px solid var(--border-color)' }}
-                          >
-                            <option value="all">Peu importe</option>
-                            <option value="CM">Cours (CM)</option>
-                            <option value="TD">Exercices (TD)</option>
-                            <option value="TP">Projet (TP)</option>
-                            <option value="ANNALE">Annales</option>
-                          </select>
-                        </div>
-
-                        <div style={{ marginBottom: '1.5rem' }}>
-                          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Durée souhaitée (minutes)</label>
-                          <input 
-                            type="number" 
-                            min="5" 
-                            step="5"
-                            value={customDuration} 
-                            onChange={e => setCustomDuration(parseInt(e.target.value) || 30)}
-                            style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', color: 'white', border: '1px solid var(--border-color)' }}
-                          />
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                          <button 
-                            onClick={() => setShowCustomTargetForm(false)}
-                            style={{ flex: 1, padding: '0.8rem', background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '8px', cursor: 'pointer' }}
-                          >
-                            Annuler
-                          </button>
-                          <button 
-                            onClick={handleCustomTargetRequest}
-                            disabled={isGeneratingCustom}
-                            className="btn-primary"
-                            style={{ flex: 2, padding: '0.8rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '8px', cursor: isGeneratingCustom ? 'wait' : 'pointer' }}
-                          >
-                            {isGeneratingCustom ? 'Recherche...' : 'Générer ma cible'}
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
                   </>
                 )}
               </div>

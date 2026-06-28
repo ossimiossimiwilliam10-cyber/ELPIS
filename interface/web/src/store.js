@@ -62,10 +62,13 @@ const useStore = create(immer((set, get) => ({
   dailyFillGap: false,
   orchestratorData: null,
   intelligence: null,
-
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
   setDailyFillGap: (val) => set({ dailyFillGap: val }),
+  
+  // --- FORCED TASK (Ciblage Manuel) ---
+  forcedTask: null,
+  setForcedTask: (task) => set({ forcedTask: task }),
 
   // --- ORCHESTRATOR FETCH (global, used by all pages) ---
   fetchOrchestrator: async (params = {}) => {
