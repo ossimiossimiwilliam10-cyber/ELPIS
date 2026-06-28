@@ -598,7 +598,7 @@ function EntrainementPage() {
                     
                     {!showCustomTargetForm ? (
                       <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                        {tempsDejaTravaille < tempsDispoMin && !dailyFillGap && (
+                        {!dailyFillGap && (
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}

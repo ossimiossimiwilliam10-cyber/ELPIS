@@ -558,7 +558,7 @@ function Dashboard() {
                   </motion.button>
                 )}
                 
-                {orchestratorData && (orchestratorData.tempsDejaTravailleMin || 0) < orchestratorData.tempsDispoMin && !dailyFillGap && (
+                {orchestratorData && !dailyFillGap && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -597,7 +597,7 @@ function Dashboard() {
                   </motion.button>
                 )}
                 
-                {orchestratorData && (orchestratorData.tempsDejaTravailleMin || 0) < orchestratorData.tempsDispoMin && !dailyFillGap && (
+                {orchestratorData && !dailyFillGap && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
