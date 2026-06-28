@@ -581,7 +581,7 @@ function EntrainementPage() {
                             className="btn-primary"
                             style={{ background: 'var(--accent-primary)', padding: '1rem 2rem', fontSize: '1.1rem' }}
                           >
-                            🔥 Demander plus de tâches à l'IA
+                            🔥 Demander plus de tâches
                           </motion.button>
                         )}
                         <motion.button

@@ -608,7 +608,7 @@ function Dashboard() {
                     className="btn-primary"
                     style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
                   >
-                    🚀 Demander plus de tâches à l'IA
+                    🚀 Demander plus de tâches
                   </motion.button>
                 )}
               </div>
