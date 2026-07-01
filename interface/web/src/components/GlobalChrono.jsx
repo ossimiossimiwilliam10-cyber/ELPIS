@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import useStore, { useChronoStore } from '../store';
 
 export default function GlobalChrono() {
   const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useChronoStore();
-  const { isRunning, elapsedSeconds, titre, matiereNom, exoId } = globalChrono;
+  const { isRunning, elapsedSeconds, titre, matiereNom, exoId, type } = globalChrono;
   
   const [isVisible, setIsVisible] = useState(true);
   const [pipWindow, setPipWindow] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   
   // Timer effect
   useEffect(() => {
@@ -39,8 +40,8 @@ export default function GlobalChrono() {
     }
     try {
       const pip = await window.documentPictureInPicture.requestWindow({
-        width: 200,
-        height: 200,
+        width: 280,
+        height: 320,
       });
 
       // Copy styles
@@ -60,7 +61,7 @@ export default function GlobalChrono() {
         }
       });
       
-      // Set background color of the body to match our theme
+      // Set background
       pip.document.body.style.background = 'var(--bg-primary, #0f172a)';
       pip.document.body.style.display = 'flex';
       pip.document.body.style.alignItems = 'center';
@@ -68,6 +69,7 @@ export default function GlobalChrono() {
       pip.document.body.style.margin = '0';
       pip.document.body.style.height = '100vh';
       pip.document.body.style.color = 'white';
+      pip.document.body.style.overflow = 'hidden';
 
       setPipWindow(pip);
     } catch (err) {
@@ -96,142 +98,337 @@ export default function GlobalChrono() {
     }
   };
 
-  // The actual UI content of the chrono
-  const chronoContent = (
-    <div 
-      className={!isRunning && elapsedSeconds > 0 ? "chrono-paused-blink" : ""}
-      style={{
+  const typeEmoji = {
+    'CM': '📖',
+    'TD': '✏️',
+    'TP': '🔬',
+    'ANNALE': '📝',
+    'Projet': '🏗️',
+    'Exercice': '✏️'
+  }[type] || '⏱️';
+
+  // ========== PiP (Detached) Content ==========
+  const pipContent = (
+    <div style={{
       display: 'flex',
-      flexDirection: pipWindow ? 'column' : 'row',
-      justifyContent: 'center',
+      flexDirection: 'column',
       alignItems: 'center',
-      gap: pipWindow ? '0.5rem' : '0.8rem',
-      background: 'var(--bg-secondary, #1e293b)',
-      padding: pipWindow ? '1.5rem' : '0.75rem 1rem',
-      borderRadius: pipWindow ? '50%' : '16px',
-      boxShadow: pipWindow ? 'none' : '0 8px 24px rgba(0,0,0,0.4)',
-      border: pipWindow ? '2px solid rgba(255,255,255,0.1)' : '1px solid rgba(255,255,255,0.1)',
-      backdropFilter: 'blur(10px)',
-      width: pipWindow ? '180px' : '100%',
-      height: pipWindow ? '180px' : 'auto',
-      maxWidth: '300px',
-      boxSizing: 'border-box'
+      justifyContent: 'center',
+      gap: '0.8rem',
+      width: '100%',
+      height: '100%',
+      padding: '1rem',
+      fontFamily: "'Inter', system-ui, sans-serif",
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', order: pipWindow ? 2 : 1 }}>
+      {/* Title area */}
+      {exoId && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '0.2rem',
+          maxWidth: '240px',
+        }}>
+          <div style={{
+            fontSize: '0.7rem',
+            color: 'var(--text-secondary, #94A3B8)',
+            textTransform: 'uppercase',
+            letterSpacing: '1.5px',
+            fontWeight: 600,
+          }}>
+            {typeEmoji} {matiereNom || type}
+          </div>
+          <div style={{
+            fontSize: '0.85rem',
+            color: 'var(--text-primary, #F8FAFC)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '220px',
+            fontWeight: 500,
+          }} title={titre}>
+            {titre}
+          </div>
+        </div>
+      )}
+
+      {/* Clock ring */}
+      <div style={{ position: 'relative', width: '140px', height: '140px' }}>
+        {/* Outer ring glow */}
+        <svg width="140" height="140" viewBox="0 0 140 140" style={{ position: 'absolute', top: 0, left: 0 }}>
+          <circle
+            cx="70" cy="70" r="62"
+            fill="none"
+            stroke={isRunning ? 'rgba(59, 130, 246, 0.15)' : 'rgba(148, 163, 184, 0.1)'}
+            strokeWidth="4"
+          />
+          {/* Animated progress ring (completes a full cycle every 60s) */}
+          <circle
+            cx="70" cy="70" r="62"
+            fill="none"
+            stroke={isRunning ? 'var(--accent-primary, #3B82F6)' : 'var(--text-secondary, #94A3B8)'}
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeDasharray={`${2 * Math.PI * 62}`}
+            strokeDashoffset={`${2 * Math.PI * 62 * (1 - (elapsedSeconds % 60) / 60)}`}
+            transform="rotate(-90 70 70)"
+            style={{ transition: 'stroke-dashoffset 0.3s linear, stroke 0.5s ease' }}
+          />
+        </svg>
+        {/* Center time display */}
+        <div 
+          onClick={handleEditTime}
+          title="Modifier manuellement le temps"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+            fontSize: elapsedSeconds >= 3600 ? '1.6rem' : '2rem',
+            fontWeight: 700,
+            color: isRunning ? 'var(--text-primary, #F8FAFC)' : 'var(--text-secondary, #94A3B8)',
+            cursor: 'pointer',
+            letterSpacing: '2px',
+            textShadow: isRunning ? '0 0 20px rgba(59, 130, 246, 0.4)' : 'none',
+            transition: 'color 0.3s, text-shadow 0.3s',
+            userSelect: 'none',
+          }}
+        >
+          {formatTime(elapsedSeconds)}
+        </div>
+      </div>
+
+      {/* Control buttons */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {/* Reset */}
+        <button
+          onClick={resetGlobalChrono}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.05)',
+            color: 'var(--text-secondary, #94A3B8)',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s',
+          }}
+          title="Réinitialiser"
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; e.currentTarget.style.color = '#ef4444'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-secondary, #94A3B8)'; }}
+        >
+          ↺
+        </button>
+
+        {/* Play/Pause - main action */}
         <button 
           onClick={toggleGlobalChrono}
           style={{
-            background: isRunning ? '#ef4444' : '#10B981', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '50%', 
-            width: '36px', 
-            height: '36px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            border: 'none',
+            background: isRunning 
+              ? 'linear-gradient(135deg, #ef4444, #dc2626)' 
+              : 'linear-gradient(135deg, #3B82F6, #2563EB)',
+            color: 'white',
             cursor: 'pointer',
-            transition: 'background 0.2s',
-            fontSize: '1rem'
+            fontSize: '1.3rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: isRunning 
+              ? '0 4px 20px rgba(239, 68, 68, 0.4)' 
+              : '0 4px 20px rgba(59, 130, 246, 0.4)',
+            transition: 'all 0.3s ease',
           }}
           title={isRunning ? "Mettre en pause" : "Démarrer"}
         >
           {isRunning ? '⏸' : '▶'}
         </button>
+
+        {/* Edit time */}
         <button
-          onClick={resetGlobalChrono}
+          onClick={handleEditTime}
           style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--text-secondary)',
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.05)',
+            color: 'var(--text-secondary, #94A3B8)',
             cursor: 'pointer',
-            fontSize: '1.2rem',
+            fontSize: '0.85rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '4px'
+            transition: 'all 0.2s',
           }}
-          title="Réinitialiser"
+          title="Modifier le temps manuellement"
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.15)'; e.currentTarget.style.borderColor = 'rgba(59,130,246,0.4)'; e.currentTarget.style.color = '#3B82F6'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-secondary, #94A3B8)'; }}
         >
-          🔄
+          ✎
         </button>
       </div>
-      
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: '80px', order: pipWindow ? 1 : 2 }}>
+    </div>
+  );
+
+  // ========== Inline (Floating Widget) Content ==========
+  const inlineContent = (
+    <div 
+      className={!isRunning && elapsedSeconds > 0 ? "chrono-paused-blink" : ""}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.6rem',
+        background: 'var(--bg-secondary, #1e293b)',
+        padding: '0.6rem 0.8rem',
+        borderRadius: '14px',
+        boxShadow: isRunning 
+          ? '0 4px 24px rgba(59, 130, 246, 0.2), 0 0 0 1px rgba(59, 130, 246, 0.15)' 
+          : '0 4px 16px rgba(0,0,0,0.3)',
+        border: isRunning ? '1px solid rgba(59, 130, 246, 0.25)' : '1px solid rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(16px)',
+        transition: 'all 0.3s ease',
+        maxWidth: '320px',
+      }}
+    >
+      {/* Play/Pause button */}
+      <button 
+        onClick={toggleGlobalChrono}
+        style={{
+          width: '34px',
+          height: '34px',
+          borderRadius: '50%',
+          border: 'none',
+          background: isRunning 
+            ? 'linear-gradient(135deg, #ef4444, #dc2626)' 
+            : 'linear-gradient(135deg, #3B82F6, #2563EB)',
+          color: 'white',
+          cursor: 'pointer',
+          fontSize: '0.9rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          boxShadow: isRunning 
+            ? '0 2px 10px rgba(239, 68, 68, 0.3)' 
+            : '0 2px 10px rgba(59, 130, 246, 0.3)',
+          transition: 'all 0.3s ease',
+        }}
+        title={isRunning ? "Mettre en pause" : "Démarrer"}
+      >
+        {isRunning ? '⏸' : '▶'}
+      </button>
+
+      {/* Info section */}
+      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
         {exoId && (
           <div style={{
-            fontSize: '0.7rem', 
+            fontSize: '0.65rem',
             color: 'var(--text-secondary)',
-            maxWidth: '120px',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            marginBottom: '-2px'
-          }} title={`${matiereNom} - ${titre}`}>
-            {titre}
+            lineHeight: 1.2,
+          }} title={`${matiereNom} — ${titre}`}>
+            {typeEmoji} {titre}
           </div>
         )}
         <div 
           onClick={handleEditTime}
-          title="Modifier manuellement le temps (en minutes)"
+          title="Modifier manuellement le temps"
           style={{
-          fontFamily: 'monospace', 
-          fontSize: pipWindow ? '1.8rem' : '1.4rem', 
-          fontWeight: 'bold', 
-          color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)',
-          textAlign: 'center',
-          userSelect: 'none',
-          letterSpacing: '1px',
-          cursor: 'pointer'
-        }}>
+            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+            fontSize: '1.15rem',
+            fontWeight: 700,
+            color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)',
+            letterSpacing: '1.5px',
+            cursor: 'pointer',
+            userSelect: 'none',
+            lineHeight: 1.3,
+          }}
+        >
           {formatTime(elapsedSeconds)}
         </div>
       </div>
 
-      {!pipWindow && typeof window !== 'undefined' && 'documentPictureInPicture' in window ? (
-        <button
-          onClick={openPip}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            fontSize: '1.2rem',
-            padding: '4px',
-            opacity: 0.8,
-            transition: 'opacity 0.2s'
-          }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '0.8'}
-          title="Détacher en mini-fenêtre flottante (système)"
-        >
-          ⏏️
-        </button>
-      ) : null}
+      {/* Action buttons (visible on hover or always on touch) */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', overflow: 'hidden' }}
+          >
+            <button
+              onClick={resetGlobalChrono}
+              style={{
+                background: 'none', border: 'none',
+                color: 'var(--text-secondary)', cursor: 'pointer',
+                fontSize: '0.9rem', padding: '4px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: '6px', transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'none'; }}
+              title="Réinitialiser"
+            >
+              ↺
+            </button>
 
-      {!pipWindow && (
-        <button
-          onClick={() => setIsVisible(false)}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            fontSize: '1rem',
-            padding: '4px',
-            opacity: 0.6
-          }}
-          title="Masquer"
-        >
-          ✖
-        </button>
-      )}
+            {typeof window !== 'undefined' && 'documentPictureInPicture' in window && (
+              <button
+                onClick={openPip}
+                style={{
+                  background: 'none', border: 'none',
+                  color: 'var(--text-secondary)', cursor: 'pointer',
+                  fontSize: '0.9rem', padding: '4px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  borderRadius: '6px', transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#3B82F6'; e.currentTarget.style.background = 'rgba(59,130,246,0.1)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'none'; }}
+                title="Détacher en mini-fenêtre"
+              >
+                ⏏️
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsVisible(false)}
+              style={{
+                background: 'none', border: 'none',
+                color: 'var(--text-secondary)', cursor: 'pointer',
+                fontSize: '0.75rem', padding: '4px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: '6px', transition: 'all 0.2s',
+                opacity: 0.6,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = '1'; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = '0.6'; }}
+              title="Masquer"
+            >
+              ✖
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 
   // If in PiP mode, render through Portal
   if (pipWindow) {
-    return createPortal(chronoContent, pipWindow.document.body);
+    return createPortal(pipContent, pipWindow.document.body);
   }
 
   // Hidden state (icon only)
@@ -257,7 +454,7 @@ export default function GlobalChrono() {
       animate={{ opacity: 1, y: 0 }}
       whileDrag={{ cursor: 'grabbing', scale: 1.05 }}
     >
-      {chronoContent}
+      {inlineContent}
     </motion.div>
   );
 }
