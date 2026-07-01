@@ -277,16 +277,43 @@ const useStore = create(immer((set, get) => ({
 
 export default useStore;
 
+// --- Helper: restore chrono from sessionStorage ---
+const CHRONO_STORAGE_KEY = 'elpis_chrono_state';
+
+const getPersistedChrono = () => {
+  try {
+    const raw = sessionStorage.getItem(CHRONO_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Si le chrono était en cours, recalculer le temps écoulé depuis la dernière sauvegarde
+      if (parsed.isRunning && parsed.lastTickDate) {
+        const now = Date.now();
+        const diffSeconds = Math.floor((now - parsed.lastTickDate) / 1000);
+        if (diffSeconds > 0) {
+          parsed.elapsedSeconds = (parsed.elapsedSeconds || 0) + diffSeconds;
+          parsed.lastTickDate = parsed.lastTickDate + (diffSeconds * 1000);
+        }
+      }
+      return parsed;
+    }
+  } catch (e) {
+    console.error("Erreur restauration chrono:", e);
+  }
+  return null;
+};
+
+const defaultChrono = {
+  exoId: null,
+  titre: null,
+  matiereNom: null,
+  type: null,
+  isRunning: false,
+  elapsedSeconds: 0,
+  lastTickDate: null
+};
+
 export const useChronoStore = create((set) => ({
-  globalChrono: {
-    exoId: null,
-    titre: null,
-    matiereNom: null,
-    type: null,
-    isRunning: false,
-    elapsedSeconds: 0,
-    lastTickDate: null
-  },
+  globalChrono: getPersistedChrono() || defaultChrono,
   startGlobalChrono: (exo) => set({
     globalChrono: {
       exoId: exo.id || exo.titre,
@@ -334,3 +361,12 @@ export const useChronoStore = create((set) => ({
     }
   }))
 }));
+
+// Persist chrono state to sessionStorage on every change
+useChronoStore.subscribe((state) => {
+  try {
+    sessionStorage.setItem(CHRONO_STORAGE_KEY, JSON.stringify(state.globalChrono));
+  } catch (e) {
+    // sessionStorage plein ou indisponible, on ignore silencieusement
+  }
+});
