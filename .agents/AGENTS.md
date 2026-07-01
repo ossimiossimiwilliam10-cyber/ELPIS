@@ -19,3 +19,9 @@
 - **Validation dans Multer** : Ne jamais utiliser cb(new Error(...)) à l'intérieur des fonctions destination ou filename de multer.diskStorage pour des règles métier (comme "le fichier existe déjà"). Laisser multer uploader tous les fichiers dans un dossier temporaire et effectuer les vérifications métier dans le contrôleur de la route.
 
 - **Transparence des erreurs** : Le Global Error Handler du backend doit toujours exposer le message d'erreur réel (err.message) au frontend dans le champ principal 'error' renvoyé en JSON. Ne jamais masquer une erreur métier interceptée derrière un message générique statique.
+
+- **Service Worker SPA Caching (Blank Screen Prevention)** : Ne jamais utiliser une stratÃ©gie "Cache-First" (qui retourne toujours la rÃ©ponse du cache en prioritÃ©) pour l'"index.html" d'une Single Page Application (SPA, par exemple React + Vite). Lors du dÃ©ploiement d'une nouvelle version, l'ancien HTML cherchera des bundles JS supprimÃ©s, causant un crash silencieux (Ã©cran blanc/noir). Utiliser TOUJOURS une stratÃ©gie "Network-First" (avec fallback vers le cache) pour "index.html" afin que l'application reÃ§oive toujours la derniÃ¨re version du build.
+
+
+- **DÃ©ploiement systÃ©matique (Build & Push)** : AprÃ¨s avoir terminÃ© un bloc logique de modifications sur le projet (surtout pour l'interface web), exÃ©cuter TOUJOURS "npm run build" dans le rÃ©pertoire appropriÃ©, puis crÃ©er un commit ("git commit") clair et le pousser ("git push"). Ne jamais considÃ©rer une tÃ¢che comme achevÃ©e tant que le code n'est pas compilÃ© et sauvegardÃ© sur le dÃ©pÃ´t distant.
+

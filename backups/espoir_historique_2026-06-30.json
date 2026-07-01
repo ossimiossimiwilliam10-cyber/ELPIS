@@ -251,5 +251,22 @@
         "dureeMinutes": 18,
         "easeFactor": 3.2704740075,
         "timestamp": "2026-06-24T14:32:06.884Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Révision Flashcards",
+        "matiere": "Routine",
+        "action": "Terminé",
+        "dureeMinutes": 30,
+        "timestamp": "2026-06-25T10:00:37.674Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Chapitre 3 : Changements de référentiels et composition des mouvements",
+        "matiere": "Mécanique du solide",
+        "action": "Révisé (J1)",
+        "dureeMinutes": 63,
+        "easeFactor": 2.5219573225,
+        "timestamp": "2026-06-25T12:30:38.886Z"
     }
 ]

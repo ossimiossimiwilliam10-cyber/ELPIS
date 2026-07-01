@@ -27,24 +27,54 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Les pièges du \"Frenglish\"",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-06-24",
+                                            "easeFactor": 3.2704740075,
+                                            "repetitions": 1,
+                                            "fsrsCard": {
+                                                "due": "2026-06-24T10:18:20.693Z",
+                                                "stability": 2.3065,
+                                                "difficulty": 2.11810397,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 1,
+                                                "state": 1,
+                                                "last_review": "2026-06-24T10:08:20.693Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-06-24",
+                                            "tempsMoyen": 16,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 4 : Étude de cas : La Nanocar Race",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-06-24",
+                                            "easeFactor": 3.2704740075,
+                                            "repetitions": 1,
+                                            "fsrsCard": {
+                                                "due": "2026-06-24T10:42:06.882Z",
+                                                "stability": 2.3065,
+                                                "difficulty": 2.11810397,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 1,
+                                                "state": 1,
+                                                "last_review": "2026-06-24T10:32:06.882Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-06-24",
+                                            "tempsMoyen": 18,
+                                            "nombreRevisionsTemps": 1
                                         }
                                     ],
                                     "listeTD": [
                                         {
                                             "titre": "Exercices - Unit 1",
-                                            "dernierePratique": "2026-06-18",
-                                            "nombrePratiques": 1,
+                                            "dernierePratique": "2026-06-22",
+                                            "nombrePratiques": 2,
                                             "notes": "",
                                             "difficulteInitiale": 1,
                                             "pdfPath": "/documents/doc-1781701386030-196312938.pdf",
@@ -770,12 +800,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Programmation - 2024-25 - Épreuve écrite n°1",
-                                            "dernierePratique": "",
-                                            "nombrePratiques": 0,
+                                            "dernierePratique": "2026-06-24",
+                                            "nombrePratiques": 1,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781725016341-573263425.pdf",
                                             "difficulteInitiale": 2,
-                                            "page": 1
+                                            "page": 1,
+                                            "derniereNote": 9,
+                                            "difficulte": "assez_difficile",
+                                            "tempsMoyen": 83,
+                                            "nombreRevisionsTemps": 1
                                         }
                                     ],
                                     "coefficient": 3,
@@ -1154,11 +1188,26 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Changements de référentiels et composition des mouvements",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0,
-                                            "pdfPath": "/documents/doc-1781853405307-982385010.pdf"
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-06-25",
+                                            "easeFactor": 2.5219573225,
+                                            "repetitions": 1,
+                                            "pdfPath": "/documents/doc-1781853405307-982385010.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-06-25T08:36:38.879Z",
+                                                "stability": 1.2931,
+                                                "difficulty": 5.11217071,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 1,
+                                                "last_review": "2026-06-25T08:30:38.879Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-06-25",
+                                            "tempsMoyen": 63,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 4 : Cinématique des solides en contact",
@@ -1763,7 +1812,8 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "dateFin": "2027-01-17"
                 }
             ]
         },
@@ -2306,6 +2356,560 @@
                     ]
                 }
             ]
+        },
+        {
+            "nom": "Licence 1 Physique - Sciences pour l'ingénieur PORTAIL",
+            "semestres": [
+                {
+                    "nom": "Semestre 1",
+                    "ues": [
+                        {
+                            "nom": "UE PHYSIQUE 1",
+                            "ects": 9,
+                            "matieres": [
+                                {
+                                    "nom": "Mécanique 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 16.8,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Optique 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 7.234,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Électromagnétisme 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 10.75,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Physique Expérimentale 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 16.1,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "PILS Physique",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 0.5,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Sciences et enjeux environnementaux",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Sciences & enjeux environnementaux",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 11.293,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE MATHS 1",
+                            "ects": 6,
+                            "matieres": [
+                                {
+                                    "nom": "Mathématiques pour les sciences 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 15.25,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "PILS - Mathématiques pour les sciences",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 0.389,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE CHIMIE 1",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Architecture de la matière 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 17.3,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Transformation de la matière 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 7.6,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "PILS Chimie",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 0,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE MTU",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "MTU",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 8.89,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE TP-Option",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Chimie expérimentale 1",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 9.6,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Langues 1",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Anglais Lansad",
+                                    "coefficient": 1,
+                                    "evaluations": [],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "nom": "Semestre 2",
+                    "ues": [
+                        {
+                            "nom": "UE PHYSIQUE 2",
+                            "ects": 9,
+                            "matieres": [
+                                {
+                                    "nom": "Mécanique 2-A",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 18.375,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Électromagnétisme 2",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 8.5,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Méthodes Maths pour Phy",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 11.5,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Physique expérimentale 2",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 16.4,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE MATHS & INFO 2",
+                            "ects": 9,
+                            "matieres": [
+                                {
+                                    "nom": "Mathématiques pour les sciences 2",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 14.125,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                },
+                                {
+                                    "nom": "Informatique",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 17.403,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE CHIMIE 2",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Liaisons et Molécules",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 6.25,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE PPP: Explorer",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Explorer",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 17.185,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Soutien OS",
+                            "ects": 0,
+                            "matieres": [
+                                {
+                                    "nom": "OS Renforcement Phy",
+                                    "coefficient": 1,
+                                    "evaluations": [],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Langues 2",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Anglais Lansad",
+                                    "coefficient": 1,
+                                    "evaluations": [],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        },
+                        {
+                            "nom": "UE Option S2",
+                            "ects": 3,
+                            "matieres": [
+                                {
+                                    "nom": "Géodynamique",
+                                    "coefficient": 1,
+                                    "evaluations": [
+                                        {
+                                            "nom": "Session 1",
+                                            "coefficient": 1,
+                                            "note": 8.649,
+                                            "type": "SC"
+                                        }
+                                    ],
+                                    "cm_h": 0,
+                                    "td_h": 0,
+                                    "tp_h": 0,
+                                    "listeCM": [],
+                                    "listeTD": [],
+                                    "listeTP": [],
+                                    "listeAnnales": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "archived": true
         }
     ]
 }
