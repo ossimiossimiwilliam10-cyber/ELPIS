@@ -21,6 +21,8 @@ function BackgroundMusicPlayer() {
     return null;
   };
 
+  const autoplayNextRef = useRef(false);
+
   const fetchNextTrack = async (forceCategory = null) => {
     try {
       const cat = forceCategory || getRequestedCategory();
@@ -31,23 +33,43 @@ function BackgroundMusicPlayer() {
         if (data.url) {
           setMusicData(data);
           setError(null);
-          // Si on était déjà en train de jouer, on relance automatiquement
-          if (isPlaying && audioRef.current) {
-            setTimeout(() => {
-              audioRef.current.play().catch(e => console.log("Autoplay bloqué :", e));
-            }, 100);
-          }
         } else {
           // Aucun fichier dans la catégorie
           setMusicData(null);
           setIsPlaying(false);
+          autoplayNextRef.current = false;
         }
       }
     } catch (err) {
       console.error("Erreur fetch musique:", err);
       setError("Erreur chargement");
+      autoplayNextRef.current = false;
     }
   };
+
+  // Quand musicData change et qu'on doit auto-play, lancer la lecture dès que l'audio est prêt
+  useEffect(() => {
+    if (autoplayNextRef.current && audioRef.current && musicData && musicData.url) {
+      const audio = audioRef.current;
+      const tryPlay = () => {
+        audio.play()
+          .then(() => setIsPlaying(true))
+          .catch(e => console.log("Autoplay bloqué :", e));
+      };
+      // Si l'audio est déjà prêt (readyState >= 2 = HAVE_CURRENT_DATA)
+      if (audio.readyState >= 2) {
+        tryPlay();
+      } else {
+        // Sinon attendre que la source soit chargée
+        const onCanPlay = () => {
+          tryPlay();
+          audio.removeEventListener('canplay', onCanPlay);
+        };
+        audio.addEventListener('canplay', onCanPlay);
+      }
+      autoplayNextRef.current = false;
+    }
+  }, [musicData]);
 
   useEffect(() => {
     fetchNextTrack();
@@ -62,6 +84,7 @@ function BackgroundMusicPlayer() {
       prevCategoryRef.current = currentRequested;
       // Si la musique en cours n'est pas de la bonne catégorie, on change
       if (currentRequested && musicData && musicData.category !== currentRequested) {
+        autoplayNextRef.current = isPlaying;
         fetchNextTrack(currentRequested);
       }
     }
@@ -75,6 +98,7 @@ function BackgroundMusicPlayer() {
 
   // Gérer la fin de la piste pour passer à la suivante automatiquement
   const handleEnded = () => {
+    autoplayNextRef.current = true;
     fetchNextTrack();
   };
 
@@ -229,7 +253,7 @@ function BackgroundMusicPlayer() {
             style={{ width: '60px', accentColor: 'var(--accent-primary)' }}
           />
           <button 
-            onClick={fetchNextTrack}
+            onClick={() => { autoplayNextRef.current = isPlaying; fetchNextTrack(); }}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', marginLeft: '0.5rem', color: 'var(--text-primary)' }}
             title="Piste suivante"
           >
