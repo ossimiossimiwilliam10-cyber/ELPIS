@@ -216,8 +216,25 @@
                                         },
                                         {
                                             "titre": "Cours n°4",
-                                            "jActuel": 14,
-                                            "derniereRevision": "2026-06-15"
+                                            "jActuel": 74,
+                                            "derniereRevision": "2026-07-01",
+                                            "fsrsCard": {
+                                                "due": "2026-09-13T10:59:24.707Z",
+                                                "stability": 73.98601087,
+                                                "difficulty": 3.31446137,
+                                                "elapsed_days": 16,
+                                                "scheduled_days": 74,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-01T10:59:24.707Z"
+                                            },
+                                            "easeFactor": 2.9713846575,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-09-13",
+                                            "tempsMoyen": 98,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Cours n°5",
@@ -331,12 +348,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Contrôle du 26 Octobre 2023",
-                                            "dernierePratique": "",
-                                            "nombrePratiques": 0,
+                                            "dernierePratique": "2026-07-01",
+                                            "nombrePratiques": 1,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781722402030-670357573.pdf",
                                             "difficulteInitiale": 4,
-                                            "page": 1
+                                            "page": 1,
+                                            "derniereNote": 14,
+                                            "difficulte": "moyen",
+                                            "tempsMoyen": 59,
+                                            "nombreRevisionsTemps": 1
                                         }
                                     ],
                                     "coefficient": 3,
@@ -970,12 +991,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Contrôle continu d'électromagnétisme - Novembre 2022",
-                                            "dernierePratique": "",
-                                            "nombrePratiques": 0,
+                                            "dernierePratique": "2026-07-01",
+                                            "nombrePratiques": 1,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781726276803-18306733.pdf",
                                             "difficulteInitiale": 2,
-                                            "page": 1
+                                            "page": 1,
+                                            "derniereNote": 0,
+                                            "difficulte": "difficile",
+                                            "tempsMoyen": 28,
+                                            "nombreRevisionsTemps": 1
                                         }
                                     ],
                                     "coefficient": 3,

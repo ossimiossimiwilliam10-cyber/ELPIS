@@ -268,5 +268,46 @@
         "dureeMinutes": 63,
         "easeFactor": 2.5219573225,
         "timestamp": "2026-06-25T12:30:38.886Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Révision Flashcards",
+        "matiere": "Routine",
+        "action": "Terminé",
+        "dureeMinutes": 31,
+        "timestamp": "2026-06-30T13:02:21.657Z"
+    },
+    {
+        "type": "ANKI",
+        "titre": "Révision Flashcards",
+        "matiere": "Routine",
+        "action": "Terminé",
+        "dureeMinutes": 30,
+        "timestamp": "2026-07-01T11:39:00.913Z"
+    },
+    {
+        "type": "ANNALE",
+        "titre": "Contrôle du 26 Octobre 2023",
+        "matiere": "Algèbre",
+        "action": "Terminé (Note: 14/20)",
+        "dureeMinutes": 59,
+        "timestamp": "2026-07-01T13:12:54.770Z"
+    },
+    {
+        "type": "CM",
+        "titre": "Cours n°4",
+        "matiere": "Algèbre",
+        "action": "Révisé (J74)",
+        "dureeMinutes": 98,
+        "easeFactor": 2.9713846575,
+        "timestamp": "2026-07-01T14:59:24.712Z"
+    },
+    {
+        "type": "ANNALE",
+        "titre": "Contrôle continu d'électromagnétisme - Novembre 2022",
+        "matiere": "Électromagnétisme",
+        "action": "Terminé (Note: 0/20)",
+        "dureeMinutes": 28,
+        "timestamp": "2026-07-01T15:32:51.863Z"
     }
 ]
