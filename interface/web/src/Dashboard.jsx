@@ -66,7 +66,8 @@ function Dashboard() {
     setDailyFillGap,
     setConfig,
     setCoursConfig,
-    addHistoriqueEntry
+    addHistoriqueEntry,
+    activateRestDay
   } = useStore();
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
