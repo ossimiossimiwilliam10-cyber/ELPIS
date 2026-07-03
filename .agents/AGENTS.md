@@ -34,3 +34,12 @@ pm run build dans le répertoire approprié (interface/web).
   3. Pousser les modifications sur le dépôt avec git push.
   Ne jamais considérer une tâche de code comme terminée sans avoir exécuté cette séquence.
 </RULE[project_deployment]>
+
+<RULE[project_testing]>
+- **Mise à jour Systématique des Tests** : Pour chaque nouvelle fonctionnalité ajoutée ou chaque bug corrigé, je dois OBLIGATOIREMENT :
+  1. Vérifier si un fichier de test correspondant existe (ex: NomDuComposant.test.jsx).
+  2. Ajouter les tests unitaires ou d'intégration nécessaires pour couvrir la nouvelle logique ou garantir la non-régression du bug corrigé.
+  3. M'assurer que les tests passent (en exécutant 
+pm test ou équivalent) AVANT de déclencher la procédure de Build & Push.
+  Ne jamais considérer une tâche comme terminée si le code de production a été modifié sans les tests correspondants.
+</RULE[project_testing]>

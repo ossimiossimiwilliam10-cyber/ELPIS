@@ -48,7 +48,8 @@ describe('Dashboard Component', () => {
       },
       fetchOrchestrator: fetchOrchestratorMock,
       addHistoriqueEntry: vi.fn(),
-      setCoursConfig: vi.fn()
+      setCoursConfig: vi.fn(),
+      activateRestDay: vi.fn()
     });
   });
 
@@ -103,6 +104,43 @@ describe('Dashboard Component', () => {
     render(<Dashboard />);
     await waitFor(() => {
       expect(screen.getByText('✅ Burnout : Aucun risque détecté')).toBeDefined();
+    });
+  });
+
+  it('calls activateRestDay when rest day button is clicked', async () => {
+    const activateRestDayMock = vi.fn();
+    useStore.mockReturnValue({
+      config: { restDays: [] },
+      coursConfig: { licences: [] },
+      orchestratorData: { statut: "NORMAL", tachesDuJour: [] },
+      fetchOrchestrator: fetchOrchestratorMock,
+      activateRestDay: activateRestDayMock,
+    });
+    
+    // Simulate window.confirm
+    const originalConfirm = window.confirm;
+    window.confirm = () => true;
+    
+    render(<Dashboard />);
+    
+    // Find and click the rest day button
+    const restBtn = await screen.findByText(/Activer Jour de Repos/i);
+    restBtn.click();
+    
+    expect(activateRestDayMock).toHaveBeenCalled();
+    
+    window.confirm = originalConfirm;
+  });
+
+  it('opens Custom Task (Activité Libre) modal when clicked', async () => {
+    render(<Dashboard />);
+    
+    const customBtn = await screen.findByText('✨ Activité Libre');
+    customBtn.click();
+    
+    await waitFor(() => {
+      expect(screen.getByText('✨ Nouvelle Activité Libre')).toBeDefined();
+      expect(screen.getByPlaceholderText('ex: Vidéo YouTube, Projet Perso...')).toBeDefined();
     });
   });
 });
