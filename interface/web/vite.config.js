@@ -37,6 +37,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        navigateFallbackDenylist: [/^\/api\//, /^\/documents\//],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/elpis-app\.onrender\.com\/api\/.*/i,
