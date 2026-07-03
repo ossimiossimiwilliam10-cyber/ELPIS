@@ -1,4 +1,23 @@
+import React, { useState, useEffect } from 'react';
+
 function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount, isMobileMenuOpen }) {
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [pendingSync, setPendingSync] = useState(localStorage.getItem('elpis_offline_pending_sync') === 'true');
+
+  useEffect(() => {
+    const handleStatusChange = () => {
+      setIsOffline(!navigator.onLine);
+      setPendingSync(localStorage.getItem('elpis_offline_pending_sync') === 'true');
+    };
+    window.addEventListener('online', handleStatusChange);
+    window.addEventListener('offline', handleStatusChange);
+    window.addEventListener('elpis_offline_status_changed', handleStatusChange);
+    return () => {
+      window.removeEventListener('online', handleStatusChange);
+      window.removeEventListener('offline', handleStatusChange);
+      window.removeEventListener('elpis_offline_status_changed', handleStatusChange);
+    };
+  }, []);
   const navGroups = [
     {
       title: "Quotidien",
@@ -98,8 +117,8 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
           </button>
         </div>
         <div className="system-status">
-          <div className="status-dot green"></div>
-          <span>Système en ligne</span>
+          <div className={`status-dot ${isOffline ? (pendingSync ? 'orange' : 'red') : 'green'}`}></div>
+          <span>{isOffline ? (pendingSync ? 'Hors-Ligne (Sync en attente)' : 'Hors-Ligne') : 'Système en ligne'}</span>
         </div>
       </div>
     </div>

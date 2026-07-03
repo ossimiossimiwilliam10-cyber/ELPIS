@@ -1,55 +1,86 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { persist } from 'zustand/middleware';
 import debounce from 'lodash/debounce';
 
 // API base URL
 const API_URL = '/api';
 
+// Fonction utilitaire pour gérer l'échec de la synchronisation (Mode Hors-Ligne)
+const handleOfflineError = (type, error) => {
+  console.error(`[Hors-Ligne] Failed to auto-save ${type}`, error);
+  localStorage.setItem('elpis_offline_pending_sync', 'true');
+  // Dispatch a custom event to notify the UI
+  window.dispatchEvent(new Event('elpis_offline_status_changed'));
+};
+
 // Auto-save functions using debounce
 const debouncedSaveConfig = debounce(async (config, get) => {
+  if (!navigator.onLine) return handleOfflineError('config', new Error('Offline'));
   try {
-    await fetch(`${API_URL}/config`, {
+    const res = await fetch(`${API_URL}/config`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config)
     });
+    if (!res.ok) throw new Error('API Error');
     console.log('Auto-saved config');
     if (get) get().fetchOrchestrator();
   } catch (e) {
-    console.error('Failed to auto-save config', e);
+    handleOfflineError('config', e);
   }
 }, 500);
 
 const debouncedSaveCours = debounce(async (coursConfig, get) => {
+  if (!navigator.onLine) return handleOfflineError('cours', new Error('Offline'));
   try {
-    await fetch(`${API_URL}/cours`, {
+    const res = await fetch(`${API_URL}/cours`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(coursConfig)
     });
+    if (!res.ok) throw new Error('API Error');
     console.log('Auto-saved cours');
     if (get) get().fetchOrchestrator();
   } catch (e) {
-    console.error('Failed to auto-save cours', e);
+    handleOfflineError('cours', e);
   }
 }, 500);
 
 const debouncedSaveHistorique = debounce(async (historique, get) => {
+  if (!navigator.onLine) return handleOfflineError('historique', new Error('Offline'));
   try {
-    await fetch(`${API_URL}/historique`, {
+    const res = await fetch(`${API_URL}/historique`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(historique)
     });
+    if (!res.ok) throw new Error('API Error');
     console.log('Auto-saved historique');
     if (get) get().fetchOrchestrator();
   } catch (e) {
-    console.error('Failed to auto-save historique', e);
+    handleOfflineError('historique', e);
+  }
+}, 500);
+
+const debouncedSaveProjets = debounce(async (projets, get) => {
+  if (!navigator.onLine) return handleOfflineError('projets', new Error('Offline'));
+  try {
+    const res = await fetch(`${API_URL}/projets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(projets)
+    });
+    if (!res.ok) throw new Error('API Error');
+    console.log('Auto-saved projets');
+    if (get) get().fetchOrchestrator();
+  } catch (e) {
+    handleOfflineError('projets', e);
   }
 }, 500);
 
 
-const useStore = create(immer((set, get) => ({
+const useStore = create(persist(immer((set, get) => ({
   // --- STATE ---
   config: {},
   coursConfig: { licences: [] },
@@ -142,13 +173,15 @@ const useStore = create(immer((set, get) => ({
   setProjets: async (newProjets) => {
     set({ projets: newProjets });
     try {
-      await fetch(`${API_URL}/projets`, {
+      const res = await fetch(`${API_URL}/projets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newProjets)
       });
-    } catch (err) {
-      console.error("Erreur de sauvegarde des projets:", err);
+      if (!res.ok) throw new Error('API Error');
+      if (get) get().fetchOrchestrator();
+    } catch(e) {
+      handleOfflineError('projets sync', e);
     }
   },
 
@@ -273,7 +306,17 @@ const useStore = create(immer((set, get) => ({
     }
   }
 
-})));
+})), {
+  name: 'elpis-offline-storage',
+  partialize: (state) => ({
+    config: state.config,
+    coursConfig: state.coursConfig,
+    projets: state.projets,
+    historique: state.historique,
+    orchestratorData: state.orchestratorData,
+    intelligence: state.intelligence,
+  }),
+}));
 
 export default useStore;
 
@@ -370,3 +413,35 @@ useChronoStore.subscribe((state) => {
     // sessionStorage plein ou indisponible, on ignore silencieusement
   }
 });
+
+// Initialiser le listener réseau pour la synchronisation
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', async () => {
+    window.dispatchEvent(new Event('elpis_offline_status_changed'));
+    if (localStorage.getItem('elpis_offline_pending_sync') === 'true') {
+      console.log('Back online! Syncing offline modifications...');
+      const state = useStore.getState();
+      
+      // Forcer la synchronisation de toutes les données locales vers le serveur
+      // Since debouncedSave... are debounced, we can just call them.
+      // Wait, we need to access the store methods or fetch directly.
+      // But debouncedSaveConfig is not exported. We can just do a fetch here.
+      try {
+        await Promise.all([
+          fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
+          fetch('/api/cours', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
+          fetch('/api/historique', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
+          fetch('/api/projets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
+        ]);
+        localStorage.removeItem('elpis_offline_pending_sync');
+        console.log('Offline sync triggered successfully.');
+      } catch (e) {
+        console.error('Offline sync failed again', e);
+      }
+    }
+  });
+
+  window.addEventListener('offline', () => {
+    window.dispatchEvent(new Event('elpis_offline_status_changed'));
+  });
+}
