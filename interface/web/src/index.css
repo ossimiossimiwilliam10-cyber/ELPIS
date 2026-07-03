@@ -47,6 +47,13 @@
 }
 
 /* === DYNAMIC THEMES === */
+:root.theme-morning {
+  /* 06h-12h: Fresh, slightly warmer/brighter slate for morning energy */
+  --bg-primary: #0C1A30;
+  --bg-secondary: #172D4D;
+  --bg-tertiary: #234370;
+}
+
 :root.theme-afternoon {
   /* 12h-18h: Deeper teal/cyan tint for focus */
   --bg-primary: #0A1929;
