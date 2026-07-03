@@ -25,3 +25,12 @@
 
 - **Déploiement systématique (Build & Push)** : Après avoir terminé un bloc logique de modifications sur le projet (surtout pour l'interface web), exécuter TOUJOURS "npm run build" dans le répertoire approprié, puis créer un commit ("git commit") clair et le pousser ("git push"). Ne jamais considérer une tâche comme achevée tant que le code n'est pas compilé et sauvegardé sur le dépôt distant.
 
+
+<RULE[project_deployment]>
+- **Déploiement Systématique (Build & Push)** : Après avoir terminé un bloc logique de modifications sur le code source du projet (correction de bug, nouvelle fonctionnalité, redesign), je dois TOUJOURS :
+  1. Compiler le frontend avec 
+pm run build dans le répertoire approprié (interface/web).
+  2. Créer un commit git descriptif avec git commit.
+  3. Pousser les modifications sur le dépôt avec git push.
+  Ne jamais considérer une tâche de code comme terminée sans avoir exécuté cette séquence.
+</RULE[project_deployment]>
