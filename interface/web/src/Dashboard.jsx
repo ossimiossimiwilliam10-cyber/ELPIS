@@ -79,6 +79,25 @@ function Dashboard() {
   const [pendingCMTask, setPendingCMTask] = useState(null);
   const cmModalLockRef = useRef(false); // prevents double-open race condition
 
+  // Custom Task (Activité Libre) modal state
+  const [customTaskModalOpen, setCustomTaskModalOpen] = useState(false);
+  const [customTaskParams, setCustomTaskParams] = useState({ titre: '', type: 'PERSO', matiere: '' });
+
+  const allMatieres = useMemo(() => {
+    const list = [];
+    if (!coursConfig) return list;
+    coursConfig.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(u => {
+          u.matieres?.forEach(m => {
+            list.push(m.nom);
+          });
+        });
+      });
+    });
+    return list;
+  }, [coursConfig]);
+
   const recommendedDailyHours = useWorkloadEngine();
 
   const getRestDaysUsed = () => {
@@ -162,7 +181,9 @@ function Dashboard() {
 
     let taskFound = false;
     
-    if (tache.type === 'ANKI') {
+    if (tache.isCustom) {
+      taskFound = true; // Bypass strict syllabus search
+    } else if (tache.type === 'ANKI') {
       setConfig({ ...config, dernierePratiqueAnki: today });
       taskFound = true;
     } else {
@@ -473,6 +494,18 @@ function Dashboard() {
       </div>
 
       <div className="dashboard-actions">
+        <button 
+          className="btn-primary" 
+          onClick={() => {
+            setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' });
+            setCustomTaskModalOpen(true);
+          }} 
+          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', background: 'var(--success-color)'}}
+          title="Ajouter une activité libre (Livre, Vidéo, Projet...)"
+        >
+          ✨ Activité Libre
+        </button>
+
         {statut !== "REPOS" && !isRestDayToday && (
           <button 
             className="btn-secondary" 
@@ -948,6 +981,112 @@ function Dashboard() {
         taskTitle={pendingCMTask?.titre || ''}
         defaultMinutes={pendingCMTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)}
       />
+
+      {/* === Custom Task Modal === */}
+      <AnimatePresence>
+        {customTaskModalOpen && (
+          <motion.div 
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="modal-content glass-panel"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              style={{ maxWidth: '400px', width: '90%' }}
+            >
+              <h2 style={{ marginBottom: '1.5rem', color: 'var(--success-color)' }}>✨ Nouvelle Activité Libre</h2>
+              
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Titre de l'activité</label>
+                <input 
+                  type="text" 
+                  value={customTaskParams.titre}
+                  onChange={(e) => setCustomTaskParams({...customTaskParams, titre: e.target.value})}
+                  placeholder="ex: Vidéo YouTube, Projet Perso..."
+                  style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                  autoFocus
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Catégorie</label>
+                <select 
+                  value={customTaskParams.type}
+                  onChange={(e) => setCustomTaskParams({...customTaskParams, type: e.target.value})}
+                  style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                >
+                  <option value="PERSO">Perso / Projet</option>
+                  <option value="LECTURE">Lecture / Veille</option>
+                  <option value="CM">CM (Cours)</option>
+                  <option value="TD">TD (Exercices)</option>
+                  <option value="TP">TP (Pratique)</option>
+                  <option value="ANNALE">Annale (Examen)</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Matière rattachée (Pour l'IA)</label>
+                <select 
+                  value={customTaskParams.matiere}
+                  onChange={(e) => setCustomTaskParams({...customTaskParams, matiere: e.target.value})}
+                  style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                >
+                  {allMatieres.length === 0 && <option value="">Aucune matière disponible</option>}
+                  {allMatieres.map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                  Le temps passé sur cette activité viendra remplir la jauge de cette matière dans l'algorithme.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button 
+                  className="btn-secondary"
+                  onClick={() => setCustomTaskModalOpen(false)}
+                >
+                  Annuler
+                </button>
+                <button 
+                  className="btn-primary"
+                  onClick={() => {
+                    if (!customTaskParams.titre.trim()) {
+                      toast.error("Veuillez entrer un titre.");
+                      return;
+                    }
+                    if (!customTaskParams.matiere) {
+                      toast.error("Veuillez sélectionner une matière.");
+                      return;
+                    }
+                    
+                    const newTask = {
+                      id: 'custom-' + Date.now(),
+                      titre: customTaskParams.titre,
+                      type: customTaskParams.type,
+                      matiere: customTaskParams.matiere,
+                      isCustom: true,
+                      dureeMinutes: 30 // par défaut, mais le chrono compte ce qu'il veut
+                    };
+                    
+                    useStore.getState().setActiveChronoTask(newTask);
+                    setCustomTaskModalOpen(false);
+                    toast.info("Chronomètre lancé pour l'activité libre !");
+                  }}
+                  style={{ background: 'var(--success-color)' }}
+                >
+                  ▶ Lancer le Chrono
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </motion.div>
   );
 }
