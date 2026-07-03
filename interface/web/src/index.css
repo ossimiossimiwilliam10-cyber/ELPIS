@@ -8,7 +8,7 @@
 }
 
 :root {
-  /* Palette de couleurs Premium Dark Mode */
+  /* Palette de couleurs Premium Dark Mode (Default / Morning: 06h-12h) */
   --bg-primary: #0F172A;
   --bg-secondary: #1E293B;
   --bg-tertiary: #334155;
@@ -36,12 +36,42 @@
   color-scheme: dark;
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  
+  /* Smooth transition for dynamic themes */
+  transition: background-color 2s ease, color 2s ease;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* === DYNAMIC THEMES === */
+:root.theme-afternoon {
+  /* 12h-18h: Deeper teal/cyan tint for focus */
+  --bg-primary: #0A1929;
+  --bg-secondary: #132F4C;
+  --bg-tertiary: #173A5E;
+}
+
+:root.theme-evening {
+  /* 18h-22h: Sunset vibes, deep indigo */
+  --bg-primary: #17102B;
+  --bg-secondary: #2D1B4E;
+  --bg-tertiary: #3F2373;
+}
+
+:root.theme-night {
+  /* 22h-06h: Midnight / Pitch Black for eye rest */
+  --bg-primary: #020617;
+  --bg-secondary: #0F172A;
+  --bg-tertiary: #1E293B;
+}
+
+:root, body, #root, .app-layout, .sidebar, .glass-panel, .task-card {
+  transition: background-color 2s ease, border-color 2s ease, box-shadow 2s ease;
+}
+
 
 :root.light {
   --bg-primary: #F8FAFC;

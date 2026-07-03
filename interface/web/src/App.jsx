@@ -51,6 +51,38 @@ function AppInner() {
       Notification.requestPermission();
     }
   }, [theme]);
+
+  // === Dynamic Time-based Theme ===
+  useEffect(() => {
+    const updateDynamicTheme = () => {
+      // Si on est en mode clair, on ne met pas de thème dynamique sombre
+      if (theme === 'light') return;
+
+      const hour = new Date().getHours();
+      let themeClass = '';
+
+      if (hour >= 6 && hour < 12) {
+        themeClass = 'theme-morning';
+      } else if (hour >= 12 && hour < 18) {
+        themeClass = 'theme-afternoon';
+      } else if (hour >= 18 && hour < 22) {
+        themeClass = 'theme-evening';
+      } else {
+        themeClass = 'theme-night';
+      }
+
+      const root = document.documentElement;
+      // Remove existing dynamic theme classes
+      root.classList.remove('theme-morning', 'theme-afternoon', 'theme-evening', 'theme-night');
+      // Add current dynamic theme class
+      root.classList.add(themeClass);
+    };
+
+    updateDynamicTheme();
+    // Check every minute if the theme needs to change
+    const intervalId = setInterval(updateDynamicTheme, 60000);
+    return () => clearInterval(intervalId);
+  }, [theme]);
   
   useEffect(() => {
     initData();
