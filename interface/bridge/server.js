@@ -13,8 +13,9 @@ const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
 const { loadProjets, saveProjets } = require('./moteur/projets');
 const { genererRapportQuotidien } = require('./moteur/orchestrateur');
-const { initMongo, syncFromMongoToLocal, syncToMongo } = require('./mongoAdapter');
+const { initMongo, syncFromMongoToLocal, syncToMongo, getDb } = require('./mongoAdapter');
 const { callDeepSeek } = require('./aiAdapter');
+const { GridFSBucket } = require('mongodb');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -150,16 +151,7 @@ if (!fs.existsSync(DOCUMENTS_DIR)) {
   fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, DOCUMENTS_DIR)
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, 'doc-' + uniqueSuffix + ext);
-  }
-});
+const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
   limits: {
@@ -393,13 +385,31 @@ app.post('/api/upload/pdf', (req, res, next) => {
     if (!req.file) {
       return res.status(400).json({ error: "Aucun fichier reçu." });
     }
-    const url = `/documents/${req.file.filename}`;
+
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(req.file.originalname);
+    const filename = 'doc-' + uniqueSuffix + ext;
+    
+    // Save to GridFS if MongoDB is connected, else save to local disk
+    const db = getDb();
+    if (db) {
+      const bucket = new GridFSBucket(db, { bucketName: 'documents' });
+      const uploadStream = bucket.openUploadStream(filename, {
+        contentType: req.file.mimetype
+      });
+      uploadStream.end(req.file.buffer);
+    } else {
+      // Fallback local
+      fs.writeFileSync(path.join(DOCUMENTS_DIR, filename), req.file.buffer);
+    }
+
+    const url = `/api/documents/${filename}`;
     
     // Scan text in PDF
     let suggestedExercises = [];
     try {
       if (req.file.mimetype === 'application/pdf') {
-        const dataBuffer = fs.readFileSync(req.file.path);
+        const dataBuffer = req.file.buffer;
         const pdfData = await pdfParse(dataBuffer);
         const text = pdfData.text;
         const regex = /(?:exercice|exercise|ex|exo|question|q|prob|problem|problème|partie|sujet|td|tp)\s*(?:n°|n|#)?\s*(\d+(?:\.\d+)?)/gi;
@@ -421,6 +431,30 @@ app.post('/api/upload/pdf', (req, res, next) => {
 
     res.json({ success: true, url, suggestedExercises });
   });
+});
+
+// GET file from GridFS or local
+app.get('/api/documents/:filename', async (req, res) => {
+  const filename = req.params.filename;
+  const db = getDb();
+  
+  if (db) {
+    const bucket = new GridFSBucket(db, { bucketName: 'documents' });
+    const files = await bucket.find({ filename }).toArray();
+    if (files.length > 0) {
+      res.set('Content-Type', files[0].contentType || 'application/pdf');
+      const downloadStream = bucket.openDownloadStreamByName(filename);
+      return downloadStream.pipe(res);
+    }
+  }
+  
+  // Fallback to local
+  const localPath = path.join(DOCUMENTS_DIR, filename);
+  if (fs.existsSync(localPath)) {
+    return res.sendFile(localPath);
+  }
+  
+  res.status(404).json({ error: "Fichier non trouvé" });
 });
 
 // POST shutdown — protégé par vérification d'origine

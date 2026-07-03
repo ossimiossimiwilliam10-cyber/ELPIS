@@ -64,4 +64,6 @@ async function syncToMongo(type, data) {
   }
 }
 
-module.exports = { initMongo, syncFromMongoToLocal, syncToMongo };
+const getDb = () => db;
+
+module.exports = { initMongo, syncFromMongoToLocal, syncToMongo, getDb };
