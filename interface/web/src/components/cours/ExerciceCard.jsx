@@ -10,7 +10,6 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
   const { toast } = useToast();
   const [note, setNote] = useState('');
-  const [isEditingTime, setIsEditingTime] = useState(false);
   const [manualTime, setManualTime] = useState(null);
 
   const getTPStepName = (etape) => {
@@ -166,53 +165,52 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              flexShrink: 0
             }}
             title={isRunning ? "Mettre en pause" : "Démarrer le chrono"}
           >
             {isRunning ? '⏸' : '▶'}
           </button>
-          {isEditingTime ? (
-            <input 
-              type="text" 
-              autoFocus
-              onBlur={e => {
-                const mins = parseTimeInput(e.target.value);
-                if (mins !== null && mins >= 0) {
-                  setManualTime(mins);
-                }
-                setIsEditingTime(false);
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') e.target.blur();
-              }}
-              defaultValue={manualTime !== null ? manualTime : (elapsedSeconds > 0 ? Math.ceil(elapsedSeconds / 60) : 0)}
-              style={{
-                width: '60px',
-                background: 'var(--bg-primary)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--accent-primary)',
-                borderRadius: '4px',
-                textAlign: 'center',
-                fontFamily: 'monospace',
-                fontSize: '1.2rem'
-              }}
-            />
-          ) : (
-            <span 
-              onClick={() => setIsEditingTime(true)}
-              title="Cliquez pour modifier manuellement le temps (minutes)"
-              style={{cursor: 'pointer', fontFamily: 'monospace', fontSize: '1.2rem', fontWeight: 'bold', color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)'}}
-            >
-              {manualTime !== null ? `${manualTime.toString().padStart(2, '0')}:00` : formatTime(elapsedSeconds)}
-            </span>
-          )}
-        </div>
-        {exo.tempsMoyen && (
-          <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>
-            Moy. {Math.round(exo.tempsMoyen)} min
+          <span 
+            style={{fontFamily: 'monospace', fontSize: '1.1rem', fontWeight: 'bold', color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)', minWidth: '50px'}}
+          >
+            {formatTime(elapsedSeconds)}
           </span>
-        )}
+        </div>
+        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
+          <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>ou</span>
+          <input 
+            type="number" 
+            min="0"
+            max="999"
+            placeholder={exo.tempsMoyen ? `${Math.round(exo.tempsMoyen)}` : "min"}
+            value={manualTime !== null ? manualTime : ''}
+            onChange={e => {
+              const val = e.target.value;
+              if (val === '') {
+                setManualTime(null);
+              } else {
+                const parsed = parseInt(val, 10);
+                if (!isNaN(parsed) && parsed >= 0) setManualTime(parsed);
+              }
+            }}
+            style={{
+              width: '52px',
+              background: 'var(--bg-primary)',
+              color: manualTime !== null ? 'var(--accent-primary)' : 'var(--text-secondary)',
+              border: manualTime !== null ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '6px',
+              textAlign: 'center',
+              fontFamily: 'monospace',
+              fontSize: '1rem',
+              padding: '0.3rem 0.2rem',
+              transition: 'border-color 0.2s'
+            }}
+            title="Entrez le temps manuellement (en minutes)"
+          />
+          <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>min</span>
+        </div>
       </div>
 
       <div style={{display:'flex', gap:'0.5rem', flexDirection: 'column'}}>
