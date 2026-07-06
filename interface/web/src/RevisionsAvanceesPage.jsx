@@ -33,8 +33,8 @@ export default function RevisionsAvanceesPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          matiere: customMatiere,
-          type: customType,
+          matiere: customMatiere === 'ANKI' ? 'Routine' : customMatiere,
+          type: customMatiere === 'ANKI' ? 'ANKI' : customType,
           dureeMin: customDuration
         })
       });
@@ -100,6 +100,7 @@ export default function RevisionsAvanceesPage() {
             style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem', cursor: 'pointer' }}
           >
             <option value="all">Toutes les matières</option>
+            <option value="ANKI">Routine Anki (Flashcards)</option>
             {allMatieres.map(m => (
               <option key={m} value={m}>{m}</option>
             ))}
