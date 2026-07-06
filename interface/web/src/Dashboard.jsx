@@ -148,7 +148,12 @@ function Dashboard() {
   if (orchestratorData !== prevOrchestratorData) {
     setPrevOrchestratorData(orchestratorData);
     if (orchestratorData?.tachesDuJour) {
-      setOrderedTaches(orchestratorData.tachesDuJour);
+      const todayStr = getTodayStr();
+      const filtered = orchestratorData.tachesDuJour.filter(t => {
+        if (t.type === 'ANKI' && config?.dernierePratiqueAnki === todayStr) return false;
+        return true;
+      });
+      setOrderedTaches(filtered);
     }
   }
 
