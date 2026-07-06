@@ -34,6 +34,9 @@ LOG_FILE = os.path.join(os.path.dirname(__file__), 'audit.log')
 # Intervalle entre deux scans (en secondes) : 1 heure
 SCAN_INTERVAL_SECONDS = 3600
 
+# Nombre maximum de passes consécutives pour vérifier les corrections
+MAX_PASSES = 3
+
 # Extensions de fichiers texte à scanner
 TEXT_EXTENSIONS = {
     '.js', '.jsx', '.ts', '.tsx', '.css', '.scss',
@@ -314,15 +317,16 @@ def scan_and_fix_file(filepath, rules, timestamp_dir, dry_run=False):
 # EXÉCUTION PRINCIPALE
 # ============================================================
 
-def run_audit(dry_run=False):
+def run_audit(dry_run=False, pass_number=1):
     """
     Exécute un cycle complet d'audit et de correction.
 
     Args:
         dry_run: Si True, détecte sans corriger (mode rapport uniquement).
+        pass_number: Le numéro de la passe actuelle (pour éviter les boucles infinies).
     """
     mode = "RAPPORT SEUL" if dry_run else "SCAN + CORRECTION"
-    log(f"Démarrage de l'audit complet ({mode})...")
+    log(f"--- Démarrage de l'audit complet ({mode}) | Passe {pass_number}/{MAX_PASSES} ---")
 
     rules = load_rules()
     if not rules:
@@ -395,12 +399,20 @@ def run_audit(dry_run=False):
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(report, f, indent=4, ensure_ascii=False)
 
-    log(f"Audit termine. {files_scanned} fichiers scannes.")
+    log(f"Audit termine (Passe {pass_number}). {files_scanned} fichiers scannes.")
     log(f"  -> {len(all_anomalies)} anomalies detectees.")
     log(f"  -> {len(all_corrections)} corrections appliquees sur {files_corrected} fichiers.")
 
     if all_corrections:
         log(f"  -> Backups sauvegardes dans : agent_audit/backups/{timestamp}/")
+
+    # Logique de re-scan (multi-passes) si des corrections ont été appliquées
+    if files_corrected > 0 and not dry_run:
+        if pass_number < MAX_PASSES:
+            log(f"Des corrections ont été appliquées. Lancement d'un scan de vérification (Passe {pass_number + 1})...")
+            run_audit(dry_run=dry_run, pass_number=pass_number + 1)
+        else:
+            log("[!] Limite de passes atteinte. Arrêt des vérifications pour éviter une boucle infinie.")
 
 
 def cleanup_old_backups(max_keep=10):
