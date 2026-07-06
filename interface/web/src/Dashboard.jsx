@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import useStore from './store';
+import useStore, { useChronoStore } from './store';
 import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
@@ -1082,12 +1082,12 @@ function Dashboard() {
                       id: 'custom-' + Date.now(),
                       titre: customTaskParams.titre,
                       type: customTaskParams.type,
-                      matiere: customTaskParams.matiere,
+                      matiereNom: customTaskParams.matiere, // useChronoStore expects matiereNom
                       isCustom: true,
                       dureeMinutes: 30 // par défaut, mais le chrono compte ce qu'il veut
                     };
 
-                    useStore.getState().setActiveChronoTask(newTask);
+                    useChronoStore.getState().startGlobalChrono(newTask);
                     setCustomTaskModalOpen(false);
                     toast.info("Chronomètre lancé pour l'activité libre !");
                   }}

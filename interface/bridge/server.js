@@ -20,6 +20,14 @@ const { GridFSBucket } = require('mongodb');
 const telemetry = require('./moteur/telemetry');
 
 const app = express();
+
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('UNHANDLED REJECTION:', reason);
+});
+
 const PORT = process.env.PORT || 3001;
 
 // Nécessaire pour que express-rate-limit fonctionne derrière le proxy de Render
@@ -849,7 +857,7 @@ async function startServer() {
   }
 
   // 3. Démarrer le serveur Express
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`ELPIS Bridge démarré sur https://0.0.0.0:${PORT}`);
     console.log(`Moteur Node.js natif — plus de dépendance C++ !`);
 
@@ -862,8 +870,15 @@ async function startServer() {
         detached: true,
         stdio: 'ignore'
       });
+      pythonProcess.on('error', (err) => {
+        console.error(`Erreur au lancement de l'agent Python : ${err.message}`);
+      });
       pythonProcess.unref();
     }
+  });
+
+  server.on('error', (err) => {
+    console.error('Erreur Express Serveur:', err);
   });
 }
 

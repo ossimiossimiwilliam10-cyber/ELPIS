@@ -6,6 +6,7 @@ const TELEMETRY_FILE = path.join(__dirname, '..', '..', 'data', 'telemetry.json'
 
 // Initialiser le fichier si non existant
 if (!fs.existsSync(TELEMETRY_FILE)) {
+  fs.mkdirSync(path.dirname(TELEMETRY_FILE), { recursive: true });
   fs.writeFileSync(TELEMETRY_FILE, JSON.stringify({ sessions: [], actions: [] }, null, 2), 'utf-8');
 }
 
