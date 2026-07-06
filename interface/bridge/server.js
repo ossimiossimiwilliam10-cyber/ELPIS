@@ -835,7 +835,7 @@ async function startServer() {
     if (fs.existsSync(pyScript)) {
       console.log(`Lancement de l'agent d'audit Python en arrière-plan...`);
       // Use python or python3 depending on availability, defaulting to python on Windows
-      const pythonProcess = spawn('python', [pyScript], {
+      const pythonProcess = spawn('python', [pyScript, '--once'], {
         detached: true,
         stdio: 'ignore'
       });

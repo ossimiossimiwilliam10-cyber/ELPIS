@@ -1,0 +1,42 @@
+name: ELPIS Audit Agent
+
+on:
+  schedule:
+    # S'exécute toutes les 4 heures
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+    # Permet de lancer le workflow manuellement depuis l'interface GitHub
+
+jobs:
+  audit_and_fix:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Nécessaire pour pouvoir commiter les corrections
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Run ELPIS Audit Agent
+      run: |
+        python agent_audit/main.py --once
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "ELPIS Agent"
+        git config --global user.email "agent@elpis.local"
+        
+        # Vérifier s'il y a des changements
+        if [ -n "$(git status --porcelain)" ]; then
+          git add -A
+          git commit -m "🤖 fix(audit): auto-correction par ELPIS Agent [skip ci]"
+          git push
+        else
+          echo "Aucune correction nécessaire."
+        fi
