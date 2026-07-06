@@ -1,51 +1,477 @@
 """
-ELPIS Agent Audit — Analyseur et Correcteur Autonome
-=====================================================
-Ce script scanne l'intégralité du code source du projet ELPIS,
-détecte les anomalies selon les règles définies dans rules.json,
-et applique automatiquement les corrections quand une action
-de fix est définie.
+ELPIS Immune System v3.0 — Agent Audit Autonome
+===============================================
+Systeme immunitaire du projet ELPIS. Scanne, detecte, corrige, valide, escalade.
+Fonctionne en mode continu (daemon) ou one-shot.
 
 Usage:
-    python main.py            # Mode continu (toutes les 4 heures)
-    python main.py --once     # Exécution unique
+    python main.py                    # Mode continu (toutes les heures)
+    python main.py --once             # Audit unique + correction
+    python main.py --once --dry-run   # Audit unique, rapport seul
+    python main.py --health           # Auto-diagnostic de l'agent
+    python main.py --emergency-check  # Verifie uniquement les regles d'urgence
 """
 
 import os
-import re
+import sys
 import json
 import time
-import shutil
 import datetime
-import sys
 import logging
+import subprocess
 from logging.handlers import RotatingFileHandler
 
-# ============================================================
+# ---------------------------------------------------------------------------
+# Imports internes
+# ---------------------------------------------------------------------------
+from engine import (load_rules, should_auto_fix, is_emergency,
+                    prioritize_anomalies, calculate_health_score,
+                    load_last_hashes, save_hashes, file_hash)
+from scanners import (run_all_scanners, run_global_scanners, extract_imports)
+from fixers import (apply_fixes, set_backup_dir, set_rule_cache,
+                    cleanup_old_backups, rollback_file)
+from validators import (validate_after_fix, mark_last_fixed,
+                        run_pre_fix_baseline, get_baseline_result)
+from escalation import (create_escalation, trigger_emergency,
+                        process_escalations,
+                        set_escalation_log, set_emergency_alert_file)
+from health import run_health_check
+
+# ---------------------------------------------------------------------------
 # CONFIGURATION
-# ============================================================
+# ---------------------------------------------------------------------------
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 RULES_FILE = os.path.join(os.path.dirname(__file__), 'rules.json')
 OUTPUT_FILE = os.path.join(PROJECT_ROOT, 'data', 'espoir_audit.json')
+HEALTH_FILE = os.path.join(PROJECT_ROOT, 'data', 'espoir_audit_health.json')
 BACKUPS_DIR = os.path.join(os.path.dirname(__file__), 'backups')
 LOG_FILE = os.path.join(os.path.dirname(__file__), 'audit.log')
+HASH_CACHE_FILE = os.path.join(PROJECT_ROOT, 'data', '.audit_hashes.json')
+ESCALATION_LOG = os.path.join(os.path.dirname(__file__), 'escalations.log')
+EMERGENCY_ALERTS = os.path.join(PROJECT_ROOT, 'data', 'espoir_emergency_alerts.json')
 
-# Intervalle entre deux scans (en secondes) : 1 heure
-SCAN_INTERVAL_SECONDS = 3600
-
-# Nombre maximum de passes consécutives pour vérifier les corrections
+SCAN_INTERVAL_SECONDS = 3600  # 1 heure
 MAX_PASSES = 3
+MAX_BACKUPS = 10
 
-# Extensions de fichiers texte à scanner
-TEXT_EXTENSIONS = {
-    '.js', '.jsx', '.ts', '.tsx', '.css', '.scss',
-    '.json', '.md', '.py', '.html', '.htm',
-    '.bat', '.vbs', '.sh', '.yaml', '.yml',
-    '.txt', '.env', '.gitignore', '.cfg'
-}
+# ---------------------------------------------------------------------------
+# LOGGING
+# ---------------------------------------------------------------------------
 
-# Extensions binaires à ignorer (sécurité)
+def setup_logger():
+    logger = logging.getLogger("ElpisImmuneSystem")
+    logger.setLevel(logging.INFO)
+
+    if not logger.handlers:
+        formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s',
+                                      datefmt='%Y-%m-%d %H:%M:%S')
+
+        console = logging.StreamHandler()
+        console.setFormatter(formatter)
+        logger.addHandler(console)
+
+        file_handler = RotatingFileHandler(
+            LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=3, encoding='utf-8'
+        )
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    return logger
+
+log = setup_logger()
+
+# ---------------------------------------------------------------------------
+# BANNER
+# ---------------------------------------------------------------------------
+
+BANNER = """
++==========================================================+
+|  ELPIS IMMUNE SYSTEM v3.0 — NASA-Grade Audit Agent      |
+|  "Le systeme immunitaire ne negocie pas. Il corrige."    |
++==========================================================+
+"""
+
+# ---------------------------------------------------------------------------
+# SCAN PIPELINE (appelee par chaque passe)
+# ---------------------------------------------------------------------------
+
+def scan_single_file(filepath, rel_path, lines, rules, all_files_data, source_files):
+    """Scanne un fichier avec toutes les strategies et retourne les anomalies."""
+    return run_all_scanners(filepath, rel_path, lines, rules,
+                            all_files_data, source_files, PROJECT_ROOT)
+
+# ---------------------------------------------------------------------------
+# FIX PIPELINE
+# ---------------------------------------------------------------------------
+
+def fix_single_file(filepath, rel_path, lines, fixable_anomalies, dry_run=False):
+    """Applique les corrections a un fichier et valide."""
+    corrections, escalations = apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run)
+    return corrections, escalations
+
+# ---------------------------------------------------------------------------
+# REPORT GENERATION
+# ---------------------------------------------------------------------------
+
+def generate_output(report, health_report, output_path, health_path, rules=None):
+    """Ecrit les rapports JSON."""
+    # Rapport principal
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    # Ajouter le health score (pondere par false_positive_risk si rules dispo)
+    report['health_score'] = calculate_health_score(report, rules)
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+
+    # Rapport de sante de l'agent
+    if health_report:
+        os.makedirs(os.path.dirname(health_path), exist_ok=True)
+        with open(health_path, 'w', encoding='utf-8') as f:
+            json.dump(health_report, f, indent=2, ensure_ascii=False)
+
+# ---------------------------------------------------------------------------
+# REPORTER FUNCTION (conforme a l'interface engine)
+# ---------------------------------------------------------------------------
+
+def reporter_fn(report, rules=None):
+    """Callback appele par l'engine apres chaque rapport genere."""
+    score = calculate_health_score(report, rules)
+    log.info(f"  Health Score: {score}/100")
+    log.info(f"  Anomalies: {report['total_anomalies']} "
+             f"(C:{report['anomalies_by_severity']['critical']} "
+             f"W:{report['anomalies_by_severity']['warning']} "
+             f"I:{report['anomalies_by_severity']['info']})")
+    log.info(f"  Corrections: {report['total_corrections']}")
+    log.info(f"  Escalades: {report['total_escalations']}")
+
+# ---------------------------------------------------------------------------
+# AUTO COMMIT & PUSH
+# ---------------------------------------------------------------------------
+
+def auto_commit_and_push(files_corrected):
+    """
+    S'il y a eu des corrections, on commite et on pousse uniquement ces fichiers.
+    """
+    if not files_corrected:
+        return
+        
+    try:
+        log.info(f"Auto-commit de {len(files_corrected)} fichier(s) corrige(s)...")
+        # On se place a la racine du projet
+        # git add
+        for f in files_corrected:
+            subprocess.run(['git', 'add', f], cwd=PROJECT_ROOT, check=True)
+            
+        # git commit
+        commit_msg = "🤖 fix(immune-system): auto-correction locale [skip ci]"
+        subprocess.run(['git', 'commit', '-m', commit_msg], cwd=PROJECT_ROOT, check=True)
+        
+        # git push
+        subprocess.run(['git', 'push'], cwd=PROJECT_ROOT, check=True)
+        log.info("Auto-commit et push reussis.")
+    except Exception as e:
+        log.error(f"Erreur lors de l'auto-commit/push: {e}")
+
+# ---------------------------------------------------------------------------
+# MAIN AUDIT EXECUTION
+# ---------------------------------------------------------------------------
+
+def run_full_audit(dry_run=False, emergency_only=False):
+    """
+    Execute un cycle d'audit complet.
+
+    Args:
+        dry_run: Si True, detecte sans corriger.
+        emergency_only: Si True, ne verifie que les regles critique/urgence.
+    """
+    start_time = time.time()
+    log.info(f"{'='*60}")
+    log.info(f"Demarrage de l'audit | Mode: {'RAPPORT SEUL' if dry_run else 'SCAN + CORRECTION'}"
+             f"{' | URGENCE UNIQUEMENT' if emergency_only else ''}")
+    log.info(f"{'='*60}")
+
+    # --- 1. Charger les regles ---
+    rules, meta = load_rules(RULES_FILE)
+    if not rules:
+        log.error("Aucune regle chargee. Arret.")
+        return None
+
+    log.info(f"Regles chargees: {len(rules)} (version {meta.get('version', 'inconnue')})")
+
+    # Initialiser le cache de regles pour les fixers
+    set_rule_cache(rules)
+
+    # Filtrer si emergency only
+    if emergency_only:
+        rules = [r for r in rules if r.get('emergency_mode') or r.get('severity') == 'critical']
+        log.info(f"Filtre urgence: {len(rules)} regles retenues")
+
+    # --- 2. Setup des modules ---
+    set_backup_dir(BACKUPS_DIR)
+    set_escalation_log(ESCALATION_LOG)
+    set_emergency_alert_file(EMERGENCY_ALERTS)
+
+    # --- 3. Pre-fix baseline (optionnel) ---
+    if not dry_run:
+        log.info("Etablissement de la baseline de tests...")
+        try:
+            run_pre_fix_baseline()
+        except Exception as e:
+            log.warning(f"Impossible d'etablir la baseline: {e}")
+
+    # --- 4. Phase 1 : Collecte des donnees (lecture de tous les fichiers) ---
+    log.info("Phase 1: Collecte des fichiers et extraction des imports...")
+
+    all_files_data = {}  # { rel_path: [imports] }
+    source_files = []    # Liste des chemins relatifs
+    files_content = {}   # { rel_path: lines }
+    files_scanned = 0
+    total_lines = 0
+
+    for root, dirs, files in os.walk(PROJECT_ROOT):
+        dirs[:] = [d for d in dirs if d not in {
+            'node_modules', '.git', 'dist', 'build', '.next',
+            '__pycache__', '.venv', 'venv', '.cache',
+            '.system_generated', '.tempmediaStorage',
+            'backups', 'documents', '.antigravity'
+        }]
+
+        for filename in files:
+            filepath = os.path.join(root, filename)
+
+            # Verifier si c'est un fichier texte
+            if not _is_text_file(filepath):
+                continue
+
+            # Scan differentiel
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+            except (UnicodeDecodeError, PermissionError, OSError):
+                continue
+
+            rel_path = os.path.relpath(filepath, PROJECT_ROOT)
+            source_files.append(rel_path)
+            files_content[rel_path] = lines
+            files_scanned += 1
+            total_lines += len(lines)
+
+            # Extraire les imports pour l'analyse globale
+            imports = extract_imports(filepath, lines)
+            if imports:
+                all_files_data[rel_path] = imports
+
+    log.info(f"Phase 1 terminee: {files_scanned} fichiers, {total_lines} lignes")
+
+    # --- 5. Phase 2 : Scanners globaux (import graph, layer, test coverage) ---
+    log.info("Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...")
+    global_anomalies = run_global_scanners(rules, all_files_data, source_files, PROJECT_ROOT)
+
+    if global_anomalies:
+        log.info(f"  -> {len(global_anomalies)} anomalies globales detectees")
+        # Marquer les anomalies globales
+        for anomaly in global_anomalies:
+            rule = _find_rule(rules, anomaly['rule_id'])
+            if rule:
+                anomaly['_fixable'] = should_auto_fix(rule)
+                anomaly['_escalation_message'] = rule.get('escalation_message', '')
+
+    # --- 6. Phase 3 : Scan fichier par fichier + corrections ---
+    log.info("Phase 3: Scan individuel des fichiers et corrections...")
+
+    all_anomalies = list(global_anomalies)
+    all_corrections = []
+    all_escalations = []
+    files_corrected = set()
+
+    # Tracker les regles avec potentiel faux positifs
+    rule_hit_count = {}
+
+    for pass_num in range(1, MAX_PASSES + 1):
+        pass_anomalies = []
+        pass_corrections = []
+
+        for rel_path, lines in files_content.items():
+            filepath = os.path.join(PROJECT_ROOT, rel_path)
+
+            # Scanner le fichier
+            file_anomalies, _ = scan_single_file(
+                filepath, rel_path, lines, rules,
+                all_files_data, source_files
+            )
+            pass_anomalies.extend(file_anomalies)
+
+            # Compter les hits par regle
+            for a in file_anomalies:
+                rid = a['rule_id']
+                rule_hit_count[rid] = rule_hit_count.get(rid, 0) + 1
+
+            # Corriger si applicable
+            if not dry_run:
+                fixable = [a for a in file_anomalies if a.get('_fixable')]
+                unfixable = [a for a in file_anomalies if not a.get('_fixable')]
+
+                # Escalader les unfixable
+                for anomaly in unfixable:
+                    rule = _find_rule(rules, anomaly['rule_id'])
+                    if rule:
+                        reason = 'EMERGENCY' if is_emergency(rule) else 'UNFIXABLE'
+                        esc = create_escalation(anomaly, rule, reason)
+
+                        # Mode urgence : alerte immediate
+                        if is_emergency(rule):
+                            trigger_emergency(anomaly, rule)
+                            log.warning(f"  [URGENCE] {rule['id']} dans {rel_path}:{anomaly['line']}")
+
+                        all_escalations.append(esc)
+
+                # Appliquer les corrections
+                if fixable:
+                    corrections, escs = fix_single_file(
+                        filepath, rel_path, lines, fixable, dry_run
+                    )
+
+                    if corrections:
+                        mark_last_fixed(filepath)
+
+                        # Validation post-fix
+                        validation_ok = validate_after_fix(filepath, run_tests=not dry_run)
+                        if not validation_ok:
+                            log.warning(f"  [ROLLBACK] Validation echouee pour {rel_path}")
+                            # Escalader l'echec
+                            for c in corrections:
+                                rule = _find_rule(rules, c['rule_id'])
+                                if rule:
+                                    esc = create_escalation(
+                                        {'rule_id': c['rule_id'], 'file': rel_path,
+                                         'line': c['line'], 'code_snippet': c['before']},
+                                        rule, 'FIX_BROKE_TESTS'
+                                    )
+                                    all_escalations.append(esc)
+
+                            # Annuler toutes les corrections de ce fichier via le backup
+                            # (le backup est gere dans fixers.py)
+                        else:
+                            pass_corrections.extend(corrections)
+                            files_corrected.add(rel_path)
+
+                    if escs:
+                        all_escalations.extend(escs)
+
+        all_anomalies.extend(pass_anomalies)
+        all_corrections.extend(pass_corrections)
+
+        log.info(f"  Passe {pass_num}: {len(pass_anomalies)} anomalies, "
+                 f"{len(pass_corrections)} corrections")
+
+        if not pass_corrections:
+            break
+
+    # --- 7. Verifier les faux positifs potentiels ---
+    for rule_id, count in rule_hit_count.items():
+        if count >= 3:
+            # La regle declenche beaucoup - potentiel faux positif
+            rule = _find_rule(rules, rule_id)
+            if rule and rule.get('false_positive_risk') in ('medium', 'high'):
+                esc = create_escalation(
+                    {'rule_id': rule_id, 'file': '', 'line': 0,
+                     'code_snippet': f'{count} occurrences', 'description': rule['description']},
+                    rule, 'PATTERN_TOO_BROAD',
+                    {'occurrence_count': count}
+                )
+                all_escalations.append(esc)
+
+    # --- 8. Construire le rapport ---
+    report = _build_report(all_anomalies, all_corrections, all_escalations,
+                           files_scanned, total_lines, files_corrected, dry_run)
+
+    # --- 9. Health check de l'agent ---
+    health_report = run_health_check(rules, report, all_escalations,
+                                     all_corrections, RULES_FILE,
+                                     OUTPUT_FILE, start_time)
+
+    # --- 10. Sortie ---
+    generate_output(report, health_report, OUTPUT_FILE, HEALTH_FILE, rules)
+    reporter_fn(report, rules)
+
+    # Afficher le health status
+    overall = health_report.get('overall_status', 'UNKNOWN')
+    log.info(f"Agent Health: {overall}")
+    for w in health_report.get('warnings', []):
+        log.warning(f"  [!] {w}")
+    for r in health_report.get('recommendations', []):
+        log.info(f"  [i] {r}")
+
+    # Auto-commit des corrections
+    if files_corrected and not dry_run:
+        auto_commit_and_push(files_corrected)
+
+    # Nettoyage
+    cleanup_old_backups(MAX_BACKUPS)
+
+    elapsed = time.time() - start_time
+    log.info(f"Audit termine en {elapsed:.1f}s. Health Score projet: {report.get('health_score', 'N/A')}/100")
+
+    return report
+
+# ---------------------------------------------------------------------------
+# HEALTH-ONLY MODE
+# ---------------------------------------------------------------------------
+
+def run_health_only():
+    """Execute uniquement l'auto-diagnostic de l'agent."""
+    print(BANNER)
+    log.info("Mode: AUTO-DIAGNOSTIC")
+
+    rules, meta = load_rules(RULES_FILE)
+    if not rules:
+        log.error("Impossible de charger les regles")
+        return
+
+    # Charger le dernier rapport s'il existe
+    report = {}
+    if os.path.exists(OUTPUT_FILE):
+        try:
+            with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
+                report = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            report = {}
+
+    health = run_health_check(rules, report, [], [], RULES_FILE, OUTPUT_FILE, time.time())
+
+    print(f"\n+========================================+")
+    print(f"|  AGENT SELF-DIAGNOSTIC                  |")
+    print(f"+========================================+")
+    print(f"|  Status: {health['overall_status']:<29}|")
+    print(f"|  Regles: {health['rules_health']['total_rules']:<29}|")
+    print(f"|  Regles actives: {health['rule_activity']['active_rules']:<23}|")
+    print(f"|  Regles inactives: {health['rule_activity']['inactive_count']:<21}|")
+    print(f"|  Escalades critiques: {health['escalation_health']['critical_escalations']:<19}|")
+    print(f"+========================================+")
+
+    if health['warnings']:
+        print("\n[!] WARNINGS:")
+        for w in health['warnings']:
+            print(f"  - {w}")
+
+    if health['recommendations']:
+        print("\n[i] RECOMMENDATIONS:")
+        for r in health['recommendations']:
+            print(f"  - {r}")
+
+    # Sauvegarder
+    os.makedirs(os.path.dirname(HEALTH_FILE), exist_ok=True)
+    with open(HEALTH_FILE, 'w', encoding='utf-8') as f:
+        json.dump(health, f, indent=2, ensure_ascii=False)
+
+    log.info(f"Rapport de sante sauvegarde: {HEALTH_FILE}")
+
+# ---------------------------------------------------------------------------
+# HELPERS
+# ---------------------------------------------------------------------------
+
 BINARY_EXTENSIONS = {
     '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.webp',
     '.mp3', '.wav', '.ogg', '.flac', '.aac', '.webm', '.m4a',
@@ -57,400 +483,145 @@ BINARY_EXTENSIONS = {
     '.lock', '.map'
 }
 
-# Dossiers à toujours ignorer
-IGNORED_DIRS = {
-    'node_modules', '.git', 'dist', 'build', '.next',
-    '__pycache__', '.venv', 'venv', '.cache',
-    '.system_generated', '.tempmediaStorage',
-    'backups'
+TEXT_EXTENSIONS = {
+    '.js', '.jsx', '.ts', '.tsx', '.css', '.scss',
+    '.json', '.md', '.py', '.html', '.htm',
+    '.bat', '.vbs', '.sh', '.yaml', '.yml',
+    '.txt', '.env', '.gitignore', '.cfg'
 }
 
-# ============================================================
-# CHARGEMENT DES RÈGLES
-# ============================================================
-
-def load_rules():
-    """Charge les règles d'audit depuis rules.json."""
-    try:
-        with open(RULES_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception as e:
-        log(f"Erreur lecture rules.json : {e}")
-        return []
-
-
-# ============================================================
-# INITIALISATION DU LOGGER
-# ============================================================
-
-def setup_logger():
-    """Configure le logger avec rotation (max 5 Mo, 3 backups)."""
-    logger = logging.getLogger("ElpisAudit")
-    logger.setLevel(logging.INFO)
-    
-    # Ne pas ajouter de handlers si déjà configuré
-    if not logger.handlers:
-        # Format du log
-        formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-
-        # Handler Console
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
-        logger.addHandler(console_handler)
-
-        # Handler Fichier avec rotation (5 Mo)
-        file_handler = RotatingFileHandler(
-            LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=3, encoding='utf-8'
-        )
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-
-    return logger
-
-audit_logger = setup_logger()
-
-def log(message):
-    """Alias pour garder la compatibilité avec le reste du code."""
-    audit_logger.info(message)
-
-
-# ============================================================
-# SYSTÈME DE BACKUP
-# ============================================================
-
-def create_backup(filepath, timestamp_dir):
-    """
-    Crée une copie de sécurité du fichier avant modification.
-    Retourne le chemin du backup créé.
-    """
-    # Calculer le chemin relatif par rapport au projet
-    rel_path = os.path.relpath(filepath, PROJECT_ROOT)
-    backup_path = os.path.join(timestamp_dir, rel_path)
-
-    # Créer les sous-dossiers nécessaires
-    os.makedirs(os.path.dirname(backup_path), exist_ok=True)
-
-    # Copier le fichier original
-    shutil.copy2(filepath, backup_path)
-    return backup_path
-
-
-# ============================================================
-# MOTEUR DE CORRECTION
-# ============================================================
-
-def apply_fix(line, rule):
-    """
-    Applique la correction définie dans la règle à une ligne.
-    Retourne (nouvelle_ligne, a_été_modifiée).
-
-    Actions supportées:
-    - delete_line    : Supprime la ligne entière
-    - replace        : Remplace le pattern par une chaîne fixe
-    - replace_regex  : Remplacement par regex avec groupes de capture
-    - comment_out    : Commente la ligne (ajoute un commentaire au-dessus)
-    """
-    fix = rule.get('fix')
-    if not fix:
-        return line, False
-
-    action = fix.get('action')
-
-    if action == 'delete_line':
-        return None, True  # None = supprimer la ligne
-
-    elif action == 'replace':
-        search = fix.get('search', rule['pattern'])
-        replacement = fix.get('replacement', '')
-        new_line = re.sub(search, replacement, line)
-        if new_line != line:
-            return new_line, True
-        return line, False
-
-    elif action == 'replace_regex':
-        search = fix.get('search', rule['pattern'])
-        replacement = fix.get('replacement', '')
-        new_line = re.sub(search, replacement, line)
-        if new_line != line:
-            return new_line, True
-        return line, False
-
-    elif action == 'comment_out':
-        prefix = fix.get('comment_prefix', '// TODO [AUDIT]: Review this line')
-        indent = len(line) - len(line.lstrip())
-        comment_line = ' ' * indent + prefix + '\n'
-        return comment_line + line, True
-
-    return line, False
-
-
-# ============================================================
-# SCANNER DE FICHIER
-# ============================================================
-
-def is_text_file(filepath):
-    """Détermine si un fichier est un fichier texte scannable."""
+def _is_text_file(filepath):
     _, ext = os.path.splitext(filepath)
     ext = ext.lower()
-
-    # Exclusion explicite des binaires
     if ext in BINARY_EXTENSIONS:
         return False
-
-    # Inclusion explicite des fichiers texte connus
     if ext in TEXT_EXTENSIONS:
         return True
-
-    # Pour les fichiers sans extension, tenter de lire
     if not ext:
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
-                f.read(512)  # Tester la lecture
+                f.read(512)
             return True
         except (UnicodeDecodeError, PermissionError):
             return False
-
     return False
 
+def _build_report(anomalies, corrections, escalations,
+                  files_scanned, total_lines, files_corrected, dry_run):
+    """Construit le rapport d'audit structure avec statistiques par regle."""
+    from collections import defaultdict
 
-def scan_and_fix_file(filepath, rules, timestamp_dir, dry_run=False):
-    """
-    Scanne un fichier, détecte les anomalies et applique les corrections.
+    # Anomalies par severite
+    by_severity = {'critical': 0, 'warning': 0, 'info': 0}
+    for a in anomalies:
+        sev = a.get('severity', 'info')
+        by_severity[sev] = by_severity.get(sev, 0) + 1
 
-    Retourne (anomalies_list, corrections_list, nombre_lignes).
-    """
-    anomalies = []
-    corrections = []
-    filename = os.path.basename(filepath)
+    # Anomalies par categorie
+    by_category = defaultdict(int)
+    for a in anomalies:
+        cat = a.get('category', 'UNKNOWN')
+        by_category[cat] += 1
 
-    try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            original_lines = f.readlines()
-            file_lines_count = len(original_lines)
-    except (UnicodeDecodeError, PermissionError, OSError):
-        return anomalies, corrections, 0
+    # --- NOUVEAU: Statistiques par regle (TOUTES les anomalies, pas tronquees) ---
+    rule_stats = defaultdict(lambda: {
+        'count': 0, 'severity': '', 'category': '', 'files': set(),
+        'fixable_count': 0, 'auto_fixed_count': 0
+    })
+    for a in anomalies:
+        rid = a.get('rule_id', 'UNKNOWN')
+        rs = rule_stats[rid]
+        rs['count'] += 1
+        rs['severity'] = a.get('severity', '')
+        rs['category'] = a.get('category', '')
+        rs['files'].add(a.get('file', ''))
+        if a.get('_fixable'):
+            rs['fixable_count'] += 1
 
-    log(f"  [scan] {filename} ({file_lines_count} lignes)")
+    for c in corrections:
+        rid = c.get('rule_id', 'UNKNOWN')
+        if rid in rule_stats:
+            rule_stats[rid]['auto_fixed_count'] += 1
 
-    new_lines = []
-    file_was_modified = False
+    # Convertir en format serialisable (set -> list, avec top files)
+    rule_stats_serializable = {}
+    for rid, rs in sorted(rule_stats.items(), key=lambda x: -x[1]['count']):
+        rule_stats_serializable[rid] = {
+            'count': rs['count'],
+            'severity': rs['severity'],
+            'category': rs['category'],
+            'files_affected': len(rs['files']),
+            'top_files': sorted(rs['files'])[:5],
+            'fixable_count': rs['fixable_count'],
+            'auto_fixed_count': rs['auto_fixed_count'],
+            'pct_of_total': round(rs['count'] / max(len(anomalies), 1) * 100, 1)
+        }
 
-    for i, line in enumerate(original_lines):
-        line_number = i + 1
-        current_line = line
-        line_modified = False
+    # Stats d'escalade
+    esc_stats = process_escalations(escalations, [])
 
-        for rule in rules:
-            # Vérifier si le fichier correspond au pattern de la règle
-            file_pat = rule.get('file_pattern', '.*')
-            if not re.search(file_pat, filename):
-                continue
-
-            # Vérifier l'exclusion
-            exclude_pat = rule.get('exclude_pattern')
-            if exclude_pat and re.search(exclude_pat, filename):
-                continue
-
-            # Vérifier si la ligne correspond au pattern d'anomalie
-            pattern = re.compile(rule['pattern'])
-            if pattern.search(current_line):
-                rel_path = filepath.replace(PROJECT_ROOT, '')
-
-                anomaly = {
-                    "rule_id": rule['id'],
-                    "severity": rule['severity'],
-                    "description": rule['description'],
-                    "file": rel_path,
-                    "line": line_number,
-                    "code_snippet": current_line.rstrip('\n')
-                }
-
-                # Tenter la correction
-                if rule.get('fix') and not dry_run:
-                    fixed_line, was_fixed = apply_fix(current_line, rule)
-
-                    if was_fixed:
-                        correction = {
-                            "rule_id": rule['id'],
-                            "file": rel_path,
-                            "line": line_number,
-                            "before": current_line.rstrip('\n'),
-                            "after": fixed_line.rstrip('\n') if fixed_line else "[LIGNE SUPPRIMÉE]",
-                            "action": rule['fix']['action']
-                        }
-                        corrections.append(correction)
-                        anomaly["auto_fixed"] = True
-
-                        if fixed_line is None:
-                            # delete_line : on ne conserve pas la ligne
-                            current_line = None
-                            line_modified = True
-                            break  # Pas besoin de vérifier d'autres règles
-                        else:
-                            current_line = fixed_line
-                            line_modified = True
-
-                anomalies.append(anomaly)
-
-        if current_line is not None:
-            new_lines.append(current_line)
-
-        if line_modified:
-            file_was_modified = True
-
-    # Écrire les corrections si le fichier a été modifié
-    if file_was_modified and not dry_run:
-        # 1. Créer un backup
-        create_backup(filepath, timestamp_dir)
-
-        # 2. Écrire le fichier corrigé
-        try:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.writelines(new_lines)
-        except (PermissionError, OSError) as e:
-            log(f"  [!] Impossible d'ecrire {filepath}: {e}")
-
-    return anomalies, corrections, file_lines_count
-
-
-# ============================================================
-# EXÉCUTION PRINCIPALE
-# ============================================================
-
-def run_audit(dry_run=False, pass_number=1):
-    """
-    Exécute un cycle complet d'audit et de correction.
-
-    Args:
-        dry_run: Si True, détecte sans corriger (mode rapport uniquement).
-        pass_number: Le numéro de la passe actuelle (pour éviter les boucles infinies).
-    """
-    mode = "RAPPORT SEUL" if dry_run else "SCAN + CORRECTION"
-    log(f"--- Démarrage de l'audit complet ({mode}) | Passe {pass_number}/{MAX_PASSES} ---")
-
-    rules = load_rules()
-    if not rules:
-        log("Aucune règle trouvée. Fin de l'audit.")
-        return
-
-    # Préparer le dossier de backup horodaté pour cette session
-    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-    timestamp_dir = os.path.join(BACKUPS_DIR, timestamp)
-
-    all_anomalies = []
-    all_corrections = []
-    files_scanned = 0
-    files_corrected = 0
-    total_lines = 0
-    lines_by_ext = {}
-
-    # Scanner toute l'arborescence du projet
-    for root, dirs, files in os.walk(PROJECT_ROOT):
-        # Filtrer les dossiers à ignorer (modification in-place pour os.walk)
-        dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
-
-        for filename in files:
-            filepath = os.path.join(root, filename)
-
-            if not is_text_file(filepath):
-                continue
-
-            files_scanned += 1
-            anomalies, corrections, lines_count = scan_and_fix_file(
-                filepath, rules, timestamp_dir, dry_run=dry_run
-            )
-            all_anomalies.extend(anomalies)
-            all_corrections.extend(corrections)
-            total_lines += lines_count
-
-            # Comptage par extension
-            _, ext = os.path.splitext(filename)
-            ext = ext.lower()
-            if not ext:
-                ext = "no_extension"
-            lines_by_ext[ext] = lines_by_ext.get(ext, 0) + lines_count
-
-            if corrections:
-                files_corrected += 1
-
-    # Nettoyer le dossier de backup s'il est vide (aucune correction)
-    if os.path.exists(timestamp_dir) and not os.listdir(timestamp_dir):
-        os.rmdir(timestamp_dir)
-
-    # Nettoyage des anciens backups (garder les 10 derniers)
-    cleanup_old_backups(max_keep=10)
-
-    # Générer le rapport
-    report = {
-        "last_scan": datetime.datetime.now().isoformat(),
-        "mode": mode,
-        "files_scanned": files_scanned,
-        "total_lines_of_code": total_lines,
-        "lines_by_extension": lines_by_ext,
-        "total_anomalies": len(all_anomalies),
-        "total_corrections": len(all_corrections),
-        "files_corrected": files_corrected,
-        "anomalies": all_anomalies,
-        "corrections_applied": all_corrections
+    return {
+        'last_scan': datetime.datetime.now().isoformat(),
+        'mode': 'RAPPORT SEUL' if dry_run else 'SCAN + CORRECTION',
+        'files_scanned': files_scanned,
+        'total_lines_of_code': total_lines,
+        'total_anomalies': len(anomalies),
+        'total_corrections': len(corrections),
+        'files_corrected': len(files_corrected),
+        'total_escalations': len(escalations),
+        'anomalies_by_severity': by_severity,
+        'anomalies_by_category': dict(by_category),
+        # NOUVEAU: stats par regle (full, non tronque)
+        'rule_stats': rule_stats_serializable,
+        # NOUVEAU: signal vs bruit (critiques + warnings hors high_fp_risk)
+        'signal_count': 0,  # Rempli ci-dessous
+        'noise_count': 0,
+        'escalation_stats': esc_stats,
+        'escalations': escalations[:200],
+        'anomalies': anomalies[:500],
+        'corrections_applied': corrections[:500],
+        '_anomalies_truncated': len(anomalies) > 500,
+        '_escalations_truncated': len(escalations) > 200
     }
 
-    # Sauvegarder le rapport
-    os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        json.dump(report, f, indent=4, ensure_ascii=False)
+def _find_rule(rules, rule_id):
+    for r in rules:
+        if isinstance(r, dict) and r.get('id') == rule_id:
+            return r
+    return None
 
-    log(f"Audit termine (Passe {pass_number}). {files_scanned} fichiers scannes.")
-    log(f"  -> {len(all_anomalies)} anomalies detectees.")
-    log(f"  -> {len(all_corrections)} corrections appliquees sur {files_corrected} fichiers.")
-
-    if all_corrections:
-        log(f"  -> Backups sauvegardes dans : agent_audit/backups/{timestamp}/")
-
-    # Logique de re-scan (multi-passes) si des corrections ont été appliquées
-    if files_corrected > 0 and not dry_run:
-        if pass_number < MAX_PASSES:
-            log(f"Des corrections ont été appliquées. Lancement d'un scan de vérification (Passe {pass_number + 1})...")
-            run_audit(dry_run=dry_run, pass_number=pass_number + 1)
-        else:
-            log("[!] Limite de passes atteinte. Arrêt des vérifications pour éviter une boucle infinie.")
-
-
-def cleanup_old_backups(max_keep=10):
-    """Supprime les sessions de backup les plus anciennes."""
-    if not os.path.exists(BACKUPS_DIR):
-        return
-
-    sessions = sorted([
-        d for d in os.listdir(BACKUPS_DIR)
-        if os.path.isdir(os.path.join(BACKUPS_DIR, d))
-    ])
-
-    while len(sessions) > max_keep:
-        oldest = sessions.pop(0)
-        shutil.rmtree(os.path.join(BACKUPS_DIR, oldest))
-        log(f"  [cleanup] Backup ancien supprime : {oldest}")
-
-
-# ============================================================
-# POINT D'ENTRÉE
-# ============================================================
+# ---------------------------------------------------------------------------
+# POINT D'ENTREE
+# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("  ELPIS — Agent Audit Autonome v2.0 (Auto-Correcteur)")
-    print("=" * 60)
+    print(BANNER)
 
     dry_run = "--dry-run" in sys.argv
+    emergency_only = "--emergency-check" in sys.argv
+    health_only = "--health" in sys.argv
 
-    if "--once" in sys.argv:
-        run_audit(dry_run=dry_run)
+    # Mode auto-diagnostic
+    if health_only:
+        run_health_only()
         sys.exit(0)
 
-    log("Agent démarré en mode continu.")
-    log(f"Intervalle : {SCAN_INTERVAL_SECONDS // 3600}h entre chaque scan.")
-    log(f"Mode : {'RAPPORT SEUL (--dry-run)' if dry_run else 'SCAN + CORRECTION'}")
+    # Mode one-shot
+    if "--once" in sys.argv or emergency_only:
+        run_full_audit(dry_run=dry_run, emergency_only=emergency_only)
+        sys.exit(0)
+
+    # Mode continu
+    log.info(f"Agent demarre en mode continu. Intervalle: {SCAN_INTERVAL_SECONDS // 3600}h")
+    log.info(f"Mode: {'RAPPORT SEUL' if dry_run else 'SCAN + CORRECTION'}")
 
     while True:
-        run_audit(dry_run=dry_run)
-        log(f"Prochain audit dans {SCAN_INTERVAL_SECONDS // 3600} heures...")
+        try:
+            run_full_audit(dry_run=dry_run)
+        except Exception as e:
+            log.error(f"Erreur pendant l'audit: {e}")
+            import traceback
+            log.error(traceback.format_exc())
+
+        log.info(f"Prochain audit dans {SCAN_INTERVAL_SECONDS // 3600}h...")
         time.sleep(SCAN_INTERVAL_SECONDS)

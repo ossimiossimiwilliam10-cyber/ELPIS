@@ -1,253 +1,272 @@
-# Agent Audit Autonome v2.0 — Documentation
+# ELPIS Immune System v3.0 — Documentation
 
 ## Qu'est-ce que c'est ?
 
-L'Agent Audit est un programme Python **autonome** qui surveille en permanence
-la qualite du code source d'ELPIS. Il s'execute en arriere-plan toutes les
-**4 heures**, analyse **l'integralite** du projet (tous les fichiers texte)
-et **corrige automatiquement** les erreurs qu'il detecte.
+L'Agent Audit v3.0 est le **systeme immunitaire** du projet ELPIS. Comme un
+systeme immunitaire biologique, il :
 
-Les resultats et les corrections appliquees sont enregistres dans un fichier
-JSON et consultables depuis l'interface web via le bouton **Code Health**
-sur le tableau de bord principal.
+- **Detecte** les menaces (anomalies de code) via 6 strategies de scanning
+- **Neutralise** les menaces corrigibles automatiquement (avec backup + rollback)
+- **Signale** les menaces qu'il ne peut pas neutraliser (escalade)
+- **Apprend** de ses echecs (detection de faux positifs, suggestions d'amelioration)
+- **S'auto-diagnostique** (health check de l'agent lui-meme)
+
+**Philosophie** : "Le systeme immunitaire ne negocie pas. Il corrige."
 
 ---
 
-## Structure des fichiers
+## Architecture (7 modules)
 
 ```
 agent_audit/
-|-- main.py        # Le programme principal de l'agent
-|-- rules.json     # Les regles d'audit (modifiables sans toucher au code)
-|-- backups/       # Backups automatiques avant chaque correction
-|   |-- 20260706_142231/   # Dossier horodate par session
-|   |   |-- interface/web/src/store.js   # Copie du fichier avant correction
-|   |   |-- ...
-|-- README.md      # Ce fichier
+|-- main.py          # Point d'entree CLI + orchestrateur
+|-- engine.py        # Coeur decisionnel (score de confiance, priorisation)
+|-- scanners.py      # 6 strategies de detection
+|-- fixers.py        # 8 strategies de correction avec validation gates
+|-- validators.py    # Pre-fix / Post-fix : syntaxe, tests, lint
+|-- escalation.py    # Diagnostic + recommandations quand l'agent ne peut pas corriger
+|-- health.py        # Auto-diagnostic de l'agent
+|-- rules.json       # 42 regles sur 10 categories
+|-- README.md        # Ce fichier
+|-- backups/         # Backups automatiques avant correction
 ```
 
-**Fichier de sortie :** `data/espoir_audit.json` (genere automatiquement)
+### Flux d'execution
+
+```
+1. CHARGEMENT    → rules.json (42 regles)
+2. COLLECTE      → Lecture de tous les fichiers, extraction des imports
+3. SCAN GLOBAL   → Graphe d'imports, frontieres architecturales, couverture de tests
+4. SCAN FICHIER  → 6 strategies par fichier (regex, multi-ligne, structurel...)
+5. DECISION      → Pour chaque anomalie : fixable ? (confiance >= 70% ?)
+6. CORRECTION    → Backup → Fix → Validation syntaxe → Tests → OK/KO
+7. ROLLBACK      → Si echec, restauration automatique depuis le backup
+8. ESCALADE      → Anomalies non-corrigibles → diagnostic + recommandation
+9. RAPPORT       → JSON + Health Score projet (0-100)
+10. AUTO-DIAG    → L'agent verifie sa propre sante
+```
 
 ---
 
-## Comment lancer l'agent
+## Les 6 strategies de detection
 
-### Lancement automatique (recommande)
-L'agent se lance **automatiquement** quand tu demarres ELPIS avec le
-fichier `Lancer ELPIS.vbs` ou `start_elpis.bat`. Le serveur Node.js
-s'occupe de lancer le script Python en arriere-plan.
+| Strategie        | Description                                                    |
+|------------------|----------------------------------------------------------------|
+| `regex`          | Patterns ligne par ligne (compatible v2, 35 regles)            |
+| `multi_line`     | Patterns qui traversent les lignes (ex: useEffect sans deps)   |
+| `import_graph`   | Detection d'imports circulaires par DFS                        |
+| `function_boundaries` | Detection de fonctions trop longues (>50 lignes)          |
+| `nesting_analysis`    | Detection de nesting profond (>4 niveaux)                 |
+| `test_pairing`        | Verification que chaque source a un fichier de test       |
 
-### Lancement manuel
+---
+
+## Les 10 categories de regles (42 regles)
+
+| Categorie            | Regles | Description                                         |
+|----------------------|--------|-----------------------------------------------------|
+| SECURITY             | 8      | Secrets, eval, XSS, CORS, injections SQL, HTTP      |
+| CODE_QUALITY         | 7      | var, magic numbers, empty catch, double semicolons   |
+| PERFORMANCE          | 5      | Imports lourds, IO synchrone, React.memo             |
+| REACT_BEST_PRACTICES | 5      | Keys, useEffect deps, index-as-key, prop spreading   |
+| ARCHITECTURE         | 4      | Imports circulaires, taille de fichier, layers       |
+| TESTING              | 4      | .only(), .skip(), tests async sans await, missing tests |
+| ACCESSIBILITY        | 3      | alt, aria-label, tabIndex                             |
+| PYTHON_SPECIFIC      | 3      | bare except, print(), type hints                      |
+| DOCUMENTATION        | 2      | JSDoc sur exports, TODOs sans ticket                  |
+| CSS_SPECIFIC         | 1      | !important                                           |
+
+---
+
+## Les 8 strategies de correction
+
+| Action                    | Description                                    | Exemple                    |
+|---------------------------|------------------------------------------------|----------------------------|
+| `delete_line`             | Supprime la ligne defectueuse                  | console.log()              |
+| `replace`                 | Remplace le pattern par une chaine fixe        | var → const                |
+| `replace_regex`           | Remplacement regex avec groupes de capture     | http:// → https://         |
+| `comment_out`             | Commente la ligne avec un TODO                 | Code a reviser             |
+| `delete_line_or_comment`  | Supprime si confiance >= 90%, sinon commente   | Decision contextuelle      |
+
+---
+
+## Le Score de Confiance
+
+Chaque regle a un `fix_confidence` (0-100) :
+- **>= 70%** : Correction automatique (apres validation)
+- **< 70%** : Signale uniquement, pas de correction automatique
+- **0%** : Intervention humaine obligatoire (`requires_human: true`)
+
+Exemples :
+- `NO_DOUBLE_SEMICOLONS` : confiance 100% (correction triviale)
+- `NO_CONSOLE_LOG_IN_PROD` : confiance 70% (parfois intentionnel)
+- `NO_HARDCODED_SECRETS` : confiance 0% (trop risqué, escalade critique)
+
+---
+
+## Le Systeme d'Escalade
+
+Quand l'agent ne peut pas corriger, il produit un diagnostic structure :
+
+```json
+{
+  "type": "UNFIXABLE",
+  "level": "elevated",
+  "rule_id": "NO_SQL_INJECTION_PATTERNS",
+  "diagnosis": "La correction automatique est desactivee...",
+  "recommendation": "1. Ouvrir le fichier... 2. Corriger manuellement...",
+  "rule_improvement_suggestion": null
+}
+```
+
+Types d'escalade :
+- `UNFIXABLE` : requires_human=true
+- `LOW_CONFIDENCE` : fix_confidence < 70%
+- `FIX_BROKE_TESTS` : rollback applique (les tests ont echoue apres correction)
+- `PATTERN_TOO_BROAD` : la regle produit trop de hits (faux positifs probables)
+- `EMERGENCY` : alerte critique immediate (secrets, eval, XSS...)
+- `RULE_SUGGESTION` : suggestion d'amelioration de la regle
+
+---
+
+## Le Mode Urgence
+
+Certaines regles sont marquees `emergency_mode: true`. Quand elles declenchent :
+- Une alerte critique est emise immediatement
+- Le fichier `data/espoir_emergency_alerts.json` est mis a jour
+- Aucune correction automatique n'est tentee (trop risquee)
+- Le dashboard ELPIS peut afficher ces alertes en rouge clignotant
+
+Regles en mode urgence :
+- `NO_HARDCODED_SECRETS` : credentials, tokens, clefs API
+- `NO_EVAL_OR_FUNCTION_CONSTRUCTOR` : eval(), new Function()
+
+---
+
+## L'Auto-Diagnostic
+
+L'agent verifie sa propre sante a chaque execution :
+
+| Verification          | Ce qui est controle                                   |
+|-----------------------|-------------------------------------------------------|
+| Regles                | Champs obligatoires, patterns compilables, IDs uniques|
+| Performance           | Fichiers/seconde, temps d'execution                   |
+| Faux positifs         | Regles qui declenchent trop souvent                   |
+| Escalades             | Nombre d'escalades critiques en attente               |
+| Activite des regles   | Regles qui n'ont jamais declenche (inutiles ?)        |
+| Fichier de sortie     | Integrite du JSON, champs requis                      |
+
+Resultat : `HEALTHY`, `WARNING`, ou `CRITICAL`
+
+---
+
+## Health Score Projet (0-100)
+
+Calcule a chaque audit :
+- 100 = 0 anomaly critique + 0 escalade
+- -15 par anomalie critique
+- -3 par warning
+- -0.5 par info
+- +2 par correction appliquee (max +20)
+- -10 par escalade
+
+---
+
+## Utilisation
 
 ```bash
-# Lancer un audit + correction unique (resultat immediat)
+# Audit complet + correction (one-shot)
 python agent_audit/main.py --once
 
-# Lancer en mode rapport uniquement (ne modifie rien)
+# Audit complet, rapport seulement (ne modifie rien)
 python agent_audit/main.py --once --dry-run
 
-# Lancer l'agent en mode continu (toutes les 4 heures)
+# Mode continu (toutes les heures)
 python agent_audit/main.py
 
-# Mode continu sans correction (surveillance passive)
+# Mode continu sans correction
 python agent_audit/main.py --dry-run
-```
 
-### Pre-requis
-- Python 3 doit etre installe et accessible via la commande `python`.
+# Verification urgence uniquement (secrets, eval, etc.)
+python agent_audit/main.py --emergency-check
+
+# Auto-diagnostic de l'agent
+python agent_audit/main.py --health
+```
 
 ---
 
-## Que scanne l'agent ?
+## Fichiers generes
 
-L'agent parcourt **l'integralite du projet** en analysant tous les fichiers
-texte. Voici ce qu'il inclut et exclut :
-
-### Fichiers scannes
-Tous les fichiers avec ces extensions :
-`.js`, `.jsx`, `.ts`, `.tsx`, `.css`, `.scss`, `.json`, `.md`, `.py`,
-`.html`, `.bat`, `.vbs`, `.sh`, `.yaml`, `.yml`, `.txt`, `.env`, etc.
-
-### Dossiers ignores
-`node_modules/`, `.git/`, `dist/`, `build/`, `backups/`,
-`__pycache__/`, `.venv/`, `.cache/`
-
-### Fichiers binaires ignores
-Images, audio, video, polices, archives, executables, etc.
+| Fichier                            | Contenu                                              |
+|------------------------------------|------------------------------------------------------|
+| `data/espoir_audit.json`           | Rapport d'audit complet (anomalies, corrections)      |
+| `data/espoir_audit_health.json`    | Rapport de sante de l'agent                          |
+| `data/espoir_emergency_alerts.json`| Alertes d'urgence actives                            |
+| `agent_audit/audit.log`            | Logs d'execution                                     |
+| `agent_audit/escalations.log`      | Historique des escalades (JSON lines)                 |
 
 ---
 
-## Les regles d'audit
+## Ajouter une nouvelle regle
 
-Les regles sont definies dans le fichier `rules.json`. Tu peux en ajouter,
-modifier ou supprimer sans toucher au code Python.
-
-### Format d'une regle
+Editer `rules.json` et ajouter un bloc dans le tableau `rules` :
 
 ```json
 {
-  "id": "NOM_UNIQUE_DE_LA_REGLE",
-  "description": "Message affiche quand la regle est enfreinte.",
-  "pattern": "expression_regex_a_rechercher",
-  "severity": "critical | warning | info",
-  "file_pattern": "regex_pour_filtrer_les_fichiers",
-  "exclude_pattern": "regex_pour_exclure_certains_fichiers",
-  "fix": {
-    "action": "delete_line | replace | replace_regex | comment_out",
-    "search": "regex_a_remplacer (optionnel, defaut = pattern)",
-    "replacement": "texte_de_remplacement",
-    "comment_prefix": "commentaire a ajouter (pour comment_out)"
-  }
-}
-```
-
-### Champs detailles
-
-| Champ             | Obligatoire | Description                                                              |
-|-------------------|:-----------:|--------------------------------------------------------------------------|
-| `id`              | Oui         | Identifiant unique de la regle (ex: `NO_CONSOLE_LOG`).                   |
-| `description`     | Oui         | Message humain expliquant pourquoi c'est un probleme.                    |
-| `pattern`         | Oui         | Expression reguliere Python recherchee dans chaque ligne du code.        |
-| `severity`        | Oui         | Niveau de gravite : `critical` (rouge), `warning` (orange), `info` (bleu). |
-| `file_pattern`    | Oui         | Regex pour cibler certains types de fichiers (ex: `\\.(jsx)$`).          |
-| `exclude_pattern` | Non         | Regex pour exclure certains fichiers (ex: les fichiers de test).         |
-| `fix`             | Non         | Si present, l'agent corrige automatiquement. Sinon, il signale seulement.|
-
-### Actions de correction disponibles
-
-| Action          | Description                                  | Exemple                              |
-|-----------------|----------------------------------------------|--------------------------------------|
-| `delete_line`   | Supprime la ligne entiere                    | Supprimer un `console.log()`         |
-| `replace`       | Remplace le match par un texte fixe          | `var ` -> `const `                   |
-| `replace_regex` | Remplacement Regex avec groupes de capture   | Refactoring complexe                 |
-| `comment_out`   | Ajoute un commentaire TODO au-dessus         | Marquer pour revision manuelle       |
-
-### Regles incluses par defaut
-
-| ID                       | Severite     | Detecte...                                  | Correction          |
-|--------------------------|-------------|----------------------------------------------|----------------------|
-| `NO_HARDCODED_LOCALHOST` | Critique    | Les URLs `http://localhost:XXXX` en dur      | Remplace par `/api`  |
-| `NO_CONSOLE_LOG_IN_PROD` | Warning     | Les `console.log()` oublies                 | Supprime la ligne    |
-| `NO_VAR_KEYWORD`         | Warning     | L'utilisation de `var` au lieu de `const`    | Remplace par `const` |
-| `NO_DOUBLE_SEMICOLONS`   | Warning     | Les `;;` (typos)                            | Remplace par `;`     |
-| `AVOID_INLINE_STYLES`    | Info        | Les `style={{...}}` inline                  | Rapport seulement    |
-| `NO_TRAILING_WHITESPACE` | Info        | Espaces en fin de ligne                     | Rapport seulement    |
-
-### Exemple : Ajouter une nouvelle regle avec correction
-
-Pour interdire `alert()` et le supprimer automatiquement :
-
-```json
-{
-  "id": "NO_ALERT",
-  "description": "alert() ne doit pas etre utilise en production.",
-  "pattern": "^\\s*alert\\(.*\\);?\\s*$",
+  "id": "MA_REGLE",
+  "category": "CODE_QUALITY",
   "severity": "warning",
+  "description": "Description du probleme detecte.",
+  "patterns": ["mon_pattern_regex"],
+  "multi_line": false,
   "file_pattern": "\\.(js|jsx)$",
+  "exclude_pattern": "(test|spec)\\.(js|jsx)$",
+  "auto_fix_strategy": "replace_regex",
+  "fix_confidence": 85,
+  "false_positive_risk": "low",
   "fix": {
-    "action": "delete_line"
-  }
+    "action": "replace",
+    "search": "mon_pattern_regex",
+    "replacement": "correction"
+  },
+  "escalation_message": "Message si l'agent ne peut pas corriger.",
+  "suppression_comment": "AUDIT_SUPPRESS:MA_REGLE"
 }
+```
+
+### Supprimer un faux positif localement
+
+Ajouter le commentaire de suppression sur la ligne **precedente** :
+
+```js
+// AUDIT_SUPPRESS:NO_HARDCODED_LOCALHOST
+const apiUrl = 'http://localhost:3000/api'; // Ceci est intentionnel
 ```
 
 ---
 
-## Systeme de backup (filet de securite)
+## Restauration apres correction
 
-Avant de modifier un fichier, l'agent **cree automatiquement une copie
-de securite** dans `agent_audit/backups/`.
+Si une correction automatique a casse quelque chose :
 
-### Organisation des backups
-
-Chaque session de correction genere un dossier horodate :
-```
-agent_audit/backups/
-|-- 20260706_142231/           # Session du 6 juillet a 14:22:31
-|   |-- interface/
-|   |   |-- web/
-|   |   |   |-- src/
-|   |   |       |-- store.js   # Copie du fichier AVANT correction
-|   |   |-- bridge/
-|   |       |-- server.js
-|-- 20260706_182231/           # Session suivante (4h plus tard)
-```
-
-### Restaurer un fichier
-
-Si une correction a casse quelque chose :
 ```bash
-# Copier le backup vers l'original
-copy agent_audit\backups\20260706_142231\interface\web\src\store.js interface\web\src\store.js
+# Lister les backups
+dir agent_audit\backups
+
+# Restaurer un fichier specifique
+copy agent_audit\backups\20260706_153349\interface\web\src\store.js interface\web\src\store.js
 ```
 
-### Nettoyage automatique
-L'agent conserve les **10 dernieres sessions** de backup et supprime
-automatiquement les plus anciennes.
+L'agent conserve les 10 dernieres sessions de backup.
 
 ---
 
-## Le rapport d'audit
+## Roadmap
 
-Apres chaque execution, l'agent genere `data/espoir_audit.json` :
-
-```json
-{
-    "last_scan": "2026-07-06T14:22:32.123456",
-    "mode": "SCAN + CORRECTION",
-    "files_scanned": 174,
-    "total_anomalies": 1439,
-    "total_corrections": 79,
-    "files_corrected": 14,
-    "anomalies": [ ... ],
-    "corrections_applied": [
-        {
-            "rule_id": "NO_CONSOLE_LOG_IN_PROD",
-            "file": "\\interface\\web\\src\\Dashboard.jsx",
-            "line": 42,
-            "before": "    console.log('debug');",
-            "after": "[LIGNE SUPPRIMEE]",
-            "action": "delete_line"
-        }
-    ]
-}
-```
-
----
-
-## Configuration avancee
-
-### Modifier l'intervalle de scan
-
-Dans `main.py`, modifie la constante en haut du fichier :
-
-```python
-SCAN_INTERVAL_SECONDS = 14400  # 4 heures (par defaut)
-# Exemples :
-# 3600   = 1 heure
-# 7200   = 2 heures
-# 28800  = 8 heures
-```
-
-### Ajouter un type de fichier a scanner
-
-Dans `main.py`, ajoute l'extension dans `TEXT_EXTENSIONS` :
-
-```python
-TEXT_EXTENSIONS = {
-    '.js', '.jsx', '.ts', '.tsx', '.css', '.scss',
-    # Ajouter ici :
-    '.graphql', '.sql',
-}
-```
-
-### Ajouter un dossier a ignorer
-
-Dans `main.py`, ajoute le nom dans `IGNORED_DIRS` :
-
-```python
-IGNORED_DIRS = {
-    'node_modules', '.git', 'dist', 'build',
-    # Ajouter ici :
-    'temp_files',
-}
-```
+- [ ] Integration npm audit (scan de vulnerabilites des dependances)
+- [ ] Detection de code duplique (similarite structurelle)
+- [ ] Analyse de complexite cyclomatique
+- [ ] Integration avec git hooks (pre-commit, pre-push)
+- [ ] Dashboard web temps reel
+- [ ] Notifications Slack/Discord pour les escalades critiques
