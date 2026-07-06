@@ -148,6 +148,11 @@ export default function GlobalChrono() {
     'Exercice': '✏️'
   }[type] || '⏱️';
 
+  // If the chrono has been fully reset (no active task), hide it completely
+  if (!exoId && !isRunning && elapsedSeconds === 0) {
+    return null;
+  }
+
   // ========== PiP (Detached) Content ==========
   const pipContent = (
     <div style={{
