@@ -116,6 +116,17 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
   synergyBoost = Math.max(0.5, Math.min(5.0, synergyBoost));
   base *= synergyBoost;
 
+  // AXE 14 : Epsilon-Greedy Bandits (Exploration vs Exploitation)
+  // On utilise un pseudo-random basé sur le nom et le jour pour que le dashboard ne saute pas à chaque refresh.
+  const pseudoRandom = (( (ex.nom ? ex.nom.length : 1) * new Date().getDate()) % 100) / 100;
+  const epsilon = 0.15; // 15% d'exploration
+  
+  if (pseudoRandom < epsilon) {
+    // Mode exploration : on donne un boost massif (x2 à x5) pour forcer le test de la tâche
+    const explorationBoost = 2.0 + (pseudoRandom * 20); // 0.10 * 20 = 2.0 -> boost de 4.0
+    base *= explorationBoost;
+  }
+
   return base;
 }
 
