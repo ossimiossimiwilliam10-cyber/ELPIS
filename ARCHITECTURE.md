@@ -1,35 +1,11 @@
-# Architecture Globale d'ELPIS
+# Documentation ELPIS
 
-ELPIS est un projet structuré autour d'une interface frontend React réactive, couplée à un système d'entraînement intelligent et un agent d'audit "Système Immunitaire" autonome.
+Bienvenue dans la documentation officielle d'ELPIS. 
+Pour maintenir la clarté et la scalabilité du projet, la documentation a été découpée par domaine technique.
 
-## Diagramme d'Architecture
+Veuillez consulter les rubriques suivantes dans le répertoire `docs/` :
 
-```mermaid
-graph TD
-    subgraph Frontend [Frontend React (UI)]
-        D[Dashboard] --> S[Store / State]
-        T[Training Module] --> S
-        M[Music Player] --> S
-    end
-
-    subgraph Backend [Backend Local]
-        A[API / Server] --> DB[(JSON Data Store)]
-    end
-
-    subgraph ImmuneSystem [ELPIS Immune System (Agent)]
-        E[Engine] --> Sc[Scanners]
-        Sc --> F[Fixers]
-        F --> V[Validators]
-        V --> Esc[Escalation Log]
-    end
-
-    Frontend <-->|Requêtes HTTP| Backend
-    ImmuneSystem -.->|Scan & Auto-Fix| Frontend
-    ImmuneSystem -.->|Scan & Auto-Fix| Backend
-```
-
-## Composants Clés
-
-1. **Frontend (React)** : Gère l'interface utilisateur, le dashboard, et l'orchestration des entraînements.
-2. **Backend (JSON Data Store)** : Stocke la configuration (`espoir_config.json`), l'historique (`espoir_historique.json`), et les données de cours.
-3. **Agent d'Audit (Immune System)** : Un daemon autonome (`agent_audit/main.py`) qui tourne en arrière-plan (ou via GitHub Actions) pour garantir la qualité du code (Linting, refactoring, détection de dépendances circulaires).
+- 🎨 **[Interface & Frontend React](file:///c:/Users/User/Desktop/ELPIS/docs/frontend.md)** : Composants, state management, et conventions UI.
+- 💾 **[Données & Backend Local](file:///c:/Users/User/Desktop/ELPIS/docs/backend.md)** : Schémas JSON, flux I/O, architecture serverless.
+- 🛡️ **[Système Immunitaire (Agent d'Audit)](file:///c:/Users/User/Desktop/ELPIS/docs/immune_system.md)** : Architecture du bot de linting et processus d'auto-guérison.
+- ⚙️ **[DevOps & CI/CD](file:///c:/Users/User/Desktop/ELPIS/docs/devops.md)** : Intégration continue, workflows GitHub Actions, et scripts locaux.
