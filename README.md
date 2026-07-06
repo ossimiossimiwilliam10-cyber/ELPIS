@@ -71,6 +71,7 @@ Le backend (Express.js) expose les routes suivantes sur le port `3001`.
 | POST    | `/api/pdf/scan` | (Multipart) Upload un PDF, extrait le texte et suggère des exercices détectés. |
 | POST    | `/api/music/upload` | (Multipart) Ajoute une piste audio (`audio/*`). |
 | POST    | `/api/open/file` | Ouvre un fichier local sur l'OS (Désactivé en production). |
+| GET     | `/api/audit` | Récupère le dernier rapport de l'Agent d'Audit Python (santé du code). |
 
 ---
 
@@ -90,3 +91,52 @@ Variables d'environnement nécessaires en production :
 - `MONGODB_URI` : URI de connexion MongoDB Atlas.
 - `DEEPSEEK_API_KEY` : Clé API pour le coach IA.
 - `ADMIN_PASSWORD` : Mot de passe pour bloquer l'accès à l'interface.
+
+---
+
+## 🛡️ Agent d'Audit Autonome (Python)
+
+ELPIS intègre un **agent d'audit de code** écrit en Python qui tourne en arrière-plan et scanne automatiquement le code source toutes les 4 heures.
+
+- **Fonctionnement** : Analyse par Regex de chaque fichier `.js` / `.jsx` pour détecter les non-conformités (URLs en dur, `console.log` oubliés, styles inline, etc.).
+- **Configuration** : Les règles sont définies dans `agent_audit/rules.json` (modifiable sans toucher au code Python).
+- **Résultats** : Sauvegardés dans `data/espoir_audit.json` et consultables via le bouton **🛡️ Code Health** sur le tableau de bord.
+- **Lancement** : Automatique au démarrage du serveur, ou manuel avec `python agent_audit/main.py --once`.
+
+📚 Pour la documentation complète (ajout de règles, configuration, format du rapport), voir [`agent_audit/README.md`](agent_audit/README.md).
+
+---
+
+## 📁 Arborescence du Projet
+
+```
+ELPIS/
+├── agent_audit/           # Agent Python d'audit autonome
+│   ├── main.py            # Script principal (boucle 4h)
+│   ├── rules.json         # Règles d'audit modifiables
+│   └── README.md          # Documentation de l'agent
+├── backups/               # Backups automatiques (5 jours glissants)
+├── data/                  # Données persistantes (JSON)
+│   ├── espoir_config.json # Configuration utilisateur
+│   ├── espoir_cours.json  # Arbre des cours
+│   ├── espoir_historique.json # Historique d'étude
+│   └── espoir_audit.json  # Rapport d'audit (généré automatiquement)
+├── documents/             # PDFs et fiches stockées
+├── interface/
+│   ├── bridge/            # Backend Express.js (API REST)
+│   │   ├── server.js      # Serveur principal
+│   │   ├── moteur/        # Logique métier (orchestrateur, scoring, intelligence)
+│   │   ├── mongoAdapter.js # Adaptateur MongoDB (Cloud ↔ Local)
+│   │   └── aiAdapter.js   # Adaptateur IA (DeepSeek)
+│   └── web/               # Frontend React/Vite
+│       ├── src/           # Code source React
+│       │   ├── components/# Composants réutilisables
+│       │   ├── store.js   # État global (Zustand)
+│       │   └── *.jsx      # Pages (Dashboard, Cours, Stats...)
+│       └── dist/          # Build de production
+├── music/                 # Fichiers audio (calm/motivational)
+├── scripts/               # Scripts utilitaires
+├── start_elpis.bat        # Lanceur Windows (CMD)
+├── Lancer ELPIS.vbs       # Lanceur Windows (Double-clic)
+└── README.md              # Ce fichier
+```

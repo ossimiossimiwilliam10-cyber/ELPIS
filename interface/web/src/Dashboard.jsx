@@ -9,6 +9,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from './ToastProvider';
 import CMCompletionModal from './components/CMCompletionModal';
 import InfoTooltip from './components/InfoTooltip';
+import AuditDashboard from './components/AuditDashboard';
 import { DIFFICULTY_LEVELS } from './constants';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
@@ -82,6 +83,9 @@ function Dashboard() {
   // Custom Task (Activité Libre) modal state
   const [customTaskModalOpen, setCustomTaskModalOpen] = useState(false);
   const [customTaskParams, setCustomTaskParams] = useState({ titre: '', type: 'PERSO', matiere: '' });
+
+  // Audit modal state
+  const [auditModalOpen, setAuditModalOpen] = useState(false);
 
   const allMatieres = useMemo(() => {
     const list = [];
@@ -504,6 +508,15 @@ function Dashboard() {
           title="Ajouter une activité libre (Livre, Vidéo, Projet...)"
         >
           ✨ Activité Libre
+        </button>
+
+        <button 
+          className="btn-secondary" 
+          onClick={() => setAuditModalOpen(true)} 
+          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}
+          title="Voir le rapport d'audit du code"
+        >
+          🛡️ Code Health
         </button>
 
         {statut !== "REPOS" && !isRestDayToday && (
@@ -1087,6 +1100,7 @@ function Dashboard() {
         )}
       </AnimatePresence>
 
+      <AuditDashboard isOpen={auditModalOpen} onClose={() => setAuditModalOpen(false)} />
     </motion.div>
   );
 }

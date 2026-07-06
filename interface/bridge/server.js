@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
+const { spawn } = require('child_process');
 
 const { loadConfig, saveConfig } = require('./moteur/config');
 const { loadCours, saveCours } = require('./moteur/cours');
@@ -226,6 +227,20 @@ app.post('/api/cours', (req, res) => {
     res.json({ success: true, message: "Cours mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur: " + err.message });
+  }
+});
+
+// GET audit report
+app.get('/api/audit', (req, res) => {
+  try {
+    const AUDIT_FILE = path.join(ROOT_DIR, 'data', 'espoir_audit.json');
+    if (!fs.existsSync(AUDIT_FILE)) {
+      return res.json({ status: "pending", message: "Aucun audit n'a encore été réalisé." });
+    }
+    const data = fs.readFileSync(AUDIT_FILE, 'utf8');
+    res.json(JSON.parse(data));
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lecture de l'audit: " + err.message });
   }
 });
 
@@ -814,6 +829,18 @@ async function startServer() {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`ELPIS Bridge démarré sur http://0.0.0.0:${PORT}`);
     console.log(`Moteur Node.js natif — plus de dépendance C++ !`);
+    
+    // 4. Lancer l'agent Python d'Audit en arrière-plan
+    const pyScript = path.join(ROOT_DIR, 'agent_audit', 'main.py');
+    if (fs.existsSync(pyScript)) {
+      console.log(`Lancement de l'agent d'audit Python en arrière-plan...`);
+      // Use python or python3 depending on availability, defaulting to python on Windows
+      const pythonProcess = spawn('python', [pyScript], {
+        detached: true,
+        stdio: 'ignore'
+      });
+      pythonProcess.unref();
+    }
   });
 }
 

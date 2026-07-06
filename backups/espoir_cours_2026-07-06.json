@@ -216,8 +216,25 @@
                                         },
                                         {
                                             "titre": "Cours n°4",
-                                            "jActuel": 14,
-                                            "derniereRevision": "2026-06-15"
+                                            "jActuel": 74,
+                                            "derniereRevision": "2026-07-01",
+                                            "fsrsCard": {
+                                                "due": "2026-09-13T10:59:24.707Z",
+                                                "stability": 73.98601087,
+                                                "difficulty": 3.31446137,
+                                                "elapsed_days": 16,
+                                                "scheduled_days": 74,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-01T10:59:24.707Z"
+                                            },
+                                            "easeFactor": 2.9713846575,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-09-13",
+                                            "tempsMoyen": 98,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Cours n°5",
@@ -228,13 +245,13 @@
                                     "listeTD": [
                                         {
                                             "titre": "Exercice 1 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
-                                            "dernierePratique": "2026-06-17",
-                                            "nombrePratiques": 2,
+                                            "dernierePratique": "2026-07-03",
+                                            "nombrePratiques": 3,
                                             "notes": "",
-                                            "difficulte": "tres_facile",
+                                            "difficulte": "assez_difficile",
                                             "page": 1,
-                                            "tempsMoyen": 7,
-                                            "nombreRevisionsTemps": 1,
+                                            "tempsMoyen": 11,
+                                            "nombreRevisionsTemps": 2,
                                             "difficulteInitiale": 3,
                                             "pdfPath": "/documents/doc-1781701451622-559499730.pdf"
                                         },
@@ -331,12 +348,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Contrôle du 26 Octobre 2023",
-                                            "dernierePratique": "",
-                                            "nombrePratiques": 0,
+                                            "dernierePratique": "2026-07-03",
+                                            "nombrePratiques": 2,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781722402030-670357573.pdf",
                                             "difficulteInitiale": 4,
-                                            "page": 1
+                                            "page": 1,
+                                            "derniereNote": 18,
+                                            "difficulte": "tres_facile",
+                                            "tempsMoyen": 63.5,
+                                            "nombreRevisionsTemps": 2
                                         }
                                     ],
                                     "coefficient": 3,
@@ -873,8 +894,25 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Magnétostatique",
-                                            "jActuel": 7,
-                                            "derniereRevision": "2026-06-15"
+                                            "jActuel": 37,
+                                            "derniereRevision": "2026-07-03",
+                                            "fsrsCard": {
+                                                "due": "2026-08-09T12:08:15.751Z",
+                                                "stability": 36.77501076,
+                                                "difficulty": 4.99022837,
+                                                "elapsed_days": 18,
+                                                "scheduled_days": 37,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-03T12:08:15.751Z"
+                                            },
+                                            "easeFactor": 2.5524429075,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-08-09",
+                                            "tempsMoyen": 114,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 4 : Induction électromagnétique",
@@ -970,12 +1008,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Contrôle continu d'électromagnétisme - Novembre 2022",
-                                            "dernierePratique": "",
-                                            "nombrePratiques": 0,
+                                            "dernierePratique": "2026-07-03",
+                                            "nombrePratiques": 3,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781726276803-18306733.pdf",
                                             "difficulteInitiale": 2,
-                                            "page": 1
+                                            "page": 1,
+                                            "derniereNote": 16.5,
+                                            "difficulte": "facile",
+                                            "tempsMoyen": 96,
+                                            "nombreRevisionsTemps": 3
                                         }
                                     ],
                                     "coefficient": 3,
@@ -1005,11 +1047,26 @@
                                     "listeCM": [
                                         {
                                             "titre": "Chapitre 1 : Outils et théorèmes fondamentaux de l'électrocinétique",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0,
-                                            "pdfPath": "/documents/doc-1781853358939-971488381.pdf"
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-07-04",
+                                            "easeFactor": 2.5219573225,
+                                            "repetitions": 1,
+                                            "pdfPath": "/documents/doc-1781853358939-971488381.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-07-04T10:12:04.848Z",
+                                                "stability": 1.2931,
+                                                "difficulty": 5.11217071,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 1,
+                                                "last_review": "2026-07-04T10:06:04.848Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-07-04",
+                                            "tempsMoyen": 115,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 2 : Les amplificateurs linéaires : concepts généraux et modélisation",

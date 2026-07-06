@@ -1,0 +1,25 @@
+[
+  {
+    "id": "NO_HARDCODED_LOCALHOST",
+    "description": "L'utilisation de 'localhost' en dur dans le code est interdite. Utilisez les variables d'environnement ou API_URL.",
+    "pattern": "http://localhost:[0-9]+",
+    "severity": "critical",
+    "file_pattern": "\\.(js|jsx)$",
+    "exclude_pattern": "(setupTests|test|server|mongoAdapter)\\.(js|jsx)$"
+  },
+  {
+    "id": "NO_CONSOLE_LOG_IN_PROD",
+    "description": "Des console.log() ont été laissés dans le code. Veuillez les retirer pour la production.",
+    "pattern": "console\\.log\\(",
+    "severity": "warning",
+    "file_pattern": "\\.(js|jsx)$",
+    "exclude_pattern": "(server|mongoAdapter|test|setupTests)\\.(js|jsx)$|\\.test\\.jsx$"
+  },
+  {
+    "id": "AVOID_INLINE_STYLES",
+    "description": "L'utilisation de 'style={{' est déconseillée pour l'architecture. Privilégiez les classes CSS.",
+    "pattern": "style=\\{\\{",
+    "severity": "warning",
+    "file_pattern": "\\.(jsx)$"
+  }
+]
