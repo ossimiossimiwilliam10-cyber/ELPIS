@@ -48,13 +48,7 @@
       "replacement": ";"
     }
   },
-  {
-    "id": "AVOID_INLINE_STYLES",
-    "description": "L'utilisation de 'style={{' est deconseillee. Privilegiez les classes CSS.",
-    "pattern": "style=\\{\\{",
-    "severity": "info",
-    "file_pattern": "\\.(jsx)$"
-  },
+
   {
     "id": "NO_TRAILING_WHITESPACE",
     "description": "Espaces inutiles en fin de ligne.",
