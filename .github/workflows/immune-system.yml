@@ -1,0 +1,49 @@
+name: ELPIS Immune System
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Tous les jours a 3h du matin
+  workflow_dispatch: # Permet le lancement manuel
+
+jobs:
+  audit-and-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js (for Validators)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        working-directory: ./interface/web
+        run: npm ci || npm install
+
+      - name: Install Bridge Dependencies
+        working-directory: ./interface/bridge
+        run: npm ci || npm install
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Immune System
+        working-directory: ./agent_audit
+        run: python main.py --once
+
+      - name: Create Pull Request for Fixes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'fix(immune-system): Corrections automatiques suite a audit'
+          title: '🛡️ [Immune System] Corrections Automatiques'
+          body: |
+            Le système immunitaire ELPIS a détecté et corrigé automatiquement des anomalies.
+            Merci de vérifier les modifications avant de fusionner.
+          branch: immune-system-fixes
+          labels: 'automated, immune-system'
