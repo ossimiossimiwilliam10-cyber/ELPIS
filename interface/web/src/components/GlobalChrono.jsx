@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import useStore, { useChronoStore } from '../store';
@@ -12,9 +12,11 @@ export default function GlobalChrono() {
   const [isVisible, setIsVisible] = useState(true);
   const [pipWindow, setPipWindow] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+  const saveLockRef = useRef(false);
 
   const handleSave = () => {
-    if (!exoId) return;
+    if (!exoId || saveLockRef.current) return;
+    saveLockRef.current = true; // Lock the save function immediately
     const addHistoriqueEntry = useStore.getState().addHistoriqueEntry;
     
     // Convertir les secondes en minutes (minimum 1 minute)
@@ -42,6 +44,13 @@ export default function GlobalChrono() {
 
     resetGlobalChrono();
   };
+
+  // Reset lock when a new task is started
+  useEffect(() => {
+    if (exoId) {
+      saveLockRef.current = false;
+    }
+  }, [exoId]);
 
   // Timer effect
   useEffect(() => {
