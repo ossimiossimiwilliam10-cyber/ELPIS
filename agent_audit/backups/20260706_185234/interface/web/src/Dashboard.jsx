@@ -241,7 +241,7 @@ function Dashboard() {
     if (taskFound) {
       // Remove immediately from UI to prevent double submission and provide instant feedback
       setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
-
+      
       confetti({
         particleCount: 100,
         spread: 70,
