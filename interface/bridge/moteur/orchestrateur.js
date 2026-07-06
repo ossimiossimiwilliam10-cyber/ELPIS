@@ -1,26 +1,27 @@
 /**
- * ORCHESTRATEUR — Générateur de rapport quotidien (Scheduler).
+ * ORCHESTRATEUR v3 — Générateur de rapport quotidien (Scheduler).
  * Importe l'intelligence (maps d'analyse) et le scoring (priorités).
  * Orchestre le tout pour produire le planning du jour.
+ *
+ * v3 ajoute :
+ *   - Carte de projection détaillée (intervalles de confiance, tendances, anomalies)
+ *   - Carte de synergie inter-matières par chevauchement de concepts
+ *   - Détection du chronotype pour l'ordonnancement horaire
+ *   - Prévision de charge de travail sur 7 jours
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const MAGIC_CONSTANTS = {
-  // Poids des priorités
-  PRIO_MAX_ANKI: 9999,           // La routine Anki passe avant tout
-  PRIO_MAX_RETARD: 999,          // Utilisé pour un retard infini ou un TP dû demain
-  PRIO_WEEKEND_TP: 500,          // Boost massif pour inciter à faire les TP le week-end
-
-  // Multiplicateurs d'urgence et de synergie
-  BOOST_CRISE_NOTE: 2.0,         // Multiplicateur d'urgence si la note projetée est < 5/20
-  BOOST_PREP_TD: 1.5,            // Multiplicateur pour un CM qui prépare un TD à venir
-  BOOST_ANNALE_URGENT: 5.0,      // Multiplicateur pour une annale si l'examen est < 14 jours
-  BOOST_ANNALE_NORMAL: 3.0,      // Multiplicateur de base pour débloquer une annale
-
-  // Poids Anti-Décrochage
-  BOOST_INACTIVITE_MAX: 3.0,     // Le boost d'inactivité plafonne à x3 (atteint à J+21)
+  PRIO_MAX_ANKI: 9999,
+  PRIO_MAX_RETARD: 999,
+  PRIO_WEEKEND_TP: 500,
+  BOOST_CRISE_NOTE: 2.0,
+  BOOST_PREP_TD: 1.5,
+  BOOST_ANNALE_URGENT: 5.0,
+  BOOST_ANNALE_NORMAL: 3.0,
+  BOOST_INACTIVITE_MAX: 3.0,
 };
 const { loadConfig } = require('./config');
 const { loadCours } = require('./cours');
@@ -32,8 +33,12 @@ const {
   buildVelocityMap,
   detectBurnoutRisk,
   buildProjectedScoreMap,
+  buildProjectedScoreDetailMap,
   buildCognitiveLoadMap,
-  buildExamUrgencyMap
+  buildExamUrgencyMap,
+  buildTimeOptimizationMap,
+  buildSynergyMap,
+  buildWorkloadForecast
 } = require('./intelligence');
 const { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost } = require('./scoring');
 
@@ -41,9 +46,8 @@ const { normalizeDateStr, parseDateLocal } = require('./utils');
 
 function buildTaskPools({
   crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
-  compensationMap, velocityMap, projectedScoreMap, matieresSatureesToday, fillGap, now, parityJour
+  compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday, fillGap, now, parityJour
 }) {
-  // Pools
   const poolCM = [];
   const poolTD = [];
   const poolTP = [];
@@ -63,7 +67,6 @@ function buildTaskPools({
       let matiereIndexDansSemestre = 0;
       let newCMCountPerSemester = 0;
       for (const ue of (s.ues || [])) {
-        // Peupler _ueMatieres pour la détection de synergies inter-matières
         const ueMatiereNames = (ue.matieres || []).map(m => m.nom).filter(Boolean);
         for (const m of (ue.matieres || [])) {
           m._ueMatieres = ueMatiereNames;
@@ -88,7 +91,6 @@ function buildTaskPools({
           let inactivityBoost = 1.0;
           if (lastPratiqueMs > 0) {
             const daysInactive = (now.getTime() - lastPratiqueMs) / (1000 * 60 * 60 * 24);
-            // Progression linéaire : neutre avant J7, puis montée graduelle jusqu'à MAGIC_CONSTANTS.BOOST_INACTIVITE_MAX à J21
             if (daysInactive > 7) {
               inactivityBoost = Math.min(MAGIC_CONSTANTS.BOOST_INACTIVITE_MAX, 1.0 + (daysInactive - 7) / 7);
             }
@@ -113,7 +115,7 @@ function buildTaskPools({
             let doitReviser = false;
             let joursEnRetard = 0;
             if (!cm.derniereRevision) {
-              if (matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
+              if (matieresSatureesToday.has(m.nom)) continue;
               if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject || newCMCountPerSemester >= maxNewCMPerSemester)) continue;
               doitReviser = true;
               joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
@@ -176,7 +178,7 @@ function buildTaskPools({
 
           // --- TD ---
           for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
-            if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
+            if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
             const dureeBase = cfg.defaultDurationTD || 20;
             const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             poolTD.push({
@@ -187,7 +189,7 @@ function buildTaskPools({
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap) * inactivityBoost,
+              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail) * inactivityBoost,
               raisons: [...baseRaisons]
             });
           }
@@ -195,13 +197,12 @@ function buildTaskPools({
           // --- TP ---
           for (const ex of (m.listeTP || []).filter(e => {
             if (e.dernierePratique === todayStr) {
-              // Déjà pratiqué aujourd'hui, ne garder que s'il est dû demain
               if (!e.dateTP) return false;
               return normalizeDateStr(e.dateTP) === tomorrowStr;
             }
             return true;
           })) {
-            if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
+            if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
             const currentStep = ex.nombrePratiques || 0;
             if (currentStep >= 4) continue;
 
@@ -226,7 +227,7 @@ function buildTaskPools({
             }
             const dureeEstimee = (avgForStep != null && avgForStep > 0) ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
 
-            let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
+            let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail);
             if (isTomorrow) tpPrio = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
             else if (isWeekend) tpPrio += MAGIC_CONSTANTS.PRIO_WEEKEND_TP;
 
@@ -257,7 +258,7 @@ function buildTaskPools({
 
           const isEarlyReady = tdFaits >= 2 || tpFaits >= 1;
           const isMastered = (cmCompletion >= 0.70 && tdCompletion >= 0.50) || isEarlyReady;
-          const isUrgent = daysToExam <= 21; // Modifié de 14 à 21 jours
+          const isUrgent = daysToExam <= 21;
           const hasStartedAnnales = (m.listeAnnales || []).some(a => (a.nombrePratiques || 0) > 0 || a.dernierePratique);
 
           const annalesRaisons = [...baseRaisons];
@@ -265,13 +266,12 @@ function buildTaskPools({
           else if (isEarlyReady && !isMastered) annalesRaisons.push("🚀 Défi Précoce");
           else if (isMastered) annalesRaisons.push("🏆 Maîtrise Atteinte");
 
-          // Si une annale a été commencée un jour, elle n'est plus jamais verrouillée
           if (isMastered || isUrgent || hasStartedAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
-              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue; // Malus cognitif
+              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
-              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap);
+              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail);
               const annaleBoost = isUrgent ? MAGIC_CONSTANTS.BOOST_ANNALE_URGENT : MAGIC_CONSTANTS.BOOST_ANNALE_NORMAL;
 
               poolAnnales.push({
@@ -303,13 +303,12 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
 
   const tomorrowDate = new Date(now);
-  tomorrowDate.setHours(tomorrowDate.getHours() - 4); // aligner avec la période de grâce (Night Owl)
+  tomorrowDate.setHours(tomorrowDate.getHours() - 4);
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   const tomorrowStr = tomorrowDate.getFullYear() + '-' + String(tomorrowDate.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrowDate.getDate()).padStart(2, '0');
   const dayOfWeek = now.getDay();
   const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
-  // Charger l'historique
   let historique = [];
   try {
     const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
@@ -320,13 +319,17 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     console.error("Erreur lecture historique:", e);
   }
 
-  // Construire les maps d'intelligence
+  // --- Cartes d'intelligence v3 ---
   const compensationMap = buildCompensationMap(crs);
   const remainingWeightMap = buildRemainingWeightMap(crs);
   const velocityMap = buildVelocityMap(crs, historique, cfg);
   const cognitiveLoadMap = buildCognitiveLoadMap(crs);
   const burnoutRisk = detectBurnoutRisk(cfg, historique);
   const projectedScoreMap = buildProjectedScoreMap(crs, velocityMap);
+  const projectedScoreDetail = buildProjectedScoreDetailMap(crs, velocityMap);
+  const timeOptimizationMap = buildTimeOptimizationMap(historique, cfg);
+  const synergyMap = buildSynergyMap(crs);
+  const workloadForecast = buildWorkloadForecast(historique, cfg);
 
   rapport.intelligence = {
     compensationMap,
@@ -334,7 +337,11 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     velocityMap,
     cognitiveLoadMap,
     burnoutRisk,
-    projectedScoreMap
+    projectedScoreMap,
+    projectedScoreDetail,
+    timeOptimizationMap,
+    synergyMap,
+    workloadForecast
   };
 
   // Anti-Burnout
@@ -364,7 +371,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const maxSubjectsPerDay = cfg.maxSubjectsPerDay || 4;
   let tempsLibreMin = heuresTravailJour * 60;
 
-  // Calculer les engagements fixes du jour
   const todayName = getDayOfWeekString();
   let fixedCommitmentsMin = 0;
   let matieresSatureesToday = new Set();
@@ -398,7 +404,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   rapport.tempsDispoMin = tempsLibreMin;
   rapport.fixedCommitmentsMin = fixedCommitmentsMin;
 
-  // 2. Calculer le temps déjà travaillé aujourd'hui depuis l'historique
+  // 2. Temps déjà travaillé aujourd'hui
   let tempsDejaTravailleMin = 0;
   if (historique && Array.isArray(historique)) {
     const todayEntries = historique.filter(h => {
@@ -412,7 +418,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     tempsDejaTravailleMin = todayEntries.reduce((sum, h) => {
       let mins = h.dureeMinutes;
       if (mins == null || isNaN(mins)) {
-        // Fallback for older entries missing dureeMinutes
         if (h.type === 'ANKI') mins = cfg.defaultDurationAnki || 30;
         else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
         else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
@@ -436,9 +441,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
     crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
-    compensationMap, velocityMap, projectedScoreMap, matieresSatureesToday, fillGap, now, parityJour
+    compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday, fillGap, now, parityJour
   });
-
 
   // 3. Tri par priorité décroissante
   poolAnnales.sort((a, b) => b.prio - a.prio);
@@ -477,7 +481,6 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const subjectTPCount = {};
   const subjectCMCount = {};
 
-  // Pré-sélection stratégique des matières
   const subjectMaxPrio = {};
   for (const t of [...poolAnnales, ...poolCM, ...poolTD, ...poolTP]) {
     if (!subjectMaxPrio[t.matiere] || t.prio > subjectMaxPrio[t.matiere]) {
@@ -529,7 +532,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     appendFromPool(poolTP, subjectTPCount, 1);
   }
 
-  // 5. Chronobiologie
+  // --- 5. Chronobiologie v3 : Ordonnancement par charge cognitive + chronotype ---
   const heavyTasks = [];
   const mediumTasks = [];
   const lightTasks = [];
@@ -546,9 +549,27 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   }
 
   taches.length = 0;
-  taches.push(...heavyTasks, ...mediumTasks, ...lightTasks);
 
+  // Ordonnancement sensible au chronotype
+  const chrono = timeOptimizationMap;
   const currentHour = new Date().getHours();
+  const heavyWindow = chrono.optimalWindows.heavy;
+  const mediumWindow = chrono.optimalWindows.medium;
+
+  // Si on est dans la fenêtre "heavy" (ex: 8h-12h), on priorise les tâches lourdes
+  const inHeavyWindow = currentHour >= heavyWindow.start && currentHour < heavyWindow.end;
+  const inMediumWindow = currentHour >= mediumWindow.start && currentHour < mediumWindow.end;
+
+  if (inHeavyWindow) {
+    taches.push(...heavyTasks, ...mediumTasks, ...lightTasks);
+  } else if (inMediumWindow) {
+    taches.push(...mediumTasks, ...heavyTasks, ...lightTasks);
+  } else {
+    // Soir ou matin très tôt : tâches légères d'abord
+    taches.push(...lightTasks, ...mediumTasks, ...heavyTasks);
+  }
+
+  // Assignation des moments (rétrocompatible avec l'heure courante)
   let accumulatedTime = 0;
   for (const t of taches) {
     let percentBefore = accumulatedTime / (tempsRequisMin || 1);
@@ -556,6 +577,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     let percentAfter = accumulatedTime / (tempsRequisMin || 1);
     let midPercent = (percentBefore + percentAfter) / 2.0;
 
+    // Seuils adaptés à l'heure et au chronotype
     if (currentHour < 12) {
       if (midPercent <= 0.35) t.moment = 'matin';
       else if (midPercent <= 0.70) t.moment = 'aprem';
@@ -565,6 +587,11 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
       else t.moment = 'soir';
     } else {
       t.moment = 'soir';
+    }
+
+    // Tagguer les synergies détectées
+    if (synergyMap[t.matiere] && synergyMap[t.matiere].length > 0) {
+      t.synergies = synergyMap[t.matiere].slice(0, 3);
     }
   }
 
@@ -586,7 +613,6 @@ module.exports = {
 
 /**
  * Génère UNE seule tâche spécifique selon les critères demandés par l'utilisateur (matière, type).
- * Choisit la tâche la plus pertinente et prioritaire correspondant aux critères.
  */
 function genererTacheSpecifique(configPath, coursPath, options) {
   const { matiere = 'all', type = 'all', dureeMin = 30 } = options;
@@ -614,6 +640,7 @@ function genererTacheSpecifique(configPath, coursPath, options) {
   const remainingWeightMap = buildRemainingWeightMap(crs);
   const velocityMap = buildVelocityMap(crs, historique, cfg);
   const examUrgencyMap = buildExamUrgencyMap(crs);
+  const projectedScoreDetail = buildProjectedScoreDetailMap(crs, velocityMap);
 
   const candidates = [];
 
@@ -632,7 +659,7 @@ function genererTacheSpecifique(configPath, coursPath, options) {
 
   const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
     crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
-    compensationMap, velocityMap, projectedScoreMap: {}, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: 0
+    compensationMap, velocityMap, projectedScoreMap: {}, projectedScoreDetail, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: 0
   });
 
   const allPools = [...poolCM, ...poolTD, ...poolTP, ...poolAnnales];
@@ -644,11 +671,9 @@ function genererTacheSpecifique(configPath, coursPath, options) {
 
   if (candidates.length === 0) return null;
 
-  // Appliquer une petite pénalité de priorité si la durée estimée s'éloigne beaucoup de la durée souhaitée (si précisée)
   if (dureeMin > 0 && type !== 'ANKI') {
     candidates.forEach(c => {
       const diff = Math.abs(c.dureeMinutes - dureeMin);
-      // pénalise d'autant plus que l'écart est grand (par ex: 1 pt de priorité en moins par minute d'écart au-delà de 15min)
       if (diff > 15) {
          c.prio -= (diff - 15) * 0.5;
       }
@@ -658,6 +683,6 @@ function genererTacheSpecifique(configPath, coursPath, options) {
   candidates.sort((a, b) => b.prio - a.prio);
 
   const bestTask = candidates[0];
-  bestTask.moment = 'sur-mesure'; // Indicateur pour le rendu
+  bestTask.moment = 'sur-mesure';
   return bestTask;
 }

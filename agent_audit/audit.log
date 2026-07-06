@@ -537,3 +537,908 @@
 [2026-07-06 15:18:43]   -> 1393 anomalies detectees.
 [2026-07-06 15:18:43]   -> 630 corrections appliquees sur 41 fichiers.
 [2026-07-06 15:18:43]   -> Backups sauvegardes dans : agent_audit/backups/20260706_151842/
+[2026-07-06 15:23:48] Démarrage de l'audit complet (RAPPORT SEUL)...
+[2026-07-06 15:23:48]   [scan] Lancer ELPIS.vbs (15 lignes)
+[2026-07-06 15:23:48]   [scan] README.md (142 lignes)
+[2026-07-06 15:23:48]   [scan] render.yaml (12 lignes)
+[2026-07-06 15:23:48]   [scan] start_elpis.bat (35 lignes)
+[2026-07-06 15:23:48]   [scan] SKILL.md (13 lignes)
+[2026-07-06 15:23:48]   [scan] elpis_rules.md (54 lignes)
+[2026-07-06 15:23:48]   [scan] agent_audit.yml (42 lignes)
+[2026-07-06 15:23:48]   [scan] ci.yml (55 lignes)
+[2026-07-06 15:23:48]   [scan] main.py (444 lignes)
+[2026-07-06 15:23:48]   [scan] README.md (253 lignes)
+[2026-07-06 15:23:48]   [scan] rules.json (71 lignes)
+[2026-07-06 15:23:48]   [scan] espoir_audit.json (16842 lignes)
+[2026-07-06 15:23:48]   [scan] espoir_chat.json (42 lignes)
+[2026-07-06 15:23:48]   [scan] espoir_config.json (49 lignes)
+[2026-07-06 15:23:48]   [scan] espoir_cours.json (2989 lignes)
+[2026-07-06 15:23:48]   [scan] espoir_historique.json (413 lignes)
+[2026-07-06 15:23:48]   [scan] .env (1 lignes)
+[2026-07-06 15:23:48]   [scan] aiAdapter.js (150 lignes)
+[2026-07-06 15:23:48]   [scan] eslint.config.js (27 lignes)
+[2026-07-06 15:23:48]   [scan] migrate_pdfs.js (59 lignes)
+[2026-07-06 15:23:49]   [scan] migrate_to_mongo.js (62 lignes)
+[2026-07-06 15:23:49]   [scan] migrate_via_http.js (36 lignes)
+[2026-07-06 15:23:49]   [scan] mongoAdapter.js (69 lignes)
+[2026-07-06 15:23:49]   [scan] package-lock.json (3895 lignes)
+[2026-07-06 15:23:49]   [scan] package.json (38 lignes)
+[2026-07-06 15:23:49]   [scan] server.js (847 lignes)
+[2026-07-06 15:23:49]   [scan] sim_stress_test.js (236 lignes)
+[2026-07-06 15:23:49]   [scan] base.css (224 lignes)
+[2026-07-06 15:23:49]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:23:49]   [scan] config.js.html (577 lignes)
+[2026-07-06 15:23:49]   [scan] cours.js.html (772 lignes)
+[2026-07-06 15:23:49]   [scan] coverage-final.json (6 lignes)
+[2026-07-06 15:23:49]   [scan] index.html (176 lignes)
+[2026-07-06 15:23:49]   [scan] intelligence.js.html (1363 lignes)
+[2026-07-06 15:23:49]   [scan] orchestrateur.js.html (1876 lignes)
+[2026-07-06 15:23:49]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:23:49]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:23:49]   [scan] scoring.js.html (562 lignes)
+[2026-07-06 15:23:49]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:23:49]   [scan] config.js (163 lignes)
+[2026-07-06 15:23:49]   [scan] cours.js (231 lignes)
+[2026-07-06 15:23:49]   [scan] intelligence.js (459 lignes)
+[2026-07-06 15:23:49]   [scan] orchestrateur.js (663 lignes)
+[2026-07-06 15:23:49]   [scan] projets.js (47 lignes)
+[2026-07-06 15:23:49]   [scan] scoring.js (159 lignes)
+[2026-07-06 15:23:49]   [scan] utils.js (32 lignes)
+[2026-07-06 15:23:49]   [scan] aiAdapter.test.js (35 lignes)
+[2026-07-06 15:23:49]   [scan] config.test.js (234 lignes)
+[2026-07-06 15:23:49]   [scan] cours.test.js (388 lignes)
+[2026-07-06 15:23:49]   [scan] intelligence.test.js (224 lignes)
+[2026-07-06 15:23:49]   [scan] orchestrateur.coverage.test.js (174 lignes)
+[2026-07-06 15:23:49]   [scan] orchestrateur.integration.test.js (130 lignes)
+[2026-07-06 15:23:49]   [scan] orchestrateur.stress.test.js (149 lignes)
+[2026-07-06 15:23:49]   [scan] orchestrateur.test.js (102 lignes)
+[2026-07-06 15:23:49]   [scan] projets.test.js (51 lignes)
+[2026-07-06 15:23:49]   [scan] scoring.test.js (192 lignes)
+[2026-07-06 15:23:49]   [scan] .gitignore (24 lignes)
+[2026-07-06 15:23:49]   [scan] eslint.config.js (21 lignes)
+[2026-07-06 15:23:49]   [scan] index.html (30 lignes)
+[2026-07-06 15:23:49]   [scan] package-lock.json (9775 lignes)
+[2026-07-06 15:23:49]   [scan] package.json (46 lignes)
+[2026-07-06 15:23:49]   [scan] playwright.config.js (26 lignes)
+[2026-07-06 15:23:49]   [scan] README.md (16 lignes)
+[2026-07-06 15:23:49]   [scan] vite.config.js (66 lignes)
+[2026-07-06 15:23:49]   [scan] base.css (224 lignes)
+[2026-07-06 15:23:49]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:23:49]   [scan] coverage-final.json (28 lignes)
+[2026-07-06 15:23:49]   [scan] index.html (146 lignes)
+[2026-07-06 15:23:49]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:23:49]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:23:49]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:23:49]   [scan] App.jsx.html (1795 lignes)
+[2026-07-06 15:23:49]   [scan] BulletinPage.jsx.html (1177 lignes)
+[2026-07-06 15:23:49]   [scan] constants.js.html (106 lignes)
+[2026-07-06 15:23:49]   [scan] CoursPage.jsx.html (1354 lignes)
+[2026-07-06 15:23:49]   [scan] Dashboard.jsx.html (2641 lignes)
+[2026-07-06 15:23:49]   [scan] fsrsEngine.js.html (337 lignes)
+[2026-07-06 15:23:49]   [scan] GlobalSearchModal.jsx.html (562 lignes)
+[2026-07-06 15:23:49]   [scan] index.css.html (4168 lignes)
+[2026-07-06 15:23:49]   [scan] index.html (356 lignes)
+[2026-07-06 15:23:49]   [scan] MarkdownModal.jsx.html (343 lignes)
+[2026-07-06 15:23:49]   [scan] parseDateLocal.js.html (154 lignes)
+[2026-07-06 15:23:49]   [scan] PreparationHebdoPage.jsx.html (1396 lignes)
+[2026-07-06 15:23:49]   [scan] RevisionsAvanceesPage.jsx.html (1105 lignes)
+[2026-07-06 15:23:49]   [scan] Sidebar.jsx.html (406 lignes)
+[2026-07-06 15:23:49]   [scan] sm2.js.html (526 lignes)
+[2026-07-06 15:23:49]   [scan] store.js.html (976 lignes)
+[2026-07-06 15:23:49]   [scan] ToastProvider.jsx.html (304 lignes)
+[2026-07-06 15:23:49]   [scan] useWorkloadEngine.js.html (382 lignes)
+[2026-07-06 15:23:49]   [scan] CMCompletionModal.jsx.html (661 lignes)
+[2026-07-06 15:23:49]   [scan] DisclaimerModal.jsx.html (277 lignes)
+[2026-07-06 15:23:49]   [scan] GlobalChrono.jsx.html (865 lignes)
+[2026-07-06 15:23:49]   [scan] index.html (161 lignes)
+[2026-07-06 15:23:49]   [scan] InfoTooltip.jsx.html (295 lignes)
+[2026-07-06 15:23:49]   [scan] EditableLabel.jsx.html (154 lignes)
+[2026-07-06 15:23:49]   [scan] EditableNote.jsx.html (133 lignes)
+[2026-07-06 15:23:49]   [scan] ExerciceCard.jsx.html (829 lignes)
+[2026-07-06 15:23:49]   [scan] ExerciceRow.jsx.html (382 lignes)
+[2026-07-06 15:23:49]   [scan] index.html (191 lignes)
+[2026-07-06 15:23:49]   [scan] MatiereCard.jsx.html (1222 lignes)
+[2026-07-06 15:23:49]   [scan] StarRating.jsx.html (157 lignes)
+[2026-07-06 15:23:49]   [scan] index.html (90 lignes)
+[2026-07-06 15:23:49]   [scan] manifest.json (21 lignes)
+[2026-07-06 15:23:49]   [scan] sw.js (15 lignes)
+[2026-07-06 15:23:49]   [scan] App.jsx (624 lignes)
+[2026-07-06 15:23:49]   [scan] BulletinPage.jsx (414 lignes)
+[2026-07-06 15:23:49]   [scan] BulletinPage.test.jsx (168 lignes)
+[2026-07-06 15:23:49]   [scan] CMCompletionModal.test.jsx (65 lignes)
+[2026-07-06 15:23:49]   [scan] constants.js (7 lignes)
+[2026-07-06 15:23:49]   [scan] CoursPage.jsx (446 lignes)
+[2026-07-06 15:23:49]   [scan] CoursPage.test.jsx (156 lignes)
+[2026-07-06 15:23:49]   [scan] Dashboard.jsx (1108 lignes)
+[2026-07-06 15:23:49]   [scan] Dashboard.test.jsx (146 lignes)
+[2026-07-06 15:23:49]   [scan] e2e_mock.test.js (31 lignes)
+[2026-07-06 15:23:49]   [scan] EntrainementPage.jsx (641 lignes)
+[2026-07-06 15:23:49]   [scan] fsrsEngine.js (84 lignes)
+[2026-07-06 15:23:49]   [scan] fsrsEngine.test.js (301 lignes)
+[2026-07-06 15:23:49]   [scan] GlobalSearchModal.jsx (159 lignes)
+[2026-07-06 15:23:49]   [scan] GlobalSearchModal.test.jsx (101 lignes)
+[2026-07-06 15:23:49]   [scan] index.css (1443 lignes)
+[2026-07-06 15:23:49]   [scan] main.jsx (13 lignes)
+[2026-07-06 15:23:49]   [scan] MarkdownModal.jsx (86 lignes)
+[2026-07-06 15:23:49]   [scan] MarkdownModal.test.jsx (56 lignes)
+[2026-07-06 15:23:49]   [scan] MatiereCard.test.jsx (74 lignes)
+[2026-07-06 15:23:49]   [scan] parseDateLocal.js (23 lignes)
+[2026-07-06 15:23:49]   [scan] parseDateLocal.test.js (109 lignes)
+[2026-07-06 15:23:49]   [scan] PreparationHebdoPage.jsx (442 lignes)
+[2026-07-06 15:23:50]   [scan] ProjetsPage.jsx (321 lignes)
+[2026-07-06 15:23:50]   [scan] ProjetsPage.test.jsx (105 lignes)
+[2026-07-06 15:23:50]   [scan] RevisionsAvanceesPage.jsx (151 lignes)
+[2026-07-06 15:23:50]   [scan] RevisionsAvanceesPage.test.jsx (118 lignes)
+[2026-07-06 15:23:50]   [scan] setupTests.js (1 lignes)
+[2026-07-06 15:23:50]   [scan] Sidebar.jsx (128 lignes)
+[2026-07-06 15:23:50]   [scan] Sidebar.test.jsx (79 lignes)
+[2026-07-06 15:23:50]   [scan] sm2.js (147 lignes)
+[2026-07-06 15:23:50]   [scan] sm2.test.js (260 lignes)
+[2026-07-06 15:23:50]   [scan] StatistiquesPage.jsx (592 lignes)
+[2026-07-06 15:23:50]   [scan] store.js (441 lignes)
+[2026-07-06 15:23:50]   [scan] store.test.js (52 lignes)
+[2026-07-06 15:23:50]   [scan] ToastProvider.jsx (73 lignes)
+[2026-07-06 15:23:50]   [scan] useWorkloadEngine.js (116 lignes)
+[2026-07-06 15:23:50]   [scan] useWorkloadEngine.test.js (81 lignes)
+[2026-07-06 15:23:50]   [scan] AICoachSidebar.jsx (244 lignes)
+[2026-07-06 15:23:50]   [scan] AICoachSidebar.test.jsx (91 lignes)
+[2026-07-06 15:23:50]   [scan] AuditDashboard.jsx (122 lignes)
+[2026-07-06 15:23:50]   [scan] BackgroundMusicPlayer.jsx (277 lignes)
+[2026-07-06 15:23:50]   [scan] CMCompletionModal.jsx (203 lignes)
+[2026-07-06 15:23:50]   [scan] DisclaimerModal.jsx (64 lignes)
+[2026-07-06 15:23:50]   [scan] ErrorBoundary.jsx (37 lignes)
+[2026-07-06 15:23:50]   [scan] GlobalChrono.jsx (460 lignes)
+[2026-07-06 15:23:50]   [scan] InfoTooltip.jsx (70 lignes)
+[2026-07-06 15:23:50]   [scan] MusicSettingsModal.jsx (190 lignes)
+[2026-07-06 15:23:50]   [scan] EditableLabel.jsx (31 lignes)
+[2026-07-06 15:23:50]   [scan] EditableLabel.test.jsx (64 lignes)
+[2026-07-06 15:23:50]   [scan] EditableNote.jsx (16 lignes)
+[2026-07-06 15:23:50]   [scan] ExerciceCard.jsx (296 lignes)
+[2026-07-06 15:23:50]   [scan] ExerciceCard.test.jsx (64 lignes)
+[2026-07-06 15:23:50]   [scan] ExerciceRow.jsx (99 lignes)
+[2026-07-06 15:23:50]   [scan] ExerciceRow.test.jsx (49 lignes)
+[2026-07-06 15:23:50]   [scan] MatiereCard.jsx (426 lignes)
+[2026-07-06 15:23:50]   [scan] StarRating.jsx (24 lignes)
+[2026-07-06 15:23:50]   [scan] StarRating.test.jsx (30 lignes)
+[2026-07-06 15:23:50]   [scan] timeParser.js (49 lignes)
+[2026-07-06 15:23:50]   [scan] timeParser.test.js (41 lignes)
+[2026-07-06 15:23:50]   [scan] App.test.jsx (99 lignes)
+[2026-07-06 15:23:50]   [scan] PreparationHebdoPage.test.jsx (76 lignes)
+[2026-07-06 15:23:50]   [scan] store.test.js (146 lignes)
+[2026-07-06 15:23:50]   [scan] .last-run.json (4 lignes)
+[2026-07-06 15:23:50]   [scan] elpis.spec.js (140 lignes)
+[2026-07-06 15:23:50]   [scan] music_hashes.json (9 lignes)
+[2026-07-06 15:23:50]   [scan] test_saveCours.js (16 lignes)
+[2026-07-06 15:23:50]   [scan] test_timezone.js (6 lignes)
+[2026-07-06 15:23:50]   [scan] agent_qa.bat (49 lignes)
+[2026-07-06 15:23:50]   [scan] deploy_oracle.sh (42 lignes)
+[2026-07-06 15:23:50] Audit termine. 175 fichiers scannes.
+[2026-07-06 15:23:50]   -> 764 anomalies detectees.
+[2026-07-06 15:23:50]   -> 0 corrections appliquees sur 0 fichiers.
+[2026-07-06 15:28:35] --- Démarrage de l'audit complet (RAPPORT SEUL) | Passe 1/3 ---
+[2026-07-06 15:28:35]   [scan] Lancer ELPIS.vbs (15 lignes)
+[2026-07-06 15:28:35]   [scan] README.md (142 lignes)
+[2026-07-06 15:28:35]   [scan] render.yaml (12 lignes)
+[2026-07-06 15:28:35]   [scan] start_elpis.bat (35 lignes)
+[2026-07-06 15:28:35]   [scan] SKILL.md (13 lignes)
+[2026-07-06 15:28:35]   [scan] elpis_rules.md (54 lignes)
+[2026-07-06 15:28:35]   [scan] agent_audit.yml (42 lignes)
+[2026-07-06 15:28:35]   [scan] ci.yml (55 lignes)
+[2026-07-06 15:28:35]   [scan] main.py (456 lignes)
+[2026-07-06 15:28:35]   [scan] README.md (253 lignes)
+[2026-07-06 15:28:35]   [scan] rules.json (71 lignes)
+[2026-07-06 15:28:35]   [scan] espoir_audit.json (6139 lignes)
+[2026-07-06 15:28:35]   [scan] espoir_chat.json (42 lignes)
+[2026-07-06 15:28:35]   [scan] espoir_config.json (49 lignes)
+[2026-07-06 15:28:35]   [scan] espoir_cours.json (2989 lignes)
+[2026-07-06 15:28:35]   [scan] espoir_historique.json (413 lignes)
+[2026-07-06 15:28:35]   [scan] .env (1 lignes)
+[2026-07-06 15:28:35]   [scan] aiAdapter.js (150 lignes)
+[2026-07-06 15:28:35]   [scan] eslint.config.js (27 lignes)
+[2026-07-06 15:28:35]   [scan] migrate_pdfs.js (59 lignes)
+[2026-07-06 15:28:35]   [scan] migrate_to_mongo.js (62 lignes)
+[2026-07-06 15:28:35]   [scan] migrate_via_http.js (36 lignes)
+[2026-07-06 15:28:35]   [scan] mongoAdapter.js (69 lignes)
+[2026-07-06 15:28:35]   [scan] package-lock.json (3895 lignes)
+[2026-07-06 15:28:35]   [scan] package.json (38 lignes)
+[2026-07-06 15:28:35]   [scan] server.js (847 lignes)
+[2026-07-06 15:28:35]   [scan] sim_stress_test.js (236 lignes)
+[2026-07-06 15:28:35]   [scan] base.css (224 lignes)
+[2026-07-06 15:28:35]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:28:35]   [scan] config.js.html (577 lignes)
+[2026-07-06 15:28:35]   [scan] cours.js.html (772 lignes)
+[2026-07-06 15:28:35]   [scan] coverage-final.json (6 lignes)
+[2026-07-06 15:28:35]   [scan] index.html (176 lignes)
+[2026-07-06 15:28:35]   [scan] intelligence.js.html (1363 lignes)
+[2026-07-06 15:28:35]   [scan] orchestrateur.js.html (1876 lignes)
+[2026-07-06 15:28:35]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:28:35]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:28:35]   [scan] scoring.js.html (562 lignes)
+[2026-07-06 15:28:35]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:28:35]   [scan] config.js (163 lignes)
+[2026-07-06 15:28:35]   [scan] cours.js (231 lignes)
+[2026-07-06 15:28:35]   [scan] intelligence.js (459 lignes)
+[2026-07-06 15:28:35]   [scan] orchestrateur.js (663 lignes)
+[2026-07-06 15:28:35]   [scan] projets.js (47 lignes)
+[2026-07-06 15:28:35]   [scan] scoring.js (159 lignes)
+[2026-07-06 15:28:35]   [scan] utils.js (32 lignes)
+[2026-07-06 15:28:35]   [scan] aiAdapter.test.js (35 lignes)
+[2026-07-06 15:28:35]   [scan] config.test.js (234 lignes)
+[2026-07-06 15:28:35]   [scan] cours.test.js (388 lignes)
+[2026-07-06 15:28:35]   [scan] intelligence.test.js (224 lignes)
+[2026-07-06 15:28:35]   [scan] orchestrateur.coverage.test.js (174 lignes)
+[2026-07-06 15:28:35]   [scan] orchestrateur.integration.test.js (130 lignes)
+[2026-07-06 15:28:35]   [scan] orchestrateur.stress.test.js (149 lignes)
+[2026-07-06 15:28:35]   [scan] orchestrateur.test.js (102 lignes)
+[2026-07-06 15:28:35]   [scan] projets.test.js (51 lignes)
+[2026-07-06 15:28:35]   [scan] scoring.test.js (192 lignes)
+[2026-07-06 15:28:35]   [scan] .gitignore (24 lignes)
+[2026-07-06 15:28:35]   [scan] eslint.config.js (21 lignes)
+[2026-07-06 15:28:35]   [scan] index.html (30 lignes)
+[2026-07-06 15:28:35]   [scan] package-lock.json (9775 lignes)
+[2026-07-06 15:28:35]   [scan] package.json (46 lignes)
+[2026-07-06 15:28:35]   [scan] playwright.config.js (26 lignes)
+[2026-07-06 15:28:35]   [scan] README.md (16 lignes)
+[2026-07-06 15:28:35]   [scan] vite.config.js (66 lignes)
+[2026-07-06 15:28:35]   [scan] base.css (224 lignes)
+[2026-07-06 15:28:35]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:28:35]   [scan] coverage-final.json (28 lignes)
+[2026-07-06 15:28:35]   [scan] index.html (146 lignes)
+[2026-07-06 15:28:35]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:28:35]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:28:35]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:28:35]   [scan] App.jsx.html (1795 lignes)
+[2026-07-06 15:28:35]   [scan] BulletinPage.jsx.html (1177 lignes)
+[2026-07-06 15:28:35]   [scan] constants.js.html (106 lignes)
+[2026-07-06 15:28:35]   [scan] CoursPage.jsx.html (1354 lignes)
+[2026-07-06 15:28:35]   [scan] Dashboard.jsx.html (2641 lignes)
+[2026-07-06 15:28:35]   [scan] fsrsEngine.js.html (337 lignes)
+[2026-07-06 15:28:35]   [scan] GlobalSearchModal.jsx.html (562 lignes)
+[2026-07-06 15:28:35]   [scan] index.css.html (4168 lignes)
+[2026-07-06 15:28:35]   [scan] index.html (356 lignes)
+[2026-07-06 15:28:35]   [scan] MarkdownModal.jsx.html (343 lignes)
+[2026-07-06 15:28:35]   [scan] parseDateLocal.js.html (154 lignes)
+[2026-07-06 15:28:35]   [scan] PreparationHebdoPage.jsx.html (1396 lignes)
+[2026-07-06 15:28:35]   [scan] RevisionsAvanceesPage.jsx.html (1105 lignes)
+[2026-07-06 15:28:35]   [scan] Sidebar.jsx.html (406 lignes)
+[2026-07-06 15:28:35]   [scan] sm2.js.html (526 lignes)
+[2026-07-06 15:28:35]   [scan] store.js.html (976 lignes)
+[2026-07-06 15:28:35]   [scan] ToastProvider.jsx.html (304 lignes)
+[2026-07-06 15:28:35]   [scan] useWorkloadEngine.js.html (382 lignes)
+[2026-07-06 15:28:35]   [scan] CMCompletionModal.jsx.html (661 lignes)
+[2026-07-06 15:28:35]   [scan] DisclaimerModal.jsx.html (277 lignes)
+[2026-07-06 15:28:35]   [scan] GlobalChrono.jsx.html (865 lignes)
+[2026-07-06 15:28:35]   [scan] index.html (161 lignes)
+[2026-07-06 15:28:35]   [scan] InfoTooltip.jsx.html (295 lignes)
+[2026-07-06 15:28:35]   [scan] EditableLabel.jsx.html (154 lignes)
+[2026-07-06 15:28:35]   [scan] EditableNote.jsx.html (133 lignes)
+[2026-07-06 15:28:35]   [scan] ExerciceCard.jsx.html (829 lignes)
+[2026-07-06 15:28:35]   [scan] ExerciceRow.jsx.html (382 lignes)
+[2026-07-06 15:28:35]   [scan] index.html (191 lignes)
+[2026-07-06 15:28:35]   [scan] MatiereCard.jsx.html (1222 lignes)
+[2026-07-06 15:28:35]   [scan] StarRating.jsx.html (157 lignes)
+[2026-07-06 15:28:35]   [scan] index.html (90 lignes)
+[2026-07-06 15:28:35]   [scan] manifest.json (21 lignes)
+[2026-07-06 15:28:35]   [scan] sw.js (15 lignes)
+[2026-07-06 15:28:35]   [scan] App.jsx (624 lignes)
+[2026-07-06 15:28:35]   [scan] BulletinPage.jsx (414 lignes)
+[2026-07-06 15:28:35]   [scan] BulletinPage.test.jsx (168 lignes)
+[2026-07-06 15:28:35]   [scan] CMCompletionModal.test.jsx (65 lignes)
+[2026-07-06 15:28:35]   [scan] constants.js (7 lignes)
+[2026-07-06 15:28:35]   [scan] CoursPage.jsx (446 lignes)
+[2026-07-06 15:28:35]   [scan] CoursPage.test.jsx (156 lignes)
+[2026-07-06 15:28:35]   [scan] Dashboard.jsx (1108 lignes)
+[2026-07-06 15:28:35]   [scan] Dashboard.test.jsx (146 lignes)
+[2026-07-06 15:28:35]   [scan] e2e_mock.test.js (31 lignes)
+[2026-07-06 15:28:35]   [scan] EntrainementPage.jsx (641 lignes)
+[2026-07-06 15:28:35]   [scan] fsrsEngine.js (84 lignes)
+[2026-07-06 15:28:35]   [scan] fsrsEngine.test.js (301 lignes)
+[2026-07-06 15:28:35]   [scan] GlobalSearchModal.jsx (159 lignes)
+[2026-07-06 15:28:35]   [scan] GlobalSearchModal.test.jsx (101 lignes)
+[2026-07-06 15:28:35]   [scan] index.css (1443 lignes)
+[2026-07-06 15:28:35]   [scan] main.jsx (13 lignes)
+[2026-07-06 15:28:35]   [scan] MarkdownModal.jsx (86 lignes)
+[2026-07-06 15:28:35]   [scan] MarkdownModal.test.jsx (56 lignes)
+[2026-07-06 15:28:35]   [scan] MatiereCard.test.jsx (74 lignes)
+[2026-07-06 15:28:35]   [scan] parseDateLocal.js (23 lignes)
+[2026-07-06 15:28:35]   [scan] parseDateLocal.test.js (109 lignes)
+[2026-07-06 15:28:35]   [scan] PreparationHebdoPage.jsx (442 lignes)
+[2026-07-06 15:28:35]   [scan] ProjetsPage.jsx (321 lignes)
+[2026-07-06 15:28:35]   [scan] ProjetsPage.test.jsx (105 lignes)
+[2026-07-06 15:28:35]   [scan] RevisionsAvanceesPage.jsx (151 lignes)
+[2026-07-06 15:28:35]   [scan] RevisionsAvanceesPage.test.jsx (118 lignes)
+[2026-07-06 15:28:35]   [scan] setupTests.js (1 lignes)
+[2026-07-06 15:28:35]   [scan] Sidebar.jsx (128 lignes)
+[2026-07-06 15:28:35]   [scan] Sidebar.test.jsx (79 lignes)
+[2026-07-06 15:28:35]   [scan] sm2.js (147 lignes)
+[2026-07-06 15:28:35]   [scan] sm2.test.js (260 lignes)
+[2026-07-06 15:28:35]   [scan] StatistiquesPage.jsx (592 lignes)
+[2026-07-06 15:28:35]   [scan] store.js (441 lignes)
+[2026-07-06 15:28:35]   [scan] store.test.js (52 lignes)
+[2026-07-06 15:28:35]   [scan] ToastProvider.jsx (73 lignes)
+[2026-07-06 15:28:35]   [scan] useWorkloadEngine.js (116 lignes)
+[2026-07-06 15:28:35]   [scan] useWorkloadEngine.test.js (81 lignes)
+[2026-07-06 15:28:35]   [scan] AICoachSidebar.jsx (244 lignes)
+[2026-07-06 15:28:35]   [scan] AICoachSidebar.test.jsx (91 lignes)
+[2026-07-06 15:28:35]   [scan] AuditDashboard.jsx (122 lignes)
+[2026-07-06 15:28:35]   [scan] BackgroundMusicPlayer.jsx (277 lignes)
+[2026-07-06 15:28:35]   [scan] CMCompletionModal.jsx (203 lignes)
+[2026-07-06 15:28:35]   [scan] DisclaimerModal.jsx (64 lignes)
+[2026-07-06 15:28:35]   [scan] ErrorBoundary.jsx (37 lignes)
+[2026-07-06 15:28:35]   [scan] GlobalChrono.jsx (460 lignes)
+[2026-07-06 15:28:35]   [scan] InfoTooltip.jsx (70 lignes)
+[2026-07-06 15:28:35]   [scan] MusicSettingsModal.jsx (190 lignes)
+[2026-07-06 15:28:35]   [scan] EditableLabel.jsx (31 lignes)
+[2026-07-06 15:28:35]   [scan] EditableLabel.test.jsx (64 lignes)
+[2026-07-06 15:28:35]   [scan] EditableNote.jsx (16 lignes)
+[2026-07-06 15:28:35]   [scan] ExerciceCard.jsx (296 lignes)
+[2026-07-06 15:28:35]   [scan] ExerciceCard.test.jsx (64 lignes)
+[2026-07-06 15:28:35]   [scan] ExerciceRow.jsx (99 lignes)
+[2026-07-06 15:28:35]   [scan] ExerciceRow.test.jsx (49 lignes)
+[2026-07-06 15:28:35]   [scan] MatiereCard.jsx (426 lignes)
+[2026-07-06 15:28:35]   [scan] StarRating.jsx (24 lignes)
+[2026-07-06 15:28:35]   [scan] StarRating.test.jsx (30 lignes)
+[2026-07-06 15:28:35]   [scan] timeParser.js (49 lignes)
+[2026-07-06 15:28:35]   [scan] timeParser.test.js (41 lignes)
+[2026-07-06 15:28:35]   [scan] App.test.jsx (99 lignes)
+[2026-07-06 15:28:35]   [scan] PreparationHebdoPage.test.jsx (76 lignes)
+[2026-07-06 15:28:35]   [scan] store.test.js (146 lignes)
+[2026-07-06 15:28:35]   [scan] .last-run.json (4 lignes)
+[2026-07-06 15:28:35]   [scan] elpis.spec.js (140 lignes)
+[2026-07-06 15:28:35]   [scan] music_hashes.json (9 lignes)
+[2026-07-06 15:28:35]   [scan] test_saveCours.js (16 lignes)
+[2026-07-06 15:28:35]   [scan] test_timezone.js (6 lignes)
+[2026-07-06 15:28:35]   [scan] agent_qa.bat (49 lignes)
+[2026-07-06 15:28:35]   [scan] deploy_oracle.sh (42 lignes)
+[2026-07-06 15:28:35] Audit termine (Passe 1). 175 fichiers scannes.
+[2026-07-06 15:28:35]   -> 764 anomalies detectees.
+[2026-07-06 15:28:35]   -> 0 corrections appliquees sur 0 fichiers.
+[2026-07-06 15:33:49] --- Démarrage de l'audit complet (SCAN + CORRECTION) | Passe 1/3 ---
+[2026-07-06 15:33:49]   [scan] Lancer ELPIS.vbs (15 lignes)
+[2026-07-06 15:33:49]   [scan] README.md (142 lignes)
+[2026-07-06 15:33:49]   [scan] render.yaml (12 lignes)
+[2026-07-06 15:33:49]   [scan] start_elpis.bat (35 lignes)
+[2026-07-06 15:33:49]   [scan] SKILL.md (13 lignes)
+[2026-07-06 15:33:49]   [scan] elpis_rules.md (54 lignes)
+[2026-07-06 15:33:49]   [scan] agent_audit.yml (42 lignes)
+[2026-07-06 15:33:49]   [scan] ci.yml (55 lignes)
+[2026-07-06 15:33:49]   [scan] main.py (456 lignes)
+[2026-07-06 15:33:49]   [scan] README.md (253 lignes)
+[2026-07-06 15:33:49]   [scan] rules.json (65 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_audit.json (6139 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_chat.json (42 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_config.json (49 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_cours.json (2989 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_historique.json (413 lignes)
+[2026-07-06 15:33:49]   [scan] .env (1 lignes)
+[2026-07-06 15:33:49]   [scan] aiAdapter.js (150 lignes)
+[2026-07-06 15:33:49]   [scan] eslint.config.js (27 lignes)
+[2026-07-06 15:33:49]   [scan] migrate_pdfs.js (59 lignes)
+[2026-07-06 15:33:49]   [scan] migrate_to_mongo.js (62 lignes)
+[2026-07-06 15:33:49]   [scan] migrate_via_http.js (36 lignes)
+[2026-07-06 15:33:49]   [scan] mongoAdapter.js (69 lignes)
+[2026-07-06 15:33:49]   [scan] package-lock.json (3895 lignes)
+[2026-07-06 15:33:49]   [scan] package.json (38 lignes)
+[2026-07-06 15:33:49]   [scan] server.js (847 lignes)
+[2026-07-06 15:33:49]   [scan] sim_stress_test.js (236 lignes)
+[2026-07-06 15:33:49]   [scan] base.css (224 lignes)
+[2026-07-06 15:33:49]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:33:49]   [scan] config.js.html (577 lignes)
+[2026-07-06 15:33:49]   [scan] cours.js.html (772 lignes)
+[2026-07-06 15:33:49]   [scan] coverage-final.json (6 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (176 lignes)
+[2026-07-06 15:33:49]   [scan] intelligence.js.html (1363 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.js.html (1876 lignes)
+[2026-07-06 15:33:49]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:33:49]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:33:49]   [scan] scoring.js.html (562 lignes)
+[2026-07-06 15:33:49]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:33:49]   [scan] config.js (163 lignes)
+[2026-07-06 15:33:49]   [scan] cours.js (231 lignes)
+[2026-07-06 15:33:49]   [scan] intelligence.js (459 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.js (663 lignes)
+[2026-07-06 15:33:49]   [scan] projets.js (47 lignes)
+[2026-07-06 15:33:49]   [scan] scoring.js (159 lignes)
+[2026-07-06 15:33:49]   [scan] utils.js (32 lignes)
+[2026-07-06 15:33:49]   [scan] aiAdapter.test.js (35 lignes)
+[2026-07-06 15:33:49]   [scan] config.test.js (234 lignes)
+[2026-07-06 15:33:49]   [scan] cours.test.js (388 lignes)
+[2026-07-06 15:33:49]   [scan] intelligence.test.js (224 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.coverage.test.js (174 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.integration.test.js (130 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.stress.test.js (149 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.test.js (102 lignes)
+[2026-07-06 15:33:49]   [scan] projets.test.js (51 lignes)
+[2026-07-06 15:33:49]   [scan] scoring.test.js (192 lignes)
+[2026-07-06 15:33:49]   [scan] .gitignore (24 lignes)
+[2026-07-06 15:33:49]   [scan] eslint.config.js (21 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (30 lignes)
+[2026-07-06 15:33:49]   [scan] package-lock.json (9775 lignes)
+[2026-07-06 15:33:49]   [scan] package.json (46 lignes)
+[2026-07-06 15:33:49]   [scan] playwright.config.js (26 lignes)
+[2026-07-06 15:33:49]   [scan] README.md (16 lignes)
+[2026-07-06 15:33:49]   [scan] vite.config.js (66 lignes)
+[2026-07-06 15:33:49]   [scan] base.css (224 lignes)
+[2026-07-06 15:33:49]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:33:49]   [scan] coverage-final.json (28 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (146 lignes)
+[2026-07-06 15:33:49]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:33:49]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:33:49]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:33:49]   [scan] App.jsx.html (1795 lignes)
+[2026-07-06 15:33:49]   [scan] BulletinPage.jsx.html (1177 lignes)
+[2026-07-06 15:33:49]   [scan] constants.js.html (106 lignes)
+[2026-07-06 15:33:49]   [scan] CoursPage.jsx.html (1354 lignes)
+[2026-07-06 15:33:49]   [scan] Dashboard.jsx.html (2641 lignes)
+[2026-07-06 15:33:49]   [scan] fsrsEngine.js.html (337 lignes)
+[2026-07-06 15:33:49]   [scan] GlobalSearchModal.jsx.html (562 lignes)
+[2026-07-06 15:33:49]   [scan] index.css.html (4168 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (356 lignes)
+[2026-07-06 15:33:49]   [scan] MarkdownModal.jsx.html (343 lignes)
+[2026-07-06 15:33:49]   [scan] parseDateLocal.js.html (154 lignes)
+[2026-07-06 15:33:49]   [scan] PreparationHebdoPage.jsx.html (1396 lignes)
+[2026-07-06 15:33:49]   [scan] RevisionsAvanceesPage.jsx.html (1105 lignes)
+[2026-07-06 15:33:49]   [scan] Sidebar.jsx.html (406 lignes)
+[2026-07-06 15:33:49]   [scan] sm2.js.html (526 lignes)
+[2026-07-06 15:33:49]   [scan] store.js.html (976 lignes)
+[2026-07-06 15:33:49]   [scan] ToastProvider.jsx.html (304 lignes)
+[2026-07-06 15:33:49]   [scan] useWorkloadEngine.js.html (382 lignes)
+[2026-07-06 15:33:49]   [scan] CMCompletionModal.jsx.html (661 lignes)
+[2026-07-06 15:33:49]   [scan] DisclaimerModal.jsx.html (277 lignes)
+[2026-07-06 15:33:49]   [scan] GlobalChrono.jsx.html (865 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (161 lignes)
+[2026-07-06 15:33:49]   [scan] InfoTooltip.jsx.html (295 lignes)
+[2026-07-06 15:33:49]   [scan] EditableLabel.jsx.html (154 lignes)
+[2026-07-06 15:33:49]   [scan] EditableNote.jsx.html (133 lignes)
+[2026-07-06 15:33:49]   [scan] ExerciceCard.jsx.html (829 lignes)
+[2026-07-06 15:33:49]   [scan] ExerciceRow.jsx.html (382 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (191 lignes)
+[2026-07-06 15:33:49]   [scan] MatiereCard.jsx.html (1222 lignes)
+[2026-07-06 15:33:49]   [scan] StarRating.jsx.html (157 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (90 lignes)
+[2026-07-06 15:33:49]   [scan] manifest.json (21 lignes)
+[2026-07-06 15:33:49]   [scan] sw.js (15 lignes)
+[2026-07-06 15:33:49]   [scan] App.jsx (624 lignes)
+[2026-07-06 15:33:49]   [scan] BulletinPage.jsx (414 lignes)
+[2026-07-06 15:33:49]   [scan] BulletinPage.test.jsx (168 lignes)
+[2026-07-06 15:33:49]   [scan] CMCompletionModal.test.jsx (65 lignes)
+[2026-07-06 15:33:49]   [scan] constants.js (7 lignes)
+[2026-07-06 15:33:49]   [scan] CoursPage.jsx (446 lignes)
+[2026-07-06 15:33:49]   [scan] CoursPage.test.jsx (156 lignes)
+[2026-07-06 15:33:49]   [scan] Dashboard.jsx (1108 lignes)
+[2026-07-06 15:33:49]   [scan] Dashboard.test.jsx (146 lignes)
+[2026-07-06 15:33:49]   [scan] e2e_mock.test.js (31 lignes)
+[2026-07-06 15:33:49]   [scan] EntrainementPage.jsx (641 lignes)
+[2026-07-06 15:33:49]   [scan] fsrsEngine.js (84 lignes)
+[2026-07-06 15:33:49]   [scan] fsrsEngine.test.js (301 lignes)
+[2026-07-06 15:33:49]   [scan] GlobalSearchModal.jsx (159 lignes)
+[2026-07-06 15:33:49]   [scan] GlobalSearchModal.test.jsx (101 lignes)
+[2026-07-06 15:33:49]   [scan] index.css (1443 lignes)
+[2026-07-06 15:33:49]   [scan] main.jsx (13 lignes)
+[2026-07-06 15:33:49]   [scan] MarkdownModal.jsx (86 lignes)
+[2026-07-06 15:33:49]   [scan] MarkdownModal.test.jsx (56 lignes)
+[2026-07-06 15:33:49]   [scan] MatiereCard.test.jsx (74 lignes)
+[2026-07-06 15:33:49]   [scan] parseDateLocal.js (23 lignes)
+[2026-07-06 15:33:49]   [scan] parseDateLocal.test.js (109 lignes)
+[2026-07-06 15:33:49]   [scan] PreparationHebdoPage.jsx (442 lignes)
+[2026-07-06 15:33:49]   [scan] ProjetsPage.jsx (321 lignes)
+[2026-07-06 15:33:49]   [scan] ProjetsPage.test.jsx (105 lignes)
+[2026-07-06 15:33:49]   [scan] RevisionsAvanceesPage.jsx (151 lignes)
+[2026-07-06 15:33:49]   [scan] RevisionsAvanceesPage.test.jsx (118 lignes)
+[2026-07-06 15:33:49]   [scan] setupTests.js (1 lignes)
+[2026-07-06 15:33:49]   [scan] Sidebar.jsx (128 lignes)
+[2026-07-06 15:33:49]   [scan] Sidebar.test.jsx (79 lignes)
+[2026-07-06 15:33:49]   [scan] sm2.js (147 lignes)
+[2026-07-06 15:33:49]   [scan] sm2.test.js (260 lignes)
+[2026-07-06 15:33:49]   [scan] StatistiquesPage.jsx (592 lignes)
+[2026-07-06 15:33:49]   [scan] store.js (441 lignes)
+[2026-07-06 15:33:49]   [scan] store.test.js (52 lignes)
+[2026-07-06 15:33:49]   [scan] ToastProvider.jsx (73 lignes)
+[2026-07-06 15:33:49]   [scan] useWorkloadEngine.js (116 lignes)
+[2026-07-06 15:33:49]   [scan] useWorkloadEngine.test.js (81 lignes)
+[2026-07-06 15:33:49]   [scan] AICoachSidebar.jsx (244 lignes)
+[2026-07-06 15:33:49]   [scan] AICoachSidebar.test.jsx (91 lignes)
+[2026-07-06 15:33:49]   [scan] AuditDashboard.jsx (122 lignes)
+[2026-07-06 15:33:49]   [scan] BackgroundMusicPlayer.jsx (277 lignes)
+[2026-07-06 15:33:49]   [scan] CMCompletionModal.jsx (203 lignes)
+[2026-07-06 15:33:49]   [scan] DisclaimerModal.jsx (64 lignes)
+[2026-07-06 15:33:49]   [scan] ErrorBoundary.jsx (37 lignes)
+[2026-07-06 15:33:49]   [scan] GlobalChrono.jsx (460 lignes)
+[2026-07-06 15:33:49]   [scan] InfoTooltip.jsx (70 lignes)
+[2026-07-06 15:33:49]   [scan] MusicSettingsModal.jsx (190 lignes)
+[2026-07-06 15:33:49]   [scan] EditableLabel.jsx (31 lignes)
+[2026-07-06 15:33:49]   [scan] EditableLabel.test.jsx (64 lignes)
+[2026-07-06 15:33:49]   [scan] EditableNote.jsx (16 lignes)
+[2026-07-06 15:33:49]   [scan] ExerciceCard.jsx (296 lignes)
+[2026-07-06 15:33:49]   [scan] ExerciceCard.test.jsx (64 lignes)
+[2026-07-06 15:33:49]   [scan] ExerciceRow.jsx (99 lignes)
+[2026-07-06 15:33:49]   [scan] ExerciceRow.test.jsx (49 lignes)
+[2026-07-06 15:33:49]   [scan] MatiereCard.jsx (426 lignes)
+[2026-07-06 15:33:49]   [scan] StarRating.jsx (24 lignes)
+[2026-07-06 15:33:49]   [scan] StarRating.test.jsx (30 lignes)
+[2026-07-06 15:33:49]   [scan] timeParser.js (49 lignes)
+[2026-07-06 15:33:49]   [scan] timeParser.test.js (41 lignes)
+[2026-07-06 15:33:49]   [scan] App.test.jsx (99 lignes)
+[2026-07-06 15:33:49]   [scan] PreparationHebdoPage.test.jsx (76 lignes)
+[2026-07-06 15:33:49]   [scan] store.test.js (146 lignes)
+[2026-07-06 15:33:49]   [scan] .last-run.json (4 lignes)
+[2026-07-06 15:33:49]   [scan] elpis.spec.js (140 lignes)
+[2026-07-06 15:33:49]   [scan] music_hashes.json (9 lignes)
+[2026-07-06 15:33:49]   [scan] test_saveCours.js (16 lignes)
+[2026-07-06 15:33:49]   [scan] test_timezone.js (6 lignes)
+[2026-07-06 15:33:49]   [scan] agent_qa.bat (49 lignes)
+[2026-07-06 15:33:49]   [scan] deploy_oracle.sh (42 lignes)
+[2026-07-06 15:33:49] Audit termine (Passe 1). 175 fichiers scannes.
+[2026-07-06 15:33:49]   -> 1 anomalies detectees.
+[2026-07-06 15:33:49]   -> 1 corrections appliquees sur 1 fichiers.
+[2026-07-06 15:33:49]   -> Backups sauvegardes dans : agent_audit/backups/20260706_153349/
+[2026-07-06 15:33:49] Des corrections ont été appliquées. Lancement d'un scan de vérification (Passe 2)...
+[2026-07-06 15:33:49] --- Démarrage de l'audit complet (SCAN + CORRECTION) | Passe 2/3 ---
+[2026-07-06 15:33:49]   [scan] Lancer ELPIS.vbs (15 lignes)
+[2026-07-06 15:33:49]   [scan] README.md (142 lignes)
+[2026-07-06 15:33:49]   [scan] render.yaml (12 lignes)
+[2026-07-06 15:33:49]   [scan] start_elpis.bat (35 lignes)
+[2026-07-06 15:33:49]   [scan] SKILL.md (13 lignes)
+[2026-07-06 15:33:49]   [scan] elpis_rules.md (54 lignes)
+[2026-07-06 15:33:49]   [scan] agent_audit.yml (42 lignes)
+[2026-07-06 15:33:49]   [scan] ci.yml (55 lignes)
+[2026-07-06 15:33:49]   [scan] main.py (456 lignes)
+[2026-07-06 15:33:49]   [scan] README.md (253 lignes)
+[2026-07-06 15:33:49]   [scan] rules.json (65 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_audit.json (45 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_chat.json (42 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_config.json (49 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_cours.json (2989 lignes)
+[2026-07-06 15:33:49]   [scan] espoir_historique.json (413 lignes)
+[2026-07-06 15:33:49]   [scan] .env (1 lignes)
+[2026-07-06 15:33:49]   [scan] aiAdapter.js (150 lignes)
+[2026-07-06 15:33:49]   [scan] eslint.config.js (27 lignes)
+[2026-07-06 15:33:49]   [scan] migrate_pdfs.js (59 lignes)
+[2026-07-06 15:33:49]   [scan] migrate_to_mongo.js (62 lignes)
+[2026-07-06 15:33:49]   [scan] migrate_via_http.js (36 lignes)
+[2026-07-06 15:33:49]   [scan] mongoAdapter.js (69 lignes)
+[2026-07-06 15:33:49]   [scan] package-lock.json (3895 lignes)
+[2026-07-06 15:33:49]   [scan] package.json (38 lignes)
+[2026-07-06 15:33:49]   [scan] server.js (847 lignes)
+[2026-07-06 15:33:49]   [scan] sim_stress_test.js (236 lignes)
+[2026-07-06 15:33:49]   [scan] base.css (224 lignes)
+[2026-07-06 15:33:49]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:33:49]   [scan] config.js.html (577 lignes)
+[2026-07-06 15:33:49]   [scan] cours.js.html (772 lignes)
+[2026-07-06 15:33:49]   [scan] coverage-final.json (6 lignes)
+[2026-07-06 15:33:49]   [scan] index.html (176 lignes)
+[2026-07-06 15:33:49]   [scan] intelligence.js.html (1363 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.js.html (1876 lignes)
+[2026-07-06 15:33:49]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:33:49]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:33:49]   [scan] scoring.js.html (562 lignes)
+[2026-07-06 15:33:49]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:33:49]   [scan] config.js (163 lignes)
+[2026-07-06 15:33:49]   [scan] cours.js (231 lignes)
+[2026-07-06 15:33:49]   [scan] intelligence.js (459 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.js (663 lignes)
+[2026-07-06 15:33:49]   [scan] projets.js (47 lignes)
+[2026-07-06 15:33:49]   [scan] scoring.js (159 lignes)
+[2026-07-06 15:33:49]   [scan] utils.js (32 lignes)
+[2026-07-06 15:33:49]   [scan] aiAdapter.test.js (35 lignes)
+[2026-07-06 15:33:49]   [scan] config.test.js (234 lignes)
+[2026-07-06 15:33:49]   [scan] cours.test.js (388 lignes)
+[2026-07-06 15:33:49]   [scan] intelligence.test.js (224 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.coverage.test.js (174 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.integration.test.js (130 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.stress.test.js (149 lignes)
+[2026-07-06 15:33:49]   [scan] orchestrateur.test.js (102 lignes)
+[2026-07-06 15:33:49]   [scan] projets.test.js (51 lignes)
+[2026-07-06 15:33:49]   [scan] scoring.test.js (192 lignes)
+[2026-07-06 15:33:50]   [scan] .gitignore (24 lignes)
+[2026-07-06 15:33:50]   [scan] eslint.config.js (21 lignes)
+[2026-07-06 15:33:50]   [scan] index.html (30 lignes)
+[2026-07-06 15:33:50]   [scan] package-lock.json (9775 lignes)
+[2026-07-06 15:33:50]   [scan] package.json (46 lignes)
+[2026-07-06 15:33:50]   [scan] playwright.config.js (26 lignes)
+[2026-07-06 15:33:50]   [scan] README.md (16 lignes)
+[2026-07-06 15:33:50]   [scan] vite.config.js (66 lignes)
+[2026-07-06 15:33:50]   [scan] base.css (224 lignes)
+[2026-07-06 15:33:50]   [scan] block-navigation.js (87 lignes)
+[2026-07-06 15:33:50]   [scan] coverage-final.json (28 lignes)
+[2026-07-06 15:33:50]   [scan] index.html (146 lignes)
+[2026-07-06 15:33:50]   [scan] prettify.css (1 lignes)
+[2026-07-06 15:33:50]   [scan] prettify.js (2 lignes)
+[2026-07-06 15:33:50]   [scan] sorter.js (210 lignes)
+[2026-07-06 15:33:50]   [scan] App.jsx.html (1795 lignes)
+[2026-07-06 15:33:50]   [scan] BulletinPage.jsx.html (1177 lignes)
+[2026-07-06 15:33:50]   [scan] constants.js.html (106 lignes)
+[2026-07-06 15:33:50]   [scan] CoursPage.jsx.html (1354 lignes)
+[2026-07-06 15:33:50]   [scan] Dashboard.jsx.html (2641 lignes)
+[2026-07-06 15:33:50]   [scan] fsrsEngine.js.html (337 lignes)
+[2026-07-06 15:33:50]   [scan] GlobalSearchModal.jsx.html (562 lignes)
+[2026-07-06 15:33:50]   [scan] index.css.html (4168 lignes)
+[2026-07-06 15:33:50]   [scan] index.html (356 lignes)
+[2026-07-06 15:33:50]   [scan] MarkdownModal.jsx.html (343 lignes)
+[2026-07-06 15:33:50]   [scan] parseDateLocal.js.html (154 lignes)
+[2026-07-06 15:33:50]   [scan] PreparationHebdoPage.jsx.html (1396 lignes)
+[2026-07-06 15:33:50]   [scan] RevisionsAvanceesPage.jsx.html (1105 lignes)
+[2026-07-06 15:33:50]   [scan] Sidebar.jsx.html (406 lignes)
+[2026-07-06 15:33:50]   [scan] sm2.js.html (526 lignes)
+[2026-07-06 15:33:50]   [scan] store.js.html (976 lignes)
+[2026-07-06 15:33:50]   [scan] ToastProvider.jsx.html (304 lignes)
+[2026-07-06 15:33:50]   [scan] useWorkloadEngine.js.html (382 lignes)
+[2026-07-06 15:33:50]   [scan] CMCompletionModal.jsx.html (661 lignes)
+[2026-07-06 15:33:50]   [scan] DisclaimerModal.jsx.html (277 lignes)
+[2026-07-06 15:33:50]   [scan] GlobalChrono.jsx.html (865 lignes)
+[2026-07-06 15:33:50]   [scan] index.html (161 lignes)
+[2026-07-06 15:33:50]   [scan] InfoTooltip.jsx.html (295 lignes)
+[2026-07-06 15:33:50]   [scan] EditableLabel.jsx.html (154 lignes)
+[2026-07-06 15:33:50]   [scan] EditableNote.jsx.html (133 lignes)
+[2026-07-06 15:33:50]   [scan] ExerciceCard.jsx.html (829 lignes)
+[2026-07-06 15:33:50]   [scan] ExerciceRow.jsx.html (382 lignes)
+[2026-07-06 15:33:50]   [scan] index.html (191 lignes)
+[2026-07-06 15:33:50]   [scan] MatiereCard.jsx.html (1222 lignes)
+[2026-07-06 15:33:50]   [scan] StarRating.jsx.html (157 lignes)
+[2026-07-06 15:33:50]   [scan] index.html (90 lignes)
+[2026-07-06 15:33:50]   [scan] manifest.json (21 lignes)
+[2026-07-06 15:33:50]   [scan] sw.js (15 lignes)
+[2026-07-06 15:33:50]   [scan] App.jsx (624 lignes)
+[2026-07-06 15:33:50]   [scan] BulletinPage.jsx (414 lignes)
+[2026-07-06 15:33:50]   [scan] BulletinPage.test.jsx (168 lignes)
+[2026-07-06 15:33:50]   [scan] CMCompletionModal.test.jsx (65 lignes)
+[2026-07-06 15:33:50]   [scan] constants.js (7 lignes)
+[2026-07-06 15:33:50]   [scan] CoursPage.jsx (446 lignes)
+[2026-07-06 15:33:50]   [scan] CoursPage.test.jsx (156 lignes)
+[2026-07-06 15:33:50]   [scan] Dashboard.jsx (1108 lignes)
+[2026-07-06 15:33:50]   [scan] Dashboard.test.jsx (146 lignes)
+[2026-07-06 15:33:50]   [scan] e2e_mock.test.js (31 lignes)
+[2026-07-06 15:33:50]   [scan] EntrainementPage.jsx (641 lignes)
+[2026-07-06 15:33:50]   [scan] fsrsEngine.js (84 lignes)
+[2026-07-06 15:33:50]   [scan] fsrsEngine.test.js (301 lignes)
+[2026-07-06 15:33:50]   [scan] GlobalSearchModal.jsx (159 lignes)
+[2026-07-06 15:33:50]   [scan] GlobalSearchModal.test.jsx (101 lignes)
+[2026-07-06 15:33:50]   [scan] index.css (1443 lignes)
+[2026-07-06 15:33:50]   [scan] main.jsx (13 lignes)
+[2026-07-06 15:33:50]   [scan] MarkdownModal.jsx (86 lignes)
+[2026-07-06 15:33:50]   [scan] MarkdownModal.test.jsx (56 lignes)
+[2026-07-06 15:33:50]   [scan] MatiereCard.test.jsx (74 lignes)
+[2026-07-06 15:33:50]   [scan] parseDateLocal.js (23 lignes)
+[2026-07-06 15:33:50]   [scan] parseDateLocal.test.js (109 lignes)
+[2026-07-06 15:33:50]   [scan] PreparationHebdoPage.jsx (442 lignes)
+[2026-07-06 15:33:50]   [scan] ProjetsPage.jsx (321 lignes)
+[2026-07-06 15:33:50]   [scan] ProjetsPage.test.jsx (105 lignes)
+[2026-07-06 15:33:50]   [scan] RevisionsAvanceesPage.jsx (151 lignes)
+[2026-07-06 15:33:50]   [scan] RevisionsAvanceesPage.test.jsx (118 lignes)
+[2026-07-06 15:33:50]   [scan] setupTests.js (1 lignes)
+[2026-07-06 15:33:50]   [scan] Sidebar.jsx (128 lignes)
+[2026-07-06 15:33:50]   [scan] Sidebar.test.jsx (79 lignes)
+[2026-07-06 15:33:50]   [scan] sm2.js (147 lignes)
+[2026-07-06 15:33:50]   [scan] sm2.test.js (260 lignes)
+[2026-07-06 15:33:50]   [scan] StatistiquesPage.jsx (592 lignes)
+[2026-07-06 15:33:50]   [scan] store.js (441 lignes)
+[2026-07-06 15:33:50]   [scan] store.test.js (52 lignes)
+[2026-07-06 15:33:50]   [scan] ToastProvider.jsx (73 lignes)
+[2026-07-06 15:33:50]   [scan] useWorkloadEngine.js (116 lignes)
+[2026-07-06 15:33:50]   [scan] useWorkloadEngine.test.js (81 lignes)
+[2026-07-06 15:33:50]   [scan] AICoachSidebar.jsx (244 lignes)
+[2026-07-06 15:33:50]   [scan] AICoachSidebar.test.jsx (91 lignes)
+[2026-07-06 15:33:50]   [scan] AuditDashboard.jsx (122 lignes)
+[2026-07-06 15:33:50]   [scan] BackgroundMusicPlayer.jsx (277 lignes)
+[2026-07-06 15:33:50]   [scan] CMCompletionModal.jsx (203 lignes)
+[2026-07-06 15:33:50]   [scan] DisclaimerModal.jsx (64 lignes)
+[2026-07-06 15:33:50]   [scan] ErrorBoundary.jsx (37 lignes)
+[2026-07-06 15:33:50]   [scan] GlobalChrono.jsx (460 lignes)
+[2026-07-06 15:33:50]   [scan] InfoTooltip.jsx (70 lignes)
+[2026-07-06 15:33:50]   [scan] MusicSettingsModal.jsx (190 lignes)
+[2026-07-06 15:33:50]   [scan] EditableLabel.jsx (31 lignes)
+[2026-07-06 15:33:50]   [scan] EditableLabel.test.jsx (64 lignes)
+[2026-07-06 15:33:50]   [scan] EditableNote.jsx (16 lignes)
+[2026-07-06 15:33:50]   [scan] ExerciceCard.jsx (296 lignes)
+[2026-07-06 15:33:50]   [scan] ExerciceCard.test.jsx (64 lignes)
+[2026-07-06 15:33:50]   [scan] ExerciceRow.jsx (99 lignes)
+[2026-07-06 15:33:50]   [scan] ExerciceRow.test.jsx (49 lignes)
+[2026-07-06 15:33:50]   [scan] MatiereCard.jsx (426 lignes)
+[2026-07-06 15:33:50]   [scan] StarRating.jsx (24 lignes)
+[2026-07-06 15:33:50]   [scan] StarRating.test.jsx (30 lignes)
+[2026-07-06 15:33:50]   [scan] timeParser.js (49 lignes)
+[2026-07-06 15:33:50]   [scan] timeParser.test.js (41 lignes)
+[2026-07-06 15:33:50]   [scan] App.test.jsx (99 lignes)
+[2026-07-06 15:33:50]   [scan] PreparationHebdoPage.test.jsx (76 lignes)
+[2026-07-06 15:33:50]   [scan] store.test.js (146 lignes)
+[2026-07-06 15:33:50]   [scan] .last-run.json (4 lignes)
+[2026-07-06 15:33:50]   [scan] elpis.spec.js (140 lignes)
+[2026-07-06 15:33:50]   [scan] music_hashes.json (9 lignes)
+[2026-07-06 15:33:50]   [scan] test_saveCours.js (16 lignes)
+[2026-07-06 15:33:50]   [scan] test_timezone.js (6 lignes)
+[2026-07-06 15:33:50]   [scan] agent_qa.bat (49 lignes)
+[2026-07-06 15:33:50]   [scan] deploy_oracle.sh (42 lignes)
+[2026-07-06 15:33:50] Audit termine (Passe 2). 175 fichiers scannes.
+[2026-07-06 15:33:50]   -> 0 anomalies detectees.
+[2026-07-06 15:33:50]   -> 0 corrections appliquees sur 0 fichiers.
+[2026-07-06 15:51:53] [INFO] ============================================================
+[2026-07-06 15:51:53] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 15:51:53] [INFO] ============================================================
+[2026-07-06 15:51:53] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 15:51:53] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 15:51:53] [INFO] Phase 1 terminee: 180 fichiers, 69223 lignes
+[2026-07-06 15:51:53] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 15:51:53] [INFO]   -> 45 anomalies globales detectees
+[2026-07-06 15:51:53] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 15:52:17] [INFO] ============================================================
+[2026-07-06 15:52:17] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 15:52:17] [INFO] ============================================================
+[2026-07-06 15:52:17] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 15:52:17] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 15:52:17] [INFO] Phase 1 terminee: 180 fichiers, 69227 lignes
+[2026-07-06 15:52:17] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 15:52:17] [INFO]   -> 45 anomalies globales detectees
+[2026-07-06 15:52:17] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 15:52:44] [INFO]   Passe 1: 10473 anomalies, 0 corrections
+[2026-07-06 15:52:44] [INFO]   Health Score: 0/100
+[2026-07-06 15:52:44] [INFO]   Anomalies: 10518 (C:22 W:8927 I:1569)
+[2026-07-06 15:52:44] [INFO]   Corrections: 0
+[2026-07-06 15:52:44] [INFO]   Escalades: 12
+[2026-07-06 15:52:44] [INFO] Agent Health: WARNING
+[2026-07-06 15:52:44] [WARNING]   [!] Problemes dans les regles: Pattern regex invalide pour MISSING_JSDOC_ON_EXPORT: unbalanced parenthesis at position 77
+[2026-07-06 15:52:44] [WARNING]   [!] Performance degradee: 6.7 fichiers/s
+[2026-07-06 15:52:44] [INFO]   [i] 28 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 15:52:44] [INFO] Audit termine en 27.0s. Health Score projet: 0/100
+[2026-07-06 16:00:54] [INFO] ============================================================
+[2026-07-06 16:00:54] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:00:54] [INFO] ============================================================
+[2026-07-06 16:00:54] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:00:54] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:00:54] [INFO] Phase 1 terminee: 181 fichiers, 83614 lignes
+[2026-07-06 16:00:54] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:00:54] [INFO]   -> 45 anomalies globales detectees
+[2026-07-06 16:00:54] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:01:20] [INFO]   Passe 1: 10483 anomalies, 0 corrections
+[2026-07-06 16:01:20] [INFO]   Health Score: 0/100
+[2026-07-06 16:01:20] [INFO]   Anomalies: 10528 (C:22 W:8927 I:1579)
+[2026-07-06 16:01:20] [INFO]   Corrections: 0
+[2026-07-06 16:01:20] [INFO]   Escalades: 13
+[2026-07-06 16:01:20] [INFO] Agent Health: WARNING
+[2026-07-06 16:01:20] [WARNING]   [!] Performance degradee: 6.9 fichiers/s
+[2026-07-06 16:01:20] [INFO]   [i] 28 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:01:20] [INFO] Audit termine en 26.1s. Health Score projet: 0/100
+[2026-07-06 16:03:16] [INFO] ============================================================
+[2026-07-06 16:03:16] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:03:16] [INFO] ============================================================
+[2026-07-06 16:03:16] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:03:16] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:03:16] [INFO] Phase 1 terminee: 182 fichiers, 83679 lignes
+[2026-07-06 16:03:16] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:03:16] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:03:16] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:03:48] [INFO]   Passe 1: 10506 anomalies, 0 corrections
+[2026-07-06 16:03:48] [INFO]   Health Score: 0/100
+[2026-07-06 16:03:48] [INFO]   Anomalies: 10552 (C:22 W:8944 I:1586)
+[2026-07-06 16:03:48] [INFO]   Corrections: 0
+[2026-07-06 16:03:48] [INFO]   Escalades: 13
+[2026-07-06 16:03:48] [INFO] Agent Health: WARNING
+[2026-07-06 16:03:48] [WARNING]   [!] Performance degradee: 5.6 fichiers/s
+[2026-07-06 16:03:48] [INFO]   [i] 28 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:03:48] [INFO] Audit termine en 32.4s. Health Score projet: 0/100
+[2026-07-06 16:09:14] [INFO] ============================================================
+[2026-07-06 16:09:14] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:09:14] [INFO] ============================================================
+[2026-07-06 16:09:14] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:09:14] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:09:19] [INFO] Phase 1 terminee: 182 fichiers, 83749 lignes
+[2026-07-06 16:09:19] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:09:19] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:09:19] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:09:20] [INFO]   Passe 1: 2061 anomalies, 0 corrections
+[2026-07-06 16:09:20] [INFO]   Health Score: 0/100
+[2026-07-06 16:09:20] [INFO]   Anomalies: 2107 (C:22 W:493 I:1592)
+[2026-07-06 16:09:20] [INFO]   Corrections: 0
+[2026-07-06 16:09:20] [INFO]   Escalades: 11
+[2026-07-06 16:09:20] [INFO] Agent Health: HEALTHY
+[2026-07-06 16:09:20] [INFO]   [i] 29 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:09:20] [INFO] Audit termine en 6.4s. Health Score projet: 0/100
+[2026-07-06 16:10:37] [INFO] ============================================================
+[2026-07-06 16:10:37] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:10:37] [INFO] ============================================================
+[2026-07-06 16:10:37] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:10:37] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:10:37] [INFO] Phase 1 terminee: 182 fichiers, 77037 lignes
+[2026-07-06 16:10:37] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:10:37] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:10:37] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:10:38] [INFO]   Passe 1: 2053 anomalies, 0 corrections
+[2026-07-06 16:10:38] [INFO]   Health Score: 0/100
+[2026-07-06 16:10:38] [INFO]   Anomalies: 2099 (C:17 W:493 I:1589)
+[2026-07-06 16:10:38] [INFO]   Corrections: 0
+[2026-07-06 16:10:38] [INFO]   Escalades: 13
+[2026-07-06 16:10:38] [INFO] Agent Health: HEALTHY
+[2026-07-06 16:10:38] [INFO]   [i] 30 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:10:38] [INFO] Audit termine en 0.9s. Health Score projet: 0/100
+[2026-07-06 16:11:35] [INFO] ============================================================
+[2026-07-06 16:11:35] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:11:35] [INFO] ============================================================
+[2026-07-06 16:11:35] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:11:35] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:11:35] [INFO] Phase 1 terminee: 182 fichiers, 77092 lignes
+[2026-07-06 16:11:35] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:11:35] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:11:35] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:11:36] [INFO]   Passe 1: 2058 anomalies, 0 corrections
+[2026-07-06 16:11:36] [INFO]   Health Score: 5/100
+[2026-07-06 16:11:36] [INFO]   Anomalies: 2104 (C:17 W:493 I:1594)
+[2026-07-06 16:11:36] [INFO]   Corrections: 0
+[2026-07-06 16:11:36] [INFO]   Escalades: 13
+[2026-07-06 16:11:36] [INFO] Agent Health: HEALTHY
+[2026-07-06 16:11:36] [INFO]   [i] 30 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:11:36] [INFO] Audit termine en 0.9s. Health Score projet: 5/100
+[2026-07-06 16:12:00] [INFO] ============================================================
+[2026-07-06 16:12:00] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:12:00] [INFO] ============================================================
+[2026-07-06 16:12:00] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:12:00] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:12:00] [INFO] Phase 1 terminee: 182 fichiers, 77094 lignes
+[2026-07-06 16:12:00] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:12:00] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:12:00] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:12:01] [INFO]   Passe 1: 2058 anomalies, 0 corrections
+[2026-07-06 16:12:01] [INFO]   Health Score: 41/100
+[2026-07-06 16:12:01] [INFO]   Anomalies: 2104 (C:17 W:493 I:1594)
+[2026-07-06 16:12:01] [INFO]   Corrections: 0
+[2026-07-06 16:12:01] [INFO]   Escalades: 13
+[2026-07-06 16:12:01] [INFO] Agent Health: HEALTHY
+[2026-07-06 16:12:01] [INFO]   [i] 30 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:12:01] [INFO] Audit termine en 1.0s. Health Score projet: 41/100
+[2026-07-06 16:12:06] [INFO] Mode: AUTO-DIAGNOSTIC
+[2026-07-06 16:12:06] [INFO] Rapport de sante sauvegarde: C:\Users\User\Desktop\ELPIS\data\espoir_audit_health.json
+[2026-07-06 16:14:15] [INFO] Mode: AUTO-DIAGNOSTIC
+[2026-07-06 16:14:15] [INFO] Rapport de sante sauvegarde: C:\Users\User\Desktop\ELPIS\data\espoir_audit_health.json
+[2026-07-06 16:14:25] [INFO] ============================================================
+[2026-07-06 16:14:25] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:14:25] [INFO] ============================================================
+[2026-07-06 16:14:25] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:14:25] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:14:25] [INFO] Phase 1 terminee: 182 fichiers, 77094 lignes
+[2026-07-06 16:14:25] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:14:25] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:14:25] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:14:26] [INFO]   Passe 1: 2058 anomalies, 0 corrections
+[2026-07-06 16:14:26] [INFO]   Health Score: 41/100
+[2026-07-06 16:14:26] [INFO]   Anomalies: 2104 (C:17 W:493 I:1594)
+[2026-07-06 16:14:26] [INFO]   Corrections: 0
+[2026-07-06 16:14:26] [INFO]   Escalades: 13
+[2026-07-06 16:14:26] [INFO] Agent Health: HEALTHY
+[2026-07-06 16:14:26] [INFO]   [i] 30 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:14:26] [INFO] Audit termine en 0.9s. Health Score projet: 41/100
+[2026-07-06 16:18:12] [INFO] ============================================================
+[2026-07-06 16:18:12] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:18:12] [INFO] ============================================================
+[2026-07-06 16:18:12] [INFO] Regles chargees: 42 (version 3.0.0)
+[2026-07-06 16:18:12] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:18:12] [INFO] Phase 1 terminee: 182 fichiers, 77127 lignes
+[2026-07-06 16:18:12] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:18:12] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:18:12] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:18:13] [INFO]   Passe 1: 2062 anomalies, 0 corrections
+[2026-07-06 16:18:13] [INFO]   Health Score: 41/100
+[2026-07-06 16:18:13] [INFO]   Anomalies: 2108 (C:17 W:493 I:1598)
+[2026-07-06 16:18:13] [INFO]   Corrections: 0
+[2026-07-06 16:18:13] [INFO]   Escalades: 13
+[2026-07-06 16:18:13] [INFO] Agent Health: HEALTHY
+[2026-07-06 16:18:13] [INFO]   [i] 30 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:18:13] [INFO] Audit termine en 1.0s. Health Score projet: 41/100
+[2026-07-06 16:34:06] [INFO] Mode: AUTO-DIAGNOSTIC
+[2026-07-06 16:34:06] [INFO] Rapport de sante sauvegarde: C:\Users\User\Desktop\ELPIS\data\espoir_audit_health.json
+[2026-07-06 16:34:35] [INFO] Mode: AUTO-DIAGNOSTIC
+[2026-07-06 16:34:35] [INFO] Rapport de sante sauvegarde: C:\Users\User\Desktop\ELPIS\data\espoir_audit_health.json
+[2026-07-06 16:34:41] [INFO] ============================================================
+[2026-07-06 16:34:41] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 16:34:41] [INFO] ============================================================
+[2026-07-06 16:34:41] [INFO] Regles chargees: 44 (version 3.0.0)
+[2026-07-06 16:34:41] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 16:34:42] [INFO] Phase 1 terminee: 183 fichiers, 77117 lignes
+[2026-07-06 16:34:42] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 16:34:42] [INFO]   -> 46 anomalies globales detectees
+[2026-07-06 16:34:42] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 16:34:43] [INFO]   Passe 1: 2094 anomalies, 0 corrections
+[2026-07-06 16:34:43] [INFO]   Health Score: 39/100
+[2026-07-06 16:34:43] [INFO]   Anomalies: 2140 (C:17 W:525 I:1598)
+[2026-07-06 16:34:43] [INFO]   Corrections: 0
+[2026-07-06 16:34:43] [INFO]   Escalades: 13
+[2026-07-06 16:34:43] [INFO] Agent Health: HEALTHY
+[2026-07-06 16:34:43] [INFO]   [i] 30 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 16:34:43] [INFO] Audit termine en 1.1s. Health Score projet: 39/100

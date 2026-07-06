@@ -74,6 +74,11 @@ describe('Orchestrateur - genererRapportQuotidien', () => {
     expect(r.intelligence).toHaveProperty('cognitiveLoadMap');
     expect(r.intelligence).toHaveProperty('burnoutRisk');
     expect(r.intelligence).toHaveProperty('projectedScoreMap');
+    // v3 additions
+    expect(r.intelligence).toHaveProperty('projectedScoreDetail');
+    expect(r.intelligence).toHaveProperty('timeOptimizationMap');
+    expect(r.intelligence).toHaveProperty('synergyMap');
+    expect(r.intelligence).toHaveProperty('workloadForecast');
   });
 
   test('Anti-regression: Time-awareness properly assigns moments based on current hour', () => {
