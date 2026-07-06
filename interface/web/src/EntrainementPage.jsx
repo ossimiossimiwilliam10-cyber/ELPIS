@@ -496,7 +496,18 @@ function EntrainementPage() {
                 </div>
               </div>
               <button
-                onClick={() => setFatigueCounter(0)}
+                onClick={() => {
+                  setFatigueCounter(0);
+                  // Envoi Télémétrie (Fire and forget)
+                  fetch('/api/telemetry/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      actionType: 'ignored_fatigue_alert',
+                      taskContext: { fatigueCounter }
+                    })
+                  }).catch(e => console.error("Erreur télémétrie:", e));
+                }}
                 style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid #f59e0b', color: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
               >
                 Ignorer

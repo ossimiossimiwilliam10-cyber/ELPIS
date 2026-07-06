@@ -6,7 +6,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': 'http://localhost:3001',
-      '/documents': 'http://localhost:3001'
+      '/documents': 'http://localhost:3001',
+      '/music': 'http://localhost:3001'
     }
   },
   plugins: [
@@ -37,7 +38,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        navigateFallbackDenylist: [/^\/api\//, /^\/documents\//],
+        navigateFallbackDenylist: [/^\/api\//, /^\/documents\//, /^\/music\//],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/elpis-app\.onrender\.com\/api\/.*/i,

@@ -911,6 +911,19 @@
             "patterns": [
                 "FUNCTION_LENGTH_CHECK"
             ]
+        },
+        {
+            "id": "PWA_STATIC_ROUTE_EXCLUSION",
+            "category": "architecture",
+            "severity": "critical",
+            "description": "Vérifie que tous les dossiers statiques du backend sont exclus du Service Worker PWA.",
+            "detection_strategy": "custom_python",
+            "file_pattern": "vite\\.config\\.js",
+            "fix": null,
+            "escalation_message": "Ajouter les routes manquantes dans navigateFallbackDenylist du vite.config.js.",
+            "patterns": [
+                "scan_pwa_static_exclusions"
+            ]
         }
     ]
 }

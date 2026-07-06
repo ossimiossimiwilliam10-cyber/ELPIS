@@ -1442,3 +1442,30 @@
 [2026-07-06 16:34:43] [INFO] Agent Health: HEALTHY
 [2026-07-06 16:34:43] [INFO]   [i] 30 regles inactives. Verifier si elles sont encore pertinentes.
 [2026-07-06 16:34:43] [INFO] Audit termine en 1.1s. Health Score projet: 39/100
+[2026-07-06 17:50:24] [INFO] ============================================================
+[2026-07-06 17:50:24] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 17:50:24] [INFO] ============================================================
+[2026-07-06 17:50:24] [INFO] Regles chargees: 45 (version 3.0.0)
+[2026-07-06 17:50:24] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 17:50:24] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 17:50:24] [INFO] Phase 1 terminee: 193 fichiers, 1578313 lignes
+[2026-07-06 17:50:24] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 17:50:24] [INFO]   -> 50 anomalies globales detectees
+[2026-07-06 17:50:24] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 17:50:26] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\App.jsx
+[2026-07-06 17:50:36] [INFO]   Passe 1: 2264 anomalies, 812 corrections
+[2026-07-06 17:50:38] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\App.jsx
+[2026-07-06 17:50:48] [INFO]   Passe 2: 2264 anomalies, 812 corrections
+[2026-07-06 17:50:50] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\App.jsx
+[2026-07-06 17:50:59] [INFO]   Passe 3: 2264 anomalies, 812 corrections
+[2026-07-06 17:50:59] [INFO]   Health Score: 0/100
+[2026-07-06 17:50:59] [INFO]   Anomalies: 6842 (C:51 W:1677 I:5108)
+[2026-07-06 17:50:59] [INFO]   Corrections: 2436
+[2026-07-06 17:50:59] [INFO]   Escalades: 4366
+[2026-07-06 17:50:59] [INFO] Agent Health: WARNING
+[2026-07-06 17:50:59] [WARNING]   [!] Problemes dans les regles: Severite invalide pour PWA_STATIC_ROUTE_EXCLUSION: high
+[2026-07-06 17:50:59] [WARNING]   [!] Performance degradee: 5.4 fichiers/s
+[2026-07-06 17:50:59] [INFO]   [i] 31 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 17:50:59] [INFO] Auto-commit de 51 fichier(s) corrige(s)...
+[2026-07-06 17:51:00] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'interface\\web\\coverage\\src\\index.html']' returned non-zero exit status 128.
+[2026-07-06 17:51:00] [INFO] Audit termine en 36.1s. Health Score projet: 0/100

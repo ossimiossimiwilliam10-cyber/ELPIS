@@ -239,11 +239,25 @@ const useStore = create(persist(immer((set, get) => ({
 
   // Update history state and trigger auto-save
   addHistoriqueEntry: (entry) => {
+    const stateBefore = get().intelligence;
+    const priorScore = stateBefore?.projectedScoreMap?.[entry.matiere] || null;
+
     const newHist = [...get().historique, { ...entry, timestamp: new Date().toISOString() }];
     set({ historique: newHist });
     debouncedSaveHistorique(newHist, get);
     // Update streak on every completed task (actif)
     get().checkStreak(true);
+
+    // Envoi Télémétrie (Fire and forget)
+    fetch('/api/telemetry/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionData: entry,
+        aiStateBefore: { projectedScore: priorScore },
+        aiStateAfter: { note: "calculé au prochain cycle" }
+      })
+    }).catch(e => console.error("Erreur télémétrie:", e));
   },
 
   // Check and update streak logic
