@@ -25,3 +25,8 @@ music/**/*.mp3
 music/**/*.wav
 music/**/*.ogg
 music/**/*.m4a
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*.class
