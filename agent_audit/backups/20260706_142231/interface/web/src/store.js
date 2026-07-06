@@ -24,6 +24,7 @@ const debouncedSaveConfig = debounce(async (config, get) => {
       body: JSON.stringify(config)
     });
     if (!res.ok) throw new Error('API Error');
+    console.log('Auto-saved config');
     if (get) get().fetchOrchestrator();
   } catch (e) {
     handleOfflineError('config', e);
@@ -39,6 +40,7 @@ const debouncedSaveCours = debounce(async (coursConfig, get) => {
       body: JSON.stringify(coursConfig)
     });
     if (!res.ok) throw new Error('API Error');
+    console.log('Auto-saved cours');
     if (get) get().fetchOrchestrator();
   } catch (e) {
     handleOfflineError('cours', e);
@@ -54,6 +56,7 @@ const debouncedSaveHistorique = debounce(async (historique, get) => {
       body: JSON.stringify(historique)
     });
     if (!res.ok) throw new Error('API Error');
+    console.log('Auto-saved historique');
     if (get) get().fetchOrchestrator();
   } catch (e) {
     handleOfflineError('historique', e);
@@ -69,6 +72,7 @@ const debouncedSaveProjets = debounce(async (projets, get) => {
       body: JSON.stringify(projets)
     });
     if (!res.ok) throw new Error('API Error');
+    console.log('Auto-saved projets');
     if (get) get().fetchOrchestrator();
   } catch (e) {
     handleOfflineError('projets', e);
@@ -415,6 +419,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('online', async () => {
     window.dispatchEvent(new Event('elpis_offline_status_changed'));
     if (localStorage.getItem('elpis_offline_pending_sync') === 'true') {
+      console.log('Back online! Syncing offline modifications...');
       const state = useStore.getState();
       
       // Forcer la synchronisation de toutes les données locales vers le serveur
@@ -429,6 +434,7 @@ if (typeof window !== 'undefined') {
           fetch('/api/projets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
         ]);
         localStorage.removeItem('elpis_offline_pending_sync');
+        console.log('Offline sync triggered successfully.');
       } catch (e) {
         console.error('Offline sync failed again', e);
       }

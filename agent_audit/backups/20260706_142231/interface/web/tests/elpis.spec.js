@@ -87,6 +87,7 @@ test.describe('ELPIS E2E Tests', () => {
     // Debug: Attendre 2 secondes et afficher le contenu HTML du body
     await page.waitForTimeout(2000);
     const html = await page.content();
+    console.log("HTML CONTENT:", html);
     // Vérifie que la section "Statistiques de Progression" est présente
     const statsSection = page.locator('h2', { hasText: 'Statistiques de Progression' });
     await expect(statsSection).toBeVisible({ timeout: 10000 });

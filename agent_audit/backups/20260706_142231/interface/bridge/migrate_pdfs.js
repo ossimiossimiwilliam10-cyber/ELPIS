@@ -17,8 +17,10 @@ async function migratePDFs() {
     const db = client.db('elpis_db');
     const bucket = new GridFSBucket(db, { bucketName: 'documents' });
 
+    console.log("✅ Connecté à MongoDB.");
     
     if (!fs.existsSync(DOCUMENTS_DIR)) {
+      console.log("Aucun dossier 'documents' trouvé localement.");
       return;
     }
 
@@ -26,17 +28,21 @@ async function migratePDFs() {
     const pdfFiles = files.filter(f => f.endsWith('.pdf'));
 
     if (pdfFiles.length === 0) {
+      console.log("Aucun fichier PDF local à migrer.");
       return;
     }
 
+    console.log(`📤 ${pdfFiles.length} fichier(s) trouvé(s). Début de la migration...`);
 
     for (const filename of pdfFiles) {
       const filePath = path.join(DOCUMENTS_DIR, filename);
       const existing = await bucket.find({ filename }).toArray();
       if (existing.length > 0) {
+        console.log(`- ${filename} est déjà dans GridFS, ignoré.`);
         continue;
       }
 
+      console.log(`- Upload de ${filename}...`);
       const uploadStream = bucket.openUploadStream(filename, {
         contentType: 'application/pdf'
       });
@@ -47,8 +53,10 @@ async function migratePDFs() {
           .on('error', reject)
           .on('finish', resolve);
       });
+      console.log(`  ✓ Succès: ${filename}`);
     }
 
+    console.log("🎉 Tous les PDFs ont été migrés avec succès !");
   } catch (err) {
     console.error("❌ Erreur pendant la migration :", err);
   } finally {

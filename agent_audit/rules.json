@@ -5,21 +5,62 @@
     "pattern": "http://localhost:[0-9]+",
     "severity": "critical",
     "file_pattern": "\\.(js|jsx)$",
-    "exclude_pattern": "(setupTests|test|server|mongoAdapter)\\.(js|jsx)$"
+    "exclude_pattern": "(setupTests|test|server|mongoAdapter|vite\\.config)\\.(js|jsx)$",
+    "fix": {
+      "action": "replace",
+      "search": "http://localhost:[0-9]+",
+      "replacement": "/api"
+    }
   },
   {
     "id": "NO_CONSOLE_LOG_IN_PROD",
-    "description": "Des console.log() ont été laissés dans le code. Veuillez les retirer pour la production.",
-    "pattern": "console\\.log\\(",
+    "description": "Des console.log() ont ete laisses dans le code de production.",
+    "pattern": "^\\s*console\\.log\\(.*\\);?\\s*$",
     "severity": "warning",
     "file_pattern": "\\.(js|jsx)$",
-    "exclude_pattern": "(server|mongoAdapter|test|setupTests)\\.(js|jsx)$|\\.test\\.jsx$"
+    "exclude_pattern": "(server|mongoAdapter|aiAdapter|test|setupTests|config)\\.(js|jsx)$|\\.test\\.(js|jsx)$",
+    "fix": {
+      "action": "delete_line"
+    }
+  },
+  {
+    "id": "NO_VAR_KEYWORD",
+    "description": "Utiliser 'const' ou 'let' au lieu de 'var' (ES6+).",
+    "pattern": "\\bvar\\s+",
+    "severity": "warning",
+    "file_pattern": "\\.(js|jsx)$",
+    "exclude_pattern": "\\.test\\.(js|jsx)$",
+    "fix": {
+      "action": "replace",
+      "search": "\\bvar\\s+",
+      "replacement": "const "
+    }
+  },
+  {
+    "id": "NO_DOUBLE_SEMICOLONS",
+    "description": "Double point-virgule detecte (probable typo).",
+    "pattern": ";;",
+    "severity": "warning",
+    "file_pattern": "\\.(js|jsx|css)$",
+    "fix": {
+      "action": "replace",
+      "search": ";;",
+      "replacement": ";"
+    }
   },
   {
     "id": "AVOID_INLINE_STYLES",
-    "description": "L'utilisation de 'style={{' est déconseillée pour l'architecture. Privilégiez les classes CSS.",
+    "description": "L'utilisation de 'style={{' est deconseillee. Privilegiez les classes CSS.",
     "pattern": "style=\\{\\{",
-    "severity": "warning",
+    "severity": "info",
     "file_pattern": "\\.(jsx)$"
+  },
+  {
+    "id": "NO_TRAILING_WHITESPACE",
+    "description": "Espaces inutiles en fin de ligne.",
+    "pattern": "[ \\t]+$",
+    "severity": "info",
+    "file_pattern": "\\.(js|jsx|css|py)$",
+    "exclude_pattern": "\\.test\\.(js|jsx)$"
   }
 ]

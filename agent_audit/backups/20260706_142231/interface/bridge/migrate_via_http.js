@@ -10,9 +10,11 @@ const BASE_URL = 'https://elpis-app.onrender.com/api';
 
 async function uploadFile(endpoint, filePath) {
   if (!fs.existsSync(filePath)) {
+    console.log(`Skipping ${filePath} (not found)`);
     return;
   }
   const data = fs.readFileSync(filePath, 'utf8');
+  console.log(`Uploading ${filePath} to ${endpoint}...`);
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -21,6 +23,7 @@ async function uploadFile(endpoint, filePath) {
   if (!res.ok) {
     throw new Error(`Failed to upload ${endpoint}: ${await res.text()}`);
   }
+  console.log(`✅ Success for ${endpoint}`);
 }
 
 async function migrate() {
@@ -28,6 +31,7 @@ async function migrate() {
     await uploadFile('/config', CONFIG_FILE);
     await uploadFile('/cours', COURS_FILE);
     await uploadFile('/historique', HISTORIQUE_FILE);
+    console.log("🎉 Migration HTTP terminée avec succès !");
   } catch (err) {
     console.error("❌ Erreur:", err);
   }

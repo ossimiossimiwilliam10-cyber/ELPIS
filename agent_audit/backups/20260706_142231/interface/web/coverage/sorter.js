@@ -1,7 +1,7 @@
 /* eslint-disable */
-const addSorting = (function() {
+var addSorting = (function() {
     'use strict';
-    const cols,
+    var cols,
         currentSort = {
             index: 0,
             desc: false
@@ -57,15 +57,15 @@ const addSorting = (function() {
 
     // loads the search box
     function addSearchBox() {
-        const template = document.getElementById('filterTemplate');
-        const templateClone = template.content.cloneNode(true);
+        var template = document.getElementById('filterTemplate');
+        var templateClone = template.content.cloneNode(true);
         templateClone.getElementById('fileSearch').oninput = onFilterInput;
         template.parentElement.appendChild(templateClone);
     }
 
     // loads all columns
     function loadColumns() {
-        const colNodes = getTableHeader().querySelectorAll('th'),
+        var colNodes = getTableHeader().querySelectorAll('th'),
             colNode,
             cols = [],
             col,
@@ -90,7 +90,7 @@ const addSorting = (function() {
     // attaches a data attribute to every tr element with an object
     // of data values keyed by column name
     function loadRowData(tableRow) {
-        const tableCols = tableRow.querySelectorAll('td'),
+        var tableCols = tableRow.querySelectorAll('td'),
             colNode,
             col,
             data = {},
@@ -109,7 +109,7 @@ const addSorting = (function() {
     }
     // loads all row data
     function loadData() {
-        const rows = getTableBody().querySelectorAll('tr'),
+        var rows = getTableBody().querySelectorAll('tr'),
             i;
 
         for (i = 0; i < rows.length; i += 1) {
@@ -118,7 +118,7 @@ const addSorting = (function() {
     }
     // sorts the table using the data for the ith column
     function sortByIndex(index, desc) {
-        const key = cols[index].key,
+        var key = cols[index].key,
             sorter = function(a, b) {
                 a = a.data[key];
                 b = b.data[key];
@@ -149,7 +149,7 @@ const addSorting = (function() {
     }
     // removes sort indicators for current column being sorted
     function removeSortIndicators() {
-        const col = getNthColumn(currentSort.index),
+        var col = getNthColumn(currentSort.index),
             cls = col.className;
 
         cls = cls.replace(/ sorted$/, '').replace(/ sorted-desc$/, '');
@@ -163,13 +163,13 @@ const addSorting = (function() {
     }
     // adds event listeners for all sorter widgets
     function enableUI() {
-        const i,
+        var i,
             el,
             ithSorter = function ithSorter(i) {
-                const col = cols[i];
+                var col = cols[i];
 
                 return function() {
-                    const desc = col.defaultDescSort;
+                    var desc = col.defaultDescSort;
 
                     if (currentSort.index === i) {
                         desc = !currentSort.desc;
