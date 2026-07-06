@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-06T18:52:34.958915",
+  "timestamp": "2026-07-06T20:50:08.736963",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,16 +8,16 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 10.72,
+    "elapsed_seconds": 10.34,
     "files_scanned": 192,
-    "files_per_second": 17.9,
-    "lines_per_second": 147097.0
+    "files_per_second": 18.6,
+    "lines_per_second": 152528.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 18,
+    "total_rules_with_hits": 17,
     "false_positive_escalations": 13,
     "rule_hit_distribution": {
-      "MAGIC_NUMBERS": 222,
+      "MAGIC_NUMBERS": 223,
       "MISSING_TYPE_HINTS": 77,
       "EXCESSIVE_NESTING_DEPTH": 74,
       "MISSING_TEST_FILE": 52,
@@ -30,45 +30,45 @@
     }
   },
   "escalation_health": {
-    "status": "WARNING",
-    "total_escalations": 1463,
+    "status": "HEALTHY",
+    "total_escalations": 1458,
     "critical_escalations": 0,
-    "fixes_that_broke_tests": 5
+    "fixes_that_broke_tests": 0
   },
   "rule_activity": {
     "total_rules": 46,
-    "active_rules": 18,
+    "active_rules": 17,
     "inactive_rules": [
-      "NO_EMPTY_CATCH",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "SCORING_NEW_PARAM_SIGNATURE",
       "NO_DOUBLE_SEMICOLONS",
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "NO_POSITIVE_TABINDEX",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "NO_VAR_KEYWORD",
+      "NO_EMPTY_CATCH",
+      "TEST_WITH_SKIP",
+      "NO_BARE_EXCEPT",
+      "NO_HARDCODED_LOCALHOST",
+      "NO_TRAILING_WHITESPACE",
+      "NO_CONSOLE_LOG_IN_PROD",
+      "NO_HARDCODED_SECRETS",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
       "MISSING_ALT_ATTRIBUTE",
+      "AVOID_ARRAY_CONSTRUCTOR",
       "INTELLIGENCE_EXPORT_COVERAGE",
       "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_CIRCULAR_IMPORTS",
-      "NO_WILDCARD_CORS",
-      "NO_HTTP_IN_PRODUCTION_URLS",
-      "NO_INDEX_AS_KEY",
-      "NO_BARREL_IMPORT_CYCLES",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "PROP_SPREADING_WARNING",
-      "NO_HARDCODED_SECRETS",
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "TEST_WITH_ONLY",
-      "NO_HARDCODED_LOCALHOST",
-      "NO_POSITIVE_TABINDEX"
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "TEST_WITH_ONLY"
     ],
-    "inactive_count": 28
+    "inactive_count": 29
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 467.8
+    "size_kb": 467.9
   },
   "overall_status": "HEALTHY",
   "warnings": [],
   "recommendations": [
-    "28 regles inactives. Verifier si elles sont encore pertinentes."
+    "29 regles inactives. Verifier si elles sont encore pertinentes."
   ]
 }
