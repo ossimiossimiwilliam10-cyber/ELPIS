@@ -645,14 +645,16 @@ function genererTacheSpecifique(configPath, coursPath, options) {
   const candidates = [];
 
   if (type === 'all' || type === 'ANKI') {
-    if (!cfg.dernierePratiqueAnki || cfg.dernierePratiqueAnki !== todayStr) {
+    // Si l'utilisateur force ANKI, on l'autorise même s'il l'a déjà fait aujourd'hui
+    const alreadyDone = (cfg.dernierePratiqueAnki === todayStr);
+    if (!alreadyDone || type === 'ANKI') {
       candidates.push({
         matiere: "Routine",
         type: "ANKI",
         titre: "Révision Flashcards",
         dureeMinutes: cfg.defaultDurationAnki || 30,
-        prio: MAGIC_CONSTANTS.PRIO_MAX_ANKI,
-        raisons: ["🧠 Répétition Espacée Globale"]
+        prio: type === 'ANKI' ? 9999 : MAGIC_CONSTANTS.PRIO_MAX_ANKI,
+        raisons: ["🧠 Répétition Espacée Globale" + (alreadyDone ? " (Bonus)" : "")]
       });
     }
   }

@@ -1034,6 +1034,7 @@ function Dashboard() {
                 >
                   <option value="PERSO">Perso / Projet</option>
                   <option value="LECTURE">Lecture / Veille</option>
+                  <option value="ANKI">Anki (Flashcards)</option>
                   <option value="CM">CM (Cours)</option>
                   <option value="TD">TD (Exercices)</option>
                   <option value="TP">TP (Pratique)</option>

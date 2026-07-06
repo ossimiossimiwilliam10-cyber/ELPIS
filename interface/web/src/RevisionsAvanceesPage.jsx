@@ -114,6 +114,7 @@ export default function RevisionsAvanceesPage() {
             style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem', cursor: 'pointer' }}
           >
             <option value="all">Peu importe</option>
+            <option value="ANKI">Anki (Flashcards)</option>
             <option value="CM">Cours (CM)</option>
             <option value="TD">Exercices (TD)</option>
             <option value="TP">Projet (TP)</option>

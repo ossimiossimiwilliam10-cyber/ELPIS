@@ -59,3 +59,7 @@ pm test ou Ã©quivalent) AVANT de dÃ©clencher la procÃ©dure de Build & Push
   3. Utiliser un systeme d'**Escalade** formelle pour les anomalies detectees qu'il ne peut pas corriger en toute securite, plutot que de laisser des anomalies orphelines dans les rapports standards.
   4. **Anticipation post-correction (Continuous Learning)** : Dès qu'un bug complexe est résolu manuellement, le système immunitaire DOIT être mis à jour immédiatement avec de nouvelles règles (dans rules.json ou scanners.py) pour détecter automatiquement la régression de ce cas précis, et pour généraliser la détection à des cas similaires.
 </RULE[agent_architecture_immune_system]>
+
+<RULE[daemon_lifecycle_management]>
+- **Gestion du Cycle de Vie des Processus (Démons)** : Lors de la modification du code source d'un processus s'exécutant en arrière-plan (serveur Node.js, agent Python, etc.), il faut SYSTEMATIQUEMENT identifier l'instance en cours d'exécution (via `manage_task` ou les outils système) et la redémarrer ou la tuer. Cela évite les crashs fatals dus à une désynchronisation entre le code en mémoire vive et les nouveaux fichiers de configuration sur le disque.
+</RULE[daemon_lifecycle_management]>
