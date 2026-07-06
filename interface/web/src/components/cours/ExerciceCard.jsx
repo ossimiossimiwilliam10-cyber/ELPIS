@@ -37,7 +37,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
     show: { opacity: 1, scale: 1 },
     exit: { opacity: 0, scale: 0.8, x: -50, transition: { duration: 0.2 } }
   };
-  
+
   const exoId = exo.id || exo.titre;
   const isThisExoActive = globalChrono.exoId === exoId;
   const isRunning = isThisExoActive && globalChrono.isRunning;
@@ -75,9 +75,9 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
     if (isThisExoActive) {
       resetGlobalChrono();
     }
-    
-    let finalMinutes = manualTime !== null 
-      ? manualTime 
+
+    let finalMinutes = manualTime !== null
+      ? manualTime
       : (elapsedSeconds > 0 ? Math.max(1, Math.ceil(elapsedSeconds / 60)) : 0);
 
     if (finalMinutes === 0 && exo.type === 'ANKI') {
@@ -96,21 +96,21 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
 
   const handleOpenPdf = async () => {
     if (!exo.pdfPath) return;
-    
+
     // Si l'URL est relative (commence par /documents/), on utilise le chemin relatif.
     let url = exo.pdfPath;
-    
+
     window.open(url, '_blank');
   };
 
   return (
-    <motion.div 
+    <motion.div
       variants={itemVariants}
       initial="hidden"
       animate="show"
       exit="exit"
       layout
-      className="card glass-panel" 
+      className="card glass-panel"
       style={{borderTop:`4px solid ${exo.type==='TD' ? '#34D399' : exo.type==='CM' ? '#3b82f6' : exo.type==='ANNALE' ? '#ef4444' : '#FBBF24'}`, position: 'relative'}}
     >
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem'}}>
@@ -124,7 +124,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
             </span>
           ))}
           {exo.notebookLMLink && (
-            <button 
+            <button
               onClick={() => {
                 let link = exo.notebookLMLink;
                 if (link && !link.startsWith('http')) link = 'https://' + link;
@@ -142,28 +142,28 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
             <span>
               Revu {exo.repetitions || 0} fois <InfoTooltip content="L'algorithme FSRS calcule ce délai (en jours) en fonction de ta note de difficulté. Plus tu réussis, plus l'intervalle augmente.">(J{exo.jActuel || 0}) <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip>
             </span>
-          ) : 
-           exo.type === 'TP' && exo.etape ? getTPStepName(exo.etape) : 
+          ) :
+           exo.type === 'TP' && exo.etape ? getTPStepName(exo.etape) :
            `Pratiqué ${exo.nombrePratiques || 0} fois`}
         </span>
       </div>
-      
+
       <h3 style={{margin:'0 0 1rem 0', overflow:'hidden', textOverflow:'ellipsis', display:'-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient:'vertical'}} title={exo.titre}>{exo.titre}</h3>
-      
+
       {/* Timer Section */}
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '8px', marginBottom: '1rem'}}>
         <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-          <button 
+          <button
             onClick={toggleTimer}
             style={{
-              background: isRunning ? '#ef4444' : '#10B981', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '50%', 
-              width: '32px', 
-              height: '32px', 
-              display: 'flex', 
-              alignItems: 'center', 
+              background: isRunning ? '#ef4444' : '#10B981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               flexShrink: 0
@@ -172,7 +172,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
           >
             {isRunning ? '⏸' : '▶'}
           </button>
-          <span 
+          <span
             style={{fontFamily: 'monospace', fontSize: '1.1rem', fontWeight: 'bold', color: isRunning ? 'var(--text-primary)' : 'var(--text-secondary)', minWidth: '50px'}}
           >
             {formatTime(elapsedSeconds)}
@@ -180,8 +180,8 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
         </div>
         <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
           <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>ou</span>
-          <input 
-            type="number" 
+          <input
+            type="number"
             min="0"
             max="999"
             placeholder={exo.tempsMoyen ? `${Math.round(exo.tempsMoyen)}` : "min"}
@@ -215,7 +215,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
 
       <div style={{display:'flex', gap:'0.5rem', flexDirection: 'column'}}>
         {exo.pdfPath && (
-          <button 
+          <button
             onClick={handleOpenPdf}
             className="btn-secondary"
             style={{background:'var(--bg-tertiary)', color:'var(--text-primary)', border:'1px solid rgba(255,255,255,0.1)', padding:'0.6rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', marginBottom:'0.5rem'}}
@@ -233,17 +233,17 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
              </>
           ) : exo.type === 'ANNALE' ? (
              <div style={{display:'flex', width:'100%', gap:'0.5rem', alignItems: 'center'}}>
-               <input 
-                 type="number" 
-                 min="0" 
-                 max="20" 
-                 step="0.5" 
-                 placeholder="Note /20" 
+               <input
+                 type="number"
+                 min="0"
+                 max="20"
+                 step="0.5"
+                 placeholder="Note /20"
                  value={note}
                  onChange={e => setNote(e.target.value)}
                  style={{flex: 1, padding: '0.6rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'var(--bg-primary)', color: 'white', fontSize: '1rem'}}
                />
-               <button 
+               <button
                  onClick={() => {
                    if(note !== '') handleValidation(onMarkAsDone, note);
                  }}
@@ -256,7 +256,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
              </div>
           ) : (
            <div style={{display:'flex', width:'100%', gap:'0.5rem'}}>
-             <button 
+             <button
                onClick={() => handleValidation(onMarkAsDone, "")}
                className="btn-secondary"
                style={{background:'#10B981', color:'white', border:'none', flex: 2}}

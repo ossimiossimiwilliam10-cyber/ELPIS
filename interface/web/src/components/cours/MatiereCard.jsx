@@ -4,10 +4,10 @@ import EditableNote from './EditableNote';
 import StarRating from './StarRating';
 import InfoTooltip from '../InfoTooltip';
 
-export default function MatiereCard({ 
-  matiere, 
+export default function MatiereCard({
+  matiere,
   allMatiereNames,
-  lIndex, sIndex, uIndex, mIndex, 
+  lIndex, sIndex, uIndex, mIndex,
   actions
 }) {
   const {
@@ -29,22 +29,22 @@ export default function MatiereCard({
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/pdf,image/*';
-    
+
     input.onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
       const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
       const isImg = file.type.startsWith('image/');
-      
+
       if (!isPdf && !isImg) {
         alert('Veuillez sélectionner un fichier PDF ou une image.');
         return;
       }
-      
+
       const formData = new FormData();
       formData.append('pdf', file);
-      
+
       try {
         const res = await fetch('/api/upload/pdf', {
           method: 'POST',
@@ -68,14 +68,14 @@ export default function MatiereCard({
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/pdf';
-    
+
     input.onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
       const formData = new FormData();
       formData.append('pdf', file);
-      
+
       try {
         const res = await fetch('/api/upload/pdf', {
           method: 'POST',
@@ -118,14 +118,14 @@ export default function MatiereCard({
           style={{flex:1, borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.3rem'}}
         />
       </div>
-      
+
       {/* CONFIG NOTEBOOK LM & SYNERGIES */}
       <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
         <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
           <span style={{fontSize:'1rem'}} title="Lien NotebookLM">📖</span>
-          <input 
-            type="text" 
-            placeholder="Collez ici le lien NotebookLM pour cette matière..." 
+          <input
+            type="text"
+            placeholder="Collez ici le lien NotebookLM pour cette matière..."
             value={matiere.notebookLMLink || ''}
             onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'notebookLMLink'], e.target.value)}
             style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
@@ -176,7 +176,7 @@ export default function MatiereCard({
           </div>
         </div>
       </div>
-      
+
       {/* --- CM --- */}
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem'}}>
         <span style={{fontSize:'0.9rem', color:'var(--text-secondary)'}}>{matiere.listeCM?.length || 0} CM</span>
@@ -185,7 +185,7 @@ export default function MatiereCard({
       {matiere.listeCM?.map((cm, cmIndex) => (
         <div key={`cm-${cmIndex}`} className="cm-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => deleteCM(lIndex, sIndex, uIndex, mIndex, cmIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-          <button 
+          <button
             onClick={() => {
               if (cm.pdfPath && window.confirm("Remplacer le document existant ?")) {
                 handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'pdfPath']);
@@ -205,15 +205,15 @@ export default function MatiereCard({
               placeholder="Titre du CM"
               style={{fontSize:'0.85rem'}}
             />
-            <EditableNote 
-              value={cm.notes} 
+            <EditableNote
+              value={cm.notes}
               onClick={() => setModalConfig({
                 isOpen: true,
                 title: `Notes CM : ${cm.titre}`,
                 initialValue: cm.notes,
                 onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'notes'], v)
-              })} 
-              placeholder="+ Ajouter une note (markdown supporté)" 
+              })}
+              placeholder="+ Ajouter une note (markdown supporté)"
             />
           </div>
           <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
@@ -222,7 +222,7 @@ export default function MatiereCard({
             </span>
             <div style={{display:'flex', alignItems:'center', gap:'0.5rem', fontSize:'0.7rem', color:'var(--text-secondary)'}}>
               <span title="Intervalle (jours)">Intervalle</span>
-              <input 
+              <input
                 type="number"
                 min="0"
                 value={cm.jActuel || 0}
@@ -263,7 +263,7 @@ export default function MatiereCard({
       {matiere.listeTD?.map((td, tdIndex) => (
         <div key={`td-${tdIndex}`} className="td-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => deleteTD(lIndex, sIndex, uIndex, mIndex, tdIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-          <button 
+          <button
             onClick={() => {
               if (td.pdfPath && window.confirm("Remplacer le document existant ?")) {
                 handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'pdfPath']);
@@ -283,22 +283,22 @@ export default function MatiereCard({
               placeholder="Nom de l'exercice"
               style={{fontSize:'0.85rem'}}
             />
-            <EditableNote 
-              value={td.notes} 
+            <EditableNote
+              value={td.notes}
               onClick={() => setModalConfig({
                 isOpen: true,
                 title: `Notes TD : ${td.titre}`,
                 initialValue: td.notes,
                 onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'notes'], v)
               })}
-              placeholder="+ Ajouter une note (markdown supporté)" 
+              placeholder="+ Ajouter une note (markdown supporté)"
             />
           </div>
           <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
             <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>
-            <StarRating 
-              value={td.difficulteInitiale || 1} 
-              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'difficulteInitiale'], v)} 
+            <StarRating
+              value={td.difficulteInitiale || 1}
+              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'difficulteInitiale'], v)}
             />
           </div>
         </div>
@@ -315,7 +315,7 @@ export default function MatiereCard({
       {matiere.listeTP?.map((tp, tpIndex) => (
         <div key={`tp-${tpIndex}`} className="tp-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => deleteTP(lIndex, sIndex, uIndex, mIndex, tpIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-          <button 
+          <button
             onClick={() => {
               if (tp.pdfPath && window.confirm("Remplacer le document existant ?")) {
                 handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'pdfPath']);
@@ -335,24 +335,24 @@ export default function MatiereCard({
               placeholder="Nom de l'exercice"
               style={{fontSize:'0.85rem'}}
             />
-            <EditableNote 
-              value={tp.notes} 
+            <EditableNote
+              value={tp.notes}
               onClick={() => setModalConfig({
                 isOpen: true,
                 title: `Notes TP : ${tp.titre}`,
                 initialValue: tp.notes,
                 onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'notes'], v)
               })}
-              placeholder="+ Ajouter une note (markdown supporté)" 
+              placeholder="+ Ajouter une note (markdown supporté)"
             />
             <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem'}}>
               <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>📅 Date du TP :</span>
-              <input 
-                type="date" 
+              <input
+                type="date"
                 value={tp.dateTP || ''}
                 onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'dateTP'], e.target.value)}
                 style={{
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', 
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)',
                   color: 'var(--text-primary)', borderRadius: '4px', padding: '0.1rem 0.3rem', fontSize: '0.75rem'
                 }}
               />
@@ -360,14 +360,14 @@ export default function MatiereCard({
           </div>
           <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
             <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>
-            <StarRating 
-              value={tp.difficulteInitiale || 1} 
-              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'difficulteInitiale'], v)} 
+            <StarRating
+              value={tp.difficulteInitiale || 1}
+              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'difficulteInitiale'], v)}
             />
           </div>
         </div>
       ))}
-      
+
       {/* --- ANNALES --- */}
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
         <span style={{fontSize:'0.9rem', color:'#ef4444'}}>{matiere.listeAnnales?.length || 0} Annales</span>
@@ -379,7 +379,7 @@ export default function MatiereCard({
       {matiere.listeAnnales?.map((annale, aIndex) => (
         <div key={`annale-${aIndex}`} className="annale-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(239, 68, 68, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
           <button onClick={() => actions.deleteAnnale(lIndex, sIndex, uIndex, mIndex, aIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
-          <button 
+          <button
             onClick={() => {
               if (annale.pdfPath && window.confirm("Remplacer le document existant ?")) {
                 handleUploadClick(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'pdfPath']);
@@ -399,28 +399,28 @@ export default function MatiereCard({
               placeholder="Nom de l'annale"
               style={{fontSize:'0.85rem'}}
             />
-            <EditableNote 
-              value={annale.notes} 
+            <EditableNote
+              value={annale.notes}
               onClick={() => setModalConfig({
                 isOpen: true,
                 title: `Notes Annale : ${annale.titre}`,
                 initialValue: annale.notes,
                 onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'notes'], v)
               })}
-              placeholder="+ Ajouter une note (markdown supporté)" 
+              placeholder="+ Ajouter une note (markdown supporté)"
             />
           </div>
           <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
             <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>
-            <StarRating 
-              value={annale.difficulteInitiale || 3} 
-              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'difficulteInitiale'], v)} 
+            <StarRating
+              value={annale.difficulteInitiale || 3}
+              onChange={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'difficulteInitiale'], v)}
               tooltip="Difficulté de l'annale (par défaut: 3)"
             />
           </div>
         </div>
       ))}
-      
+
     </div>
   );
 }

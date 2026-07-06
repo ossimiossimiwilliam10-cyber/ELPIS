@@ -21,11 +21,11 @@ export default function DisclaimerModal({ onClose }) {
           </div>
 
           <div className="disclaimer-body custom-scrollbar-y">
-            
+
             <div className="disclaimer-section">
               <h3>1. L'Algorithme est Roi (FSRS) 🧠</h3>
               <p>
-                ELPIS repose sur la <strong>répétition espacée</strong>. L'algorithme calcule le moment précis où vous êtes sur le point d'oublier une information pour vous la faire réviser. 
+                ELPIS repose sur la <strong>répétition espacée</strong>. L'algorithme calcule le moment précis où vous êtes sur le point d'oublier une information pour vous la faire réviser.
               </p>
               <ul className="disclaimer-list">
                 <li><strong>Soyez 100% honnête :</strong> Lors de l'évaluation (À revoir, Difficile, Bien, Parfait), ne trichez jamais. Si vous avez oublié, cliquez sur "À revoir".</li>

@@ -240,7 +240,7 @@ function CoursPage() {
           <p style={{color:'var(--text-secondary)', marginTop:'0.5rem'}}>Configure ton année scolaire : Semestres, UEs, et Matières.</p>
         </div>
         <div style={{display:'flex', gap:'1rem', alignItems: 'center', flexWrap:'wrap'}}>
-          <input 
+          <input
             type="text"
             placeholder="🔍 Rechercher..."
             value={searchTerm}
@@ -257,8 +257,8 @@ function CoursPage() {
 
       <div className="licence-tabs" style={{display:'flex', gap:'1.5rem', marginBottom:'1rem', borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.5rem'}}>
         {configLocal.licences?.map((licence, lIndex) => (
-          <button 
-            key={`lic-${lIndex}-${licence.nom}`} 
+          <button
+            key={`lic-${lIndex}-${licence.nom}`}
             className={`tab-btn ${activeLicenceIndex === lIndex ? 'active' : ''}`}
             onClick={() => { setActiveLicenceIndex(lIndex); setActiveSemestreIndex(0); setActiveUEIndex(0); }}
             style={{fontSize:'1.1rem', fontWeight: activeLicenceIndex === lIndex ? 'bold' : 'normal'}}
@@ -273,12 +273,12 @@ function CoursPage() {
         const lIndex = activeLicenceIndex;
         const licence = configLocal.licences[lIndex];
         if (!licenceMatchesSearch(licence)) return null;
-        
+
         return (
           <div key={`l-${lIndex}`}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
-              <EditableLabel 
-                value={licence.nom} 
+              <EditableLabel
+                value={licence.nom}
                 onRename={(v) => updateField(['licences', lIndex, 'nom'], v)}
                 placeholder="Nom de la licence"
                 style={{fontSize:'1.8rem', fontWeight:'bold', flex: 1}}
@@ -288,8 +288,8 @@ function CoursPage() {
 
             <div className="semestre-tabs" style={{display:'flex', gap:'1.5rem'}}>
               {licence.semestres?.map((semestre, sIndex) => (
-                <button 
-                  key={`sem-${sIndex}-${semestre.nom}`} 
+                <button
+                  key={`sem-${sIndex}-${semestre.nom}`}
                   className={`tab-btn ${activeSemestreIndex === sIndex ? 'active' : ''}`}
                   onClick={() => { setActiveSemestreIndex(sIndex); setActiveUEIndex(0); }}
                 >
@@ -307,8 +307,8 @@ function CoursPage() {
                 return (
                 <div key={`s-${sIndex}`} className="card glass-panel" style={{borderLeft:'4px solid var(--accent-primary)'}}>
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
-                    <EditableLabel 
-                      value={semestre.nom} 
+                    <EditableLabel
+                      value={semestre.nom}
                       onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'nom'], v)}
                       placeholder="Nom du semestre"
                       style={{fontSize:'1.4rem', fontWeight:'bold', flex: 1}}
@@ -316,14 +316,14 @@ function CoursPage() {
                     <div style={{display:'flex', gap:'1rem', alignItems:'center', flexWrap:'wrap', marginLeft:'1rem'}}>
                       <div style={{display:'flex', alignItems:'center', gap:'0.5rem', background:'var(--bg-tertiary)', padding:'0.2rem 0.6rem', borderRadius:'6px'}}>
                         <label style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>Date Fin :</label>
-                        <input 
-                          type="date" 
-                          value={semestre.dateFin || ''} 
+                        <input
+                          type="date"
+                          value={semestre.dateFin || ''}
                           onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'dateFin'], e.target.value)}
                           style={{background:'transparent', border:'none', color:'var(--text-primary)', outline:'none', fontSize:'0.9rem'}}
                         />
                       </div>
-                      <button 
+                      <button
                         onClick={() => updateField(['licences', lIndex, 'semestres', sIndex, 'archived'], !semestre.archived)}
                         style={{
                           background: semestre.archived ? 'var(--error-color)' : 'var(--bg-tertiary)',
@@ -346,8 +346,8 @@ function CoursPage() {
                     {semestre.ues?.map((ue, uIndex) => {
                       if (!ueMatchesSearch(ue)) return null;
                       return (
-                        <button 
-                          key={`ue-tab-${uIndex}-${ue.nom}`} 
+                        <button
+                          key={`ue-tab-${uIndex}-${ue.nom}`}
                           className={`tab-btn ${activeUEIndex === uIndex ? 'active' : ''}`}
                           style={{ fontSize:'0.95rem', padding:'0.4rem 1rem', background: activeUEIndex === uIndex ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255,255,255,0.05)' }}
                           onClick={() => setActiveUEIndex(uIndex)}
@@ -365,7 +365,7 @@ function CoursPage() {
                         const uIndex = activeUEIndex;
                         const ue = semestre.ues[uIndex];
                         if (!ueMatchesSearch(ue)) return null;
-                        
+
                         return (
                           <motion.div
                             key={`ue-content-${uIndex}`}
@@ -376,7 +376,7 @@ function CoursPage() {
                             style={{background:'rgba(255,255,255,0.02)', padding:'1.5rem', borderRadius:'12px', border:'1px solid var(--bg-tertiary)'}}>
                           <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: '1.5rem'}}>
                             <div style={{display:'flex', alignItems:'center', gap:'1rem', flex: 1}}>
-                              <EditableLabel 
+                              <EditableLabel
                                 value={ue.nom}
                                 onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'nom'], v)}
                                 placeholder="Nom de l'UE"
@@ -384,8 +384,8 @@ function CoursPage() {
                               />
                               <div style={{display:'flex', alignItems:'center', gap:'0.4rem', background:'rgba(0,0,0,0.2)', padding:'0.3rem 0.6rem', borderRadius:'6px'}}>
                                 <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>ECTS:</span>
-                                <input 
-                                  type="number" value={ue.ects || 0} 
+                                <input
+                                  type="number" value={ue.ects || 0}
                                   onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'ects'], Math.min(60, Math.max(0, parseInt(e.target.value) || 0)))}
                                   style={{width:'50px', padding:'0.2rem', fontSize:'0.85rem'}} title="Crédits ECTS (0-60)"
                                 />
@@ -432,7 +432,7 @@ function CoursPage() {
           </div>);
       })()}
 
-      <MarkdownModal 
+      <MarkdownModal
         isOpen={modalConfig.isOpen}
         title={modalConfig.title}
         initialValue={modalConfig.initialValue}

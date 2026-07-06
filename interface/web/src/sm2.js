@@ -49,7 +49,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal, su
   if (targetInterval <= 1) return targetInterval;
 
   const baseDate = new Date(baseDateStr + 'T00:00:00');
-  
+
   // Define a search window based on interval size
   // e.g., if interval is 30 days, we can shift by +/- 3 days.
   // If interval is 4 days, shift by +/- 1 day.
@@ -68,7 +68,7 @@ export function findOptimalInterval(baseDateStr, targetInterval, configLocal, su
     const testDateStr = testDate.getFullYear() + '-' + String(testDate.getMonth() + 1).padStart(2, '0') + '-' + String(testDate.getDate()).padStart(2, '0');
 
     const load = getLoadForDate(testDateStr, configLocal, subjectName);
-    
+
     // Prefer original interval if loads are equal
     // To do this, we add a tiny penalty to the load based on distance from original target
     const penalty = Math.abs(offset) * 0.1;
@@ -115,10 +115,10 @@ export function calculateSM2(score, previousInterval, easeFactor, repetitions, c
       if (actualDaysElapsed > previousInterval && score >= 3) {
         effectivePreviousInterval = actualDaysElapsed;
       }
-      
+
       // AXE 9: personalizedDecayMultiplier applied here
       newInterval = Math.round(effectivePreviousInterval * newEaseFactor * personalizedDecayMultiplier);
-      
+
       // Bonus agressif pour le score 4 (Anti-Ennui)
       if (score === 4) {
         const antiEnnuiMult = configLocal?.antiEnnuiMultiplier || 2.0;

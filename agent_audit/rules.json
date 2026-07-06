@@ -61,6 +61,11 @@
     "pattern": "[ \\t]+$",
     "severity": "info",
     "file_pattern": "\\.(js|jsx|css|py)$",
-    "exclude_pattern": "\\.test\\.(js|jsx)$"
+    "exclude_pattern": "\\.test\\.(js|jsx)$",
+    "fix": {
+      "action": "replace_regex",
+      "search": "[ \\t]+$",
+      "replacement": ""
+    }
   }
 ]

@@ -57,7 +57,7 @@ function sanitizeCours(c) {
   if (!c.licences) c.licences = [];
   // Nettoyer le champ legacy "semestres" au niveau racine s'il persiste
   if (c.semestres) delete c.semestres;
-  
+
   for (const l of c.licences) {
     if (!l.nom) l.nom = "Nouvelle Licence";
     if (!l.semestres) l.semestres = [];
@@ -71,7 +71,7 @@ function sanitizeCours(c) {
           m.cm_h = Math.max(0, Math.min(500, m.cm_h ?? 0));
           m.td_h = Math.max(0, Math.min(500, m.td_h ?? 0));
           m.tp_h = Math.max(0, Math.min(500, m.tp_h ?? 0));
-          
+
           if (!m.listeCM) m.listeCM = [];
           for (const cm of m.listeCM) {
             cm.jActuel = Math.max(0, Math.min(3000, cm.jActuel ?? 0));
@@ -81,13 +81,13 @@ function sanitizeCours(c) {
               cm.derniereRevision = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
             }
           }
-          
+
           if (!m.listeTD) m.listeTD = [];
           for (const ex of m.listeTD) {
             ex.page = Math.max(1, Math.min(9999, ex.page ?? 1));
             ex.nombrePratiques = Math.max(0, Math.min(10000, ex.nombrePratiques ?? 0));
           }
-          
+
           if (!m.listeTP) m.listeTP = [];
           for (const ex of m.listeTP) {
             ex.page = Math.max(1, Math.min(9999, ex.page ?? 1));
@@ -215,7 +215,7 @@ function saveCours(coursConfig, filePath = COURS_PATH) {
 
   const json = JSON.stringify(cleaned, null, 4);
   const tmpPath = filePath + '.tmp';
-  
+
   try {
     fs.writeFileSync(tmpPath, json, 'utf8');
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);

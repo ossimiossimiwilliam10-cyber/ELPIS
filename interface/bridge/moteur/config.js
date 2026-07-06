@@ -85,7 +85,7 @@ function sanitize(c) {
   c.maxSubjectsPerDay = Math.max(1, c.maxSubjectsPerDay ?? 3);
   c.studyBlockDurationMinutes = Math.max(10, Math.min(240, c.studyBlockDurationMinutes ?? 50));
   c.activeRecallMinutesPerDay = Math.max(0, c.activeRecallMinutesPerDay ?? 30);
-  
+
   c.defaultDurationNewCM = Math.max(5, c.defaultDurationNewCM ?? 120);
   c.defaultDurationRevCM = Math.max(5, c.defaultDurationRevCM ?? 30);
   c.defaultDurationTD = Math.max(5, c.defaultDurationTD ?? 20);
@@ -103,14 +103,14 @@ function sanitize(c) {
   c.pomoBreak = Math.max(1, Math.min(60, c.pomoBreak ?? 5));
   c.currentStreak = Math.max(0, c.currentStreak ?? 0);
   c.bestStreak = Math.max(0, c.bestStreak ?? 0);
-  
+
   if (c.theme !== "light" && c.theme !== "dark") c.theme = "dark";
-  
+
   // Ensure arrays
   if (!Array.isArray(c.subjects)) c.subjects = [];
   if (!Array.isArray(c.fixedCommitments)) c.fixedCommitments = [];
   if (!Array.isArray(c.restDays)) c.restDays = [];
-  
+
   return c;
 }
 
@@ -146,7 +146,7 @@ function saveConfig(config, filePath = CONFIG_PATH) {
 
   const json = JSON.stringify(cleaned, null, 4);
   const tmpPath = filePath + '.tmp';
-  
+
   try {
     fs.writeFileSync(tmpPath, json, 'utf8');
     // Atomic rename on Windows requires removing target first

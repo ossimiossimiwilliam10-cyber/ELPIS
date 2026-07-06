@@ -12,13 +12,13 @@ const MAGIC_CONSTANTS = {
   PRIO_MAX_ANKI: 9999,           // La routine Anki passe avant tout
   PRIO_MAX_RETARD: 999,          // Utilisé pour un retard infini ou un TP dû demain
   PRIO_WEEKEND_TP: 500,          // Boost massif pour inciter à faire les TP le week-end
-  
+
   // Multiplicateurs d'urgence et de synergie
   BOOST_CRISE_NOTE: 2.0,         // Multiplicateur d'urgence si la note projetée est < 5/20
   BOOST_PREP_TD: 1.5,            // Multiplicateur pour un CM qui prépare un TD à venir
   BOOST_ANNALE_URGENT: 5.0,      // Multiplicateur pour une annale si l'examen est < 14 jours
   BOOST_ANNALE_NORMAL: 3.0,      // Multiplicateur de base pour débloquer une annale
-  
+
   // Poids Anti-Décrochage
   BOOST_INACTIVITE_MAX: 3.0,     // Le boost d'inactivité plafonne à x3 (atteint à J+21)
 };
@@ -103,7 +103,7 @@ function buildTaskPools({
           const baseRaisons = [];
           if (inactivityBoost > 1.0) baseRaisons.push("🛡️ Reprise en main");
           if (crisisBoost > 1.0) baseRaisons.push("🚨 Urgence (Note < 5)");
-          
+
           if (daysToExam < 60) baseRaisons.push("⏳ Examen Proche");
           else if (examBoostOriginal > 1.0) baseRaisons.push("🔥 Coefficient Élevé");
 
@@ -393,7 +393,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   tempsLibreMin -= fixedCommitmentsMin;
   if (tempsLibreMin < 0) tempsLibreMin = 0;
-  
+
   tempsLibreMin += extraTimeMin;
   rapport.tempsDispoMin = tempsLibreMin;
   rapport.fixedCommitmentsMin = fixedCommitmentsMin;
@@ -592,7 +592,7 @@ function genererTacheSpecifique(configPath, coursPath, options) {
   const { matiere = 'all', type = 'all', dureeMin = 30 } = options;
   const cfg = loadConfig(configPath);
   const crs = loadCours(coursPath);
-  
+
   const todayStr = getTodayString();
   const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
   const tomorrowDate = new Date(now);

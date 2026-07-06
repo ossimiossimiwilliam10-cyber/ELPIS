@@ -22,9 +22,9 @@ function StatistiquesPage() {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split('T')[0];
-      
+
       const dayHist = historique.filter(h => h.timestamp && h.timestamp.startsWith(dateStr));
-      
+
       let cmTime = 0;
       let tdTime = 0;
       let tpTime = 0;
@@ -122,9 +122,9 @@ function StatistiquesPage() {
     let youngCards = 0;
     let learningCards = 0;
     let retentionSum = 0;
-    
+
     const now = new Date();
-    
+
     coursConfig.licences?.forEach(l => {
       l.semestres?.forEach(s => {
         s.ues?.forEach(u => {
@@ -137,7 +137,7 @@ function StatistiquesPage() {
                 if (S >= 21) matureCards++;
                 else if (S >= 3) youngCards++;
                 else learningCards++;
-                
+
                 if (cm.fsrsCard.last_review) {
                   const lastReview = new Date(cm.fsrsCard.last_review);
                   const elapsedDays = Math.max(0, (now.getTime() - lastReview.getTime()) / (1000 * 60 * 60 * 24));
@@ -214,7 +214,7 @@ function StatistiquesPage() {
     });
 
     const totalHours = (totalMinutes / 60).toFixed(1);
-    
+
     const avgPerDayMins = totalMinutes / (period === 365 ? (historique.length > 0 ? 90 : 1) : period);
     const avgPerDayHours = Math.floor(avgPerDayMins / 60);
     const avgPerDayRemMins = Math.round(avgPerDayMins % 60);
@@ -238,8 +238,8 @@ function StatistiquesPage() {
       <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'2rem', flexWrap:'wrap', gap:'1rem'}}>
         <h2>Statistiques & Performances</h2>
         <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
-          <select 
-            value={period} 
+          <select
+            value={period}
             onChange={e => setPeriod(Number(e.target.value))}
             style={{padding: '0.4rem 0.8rem', borderRadius: '6px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--bg-tertiary)'}}
           >
@@ -248,11 +248,11 @@ function StatistiquesPage() {
             <option value={365}>Tout l'historique</option>
           </select>
 
-          <button 
-            className="btn-secondary" 
+          <button
+            className="btn-secondary"
             onClick={() => {
-              const csvContent = "data:text/csv;charset=utf-8," 
-                + "Date,Matiere,Titre,Type,Duree_Minutes,Ease_Factor\n" 
+              const csvContent = "data:text/csv;charset=utf-8,"
+                + "Date,Matiere,Titre,Type,Duree_Minutes,Ease_Factor\n"
                 + historique.map(h => `${h.timestamp},"${h.matiere || ''}","${h.titre || ''}","${h.type || ''}",${h.dureeMinutes || 30},${h.easeFactor || ''}`).join("\n");
               const encodedUri = encodeURI(csvContent);
               const link = document.createElement("a");
@@ -272,10 +272,10 @@ function StatistiquesPage() {
 
       {/* Projections IA (Orchestrateur Axe 11) */}
       {projectedScores && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card glass-panel" 
+          className="card glass-panel"
           style={{marginBottom: '2rem', borderLeft: '4px solid #a78bfa', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(168, 85, 247, 0.05))'}}
         >
           <div style={{display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap'}}>
@@ -284,7 +284,7 @@ function StatistiquesPage() {
               <p style={{color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: '1.5'}}>
                 Ces notes sont des estimations basées sur ton rythme de travail, tes notes d'annales et ta maîtrise des cours (CM/TD).
               </p>
-              
+
               <div style={{display: 'flex', gap: '1rem', alignItems: 'stretch', flexWrap: 'wrap'}}>
                 <div style={{background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px', display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                   <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>Moyenne Projetée</div>
@@ -311,7 +311,7 @@ function StatistiquesPage() {
                   );
                 })()}
               </div>
-              
+
               <div style={{marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', borderLeft: '3px solid #a78bfa'}}>
                 <span style={{fontSize: '1.2rem', marginRight: '0.5rem'}}>💡</span>
                 <span style={{fontSize: '0.95rem', color: 'var(--text-primary)'}}>
@@ -333,7 +333,7 @@ function StatistiquesPage() {
                       <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-secondary)', fontSize: 10 }} />
                       <PolarRadiusAxis angle={30} domain={[0, 20]} tick={false} axisLine={false} />
                       <Radar name="Score Projeté" dataKey="A" stroke="#a78bfa" fill="#a78bfa" fillOpacity={0.4} />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', color: 'var(--text-primary)'}}
                         formatter={(value) => [`${value}/20`, 'Projection']}
                       />
@@ -342,7 +342,7 @@ function StatistiquesPage() {
                 </div>
               </div>
             )}
-            
+
             <div style={{flex: '1 1 300px', background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px'}}>
               <h4 style={{marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)'}}>Scores Projetés par Matière</h4>
               <div className="custom-scrollbar-y" style={{display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '350px', overflowY: 'auto', paddingRight: '0.5rem'}}>
@@ -370,10 +370,10 @@ function StatistiquesPage() {
 
       {/* Profil de Rétention FSRS */}
       {fsrsMetrics && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card glass-panel" 
+          className="card glass-panel"
           style={{marginBottom: '2rem', borderLeft: '4px solid #10b981', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(16, 185, 129, 0.05))'}}
         >
           <div style={{display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap'}}>
@@ -382,7 +382,7 @@ function StatistiquesPage() {
               <p style={{color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem'}}>
                 Évaluation en temps réel de ta mémoire à long terme (Stabilité) et à court terme (Rétention) sur l'ensemble de tes {fsrsMetrics.totalCards} CM.
               </p>
-              
+
               <div style={{display: 'flex', gap: '1rem', alignItems: 'stretch', flexWrap: 'wrap'}}>
                 <div style={{background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px', flex: 1, minWidth: '150px'}}>
                   <div style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>Stabilité Moyenne</div>
@@ -426,7 +426,7 @@ function StatistiquesPage() {
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', color: 'var(--text-primary)'}}
                       formatter={(value, name, props) => [`${value} CM`, props.payload.desc]}
                     />
@@ -450,31 +450,31 @@ function StatistiquesPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={forgettingCurveData.points} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                    <XAxis 
-                      dataKey="days" 
-                      stroke="var(--text-secondary)" 
-                      fontSize={11} 
-                      tickLine={false} 
+                    <XAxis
+                      dataKey="days"
+                      stroke="var(--text-secondary)"
+                      fontSize={11}
+                      tickLine={false}
                       axisLine={false}
                       label={{ value: 'Jours écoulés', position: 'insideBottomRight', offset: -5, fill: 'var(--text-secondary)', fontSize: 11 }}
                     />
-                    <YAxis 
-                      stroke="var(--text-secondary)" 
-                      fontSize={11} 
-                      tickLine={false} 
+                    <YAxis
+                      stroke="var(--text-secondary)"
+                      fontSize={11}
+                      tickLine={false}
                       axisLine={false}
                       domain={[0, 100]}
                       tickFormatter={(v) => `${v}%`}
                       label={{ value: 'Rétention', angle: -90, position: 'insideLeft', fill: 'var(--text-secondary)', fontSize: 11 }}
                     />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', color: 'var(--text-primary)'}}
                       formatter={(value) => [`${value}%`, 'Rétention']}
                       labelFormatter={(days) => `Après ${days} jour${days > 1 ? 's' : ''}`}
                     />
                     <Legend verticalAlign="top" height={30} />
                     {forgettingCurveData.refLevels.map((level) => (
-                      <Line 
+                      <Line
                         key={level.label}
                         type="monotone"
                         dataKey={level.label}
@@ -522,7 +522,7 @@ function StatistiquesPage() {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
             <XAxis dataKey="date" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
             <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={formatTooltip} />
-            <Tooltip 
+            <Tooltip
               contentStyle={{backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', color: 'var(--text-primary)'}}
               formatter={formatTooltip}
             />
@@ -554,7 +554,7 @@ function StatistiquesPage() {
                   <Cell key={`cell-${index}`} fill={COLORS_PIE[index % COLORS_PIE.length]} />
                 ))}
               </Pie>
-              <Tooltip 
+              <Tooltip
                 contentStyle={{backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', color: 'var(--text-primary)'}}
                 formatter={(value) => `${value}h`}
               />
@@ -563,7 +563,7 @@ function StatistiquesPage() {
           </ResponsiveContainer>
         </div>
       </div>
-      
+
       <div className="card glass-panel">
         <h3 style={{marginBottom: '1rem'}}>Dernières actions</h3>
         {filteredHist.length === 0 ? (

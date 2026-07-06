@@ -17,7 +17,7 @@ async function migratePDFs() {
     const db = client.db('elpis_db');
     const bucket = new GridFSBucket(db, { bucketName: 'documents' });
 
-    
+
     if (!fs.existsSync(DOCUMENTS_DIR)) {
       return;
     }
@@ -40,7 +40,7 @@ async function migratePDFs() {
       const uploadStream = bucket.openUploadStream(filename, {
         contentType: 'application/pdf'
       });
-      
+
       const fileStream = fs.createReadStream(filePath);
       await new Promise((resolve, reject) => {
         fileStream.pipe(uploadStream)

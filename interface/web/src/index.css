@@ -12,13 +12,13 @@
   --bg-primary: #0F172A;
   --bg-secondary: #1E293B;
   --bg-tertiary: #334155;
-  
+
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
-  
+
   --accent-primary: #3B82F6;
   --accent-glow: rgba(59, 130, 246, 0.5);
-  
+
   --success-color: #10B981;
   --success-glow: rgba(16, 185, 129, 0.4);
   --danger-color: #EF4444;
@@ -28,7 +28,7 @@
 
   --radius-md: 12px;
   --radius-lg: 16px;
-  
+
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -36,7 +36,7 @@
   color-scheme: dark;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  
+
   /* Smooth transition for dynamic themes */
   transition: background-color 2s ease, color 2s ease;
 
@@ -84,13 +84,13 @@
   --bg-primary: #F8FAFC;
   --bg-secondary: #F1F5F9;
   --bg-tertiary: #E2E8F0;
-  
+
   --text-primary: #0F172A;
   --text-secondary: #475569;
-  
+
   --accent-primary: #2563EB;
   --accent-glow: rgba(37, 99, 235, 0.3);
-  
+
   --success-color: #059669;
   --success-glow: rgba(5, 150, 105, 0.4);
   --danger-color: #DC2626;
@@ -331,7 +331,7 @@ body {
     padding: 0 1.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
-  
+
   :root.light .mobile-header {
     background: rgba(248, 250, 252, 0.9);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -1085,21 +1085,21 @@ input:focus, select:focus {
 
 
 /* === OVERFLOW FIXES (Graphical Collisions) === */
-.cm-item > div, 
-.td-item > div, 
+.cm-item > div,
+.td-item > div,
 .tp-item > div {
   min-width: 0 !important;
 }
 
-.todo-list, 
+.todo-list,
 .todo-list > div,
 .todo-list > div > div:first-child {
   min-width: 0 !important;
 }
 
 /* === OVERFLOW & TEXT FIXES === */
-.todo-item { 
-  word-break: break-word; 
+.todo-item {
+  word-break: break-word;
   overflow-wrap: break-word;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1129,10 +1129,10 @@ input:focus, select:focus {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(37, 99, 235, 0.1) inset;
 }
 .todo-item > div:first-child { min-width: 0; overflow: hidden; }
-.todo-item > div:first-child > div:first-child { 
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
+.todo-item > div:first-child > div:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* === TIMELINE CONNECTOR === */
@@ -1228,13 +1228,13 @@ input:focus, select:focus {
    ============================================ */
 @media (max-width: 768px) {
   /* Increase touch targets for buttons and inputs */
-  button, 
-  .btn-primary, 
-  .btn-secondary, 
-  select, 
-  input[type="text"], 
-  input[type="number"], 
-  input[type="time"], 
+  button,
+  .btn-primary,
+  .btn-secondary,
+  select,
+  input[type="text"],
+  input[type="number"],
+  input[type="time"],
   input[type="date"] {
     min-height: 44px;
     padding: 0.8rem 1rem;
@@ -1246,7 +1246,7 @@ input:focus, select:focus {
     flex-direction: column;
     align-items: stretch !important;
   }
-  
+
   .cm-item > button, .td-item > button, .tp-item > button, .annale-item > button {
     align-self: flex-start;
   }
@@ -1270,12 +1270,12 @@ input:focus, select:focus {
 }
 
 @keyframes chrono-blink {
-  0%, 100% { 
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3), inset 0 0 15px rgba(239, 68, 68, 0.2); 
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3), inset 0 0 15px rgba(239, 68, 68, 0.2);
     background-color: var(--bg-secondary);
   }
-  50% { 
-    box-shadow: 0 0 35px rgba(239, 68, 68, 0.8), inset 0 0 30px rgba(239, 68, 68, 0.4); 
+  50% {
+    box-shadow: 0 0 35px rgba(239, 68, 68, 0.8), inset 0 0 30px rgba(239, 68, 68, 0.4);
     background-color: rgba(239, 68, 68, 0.15);
   }
 }

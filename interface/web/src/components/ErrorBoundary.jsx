@@ -20,7 +20,7 @@ class ErrorBoundary extends React.Component {
         <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-primary)', color: 'var(--text-primary)', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <h1 style={{ color: 'var(--danger-color)' }}>Oops! Quelque chose s'est mal passé.</h1>
           <p style={{ color: 'var(--text-secondary)' }}>{this.state.error && this.state.error.toString()}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             style={{ marginTop: '1rem', padding: '0.8rem 1.5rem', background: 'var(--accent-primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
           >
@@ -30,7 +30,7 @@ class ErrorBoundary extends React.Component {
       );
     }
 
-    return this.props.children; 
+    return this.props.children;
   }
 }
 

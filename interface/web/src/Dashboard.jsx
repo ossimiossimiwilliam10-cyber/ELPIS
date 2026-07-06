@@ -53,14 +53,14 @@ const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
 };
 
 function Dashboard() {
-  const { 
-    config, 
-    coursConfig, 
-    loading: storeLoading, 
-    historique, 
+  const {
+    config,
+    coursConfig,
+    loading: storeLoading,
+    historique,
     projets,
-    orchestratorData, 
-    fetchOrchestrator, 
+    orchestratorData,
+    fetchOrchestrator,
     intelligence,
     pendingTasksCount,
     dailyFillGap,
@@ -74,7 +74,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [extraTime, setExtraTime] = useState(0);
   const { toast } = useToast();
-  
+
   // CM modal state
   const [cmModalOpen, setCmModalOpen] = useState(false);
   const [pendingCMTask, setPendingCMTask] = useState(null);
@@ -167,7 +167,7 @@ function Dashboard() {
 
   const handleTaskComplete = (tache, difficulte = "") => {
     if (!coursConfig) return;
-    
+
     // For CM tasks, open the mini-modal to capture real time and retention score
     if (tache.type === 'CM') {
       // Prevent race condition: if modal is already open, ignore subsequent clicks
@@ -180,11 +180,11 @@ function Dashboard() {
       setCmModalOpen(true);
       return;
     }
-    
+
     const today = getTodayStr();
 
     let taskFound = false;
-    
+
     if (tache.isCustom) {
       taskFound = true; // Bypass strict syllabus search
     } else if (tache.type === 'ANKI') {
@@ -240,9 +240,9 @@ function Dashboard() {
         origin: { y: 0.6 },
         colors: ['#818CF8', '#34D399', '#FBBF24']
       });
-      addHistoriqueEntry({ 
-        type: tache.type, 
-        titre: tache.titre, 
+      addHistoriqueEntry({
+        type: tache.type,
+        titre: tache.titre,
         matiere: tache.matiere,
         action: 'Terminé',
         dureeMinutes: tache.dureeMinutes || 0
@@ -368,7 +368,7 @@ function Dashboard() {
     });
     return { total, done, perMatiere };
   }, [coursConfig]);
-  
+
   const globalPercent = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
 
   if (loading) {
@@ -381,10 +381,10 @@ function Dashboard() {
 
   if (!orchestratorData || orchestratorData.error) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="card glass-panel" 
+        className="card glass-panel"
         style={{textAlign:'center', marginTop:'3rem'}}
       >
         <h2>{greeting} ! Bienvenue sur ELPIS</h2>
@@ -454,7 +454,7 @@ function Dashboard() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="dashboard"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -465,7 +465,7 @@ function Dashboard() {
         <div>
           <h2>{greeting} ! 👋</h2>
           <p>
-            {orderedTaches.length > 0 
+            {orderedTaches.length > 0
               ? `Tu as ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} à accomplir aujourd'hui.`
               : "Tu as tout terminé pour aujourd'hui. Bravo !"}
           </p>
@@ -489,7 +489,7 @@ function Dashboard() {
           </div>
           <div className="welcome-stat welcome-stat-streak">
             <div className="welcome-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#F59E0B' }}>
-              <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 4s ease-in-out infinite' }}>🔥</span> 
+              <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 4s ease-in-out infinite' }}>🔥</span>
               <span style={{ fontSize: '2.4rem' }}>{config?.currentStreak || 0}</span>
             </div>
             <div className="welcome-stat-label" style={{ color: 'var(--text-secondary)' }}><InfoTooltip content="Le nombre de jours consécutifs où tu as validé une tâche ou pris un jour de repos autorisé. Ne brise pas la chaîne !">Record : {config?.bestStreak || 0} <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
@@ -498,21 +498,21 @@ function Dashboard() {
       </div>
 
       <div className="dashboard-actions">
-        <button 
-          className="btn-primary" 
+        <button
+          className="btn-primary"
           onClick={() => {
             setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' });
             setCustomTaskModalOpen(true);
-          }} 
+          }}
           style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', background: 'var(--success-color)'}}
           title="Ajouter une activité libre (Livre, Vidéo, Projet...)"
         >
           ✨ Activité Libre
         </button>
 
-        <button 
-          className="btn-secondary" 
-          onClick={() => setAuditModalOpen(true)} 
+        <button
+          className="btn-secondary"
+          onClick={() => setAuditModalOpen(true)}
           style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}
           title="Voir le rapport d'audit du code"
         >
@@ -520,13 +520,13 @@ function Dashboard() {
         </button>
 
         {statut !== "REPOS" && !isRestDayToday && (
-          <button 
-            className="btn-secondary" 
+          <button
+            className="btn-secondary"
             onClick={() => {
               if (window.confirm(`Activer un jour de repos ? Il te reste ${1 - restDaysUsed} repos pour cette semaine.`)) {
                 activateRestDay();
               }
-            }} 
+            }}
             disabled={restDaysUsed >= 1}
             style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', opacity: restDaysUsed >= 1 ? 0.5 : 1}}
             title={restDaysUsed >= 1 ? "Quota de repos (1/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}
@@ -534,17 +534,17 @@ function Dashboard() {
             ☕ Activer Jour de Repos ({restDaysUsed}/1)
           </button>
         )}
-        <button 
-          className="btn-secondary" 
-          onClick={() => window.print()} 
+        <button
+          className="btn-secondary"
+          onClick={() => window.print()}
           style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}
           title="Imprimer ou sauvegarder le planning en PDF"
         >
           Exporter PDF
         </button>
-        <button 
-          className="btn-secondary" 
-          onClick={exportToICal} 
+        <button
+          className="btn-secondary"
+          onClick={exportToICal}
           style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#60a5fa', borderColor: 'rgba(96, 165, 250, 0.4)'}}
           title="Exporter le planning au format iCalendar (.ics)"
         >
@@ -554,14 +554,14 @@ function Dashboard() {
 
       <div className="dashboard-grid">
         {/* === OBJECTIFS (FIRST, more prominent) === */}
-        <motion.div 
+        <motion.div
           className="card glass-panel"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
           <h2>🎯 Objectifs du Jour</h2>
-          
+
           {/* PROGRESSION QUOTIDIENNE */}
           {orchestratorData && orchestratorData.tempsDispoMin > 0 && statut !== "REPOS" && (
             <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--bg-tertiary)' }}>
@@ -582,7 +582,7 @@ function Dashboard() {
           )}
 
           {statut === "REPOS" ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="empty-state-container"
@@ -591,20 +591,20 @@ function Dashboard() {
               <h3 style={{color:'var(--accent-primary)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Mode Repos Activé</h3>
               <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>{orchestratorData.message}</p>
               <p style={{marginTop: '1rem', fontStyle: 'italic', fontSize: '0.95rem', opacity: 0.8}}>Les tâches prévues aujourd'hui ont été suspendues sans pénalité. Prends ce temps pour toi !</p>
-              
+
               <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
                 {surcharge && (
-                  <motion.button 
+                  <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleAddExtraTime}
-                    className="btn-primary" 
+                    className="btn-primary"
                     style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
                   >
                     🔥 J'ai encore de l'énergie (+30 min)
                   </motion.button>
                 )}
-                
+
                 {orchestratorData && !dailyFillGap && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -622,7 +622,7 @@ function Dashboard() {
               </div>
             </motion.div>
           ) : orderedTaches.length === 0 ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="empty-state-container"
@@ -630,20 +630,20 @@ function Dashboard() {
               <div className="empty-state-icon">✨</div>
               <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
               <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes tes tâches pour aujourd'hui. Profite de ton temps libre, tu l'as bien mérité !</p>
-              
+
               <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
                 {surcharge && (
-                  <motion.button 
+                  <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleAddExtraTime}
-                    className="btn-primary" 
+                    className="btn-primary"
                     style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
                   >
                     🔥 J'ai encore de l'énergie (+30 min)
                   </motion.button>
                 )}
-                
+
                 {orchestratorData && !dailyFillGap && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -664,7 +664,7 @@ function Dashboard() {
             <DragDropContext onDragEnd={onDragEnd}>
               <Droppable droppableId="taches">
                 {(provided) => (
-                  <motion.div 
+                  <motion.div
                     className="todo-list"
                     variants={containerVariants}
                     initial="hidden"
@@ -679,7 +679,7 @@ function Dashboard() {
                         return (
                           <Draggable key={dragId} draggableId={dragId} index={index}>
                             {(provided) => (
-                            <motion.div 
+                            <motion.div
                               variants={itemVariants}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
@@ -713,7 +713,7 @@ function Dashboard() {
                                 <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.8rem'}}>
                                   ~{t.dureeMinutes || 0} min
                                 </div>
-                                <button 
+                                <button
                                   onClick={() => handleTaskComplete(t)}
                                   style={{
                                     background: 'rgba(16, 185, 129, 0.2)',
@@ -768,7 +768,7 @@ function Dashboard() {
         </motion.div>
 
         {/* === CHARGE DU JOUR === */}
-        <motion.div 
+        <motion.div
           className="card glass-panel"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -783,14 +783,14 @@ function Dashboard() {
                 </span>
               )}
             </div>
-          
+
           <div style={{marginTop:'2rem', marginBottom:'1rem'}}>
             <div style={{display:'flex', justifyContent:'space-between', fontSize:'0.9rem'}}>
               <span style={{color:'var(--text-secondary)'}}>Prévu : <strong>{Math.round(tempsRequisMin/60 * 10)/10}h</strong></span>
               <span style={{color:'var(--text-secondary)'}}>Cible IA : <strong>{Math.round(tempsDispoMin/60 * 10)/10}h</strong></span>
             </div>
             <div className="progress-bar-container">
-              <motion.div 
+              <motion.div
                 className={`progress-bar-fill ${surcharge ? 'surcharge' : ''}`}
                 initial={{ width: 0 }}
                 animate={{ width: `${pourcentageCharge}%` }}
@@ -801,7 +801,7 @@ function Dashboard() {
               />
             </div>
           </div>
-          
+
           {surcharge ? (
             <div style={{background: 'rgba(239, 68, 68, 0.1)', padding: '1rem', borderRadius: '8px', marginTop: '1rem', border: '1px solid rgba(239, 68, 68, 0.2)'}}>
                 <p style={{color: 'var(--danger-color)', margin: 0}}>
@@ -820,7 +820,7 @@ function Dashboard() {
 
       {/* === INSIGHTS IA v2 === */}
       {intelligence && (
-        <motion.div 
+        <motion.div
           className="card glass-panel"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -831,10 +831,10 @@ function Dashboard() {
             🧠 Insights IA
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            
+
             {/* Burnout Risk */}
             {intelligence?.burnoutRisk && intelligence.burnoutRisk.riskLevel !== 'none' && (
-              <div style={{ 
+              <div style={{
                 background: intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.15)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
                 border: `1px solid ${intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.3)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
                 padding: '1rem', borderRadius: '8px'
@@ -856,7 +856,7 @@ function Dashboard() {
                   <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                     {slowSubjects.map(([name, v]) => (
                       <div key={name} style={{ marginBottom: '0.3rem' }}>
-                        <strong>{name}</strong> — {v.avgSessionsToMaster?.toFixed(1)} sessions/CM en moyenne 
+                        <strong>{name}</strong> — {v.avgSessionsToMaster?.toFixed(1)} sessions/CM en moyenne
                         ({v.masteredCMs}/{v.totalCMs} CM maîtrisés, ~{Math.round(v.estimatedRemainingMinutes/60)}h restantes estimées)
                       </div>
                     ))}
@@ -915,7 +915,7 @@ function Dashboard() {
       )}
 
       {/* === PROJETS PERSONNELS WIDGET === */}
-      <motion.div 
+      <motion.div
         className="card glass-panel"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -925,7 +925,7 @@ function Dashboard() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <h2>💡 Projets Personnels</h2>
         </div>
-        
+
         {pendingTasksCount > 0 ? (
           <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', border: '1px dashed var(--bg-tertiary)' }}>
             <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔒</div>
@@ -948,7 +948,7 @@ function Dashboard() {
       </motion.div>
 
       {/* === STATISTIQUES === */}
-      <motion.div 
+      <motion.div
         className="card glass-panel"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -998,13 +998,13 @@ function Dashboard() {
       {/* === Custom Task Modal === */}
       <AnimatePresence>
         {customTaskModalOpen && (
-          <motion.div 
+          <motion.div
             className="modal-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div 
+            <motion.div
               className="modal-content glass-panel"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -1012,11 +1012,11 @@ function Dashboard() {
               style={{ maxWidth: '400px', width: '90%' }}
             >
               <h2 style={{ marginBottom: '1.5rem', color: 'var(--success-color)' }}>✨ Nouvelle Activité Libre</h2>
-              
+
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Titre de l'activité</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={customTaskParams.titre}
                   onChange={(e) => setCustomTaskParams({...customTaskParams, titre: e.target.value})}
                   placeholder="ex: Vidéo YouTube, Projet Perso..."
@@ -1027,7 +1027,7 @@ function Dashboard() {
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Catégorie</label>
-                <select 
+                <select
                   value={customTaskParams.type}
                   onChange={(e) => setCustomTaskParams({...customTaskParams, type: e.target.value})}
                   style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
@@ -1043,7 +1043,7 @@ function Dashboard() {
 
               <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Matière rattachée (Pour l'IA)</label>
-                <select 
+                <select
                   value={customTaskParams.matiere}
                   onChange={(e) => setCustomTaskParams({...customTaskParams, matiere: e.target.value})}
                   style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
@@ -1059,13 +1059,13 @@ function Dashboard() {
               </div>
 
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                <button 
+                <button
                   className="btn-secondary"
                   onClick={() => setCustomTaskModalOpen(false)}
                 >
                   Annuler
                 </button>
-                <button 
+                <button
                   className="btn-primary"
                   onClick={() => {
                     if (!customTaskParams.titre.trim()) {
@@ -1076,7 +1076,7 @@ function Dashboard() {
                       toast.error("Veuillez sélectionner une matière.");
                       return;
                     }
-                    
+
                     const newTask = {
                       id: 'custom-' + Date.now(),
                       titre: customTaskParams.titre,
@@ -1085,7 +1085,7 @@ function Dashboard() {
                       isCustom: true,
                       dureeMinutes: 30 // par défaut, mais le chrono compte ce qu'il veut
                     };
-                    
+
                     useStore.getState().setActiveChronoTask(newTask);
                     setCustomTaskModalOpen(false);
                     toast.info("Chronomètre lancé pour l'activité libre !");

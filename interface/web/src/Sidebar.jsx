@@ -83,17 +83,17 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
           </div>
         </div>
         <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem'}} className="theme-toggle">
-          <button 
-            className="btn-secondary" 
+          <button
+            className="btn-secondary"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             title={theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre'}
             style={{padding: '0.5rem', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'}}
           >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
-          
-          <button 
-            className="btn-secondary" 
+
+          <button
+            className="btn-secondary"
             onClick={async () => {
               if (window.confirm("Voulez-vous vraiment éteindre ELPIS ?")) {
                 // Tenter la requête shutdown (best effort)

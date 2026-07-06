@@ -48,7 +48,7 @@ function ProjetsPage() {
     const defaultInput = finalMinutes > 0 ? finalMinutes.toString() : "";
     const minStr = window.prompt("Combien de minutes as-tu travaillé sur ce projet ?", defaultInput);
     if (!minStr) return;
-    
+
     const min = parseInt(minStr, 10);
     if (isNaN(min) || min <= 0) return;
 
@@ -150,7 +150,7 @@ function ProjetsPage() {
   }, [historique]);
 
   return (
-    <motion.div 
+    <motion.div
       className="page-transition"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -169,10 +169,10 @@ function ProjetsPage() {
       <div className="glass-panel" style={{ marginBottom: '2rem' }}>
         <h3 style={{ marginBottom: '1rem' }}>Nouveau Projet</h3>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <input 
-            type="text" 
-            className="search-input" 
-            placeholder="Nom du projet..." 
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Nom du projet..."
             value={newProjectTitle}
             onChange={e => setNewProjectTitle(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAddProject()}
@@ -200,11 +200,11 @@ function ProjetsPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                 <h2 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', maxWidth: '75%', wordBreak: 'break-word', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                   {projet.titre}
-                  <input 
-                    type="date" 
-                    value={projet.dateFin || ''} 
-                    onChange={(e) => handleUpdateDateFin(projet.id, e.target.value)} 
-                    style={{ background: 'transparent', border: 'none', color: 'var(--warning-color)', fontSize: '0.9rem', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }} 
+                  <input
+                    type="date"
+                    value={projet.dateFin || ''}
+                    onChange={(e) => handleUpdateDateFin(projet.id, e.target.value)}
+                    style={{ background: 'transparent', border: 'none', color: 'var(--warning-color)', fontSize: '0.9rem', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}
                     title="Date de fin"
                   />
                 </h2>
@@ -227,8 +227,8 @@ function ProjetsPage() {
                   >
                     {(globalChrono.exoId === projet.id && globalChrono.isRunning) ? '⏸' : '▶'}
                   </button>
-                  <button 
-                    className="primary-button" 
+                  <button
+                    className="primary-button"
                     style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
                     onClick={() => handleLogTime(projet.id)}
                     title="Ajouter du temps de travail"
@@ -237,7 +237,7 @@ function ProjetsPage() {
                   </button>
                 </div>
               </div>
-              
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div style={{ flex: 1, height: '6px', background: 'var(--bg-tertiary)', borderRadius: '3px', overflow: 'hidden' }}>
                   <div style={{ width: `${progress}%`, height: '100%', background: progress === 100 ? 'var(--success-color)' : 'var(--accent-primary)', transition: 'width 0.3s' }}></div>
@@ -248,8 +248,8 @@ function ProjetsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
                 {phases.map((phase, idx) => (
                   <div key={phase.id} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.5rem', background: phase.complete ? 'rgba(16, 185, 129, 0.05)' : 'rgba(255,255,255,0.02)', borderRadius: '6px', opacity: (idx > 0 && !phases[idx-1].complete && !phase.complete) ? 0.5 : 1 }}>
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={phase.complete}
                       onChange={() => handleTogglePhase(projet.id, phase.id)}
                       style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
@@ -257,7 +257,7 @@ function ProjetsPage() {
                     <span style={{ textDecoration: phase.complete ? 'line-through' : 'none', color: phase.complete ? 'var(--text-secondary)' : 'var(--text-primary)', flex: 1 }}>
                       {idx + 1}. {phase.nom}
                     </span>
-                    <button 
+                    <button
                       onClick={() => handleDeletePhase(projet.id, phase.id)}
                       style={{ background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', padding: '0 0.5rem', opacity: 0.6 }}
                       title="Supprimer la phase"
@@ -272,10 +272,10 @@ function ProjetsPage() {
 
               {activeProjectForPhase === projet.id ? (
                 <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                  <input 
-                    type="text" 
-                    className="search-input" 
-                    placeholder="Nom de la phase..." 
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="Nom de la phase..."
                     value={newPhaseName}
                     onChange={e => setNewPhaseName(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleAddPhase(projet.id)}
@@ -285,8 +285,8 @@ function ProjetsPage() {
                   <button className="secondary-button" onClick={() => setActiveProjectForPhase(null)}>✕</button>
                 </div>
               ) : (
-                <button 
-                  className="secondary-button" 
+                <button
+                  className="secondary-button"
                   style={{ width: '100%', marginBottom: '1rem', borderStyle: 'dashed' }}
                   onClick={() => {
                     setActiveProjectForPhase(projet.id);
@@ -297,8 +297,8 @@ function ProjetsPage() {
                 </button>
               )}
 
-              <button 
-                className="secondary-button" 
+              <button
+                className="secondary-button"
                 style={{ width: '100%', color: 'var(--danger-color)', borderColor: 'var(--danger-color)', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center' }}
                 onClick={() => handleDeleteProject(projet.id)}
                 title="Supprimer ce projet"

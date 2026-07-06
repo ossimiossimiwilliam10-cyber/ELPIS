@@ -19,7 +19,7 @@ function buildAIContext(dataDir) {
     let histString = '[]';
 
     if (fs.existsSync(configPath)) config = fs.readFileSync(configPath, 'utf-8');
-    
+
     // Synthesize Cours (Remove heavy arrays to save tokens)
     if (fs.existsSync(coursPath)) {
       try {

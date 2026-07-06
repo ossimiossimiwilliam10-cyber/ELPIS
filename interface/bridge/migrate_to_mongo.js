@@ -17,7 +17,7 @@ const HISTORIQUE_FILE = path.join(ROOT_DIR, 'data', 'espoir_historique.json');
 
 async function migrate() {
   const client = new MongoClient(MONGODB_URI);
-  
+
   try {
     await client.connect();
     const db = client.db('elpis_db');

@@ -38,14 +38,14 @@ export function useWorkloadEngine() {
             // B. Multipliers
             const targetGrade = config.targetGrade || 14;
             const targetRank = config.targetRank || 50;
-            
+
             // Grade multiplier: 10/20 -> 1x, 20/20 -> 2x
             const gradeMultiplier = 1 + (targetGrade - 10) * 0.1;
             // Rank multiplier: Top 50% -> 1x, Top 1% -> 2x
             const rankMultiplier = 1 + (50 - targetRank) / 50;
-            
+
             const totalMultiplier = (gradeMultiplier + rankMultiplier) / 2;
-            
+
             let requiredEffortHours = baseEffortHours * totalMultiplier;
 
             // C. Subtract work already done (filtré par date de début d'étude)
@@ -71,12 +71,12 @@ export function useWorkloadEngine() {
                 return sum + (mins / 60);
               }, 0);
             }
-            
+
             let remainingEffortHours = Math.max(0, requiredEffortHours - hoursDone);
 
             // D. Calculate days left
-            let examDateStr = (m.examDates && m.examDates.length > 0 && m.examDates[0]) 
-              ? m.examDates[0] 
+            let examDateStr = (m.examDates && m.examDates.length > 0 && m.examDates[0])
+              ? m.examDates[0]
               : (s.dateFin || "2027-01-15");
             const examDate = parseDateLocal(examDateStr);
 

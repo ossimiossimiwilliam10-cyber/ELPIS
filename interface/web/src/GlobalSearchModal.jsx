@@ -34,7 +34,7 @@ function GlobalSearchModal() {
     if (!query.trim() || !coursConfig) return [];
     const lowerQ = query.toLowerCase();
     const res = [];
-    
+
     coursConfig.licences?.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
         s.ues?.forEach((u, uIndex) => {
@@ -78,24 +78,24 @@ function GlobalSearchModal() {
   return (
     <AnimatePresence>
       {isOpen && (
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
           display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 2000,
           paddingTop: '15vh'
         }}
         onClick={() => setIsOpen(false)}
       >
-        <motion.div 
-          initial={{ scale: 0.9, y: -20 }} 
-          animate={{ scale: 1, y: 0 }} 
+        <motion.div
+          initial={{ scale: 0.9, y: -20 }}
+          animate={{ scale: 1, y: 0 }}
           exit={{ scale: 0.9, y: -20 }}
           style={{
-            background: 'var(--bg-secondary)', width: '90%', maxWidth: '600px', 
+            background: 'var(--bg-secondary)', width: '90%', maxWidth: '600px',
             borderRadius: '12px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
             border: '1px solid var(--bg-tertiary)', overflow: 'hidden', display: 'flex', flexDirection: 'column'
           }}
@@ -103,20 +103,20 @@ function GlobalSearchModal() {
         >
           <div style={{display:'flex', alignItems:'center', padding:'1rem', borderBottom:'1px solid var(--bg-tertiary)'}}>
             <span style={{fontSize:'1.2rem', marginRight:'1rem', color:'var(--text-secondary)'}}>🔍</span>
-            <input 
+            <input
               ref={inputRef}
-              type="text" 
+              type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Rechercher un cours, une note (Ctrl+K)..."
               style={{
-                flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', 
+                flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)',
                 fontSize: '1.2rem', outline: 'none'
               }}
             />
             <button className="btn-secondary" style={{padding:'0.2rem 0.5rem', fontSize:'0.8rem'}} onClick={() => setIsOpen(false)}>ESC</button>
           </div>
-          
+
           {query.trim() && (
             <div style={{maxHeight:'400px', overflowY:'auto', padding:'0.5rem'}}>
               {results.length === 0 ? (
@@ -124,12 +124,12 @@ function GlobalSearchModal() {
               ) : (
                 <div style={{display:'flex', flexDirection:'column', gap:'0.2rem'}}>
                   {results.map((r, i) => (
-                    <div 
-                      key={i} 
+                    <div
+                      key={i}
                       onClick={() => handleSelect(r)}
                       className="search-result-item"
                       style={{
-                        padding:'0.8rem 1rem', borderRadius:'8px', cursor:'pointer', 
+                        padding:'0.8rem 1rem', borderRadius:'8px', cursor:'pointer',
                         display:'flex', alignItems:'center', justifyContent:'space-between',
                         transition:'background 0.2s'
                       }}

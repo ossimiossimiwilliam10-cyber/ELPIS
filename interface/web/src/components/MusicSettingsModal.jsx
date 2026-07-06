@@ -58,7 +58,7 @@ export default function MusicSettingsModal({ onClose }) {
       console.error("Upload error:", error);
       addToast("Erreur lors de l'upload", "error");
     }
-    
+
     // Reset l'input
     e.target.value = null;
   };
@@ -135,11 +135,11 @@ export default function MusicSettingsModal({ onClose }) {
                         fontSize: '0.8rem', fontWeight: 'bold'
                       }}>
                         + Ajouter
-                        <input 
-                          type="file" 
-                          multiple 
-                          accept="audio/*" 
-                          style={{ display: 'none' }} 
+                        <input
+                          type="file"
+                          multiple
+                          accept="audio/*"
+                          style={{ display: 'none' }}
                           onChange={(e) => handleFileUpload(e, cat)}
                         />
                       </label>
@@ -155,15 +155,15 @@ export default function MusicSettingsModal({ onClose }) {
                             backgroundColor: 'var(--bg-secondary)', padding: '0.5rem', borderRadius: '6px',
                             fontSize: '0.85rem'
                           }}>
-                            <span style={{ 
-                              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px' 
+                            <span style={{
+                              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '150px'
                             }} title={filename}>
                               {filename}
                             </span>
-                            <button 
+                            <button
                               onClick={() => handleDelete(cat, filename)}
                               style={{
-                                background: 'none', border: 'none', color: '#ff4444', 
+                                background: 'none', border: 'none', color: '#ff4444',
                                 cursor: 'pointer', fontSize: '1rem', padding: '0 0.2rem'
                               }}
                               title="Supprimer"

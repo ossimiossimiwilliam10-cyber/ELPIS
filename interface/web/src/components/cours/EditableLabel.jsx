@@ -19,9 +19,9 @@ export default function EditableLabel({ value, onRename, placeholder, style }) {
       <span title={value} style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
         {value || <em style={{color:'var(--text-secondary)'}}>{placeholder}</em>}
       </span>
-      <button 
-        onClick={handleRename} 
-        style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.9rem', padding:'0.2rem', flexShrink: 0}} 
+      <button
+        onClick={handleRename}
+        style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.9rem', padding:'0.2rem', flexShrink: 0}}
         title="Renommer"
       >
         ✏️

@@ -6,7 +6,7 @@ test.describe('ELPIS E2E Tests', () => {
     await page.addInitScript(() => {
       window.sessionStorage.setItem('elpisDisclaimerShown', 'true');
     });
-    
+
     await page.route('/api/**', async route => {
       const url = route.request().url();
       if (url.includes('/config')) {
@@ -125,10 +125,10 @@ test.describe('ELPIS E2E Tests', () => {
 
   test('devrait simuler un engagement fixe et vérifier la stabilité', async ({ page }) => {
     await page.route('/api/config', async route => {
-      await route.fulfill({ json: { 
-        targetGrade: 15, 
-        currentStreak: 5, 
-        fixedCommitments: [{ day: 'Tous les jours', start: '08:00', end: '12:00' }] 
+      await route.fulfill({ json: {
+        targetGrade: 15,
+        currentStreak: 5,
+        fixedCommitments: [{ day: 'Tous les jours', start: '08:00', end: '12:00' }]
       }});
     });
     await page.goto('/');

@@ -54,7 +54,7 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
   return (
     <AnimatePresence>
       {isOpen && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: 0, left: 0, right: 0, bottom: 0,
@@ -66,13 +66,13 @@ export default function CMCompletionModal({ isOpen, onClose, onSubmit, taskTitle
             zIndex: 1000
           }}
         >
-          <div 
+          <div
             ref={overlayRef}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} 
-            onClick={onClose} 
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onClick={onClose}
           />
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}

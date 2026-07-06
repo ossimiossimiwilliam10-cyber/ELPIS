@@ -1,6 +1,6 @@
 /**
  * Parses various time input formats into a float value representing minutes.
- * 
+ *
  * Supported formats:
  * - "35" -> 35
  * - "35.5" -> 35.5
@@ -9,7 +9,7 @@
  * - "35m44s" -> 35.73
  * - "35m 44s" -> 35.73
  * - "35 minutes et 44 secondes" -> 35.73
- * 
+ *
  * @param {string} input - The time string input from the user
  * @returns {number|null} - The parsed time in minutes, or null if invalid
  */

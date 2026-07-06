@@ -35,7 +35,7 @@ function AppInner() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(!sessionStorage.getItem('elpisDisclaimerShown'));
   const { addToast } = useToast();
-  
+
   const { config, coursConfig, loading, error, initData, setConfig, activeTab, setActiveTab, pendingTasksCount } = useStore();
 
   useEffect(() => {
@@ -45,7 +45,7 @@ function AppInner() {
     } else {
       document.documentElement.classList.remove('light');
     }
-    
+
     // Demander la permission pour les notifications (Service Worker)
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -83,7 +83,7 @@ function AppInner() {
     const intervalId = setInterval(updateDynamicTheme, 60000);
     return () => clearInterval(intervalId);
   }, [theme]);
-  
+
   useEffect(() => {
     initData();
   }, [initData]);
@@ -98,7 +98,7 @@ function AppInner() {
     if (pendingTasksCount > 0 && 'Notification' in window && Notification.permission === 'granted') {
       const today = new Date().toISOString().split('T')[0];
       const lastNotified = localStorage.getItem('elpisLastNotified');
-      
+
       if (lastNotified !== today) {
         try {
           new Notification("ELPIS - Objectif 10/10", {
@@ -205,12 +205,12 @@ function AppInner() {
     <div className="app-layout">
       {showDisclaimer && <DisclaimerModal onClose={handleCloseDisclaimer} />}
       <BackgroundMusicPlayer />
-      
+
       {/* Mobile Header */}
       <div className="mobile-header">
         <div className="mobile-header-title">ELPIS</div>
-        <button 
-          className="hamburger-btn" 
+        <button
+          className="hamburger-btn"
           onClick={() => setIsMobileMenuOpen(true)}
         >
           ☰
@@ -218,17 +218,17 @@ function AppInner() {
       </div>
 
       {/* Mobile Overlay */}
-      <div 
-        className={`mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`} 
+      <div
+        className={`mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`}
         onClick={() => setIsMobileMenuOpen(false)}
       ></div>
 
-      <Sidebar 
-        activeTab={activeTab} 
+      <Sidebar
+        activeTab={activeTab}
         setActiveTab={(t) => {
           setActiveTab(t);
           setIsMobileMenuOpen(false); // Fermer le menu sur mobile après un clic
-        }} 
+        }}
         theme={theme}
         setTheme={setTheme}
         streak={config?.currentStreak || 0}
@@ -243,7 +243,7 @@ function AppInner() {
           )}
 
           {activeTab === 'statistiques' && (
-            <motion.div 
+            <motion.div
               key="statistiques"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -257,7 +257,7 @@ function AppInner() {
           )}
 
           {activeTab === 'bulletin' && (
-            <motion.div 
+            <motion.div
               key="bulletin"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -271,7 +271,7 @@ function AppInner() {
           )}
 
           {activeTab === 'projets' && (
-            <motion.div 
+            <motion.div
               key="projets"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -285,7 +285,7 @@ function AppInner() {
           )}
 
           {activeTab === 'prep_hebdo' && (
-            <motion.div 
+            <motion.div
               key="prep_hebdo"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -299,7 +299,7 @@ function AppInner() {
           )}
 
           {activeTab === 'revisions_avancees' && (
-            <motion.div 
+            <motion.div
               key="revisions_avancees"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -313,7 +313,7 @@ function AppInner() {
           )}
 
           {activeTab === 'config' && (
-            <motion.div 
+            <motion.div
               key="config"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -358,8 +358,8 @@ function AppInner() {
                       Note Cible Estimée
                       <span style={{fontSize: '1.2rem', color: 'var(--success-color)'}}>{config.targetGrade || 14}/20</span>
                     </label>
-                    <input 
-                      type="range" 
+                    <input
+                      type="range"
                       value={config.targetGrade || 14}
                       onChange={e => setConfig({...config, targetGrade: parseFloat(e.target.value) || 10})}
                       min="10" max="20" step="0.5"
@@ -372,8 +372,8 @@ function AppInner() {
                       <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
                         Rang Visé
                       </label>
-                      <select 
-                        value={config.targetRank || 50} 
+                      <select
+                        value={config.targetRank || 50}
                         onChange={e => setConfig({...config, targetRank: parseInt(e.target.value) || 50})}
                         style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
                       >
@@ -393,7 +393,7 @@ function AppInner() {
                         Heure de Coucher (24h)
                         <span style={{display:'block', fontSize:'0.75rem', color:'var(--text-secondary)', marginTop:'0.2rem', fontWeight:'normal'}}>L'affichage AM/PM dépend du navigateur (ex: 11:00 PM = 23:00).</span>
                       </label>
-                      <input 
+                      <input
                         type="time"
                         value={config?.bedtime || "23:00"}
                         onChange={e => setConfig({...config, bedtime: e.target.value})}
@@ -404,7 +404,7 @@ function AppInner() {
                       <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
                         Heure de Réveil (24h)
                       </label>
-                      <input 
+                      <input
                         type="time"
                         value={config?.wakeUpTime || "07:00"}
                         onChange={e => setConfig({...config, wakeUpTime: e.target.value})}
@@ -429,8 +429,8 @@ function AppInner() {
                         Agressivité Anti-Ennui (Fast-Track)
                         <span style={{fontSize: '1rem', color: '#a855f7'}}>x{config.antiEnnuiMultiplier || 2.0}</span>
                       </label>
-                      <input 
-                        type="range" 
+                      <input
+                        type="range"
                         min="1.0" max="4.0" step="0.1"
                         value={config.antiEnnuiMultiplier || 2.0}
                         onChange={e => setConfig({...config, antiEnnuiMultiplier: parseFloat(e.target.value) || 2.0})}
@@ -445,9 +445,9 @@ function AppInner() {
                       <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
                         Max Nouveaux CM / Matière / Jour
                       </label>
-                      <input 
-                        type="number" 
-                        min="1" max="10" 
+                      <input
+                        type="number"
+                        min="1" max="10"
                         value={config.maxNewCMPerSubjectPerDay || 1}
                         onChange={e => setConfig({...config, maxNewCMPerSubjectPerDay: parseInt(e.target.value) || 1})}
                         style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
@@ -458,9 +458,9 @@ function AppInner() {
                       <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
                         Max Nouveaux CM / Semestre / Jour
                       </label>
-                      <input 
-                        type="number" 
-                        min="1" max="20" 
+                      <input
+                        type="number"
+                        min="1" max="20"
                         value={config.maxNewCMPerSemesterPerDay || 3}
                         onChange={e => setConfig({...config, maxNewCMPerSemesterPerDay: parseInt(e.target.value) || 3})}
                         style={{width: '100%', padding: '0.5rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--bg-tertiary)'}}
@@ -496,11 +496,11 @@ function AppInner() {
                       <div key={item.key} style={{background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px', borderLeft: `3px solid ${item.color}`}}>
                         <label style={{display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.5rem'}}>{item.label}</label>
                         <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                          <input 
-                            type="number" 
-                            min="5" 
-                            value={config[item.key] || item.defaultVal} 
-                            onChange={e => setConfig({...config, [item.key]: parseInt(e.target.value) || item.defaultVal})} 
+                          <input
+                            type="number"
+                            min="5"
+                            value={config[item.key] || item.defaultVal}
+                            onChange={e => setConfig({...config, [item.key]: parseInt(e.target.value) || item.defaultVal})}
                             style={{width: '60px', padding: '0.3rem', background: 'var(--bg-primary)', border: 'none', color: 'white', borderRadius: '4px'}}
                           />
                           <span style={{fontSize: '0.8rem', color: 'var(--text-tertiary)'}}>min</span>
@@ -523,20 +523,20 @@ function AppInner() {
                     L'application sauvegarde tout automatiquement dans ton navigateur. Tu peux exporter un backup manuel de sécurité (Format JSON).
                   </p>
                   <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
-                    <button 
+                    <button
                       onClick={downloadBackup}
                       style={{flex: 1, padding: '0.6rem', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}
                     >Export JSON</button>
                     <div style={{flex: 1}}>
-                      <input 
-                        type="file" 
+                      <input
+                        type="file"
                         accept=".json"
                         id="import-backup"
                         style={{display: 'none'}}
                         onChange={handleImportBackup}
                       />
-                      <label 
-                        htmlFor="import-backup" 
+                      <label
+                        htmlFor="import-backup"
                         style={{display: 'block', textAlign: 'center', padding: '0.6rem', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid #10b981', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}
                       >Importer</label>
                     </div>
@@ -550,7 +550,7 @@ function AppInner() {
                     Attention, ces actions sont irréversibles. Une remise à zéro supprime ton historique, tes cours, et tes statistiques.
                   </p>
                   <div style={{marginTop: '1.5rem'}}>
-                    <button 
+                    <button
                       onClick={handleFactoryReset}
                       style={{width: '100%', padding: '0.6rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'}}
                       onMouseOver={e => {e.currentTarget.style.background = '#ef4444'; e.currentTarget.style.color = '#fff'}}
@@ -565,7 +565,7 @@ function AppInner() {
           )}
 
           {activeTab === 'cours' && (
-            <motion.div 
+            <motion.div
               key="cours"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -579,7 +579,7 @@ function AppInner() {
           )}
 
           {activeTab === 'entrainement' && (
-            <motion.div 
+            <motion.div
               key="entrain"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -593,7 +593,7 @@ function AppInner() {
           )}
 
           {activeTab === 'musique' && (
-            <motion.div 
+            <motion.div
               key="musique"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -605,7 +605,7 @@ function AppInner() {
           )}
         </AnimatePresence>
       </main>
-      
+
       <GlobalSearchModal />
       <GlobalChrono />
       <AICoachSidebar />

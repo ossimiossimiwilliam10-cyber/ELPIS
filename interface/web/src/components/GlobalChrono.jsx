@@ -6,11 +6,11 @@ import useStore, { useChronoStore } from '../store';
 export default function GlobalChrono() {
   const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useChronoStore();
   const { isRunning, elapsedSeconds, titre, matiereNom, exoId, type } = globalChrono;
-  
+
   const [isVisible, setIsVisible] = useState(true);
   const [pipWindow, setPipWindow] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   // Timer effect
   useEffect(() => {
     let interval = null;
@@ -60,7 +60,7 @@ export default function GlobalChrono() {
           pip.document.head.appendChild(link);
         }
       });
-      
+
       // Set background
       pip.document.body.style.background = 'var(--bg-primary, #0f172a)';
       pip.document.body.style.display = 'flex';
@@ -176,7 +176,7 @@ export default function GlobalChrono() {
           />
         </svg>
         {/* Center time display */}
-        <div 
+        <div
           onClick={handleEditTime}
           title="Modifier manuellement le temps"
           style={{
@@ -226,15 +226,15 @@ export default function GlobalChrono() {
         </button>
 
         {/* Play/Pause - main action */}
-        <button 
+        <button
           onClick={toggleGlobalChrono}
           style={{
             width: '56px',
             height: '56px',
             borderRadius: '50%',
             border: 'none',
-            background: isRunning 
-              ? 'linear-gradient(135deg, #ef4444, #dc2626)' 
+            background: isRunning
+              ? 'linear-gradient(135deg, #ef4444, #dc2626)'
               : 'linear-gradient(135deg, #3B82F6, #2563EB)',
             color: 'white',
             cursor: 'pointer',
@@ -242,8 +242,8 @@ export default function GlobalChrono() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: isRunning 
-              ? '0 4px 20px rgba(239, 68, 68, 0.4)' 
+            boxShadow: isRunning
+              ? '0 4px 20px rgba(239, 68, 68, 0.4)'
               : '0 4px 20px rgba(59, 130, 246, 0.4)',
             transition: 'all 0.3s ease',
           }}
@@ -281,7 +281,7 @@ export default function GlobalChrono() {
 
   // ========== Inline (Floating Widget) Content ==========
   const inlineContent = (
-    <div 
+    <div
       className={!isRunning && elapsedSeconds > 0 ? "chrono-paused-blink" : ""}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -292,8 +292,8 @@ export default function GlobalChrono() {
         background: 'var(--bg-secondary, #1e293b)',
         padding: '0.6rem 0.8rem',
         borderRadius: '14px',
-        boxShadow: isRunning 
-          ? '0 4px 24px rgba(59, 130, 246, 0.2), 0 0 0 1px rgba(59, 130, 246, 0.15)' 
+        boxShadow: isRunning
+          ? '0 4px 24px rgba(59, 130, 246, 0.2), 0 0 0 1px rgba(59, 130, 246, 0.15)'
           : '0 4px 16px rgba(0,0,0,0.3)',
         border: isRunning ? '1px solid rgba(59, 130, 246, 0.25)' : '1px solid rgba(255,255,255,0.08)',
         backdropFilter: 'blur(16px)',
@@ -302,15 +302,15 @@ export default function GlobalChrono() {
       }}
     >
       {/* Play/Pause button */}
-      <button 
+      <button
         onClick={toggleGlobalChrono}
         style={{
           width: '34px',
           height: '34px',
           borderRadius: '50%',
           border: 'none',
-          background: isRunning 
-            ? 'linear-gradient(135deg, #ef4444, #dc2626)' 
+          background: isRunning
+            ? 'linear-gradient(135deg, #ef4444, #dc2626)'
             : 'linear-gradient(135deg, #3B82F6, #2563EB)',
           color: 'white',
           cursor: 'pointer',
@@ -319,8 +319,8 @@ export default function GlobalChrono() {
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0,
-          boxShadow: isRunning 
-            ? '0 2px 10px rgba(239, 68, 68, 0.3)' 
+          boxShadow: isRunning
+            ? '0 2px 10px rgba(239, 68, 68, 0.3)'
             : '0 2px 10px rgba(59, 130, 246, 0.3)',
           transition: 'all 0.3s ease',
         }}
@@ -343,7 +343,7 @@ export default function GlobalChrono() {
             {typeEmoji} {titre}
           </div>
         )}
-        <div 
+        <div
           onClick={handleEditTime}
           title="Modifier manuellement le temps"
           style={{
@@ -434,7 +434,7 @@ export default function GlobalChrono() {
   // Hidden state (icon only)
   if (!isVisible) {
     return (
-      <button 
+      <button
         className="global-timer-hidden-btn"
         onClick={() => setIsVisible(true)}
         title="Afficher le chrono"

@@ -8,7 +8,7 @@ export default function BulletinPage() {
   const { coursConfig, setCoursConfig, intelligence } = useStore();
   const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
   const [expandedUEs, setExpandedUEs] = useState({});
-  
+
   // AXE 15: What-If Simulation Mode
   const [isSimulationMode, setIsSimulationMode] = useState(false);
   const [simulationConfig, setSimulationConfig] = useState(null);
@@ -31,7 +31,7 @@ export default function BulletinPage() {
 
   const currentLicenceIndex = activeLicenceIndex < activeConfig.licences.length ? activeLicenceIndex : 0;
   const licence = activeConfig.licences[currentLicenceIndex];
-  
+
   const ues = [];
   licence.semestres?.forEach((sem, semIndex) => {
     sem.ues?.forEach((ue, ueIndex) => {
@@ -99,7 +99,7 @@ export default function BulletinPage() {
   licence.semestres?.forEach(sem => {
     let semSumNotes = 0;
     let semSumECTS = 0;
-    
+
     sem.ues?.forEach(ue => {
       let ueSumWeight = 0;
       let ueSumNotes = 0;
@@ -111,7 +111,7 @@ export default function BulletinPage() {
           ueSumNotes += avg * coef;
         }
       });
-      
+
       const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
       if (ueAvg !== null) {
         const ects = ue.ects || 0; // Use ECTS for UE weighting
@@ -119,7 +119,7 @@ export default function BulletinPage() {
         semSumECTS += ects;
       }
     });
-    
+
     const semAvg = semSumECTS > 0 ? (semSumNotes / semSumECTS).toFixed(2) : '--';
     semesterAverages.push({ nom: sem.nom, avg: semAvg });
   });
@@ -159,9 +159,9 @@ export default function BulletinPage() {
 
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem' }}>
-      
+
       {/* BANNIERE SUPER MOYENNE GENERALE */}
-      <div style={{ 
+      <div style={{
         background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
         border: '1px solid rgba(168, 85, 247, 0.3)',
         borderRadius: '16px',
@@ -184,7 +184,7 @@ export default function BulletinPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '2rem', marginBottom: '1rem' }}>📝 Espace Bulletin</h1>
-          
+
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
             {coursConfig.licences.map((lic, idx) => (
               <button
@@ -197,14 +197,14 @@ export default function BulletinPage() {
               </button>
             ))}
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '1rem' }}>(Pour ajouter une licence, rends-toi dans Bibliothèque)</span>
-            
-          <button 
+
+          <button
             onClick={toggleSimulationMode}
             style={{
-              padding: '0.6rem 1rem', 
-              borderRadius: '8px', 
-              border: isSimulationMode ? '1px solid #a855f7' : '1px solid var(--border-color)', 
-              background: isSimulationMode ? 'rgba(168, 85, 247, 0.15)' : 'transparent', 
+              padding: '0.6rem 1rem',
+              borderRadius: '8px',
+              border: isSimulationMode ? '1px solid #a855f7' : '1px solid var(--border-color)',
+              background: isSimulationMode ? 'rgba(168, 85, 247, 0.15)' : 'transparent',
               color: isSimulationMode ? '#a855f7' : 'var(--text-secondary)',
               cursor: 'pointer',
               fontWeight: 'bold',
@@ -270,7 +270,7 @@ export default function BulletinPage() {
 
         return (
           <div key={idx} className="card glass-panel" style={{ marginBottom: '1.5rem', overflow: 'hidden', padding: 0 }}>
-            <div 
+            <div
               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', background: 'rgba(0,0,0,0.2)', cursor: 'pointer' }}
               onClick={() => toggleUE(idx)}
             >
@@ -284,7 +284,7 @@ export default function BulletinPage() {
                 {/* Compensation badge */}
                 {(() => {
                   if (ueAverage === '--' || parseFloat(ueAverage) >= 10) return null;
-                  
+
                   // Compute semester average locally for real-time simulation (using ECTS rules)
                   let semSumECTS = 0;
                   let semSumNotes = 0;
@@ -309,8 +309,8 @@ export default function BulletinPage() {
                   const semAverage = semSumECTS > 0 ? (semSumNotes / semSumECTS) : 0;
                   const isCompensable = semAverage >= 10;
 
-                  
-                  return isCompensable 
+
+                  return isCompensable
                       ? <span style={{ background: 'rgba(52, 211, 153, 0.2)', color: 'var(--success)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>✅ Compensable</span>
                       : <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>⚠️ Non compensable</span>;
                 })()}
@@ -343,30 +343,30 @@ export default function BulletinPage() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
                         {(matiere.evaluations || []).map((ev, evIndex) => (
                           <div key={evIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', background: 'var(--bg-secondary)', padding: '0.8rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
-                            <button 
+                            <button
                               onClick={() => handleDeleteEval(ue.semIndex, ue.ueIndex, matIndex, evIndex)}
                               style={{ position: 'absolute', top: '0.2rem', right: '0.2rem', background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: '1.2rem', opacity: 0.5 }}
                               title="Supprimer l'évaluation"
                             >×</button>
                             <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.85rem', color: 'var(--text-secondary)', paddingRight: '1rem', gap: '0.2rem' }}>
-                              <EditableLabel 
-                                value={ev.nom} 
-                                onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'nom', val)} 
+                              <EditableLabel
+                                value={ev.nom}
+                                onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'nom', val)}
                                 placeholder="Nouvelle Éval"
                                 style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}
                               />
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                                 <span>Coef:</span>
-                                <EditableLabel 
-                                  value={String(ev.coefficient)} 
-                                  onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'coefficient', val)} 
+                                <EditableLabel
+                                  value={String(ev.coefficient)}
+                                  onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'coefficient', val)}
                                 />
-                                <select 
-                                  value={ev.type || 'SC'} 
+                                <select
+                                  value={ev.type || 'SC'}
                                   onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'type', e.target.value)}
                                   style={{ padding: '0.1rem 0.3rem', background: ev.type === 'AC' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.15)', color: ev.type === 'AC' ? '#ef4444' : '#34d399', border: 'none', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
                                 >
@@ -374,26 +374,26 @@ export default function BulletinPage() {
                                   <option value="AC">AC</option>
                                 </select>
                               </div>
-                              <input 
-                                type="date" 
+                              <input
+                                type="date"
                                 value={ev.date || ''}
                                 onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'date', e.target.value || null)}
                                 style={{ padding: '0.15rem 0.3rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px', fontSize: '0.75rem', width: '100%' }}
                               />
                             </div>
-                            <input 
-                              type="number" 
+                            <input
+                              type="number"
                               step="0.1"
                               min="0" max="20"
-                              placeholder="-- / 20" 
+                              placeholder="-- / 20"
                               defaultValue={ev.note !== null ? ev.note : ''}
                               onBlur={(e) => handleUpdateNote(ue.semIndex, ue.ueIndex, matIndex, evIndex, e.target.value)}
                               style={{ width: '100%', padding: '0.5rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', marginTop: '0.5rem' }}
                             />
                           </div>
                         ))}
-                        
-                        <button 
+
+                        <button
                           onClick={() => handleAddEval(ue.semIndex, ue.ueIndex, matIndex)}
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--border-color)', borderRadius: '6px', color: 'var(--text-secondary)', cursor: 'pointer', minHeight: '100px', transition: 'all 0.2s' }}
                           className="hover-bright"

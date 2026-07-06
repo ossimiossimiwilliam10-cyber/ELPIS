@@ -43,3 +43,7 @@ pm run build dans le répertoire approprié (interface/web).
 pm test ou équivalent) AVANT de déclencher la procédure de Build & Push.
   Ne jamais considérer une tâche comme terminée si le code de production a été modifié sans les tests correspondants.
 </RULE[project_testing]>
+
+<RULE[project_h24_tasks]>
+- **Tâches d'arrière-plan H24 (Uptime)** : Si une fonctionnalité ou un agent nécessite de fonctionner 24h/24 et 7j/7 indépendamment de l'état du PC local (ex: agent d'audit), cette tâche DOIT être implémentée via un workflow CI/CD dans le Cloud (ex: **GitHub Actions** avec déclencheur cron), et non comme un processus local (Node.js ou script système).
+</RULE[project_h24_tasks]>

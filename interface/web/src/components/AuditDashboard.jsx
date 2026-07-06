@@ -83,10 +83,10 @@ export default function AuditDashboard({ isOpen, onClose }) {
                   <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Détails des anomalies</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '1rem' }}>
                     {auditData.anomalies.map((anom, idx) => (
-                      <div key={idx} style={{ 
-                        background: 'var(--bg-primary)', 
+                      <div key={idx} style={{
+                        background: 'var(--bg-primary)',
                         borderLeft: `4px solid ${anom.severity === 'critical' ? '#ef4444' : anom.severity === 'warning' ? '#f59e0b' : '#3b82f6'}`,
-                        padding: '0.8rem', borderRadius: '4px' 
+                        padding: '0.8rem', borderRadius: '4px'
                       }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                           <strong style={{ fontSize: '0.9rem' }}>{anom.rule_id}</strong>

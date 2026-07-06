@@ -109,7 +109,7 @@ function BackgroundMusicPlayer() {
 
   useEffect(() => {
     if (interactionDone.current) return;
-    
+
     const handleFirstInteraction = () => {
       interactionDone.current = true;
       if (audioRef.current && !isPlayingRef.current && musicData && musicData.url) {
@@ -132,7 +132,7 @@ function BackgroundMusicPlayer() {
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    
+
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -146,7 +146,7 @@ function BackgroundMusicPlayer() {
   if (!musicData || !musicData.url) {
     return (
       <>
-        <button 
+        <button
           onClick={() => setShowSettings(true)}
           style={{
             position: 'fixed', bottom: '20px', right: '20px',
@@ -171,7 +171,7 @@ function BackgroundMusicPlayer() {
   }[musicData.category] || '🎵';
 
   return (
-    <div 
+    <div
       className="glass-panel"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -194,15 +194,15 @@ function BackgroundMusicPlayer() {
         minWidth: isHovered ? '300px' : 'auto'
       }}
     >
-      <audio 
-        ref={audioRef} 
-        src={musicData.url} 
-        onEnded={handleEnded} 
+      <audio
+        ref={audioRef}
+        src={musicData.url}
+        onEnded={handleEnded}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
       />
 
-      <button 
+      <button
         onClick={togglePlay}
         style={{
           background: 'var(--accent-primary)',
@@ -227,9 +227,9 @@ function BackgroundMusicPlayer() {
         <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
           <span>{categoryEmoji}</span> {musicData.category}
         </div>
-        <div style={{ 
-          fontSize: '1rem', 
-          fontWeight: 'bold', 
+        <div style={{
+          fontSize: '1rem',
+          fontWeight: 'bold',
           color: 'var(--text-primary)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -243,23 +243,23 @@ function BackgroundMusicPlayer() {
       {isHovered && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
           <span style={{ fontSize: '1.2rem', cursor: 'pointer' }} onClick={() => setVolume(Math.max(0, volume - 0.1))}>🔉</span>
-          <input 
-            type="range" 
-            min="0" 
-            max="1" 
-            step="0.05" 
-            value={volume} 
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
             style={{ width: '60px', accentColor: 'var(--accent-primary)' }}
           />
-          <button 
+          <button
             onClick={() => { autoplayNextRef.current = isPlaying; fetchNextTrack(); }}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', marginLeft: '0.5rem', color: 'var(--text-primary)' }}
             title="Piste suivante"
           >
             ⏭
           </button>
-          <button 
+          <button
             onClick={() => setShowSettings(true)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', marginLeft: '0.5rem', color: 'var(--text-secondary)' }}
             title="Gérer les musiques"

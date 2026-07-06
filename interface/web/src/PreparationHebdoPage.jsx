@@ -214,8 +214,8 @@ export default function PreparationHebdoPage() {
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>
           Renseignez vos heures de cours, TP ou travail prévus. L'algorithme les déduira de votre temps libre et adaptera ses révisions.
         </p>
-        
-        <button 
+
+        <button
           onClick={() => setConfig({...config, fixedCommitments: [...(config?.fixedCommitments||[]), {day: 'Lundi', start: '08:00', end: '10:00', matiereLinked: ''}]})}
           style={{marginBottom: '1rem', padding: '0.6rem', background: 'rgba(244, 63, 94, 0.2)', color: '#f43f5e', border: '1px solid rgba(244, 63, 94, 0.4)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold'}}
         >
@@ -225,7 +225,7 @@ export default function PreparationHebdoPage() {
         <div style={{display: 'flex', flexDirection: 'column', gap: '0.8rem'}}>
           {(config?.fixedCommitments || []).map((commitment, idx) => (
             <div key={idx} style={{display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '8px', flexWrap: 'wrap'}}>
-              <select 
+              <select
                 value={commitment.day}
                 onChange={e => {
                   const newComs = [...(config?.fixedCommitments || [])];
@@ -236,8 +236,8 @@ export default function PreparationHebdoPage() {
               >
                 {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche', 'Tous les jours'].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
-              <input 
-                type="time" 
+              <input
+                type="time"
                 value={commitment.start}
                 onChange={e => {
                   const newComs = [...(config?.fixedCommitments || [])];
@@ -247,8 +247,8 @@ export default function PreparationHebdoPage() {
                 style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
               />
               <span style={{color: 'var(--text-secondary)'}}>à</span>
-              <input 
-                type="time" 
+              <input
+                type="time"
                 value={commitment.end}
                 onChange={e => {
                   const newComs = [...(config?.fixedCommitments || [])];
@@ -257,7 +257,7 @@ export default function PreparationHebdoPage() {
                 }}
                 style={{padding: '0.3rem', borderRadius: '4px', background: 'var(--bg-primary)', color: 'white', border: 'none'}}
               />
-              
+
               {/* Dropdown Matière Liée */}
               <select
                 value={commitment.matiereLinked || ''}
@@ -272,7 +272,7 @@ export default function PreparationHebdoPage() {
                 {allMatieres.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
 
-              <button 
+              <button
                 onClick={() => {
                   const newComs = config.fixedCommitments.filter((_, i) => i !== idx);
                   setConfig({...config, fixedCommitments: newComs});

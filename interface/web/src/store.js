@@ -92,7 +92,7 @@ const useStore = create(persist(immer((set, get) => ({
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
   setDailyFillGap: (val) => set({ dailyFillGap: val }),
-  
+
   // --- FORCED TASK (Ciblage Manuel) ---
   forcedTask: null,
   setForcedTask: (task) => set({ forcedTask: task }),
@@ -121,7 +121,7 @@ const useStore = create(persist(immer((set, get) => ({
   updatePendingTasksCount: async () => {
     await get().fetchOrchestrator({ extraTime: 0, fillGap: false });
   },
-  
+
   // Fetch all initial data
   initData: async () => {
     set({ loading: true, error: null });
@@ -139,12 +139,12 @@ const useStore = create(persist(immer((set, get) => ({
         fetch(`${API_URL}/projets`).then(r => r.ok ? r.json() : [])
       ]);
 
-      set({ 
-        config: resConfig, 
-        coursConfig: resCours, 
+      set({
+        config: resConfig,
+        coursConfig: resCours,
         historique: Array.isArray(resHist) ? resHist : [],
         projets: Array.isArray(resProjets) ? resProjets : [],
-        loading: false 
+        loading: false
       });
 
       // Call streak check immediately after load (passif)
@@ -184,12 +184,12 @@ const useStore = create(persist(immer((set, get) => ({
   activateRestDay: async () => {
     const config = get().config;
     if (!config) return;
-    
+
     const d = new Date();
     d.setHours(d.getHours() - 4);
     const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     let restDays = config.restDays || [];
-    
+
     // Calculate how many rest days were taken this week (Mon-Sun)
     // Night Owl : la période de grâce de 4h s'applique aussi au calcul du jour de la semaine
     const now = new Date();
@@ -198,7 +198,7 @@ const useStore = create(persist(immer((set, get) => ({
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - dayOfWeek + 1);
     startOfWeek.setHours(0,0,0,0);
-    
+
     const restDaysThisWeek = restDays.filter(d => {
       const date = new Date(d + 'T00:00:00');
       return date >= startOfWeek;
@@ -215,7 +215,7 @@ const useStore = create(persist(immer((set, get) => ({
       restDays = [...restDays, todayStr];
       const newConfig = { ...config, restDays };
       set({ config: newConfig });
-      
+
       // Save directly without debounce to ensure immediate effect before re-fetching
       try {
         await fetch(`${API_URL}/config`, {
@@ -255,8 +255,8 @@ const useStore = create(persist(immer((set, get) => ({
     const d = new Date();
     // Période de grâce (Night Owl) : 4 heures. Si on révise à 3h du matin, c'est compté pour la veille.
     d.setHours(d.getHours() - 4);
-    const today = d.getFullYear() + '-' + 
-      String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+    const today = d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
       String(d.getDate()).padStart(2, '0');
     let streak = Number.isFinite(config.currentStreak) ? config.currentStreak : 0;
     let lastActive = config.lastActiveDate || "";
@@ -367,8 +367,8 @@ export const useChronoStore = create((set) => ({
   toggleGlobalChrono: () => set(state => {
     const isRunning = !state.globalChrono.isRunning;
     return {
-      globalChrono: { 
-        ...state.globalChrono, 
+      globalChrono: {
+        ...state.globalChrono,
         isRunning,
         lastTickDate: isRunning ? Date.now() : null
       }
@@ -382,12 +382,12 @@ export const useChronoStore = create((set) => ({
       const now = Date.now();
       const diffSeconds = Math.floor((now - state.globalChrono.lastTickDate) / 1000);
       if (diffSeconds > 0) {
-        return { 
-          globalChrono: { 
-            ...state.globalChrono, 
+        return {
+          globalChrono: {
+            ...state.globalChrono,
             elapsedSeconds: state.globalChrono.elapsedSeconds + diffSeconds,
             lastTickDate: state.globalChrono.lastTickDate + (diffSeconds * 1000)
-          } 
+          }
         };
       }
     }
@@ -416,7 +416,7 @@ if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('elpis_offline_status_changed'));
     if (localStorage.getItem('elpis_offline_pending_sync') === 'true') {
       const state = useStore.getState();
-      
+
       // Forcer la synchronisation de toutes les données locales vers le serveur
       // Since debouncedSave... are debounced, we can just call them.
       // Wait, we need to access the store methods or fetch directly.

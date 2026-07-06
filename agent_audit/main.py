@@ -27,6 +27,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 RULES_FILE = os.path.join(os.path.dirname(__file__), 'rules.json')
 OUTPUT_FILE = os.path.join(PROJECT_ROOT, 'data', 'espoir_audit.json')
 BACKUPS_DIR = os.path.join(os.path.dirname(__file__), 'backups')
+LOG_FILE = os.path.join(os.path.dirname(__file__), 'audit.log')
 
 # Intervalle entre deux scans (en secondes) : 4 heures
 SCAN_INTERVAL_SECONDS = 14400
@@ -74,8 +75,14 @@ def load_rules():
 
 
 def log(message):
-    """Affiche un message horodaté."""
-    print(f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}")
+    """Affiche un message horodaté et l'écrit dans le fichier de log."""
+    msg = f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}"
+    print(msg)
+    try:
+        with open(LOG_FILE, 'a', encoding='utf-8') as f:
+            f.write(msg + '\n')
+    except Exception:
+        pass
 
 
 # ============================================================
@@ -107,7 +114,7 @@ def apply_fix(line, rule):
     """
     Applique la correction définie dans la règle à une ligne.
     Retourne (nouvelle_ligne, a_été_modifiée).
-    
+
     Actions supportées:
     - delete_line    : Supprime la ligne entière
     - replace        : Remplace le pattern par une chaîne fixe
@@ -180,8 +187,8 @@ def is_text_file(filepath):
 def scan_and_fix_file(filepath, rules, timestamp_dir, dry_run=False):
     """
     Scanne un fichier, détecte les anomalies et applique les corrections.
-    
-    Retourne (anomalies_list, corrections_list).
+
+    Retourne (anomalies_list, corrections_list, nombre_lignes).
     """
     anomalies = []
     corrections = []
@@ -190,8 +197,11 @@ def scan_and_fix_file(filepath, rules, timestamp_dir, dry_run=False):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             original_lines = f.readlines()
+            file_lines_count = len(original_lines)
     except (UnicodeDecodeError, PermissionError, OSError):
-        return anomalies, corrections
+        return anomalies, corrections, 0
+
+    log(f"  [scan] {filename} ({file_lines_count} lignes)")
 
     new_lines = []
     file_was_modified = False
@@ -271,7 +281,7 @@ def scan_and_fix_file(filepath, rules, timestamp_dir, dry_run=False):
         except (PermissionError, OSError) as e:
             log(f"  [!] Impossible d'ecrire {filepath}: {e}")
 
-    return anomalies, corrections
+    return anomalies, corrections, file_lines_count
 
 
 # ============================================================
@@ -281,7 +291,7 @@ def scan_and_fix_file(filepath, rules, timestamp_dir, dry_run=False):
 def run_audit(dry_run=False):
     """
     Exécute un cycle complet d'audit et de correction.
-    
+
     Args:
         dry_run: Si True, détecte sans corriger (mode rapport uniquement).
     """
@@ -301,6 +311,8 @@ def run_audit(dry_run=False):
     all_corrections = []
     files_scanned = 0
     files_corrected = 0
+    total_lines = 0
+    lines_by_ext = {}
 
     # Scanner toute l'arborescence du projet
     for root, dirs, files in os.walk(PROJECT_ROOT):
@@ -314,11 +326,19 @@ def run_audit(dry_run=False):
                 continue
 
             files_scanned += 1
-            anomalies, corrections = scan_and_fix_file(
+            anomalies, corrections, lines_count = scan_and_fix_file(
                 filepath, rules, timestamp_dir, dry_run=dry_run
             )
             all_anomalies.extend(anomalies)
             all_corrections.extend(corrections)
+            total_lines += lines_count
+
+            # Comptage par extension
+            _, ext = os.path.splitext(filename)
+            ext = ext.lower()
+            if not ext:
+                ext = "no_extension"
+            lines_by_ext[ext] = lines_by_ext.get(ext, 0) + lines_count
 
             if corrections:
                 files_corrected += 1
@@ -335,6 +355,8 @@ def run_audit(dry_run=False):
         "last_scan": datetime.datetime.now().isoformat(),
         "mode": mode,
         "files_scanned": files_scanned,
+        "total_lines_of_code": total_lines,
+        "lines_by_extension": lines_by_ext,
         "total_anomalies": len(all_anomalies),
         "total_corrections": len(all_corrections),
         "files_corrected": files_corrected,

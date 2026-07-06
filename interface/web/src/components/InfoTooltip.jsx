@@ -14,8 +14,8 @@ export default function InfoTooltip({ content, children, width = 250 }) {
   }, [isVisible]);
 
   return (
-    <div 
-      className="tooltip-container" 
+    <div
+      className="tooltip-container"
       ref={containerRef}
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}

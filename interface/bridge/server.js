@@ -191,7 +191,7 @@ app.post('/api/config', (req, res) => {
     }
     // MAJ Async sur MongoDB
     syncToMongo('config', req.body).catch(console.error);
-    
+
     res.json({ success: true, message: "Configuration mise à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur: " + err.message });
@@ -223,7 +223,7 @@ app.post('/api/cours', (req, res) => {
     }
     // MAJ Async sur MongoDB
     syncToMongo('cours', req.body).catch(console.error);
-    
+
     res.json({ success: true, message: "Cours mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur: " + err.message });
@@ -266,7 +266,7 @@ app.post('/api/projets', (req, res) => {
     }
     // MAJ Async sur MongoDB
     syncToMongo('projets', req.body).catch(console.error);
-    
+
     res.json({ success: true, message: "Projets mis à jour." });
   } catch (err) {
     res.status(500).json({ error: "Erreur serveur: " + err.message });
@@ -301,7 +301,7 @@ app.post('/api/historique', (req, res) => {
     }
     // MAJ Async sur MongoDB
     syncToMongo('historique', trimmed).catch(console.error);
-    
+
     res.json({ success: true, message: "Historique mis à jour." });
   } catch (_err) {
     res.status(500).json({ error: "Erreur sauvegarde historique." });
@@ -312,7 +312,7 @@ app.post('/api/historique', (req, res) => {
 app.post('/api/open/anki', (req, res) => {
   const { spawn } = require('child_process');
   const pathModule = require('path');
-  
+
   // Non-Windows : chercher dans le PATH
   if (process.platform !== 'win32') {
     const child = spawn('anki', [], { detached: true, stdio: 'ignore' });
@@ -328,7 +328,7 @@ app.post('/api/open/anki', (req, res) => {
     pathModule.join(process.env.PROGRAMFILES || 'C:\\Program Files', 'Anki', 'anki.exe'),
     pathModule.join(process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', 'Anki', 'anki.exe')
   ];
-  
+
   let validPath = null;
   for (const p of ankiPaths) {
     if (fs.existsSync(p)) {
@@ -336,20 +336,20 @@ app.post('/api/open/anki', (req, res) => {
       break;
     }
   }
-  
+
   if (!validPath) {
     return res.status(404).json({ error: "Anki n'est pas installé ou introuvable." });
   }
-  
+
   const child = spawn(validPath, [], {
     detached: true,
     stdio: 'ignore',
   });
-  
+
   child.on('error', (err) => {
     console.error("Erreur lancement Anki:", err.message);
   });
-  
+
   child.unref();
   res.json({ success: true, message: "Anki lancé avec succès." });
 });
@@ -358,7 +358,7 @@ app.post('/api/open/anki', (req, res) => {
 app.post('/api/open/file', (req, res) => {
   const { spawn } = require('child_process');
   const filepath = req.body.filepath;
-  
+
   if (!filepath) {
     return res.status(400).json({ error: "Chemin du fichier manquant." });
   }
@@ -380,11 +380,11 @@ app.post('/api/open/file', (req, res) => {
     windowsHide: true,
     stdio: 'ignore'
   });
-  
+
   child.on('error', (err) => {
     console.error("Erreur ouverture fichier:", err.message);
   });
-  
+
   child.unref();
   res.json({ success: true, message: "Fichier ouvert." });
 });
@@ -404,7 +404,7 @@ app.post('/api/upload/pdf', (req, res, next) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(req.file.originalname);
     const filename = 'doc-' + uniqueSuffix + ext;
-    
+
     // Save to GridFS if MongoDB is connected, else save to local disk
     const db = getDb();
     if (db) {
@@ -419,7 +419,7 @@ app.post('/api/upload/pdf', (req, res, next) => {
     }
 
     const url = `/api/documents/${filename}`;
-    
+
     // Scan text in PDF
     let suggestedExercises = [];
     try {
@@ -429,7 +429,7 @@ app.post('/api/upload/pdf', (req, res, next) => {
         const text = pdfData.text;
         const regex = /(?:exercice|exercise|ex|exo|question|q|prob|problem|problème|partie|sujet|td|tp)\s*(?:n°|n|#)?\s*(\d+(?:\.\d+)?)/gi;
         const matches = [...text.matchAll(regex)];
-        
+
         const uniqueTitles = new Set();
         matches.forEach(m => {
            let title = m[0].replace(/\s+/g, ' ').trim();
@@ -437,7 +437,7 @@ app.post('/api/upload/pdf', (req, res, next) => {
            title = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
            uniqueTitles.add(title);
         });
-        
+
         suggestedExercises = Array.from(uniqueTitles);
       }
     } catch (parseErr) {
@@ -452,7 +452,7 @@ app.post('/api/upload/pdf', (req, res, next) => {
 app.get('/api/documents/:filename', async (req, res) => {
   const filename = req.params.filename;
   const db = getDb();
-  
+
   if (db) {
     const bucket = new GridFSBucket(db, { bucketName: 'documents' });
     const files = await bucket.find({ filename }).toArray();
@@ -462,13 +462,13 @@ app.get('/api/documents/:filename', async (req, res) => {
       return downloadStream.pipe(res);
     }
   }
-  
+
   // Fallback to local
   const localPath = path.join(DOCUMENTS_DIR, filename);
   if (fs.existsSync(localPath)) {
     return res.sendFile(localPath);
   }
-  
+
   res.status(404).json({ error: "Fichier non trouvé" });
 });
 
@@ -480,11 +480,11 @@ app.post('/api/shutdown', (req, res) => {
   const origin = req.get('origin') || req.get('referer') || '';
   const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`];
   const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';
-  
+
   if (!isLocalhost && !allowedOrigins.some(o => origin.startsWith(o))) {
     return res.status(403).json({ error: "Arrêt non autorisé depuis cette origine." });
   }
-  
+
   res.json({ success: true, message: "Arrêt du serveur." });
   setTimeout(() => process.exit(0), 1000);
 });
@@ -505,10 +505,10 @@ app.get('/api/orchestrateur', (req, res) => {
     const coursMtime = fs.existsSync(COURS_PATH) ? fs.statSync(COURS_PATH).mtimeMs : 0;
     const histMtime = fs.existsSync(HISTORIQUE_FILE) ? fs.statSync(HISTORIQUE_FILE).mtimeMs : 0;
     const now = Date.now();
-    
+
     // Clé de cache robuste basée sur l'ensemble des paramètres (Audit Improvement)
     const cacheKey = `${configMtime}_${coursMtime}_${histMtime}_${extraTime}_${fillGap}`;
-    
+
     let cacheEntry = orchestratorCache.get(cacheKey);
     let cacheValid = cacheEntry && (now - cacheEntry.timestamp) < CACHE_TTL_MS;
 
@@ -522,7 +522,7 @@ app.get('/api/orchestrateur', (req, res) => {
         timestamp: now
       });
     }
-    
+
     // Nettoyage périodique des vieilles entrées (tous les appels, pas seulement sur miss)
     for (const [key, entry] of orchestratorCache.entries()) {
       if (now - entry.timestamp > CACHE_TTL_MS) {
@@ -543,18 +543,18 @@ app.post('/api/orchestrator/force-task', (req, res) => {
     const { CONFIG_PATH } = require('./moteur/config');
     const { COURS_PATH } = require('./moteur/cours');
     const { genererTacheSpecifique } = require('./moteur/orchestrateur');
-    
+
     const options = {
       matiere: req.body.matiere || 'all',
       type: req.body.type || 'all',
       dureeMin: parseInt(req.body.dureeMin) || 0
     };
-    
+
     const task = genererTacheSpecifique(CONFIG_PATH, COURS_PATH, options);
     if (!task) {
       return res.status(404).json({ error: "Aucune tâche trouvée pour ces critères." });
     }
-    
+
     res.json({ task });
   } catch (err) {
     console.error("Erreur force-task:", err);
@@ -582,16 +582,16 @@ app.post('/api/chat', async (req, res) => {
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "messages requis" });
     }
-    
+
     // Call DeepSeek
     const aiResponseContent = await callDeepSeek(messages, ROOT_DIR);
-    
+
     // Append the AI response to the history
     const finalMessages = [...messages, { role: 'assistant', content: aiResponseContent }];
-    
+
     // Save to disk
     atomicWriteFileSync(CHAT_FILE, JSON.stringify(finalMessages, null, 2));
-    
+
     res.json({ content: aiResponseContent });
   } catch (err) {
     console.error("Erreur DeepSeek:", err);
@@ -613,11 +613,11 @@ app.use('/music', express.static(path.join(ROOT_DIR, 'music')));
 app.get('/api/music/recommendation', (req, res) => {
   try {
     const { genererRapportQuotidien } = require('./moteur/orchestrateur');
-    
+
     const rapport = genererRapportQuotidien(CONFIG_FILE, COURS_FILE, 0, false);
     const now = new Date();
     const hour = now.getHours();
-    
+
     let category = 'calm';
     if (req.query.category && ['calm', 'motivational'].includes(req.query.category)) {
       category = req.query.category;
@@ -631,7 +631,7 @@ app.get('/api/music/recommendation', (req, res) => {
 
     let musicDir = path.join(ROOT_DIR, 'music', category);
     const getFiles = (dir) => fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg')) : [];
-    
+
     let files = getFiles(musicDir);
     if (files.length === 0) {
       // Fallback vers l'autre catégorie si l'actuelle est vide
@@ -642,11 +642,11 @@ app.get('/api/music/recommendation', (req, res) => {
         category = fallbackCategory;
       }
     }
-    
+
     if (files.length === 0) {
       return res.json({ url: null, category });
     }
-    
+
     const randomFile = files[Math.floor(Math.random() * files.length)];
     res.json({ url: `/music/${category}/${encodeURIComponent(randomFile)}`, category, title: randomFile.replace(/\.[^/.]+$/, "") });
   } catch (err) {
@@ -785,11 +785,11 @@ app.delete('/api/music/:category/:filename', (req, res) => {
   try {
     const { category, filename } = req.params;
     if (!['calm', 'motivational'].includes(category)) return res.status(400).json({ error: "Catégorie invalide" });
-    
+
     // Security to prevent directory traversal
     const safeFilename = path.basename(filename);
     const targetPath = path.join(ROOT_DIR, 'music', category, safeFilename);
-    
+
     if (fs.existsSync(targetPath)) {
       fs.unlinkSync(targetPath);
       res.json({ message: "Fichier supprimé" });
@@ -819,7 +819,7 @@ app.use((err, req, res, next) => {
 async function startServer() {
   // 1. Initialiser MongoDB
   const isMongoEnabled = await initMongo();
-  
+
   // 2. Si MongoDB est actif, télécharger les données AVANT de démarrer le serveur
   if (isMongoEnabled) {
     await syncFromMongoToLocal(CONFIG_FILE, COURS_FILE, HISTORIQUE_FILE);
@@ -829,7 +829,7 @@ async function startServer() {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`ELPIS Bridge démarré sur http://0.0.0.0:${PORT}`);
     console.log(`Moteur Node.js natif — plus de dépendance C++ !`);
-    
+
     // 4. Lancer l'agent Python d'Audit en arrière-plan
     const pyScript = path.join(ROOT_DIR, 'agent_audit', 'main.py');
     if (fs.existsSync(pyScript)) {

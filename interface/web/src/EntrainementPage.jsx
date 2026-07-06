@@ -102,9 +102,9 @@ function EntrainementPage() {
   // Filtered exercises directly matching the orchestrator
   const strategicExercices = useMemo(() => {
     if (!tachesOrchestrateur) return [];
-    
+
     let exosToReview = [];
-    
+
     const ankiTask = tachesOrchestrateur.find(t => t.type === 'ANKI');
     if (ankiTask) {
        exosToReview.push({
@@ -123,7 +123,7 @@ function EntrainementPage() {
             const extractAndFilter = (listeExos, type) => {
                if (!listeExos) return;
                listeExos.forEach((ex, exIndex) => {
-                 const isInOrchestrator = tachesOrchestrateur.some(t => 
+                 const isInOrchestrator = tachesOrchestrateur.some(t =>
                    t.matiere === m.nom && t.type === type && t.titre === ex.titre
                  );
                  if (isInOrchestrator) {
@@ -171,7 +171,7 @@ function EntrainementPage() {
   const totalExercisesToday = useMemo(() => {
     let completedToday = 0;
     const todayStr = getTodayStr();
-    
+
     if (config?.dernierePratiqueAnki === todayStr) {
       completedToday += 1;
     }
@@ -198,9 +198,9 @@ function EntrainementPage() {
 
     const newConf = produce(coursConfig, draft => {
       const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
-    
+
     let finalScore = score;
-    
+
     // --- PÉNALITÉ / BONUS TEMPOREL ---
     if (elapsedMinutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
       const ratio = elapsedMinutes / cm.tempsMoyen;
@@ -259,16 +259,16 @@ function EntrainementPage() {
     cm.prochaineRevisionDate = newCard.due instanceof Date
       ? newCard.due.toISOString().split('T')[0]
       : new Date(newCard.due).toISOString().split('T')[0];
-    
+
     const today = getTodayStr();
     cm.derniereRevision = today;
-    
+
     // Update tempsMoyen: use elapsedMinutes if > 0, otherwise use default duration
     let effectiveMinutes = elapsedMinutes;
     if (effectiveMinutes <= 0) {
       effectiveMinutes = (cm.jActuel === 0) ? (config?.defaultDurationNewCM || 120) : (config?.defaultDurationRevCM || 30);
     }
-    
+
     const currentAvg = cm.tempsMoyen || 0;
     const currentCount = cm.nombreRevisionsTemps || 0;
     cm.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
@@ -346,7 +346,7 @@ function EntrainementPage() {
       const currentExo = targetList[exo.exIndex];
       currentExo.dernierePratique = todayStr;
       currentExo.nombrePratiques = (currentExo.nombrePratiques || 0) + 1;
-      
+
       if (exo.type === 'ANNALE' && difficulte !== "") {
         // Pour les Annales, 'difficulte' contient en fait la note sur 20
         const note = parseFloat(difficulte);
@@ -362,35 +362,35 @@ function EntrainementPage() {
       } else if (difficulte) {
         currentExo.difficulte = difficulte;
       }
-      
+
       let effectiveMinutes = elapsedMinutes;
       if (effectiveMinutes <= 0) {
         if (exo.type === 'TD') effectiveMinutes = config?.defaultDurationTD || 20;
         else if (exo.type === 'TP') {
           const stepIndex = (currentExo.nombrePratiques || 1) - 1;
           const TP_STEP_DURATIONS = [
-            config?.defaultDurationTP_Etape1 || 45, 
-            config?.defaultDurationTP_Etape2 || 180, 
-            config?.defaultDurationTP_Etape3 || 90, 
+            config?.defaultDurationTP_Etape1 || 45,
+            config?.defaultDurationTP_Etape2 || 180,
+            config?.defaultDurationTP_Etape3 || 90,
             config?.defaultDurationTP_Etape4 || 30
           ];
           effectiveMinutes = TP_STEP_DURATIONS[stepIndex] || 30;
         }
         else if (exo.type === 'ANNALE') effectiveMinutes = config?.defaultDurationAnnales || 60;
       }
-      
+
       if (exo.type === 'TP') {
         const stepIndex = (currentExo.nombrePratiques || 1) - 1;
         if (!currentExo.tempsMoyenEtapes) {
           currentExo.tempsMoyenEtapes = [];
         }
         while(currentExo.tempsMoyenEtapes.length <= stepIndex) currentExo.tempsMoyenEtapes.push(null);
-        
+
         if (!currentExo.nombreRevisionsEtapes) {
           currentExo.nombreRevisionsEtapes = [];
         }
         while(currentExo.nombreRevisionsEtapes.length <= stepIndex) currentExo.nombreRevisionsEtapes.push(0);
-        
+
         const currentAvg = currentExo.tempsMoyenEtapes[stepIndex] || 0;
         const currentCount = currentExo.nombreRevisionsEtapes[stepIndex] || 0;
         currentExo.tempsMoyenEtapes[stepIndex] = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
@@ -401,20 +401,20 @@ function EntrainementPage() {
         currentExo.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
         currentExo.nombreRevisionsTemps = currentCount + 1;
       }
-      
+
       // AXE 7: Fatigue Tracking for TP/TD/Annales
       let expectedDur = 30;
       if (exo.type === 'TD') expectedDur = config?.defaultDurationTD || 20;
       else if (exo.type === 'TP') expectedDur = config?.defaultDurationTP || 45;
       else if (exo.type === 'ANNALE') expectedDur = config?.defaultDurationAnnales || 60;
-      
+
       if (difficulte === 'difficile' || (elapsedMinutes > 0 && elapsedMinutes > expectedDur * 1.5)) {
          setFatigueCounter(prev => prev + 1);
       } else if (difficulte === 'tres_facile') {
          setFatigueCounter(0);
       }
     });
-    
+
     confetti({
       particleCount: 100,
       spread: 70,
@@ -480,9 +480,9 @@ function EntrainementPage() {
       {/* === AXE 7: ALERTE FATIGUE === */}
       <AnimatePresence>
         {fatigueCounter >= 3 && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }} 
-            animate={{ opacity: 1, height: 'auto' }} 
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             style={{ overflow: 'hidden', marginBottom: '1.5rem' }}
           >
@@ -491,12 +491,12 @@ function EntrainementPage() {
               <div>
                 <strong style={{ fontSize: '1.1rem' }}>Fatigue Cognitive Détectée</strong>
                 <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
-                  Tu as passé beaucoup de temps sur les derniers exercices ou cliqué répétitivement sur "Difficile". 
+                  Tu as passé beaucoup de temps sur les derniers exercices ou cliqué répétitivement sur "Difficile".
                   L'algorithme te conseille fortement de prendre une <strong>pause Pomodoro de 15 min</strong> ou de changer de matière (Interleaving).
                 </div>
               </div>
-              <button 
-                onClick={() => setFatigueCounter(0)} 
+              <button
+                onClick={() => setFatigueCounter(0)}
                 style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid #f59e0b', color: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
               >
                 Ignorer
@@ -509,7 +509,7 @@ function EntrainementPage() {
       {/* === FILTER PILLS === */}
       {matiereNames.length > 1 && (
         <div className="filter-pills">
-          <button 
+          <button
             className={`filter-pill ${filterMatiere === 'all' ? 'active' : ''}`}
             onClick={() => setFilterMatiere('all')}
           >
@@ -518,7 +518,7 @@ function EntrainementPage() {
           {matiereNames?.map(name => {
             const count = remainingExercises.filter(e => e.matiereNom === name).length;
             return (
-              <button 
+              <button
                 key={name}
                 className={`filter-pill ${filterMatiere === name ? 'active' : ''}`}
                 onClick={() => setFilterMatiere(name)}
@@ -551,7 +551,7 @@ function EntrainementPage() {
 
       <AnimatePresence mode="wait">
         {exercicesDuJour.length === 0 ? (
-          <motion.div 
+          <motion.div
             key="empty"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -568,7 +568,7 @@ function EntrainementPage() {
                     <div className="empty-state-icon">🏆</div>
                     <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
                     <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par le système. Repose-toi bien !</p>
-                    
+
                       <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                         {!dailyFillGap && (
                           <motion.button
@@ -611,7 +611,7 @@ function EntrainementPage() {
           <div className="entrainement-timeline" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
             <AnimatePresence>
               {exercicesDuJour?.map((exo, index) => (
-                <motion.div 
+                <motion.div
                   key={`${exo.matiereNom}-${exo.titre}-${index}`}
                   variants={itemVariants}
                   initial="hidden"
@@ -621,7 +621,7 @@ function EntrainementPage() {
                 >
                   <div className="timeline-connector"></div>
                   <div className="timeline-dot"></div>
-                  <ExerciceCard 
+                  <ExerciceCard
                     exo={exo}
                     matiereNom={exo.matiereNom}
                     notebookLMLink={exo.notebookLMLink}

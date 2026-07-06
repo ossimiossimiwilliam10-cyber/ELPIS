@@ -6,7 +6,7 @@ import { useToast } from './ToastProvider';
 export default function RevisionsAvanceesPage() {
   const { coursConfig, pendingTasksCount, setForcedTask, setActiveTab } = useStore();
   const { toast } = useToast();
-  
+
   const [customMatiere, setCustomMatiere] = useState('all');
   const [customType, setCustomType] = useState('all');
   const [customDuration, setCustomDuration] = useState(30);
@@ -81,21 +81,21 @@ export default function RevisionsAvanceesPage() {
         <h1 style={{ margin: 0, fontSize: '2rem' }}>🚀 Avance & Bonus</h1>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="card glass-panel" 
+        className="card glass-panel"
         style={{ marginBottom: '2rem', padding: '2rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '16px' }}
       >
         <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>🎯 Ciblage manuel</h3>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
           Sélectionne la matière, le type et la durée. L'IA ciblera l'exercice le plus pertinent et t'emmènera dans l'arène d'entraînement !
         </p>
-        
+
         <div style={{ marginBottom: '1.2rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 500 }}>Matière</label>
-          <select 
-            value={customMatiere} 
+          <select
+            value={customMatiere}
             onChange={e => setCustomMatiere(e.target.value)}
             style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem', cursor: 'pointer' }}
           >
@@ -108,8 +108,8 @@ export default function RevisionsAvanceesPage() {
 
         <div style={{ marginBottom: '1.2rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 500 }}>Type d'exercice</label>
-          <select 
-            value={customType} 
+          <select
+            value={customType}
             onChange={e => setCustomType(e.target.value)}
             style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem', cursor: 'pointer' }}
           >
@@ -123,18 +123,18 @@ export default function RevisionsAvanceesPage() {
 
         <div style={{ marginBottom: '2rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 500 }}>Durée souhaitée (minutes)</label>
-          <input 
-            type="number" 
-            min="5" 
+          <input
+            type="number"
+            min="5"
             step="5"
-            value={customDuration} 
+            value={customDuration}
             onChange={e => setCustomDuration(parseInt(e.target.value) || 30)}
             style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem' }}
           />
         </div>
 
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <motion.button 
+          <motion.button
             whileHover={!isGeneratingCustom ? { scale: 1.02 } : {}}
             whileTap={!isGeneratingCustom ? { scale: 0.98 } : {}}
             onClick={handleCustomTargetRequest}
