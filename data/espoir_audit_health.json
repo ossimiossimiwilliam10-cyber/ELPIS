@@ -1,79 +1,74 @@
 {
-  "timestamp": "2026-07-06T17:50:59.945420",
+  "timestamp": "2026-07-06T16:50:17.150149",
   "agent_version": "3.0.0",
   "rules_health": {
-    "status": "WARNING",
-    "total_rules": 45,
-    "issues": [
-      "Severite invalide pour PWA_STATIC_ROUTE_EXCLUSION: high"
-    ]
+    "status": "HEALTHY",
+    "total_rules": 46,
+    "issues": []
   },
   "scan_performance": {
-    "status": "WARNING",
-    "elapsed_seconds": 35.93,
-    "files_scanned": 193,
-    "files_per_second": 5.4,
-    "lines_per_second": 43930.0
+    "status": "HEALTHY",
+    "elapsed_seconds": 15.96,
+    "files_scanned": 191,
+    "files_per_second": 12.0,
+    "lines_per_second": 99132.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 14,
-    "false_positive_escalations": 16,
+    "total_rules_with_hits": 19,
+    "false_positive_escalations": 14,
     "rule_hit_distribution": {
-      "MAGIC_NUMBERS": 131,
-      "NO_TRAILING_WHITESPACE": 104,
+      "MAGIC_NUMBERS": 217,
       "MISSING_TYPE_HINTS": 77,
-      "MISSING_TEST_FILE": 50,
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER": 48,
-      "EXCESSIVE_NESTING_DEPTH": 39,
-      "EXCESSIVE_FUNCTION_LENGTH": 27,
+      "EXCESSIVE_NESTING_DEPTH": 74,
+      "MISSING_TEST_FILE": 52,
+      "EXCESSIVE_FUNCTION_LENGTH": 37,
       "NO_IMPORTANT_IN_CSS": 14,
+      "NO_CONSOLE_LOG_IN_PROD": 5,
+      "NO_PRINT_IN_PRODUCTION": 4,
       "EXCESSIVE_FILE_SIZE": 3,
-      "NO_TODO_WITHOUT_TICKET": 2
+      "NO_SQL_INJECTION_PATTERNS": 3
     }
   },
   "escalation_health": {
     "status": "WARNING",
-    "total_escalations": 4366,
+    "total_escalations": 1454,
     "critical_escalations": 0,
-    "fixes_that_broke_tests": 3
+    "fixes_that_broke_tests": 6
   },
   "rule_activity": {
-    "total_rules": 45,
-    "active_rules": 14,
+    "total_rules": 46,
+    "active_rules": 19,
     "inactive_rules": [
-      "NO_BARREL_IMPORT_CYCLES",
       "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "MISSING_JSDOC_ON_EXPORT",
-      "NO_BARE_EXCEPT",
-      "NO_DOUBLE_SEMICOLONS",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_PRINT_IN_PRODUCTION",
       "NO_POSITIVE_TABINDEX",
-      "IMPORT_BOUNDARY_VIOLATION",
-      "NO_HARDCODED_LOCALHOST",
-      "NO_UNSAFE_INNERHTML",
+      "TEST_WITH_ONLY",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
+      "MISSING_ALT_ATTRIBUTE",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "NO_BARE_EXCEPT",
       "NO_WILDCARD_CORS",
-      "NO_EMPTY_CATCH",
-      "PROP_SPREADING_WARNING",
-      "LARGE_IMPORT_SIDE_EFFECT",
+      "NO_CIRCULAR_IMPORTS",
       "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "MISSING_KEY_IN_MAP",
-      "USE_OPTIONAL_CHAINING",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "NO_DOUBLE_SEMICOLONS",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "MISSING_JSDOC_ON_EXPORT",
       "TEST_WITH_SKIP",
-      "NO_CIRCULAR_IMPORTS"
+      "NO_INDEX_AS_KEY",
+      "MISSING_REACT_MEMO",
+      "AVOID_ARRAY_CONSTRUCTOR"
     ],
-    "inactive_count": 31
+    "inactive_count": 27
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 342.2
+    "size_kb": 618.9
   },
-  "overall_status": "WARNING",
-  "warnings": [
-    "Problemes dans les regles: Severite invalide pour PWA_STATIC_ROUTE_EXCLUSION: high",
-    "Performance degradee: 5.4 fichiers/s"
-  ],
+  "overall_status": "HEALTHY",
+  "warnings": [],
   "recommendations": [
-    "31 regles inactives. Verifier si elles sont encore pertinentes."
+    "27 regles inactives. Verifier si elles sont encore pertinentes."
   ]
 }

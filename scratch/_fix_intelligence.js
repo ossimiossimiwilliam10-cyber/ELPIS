@@ -8,14 +8,13 @@ const lines = content.split('\n');
 let fixed = false;
 for (let i = 0; i < lines.length; i++) {
   if (lines[i].includes('forecastDaysToExam')) {
-    console.log(`Line ${i+1}: ${lines[i].trim()}`);
     // Replace this line and surrounding lines
     // Line before: "const v = velocityMap ? ..."
     // This line: "const daysToExam = v ? (v.forecastDaysToExam || 30) : 30;"
     // Next line: "if (trendSignificant) {"
     // Next+1: comment about MSE
     // Next+2: "projected += trend * Math.min(daysToExam, 30) * 0.5;"
-    
+
     // Fix line i-1 (comment): "Projection de tendance (sur 30 jours max)" → "Projection de tendance (fenêtre glissante de 30 jours)"
     lines[i-1] = lines[i-1].replace('(sur 30 jours max)', '(fenêtre glissante de 30 jours)');
     // Remove line i-0.5 (const v = velocityMap...)
@@ -26,7 +25,6 @@ for (let i = 0; i < lines.length; i++) {
     // Fix line i+3: change daysToExam to trendWindowDays
     lines[i+2] = ''; // Delete comment line
     lines[i+3] = lines[i+3].replace('Math.min(daysToExam, 30)', 'trendWindowDays');
-    console.log(`Fixed line ${i+1}: daysToExam → trendWindowDays`);
     fixed = true;
     break;
   }
@@ -36,13 +34,10 @@ for (let i = 0; i < lines.length; i++) {
 for (let i = 0; i < lines.length; i++) {
   if (lines[i].includes('const v = velocityMap ? velocityMap[m.nom] : null;') && lines[i+1] && lines[i+1].includes('trendWindowDays')) {
     lines[i] = '';
-    console.log(`Removed dead line ${i+1}`);
   }
 }
 
 if (fixed) {
   fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
-  console.log('File updated successfully.');
 } else {
-  console.log('Pattern not found - may already be fixed.');
 }
