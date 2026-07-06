@@ -79,7 +79,6 @@ function Dashboard() {
   const [cmModalOpen, setCmModalOpen] = useState(false);
   const [pendingCMTask, setPendingCMTask] = useState(null);
   const cmModalLockRef = useRef(false); // prevents double-open race condition
-  const completedTaskIdsRef = useRef(new Set()); // Anti-Spam: tracks completed tasks to prevent re-submission
 
   // Custom Task (Activité Libre) modal state
   const [customTaskModalOpen, setCustomTaskModalOpen] = useState(false);
@@ -150,13 +149,8 @@ function Dashboard() {
     setPrevOrchestratorData(orchestratorData);
     if (orchestratorData?.tachesDuJour) {
       const todayStr = getTodayStr();
-      const completed = completedTaskIdsRef.current;
       const filtered = orchestratorData.tachesDuJour.filter(t => {
-        // Filter out ANKI if already done today
         if (t.type === 'ANKI' && config?.dernierePratiqueAnki === todayStr) return false;
-        // Filter out any task already completed this session
-        const taskKey = `${t.type}_${t.titre}_${t.matiere}`;
-        if (completed.has(taskKey)) return false;
         return true;
       });
       setOrderedTaches(filtered);
@@ -178,11 +172,6 @@ function Dashboard() {
 
   const handleTaskComplete = (tache, difficulte = "") => {
     if (!coursConfig) return;
-
-    // Anti-Spam: prevent double submission via ref-based lock
-    const taskKey = `${tache.type}_${tache.titre}_${tache.matiere}`;
-    if (completedTaskIdsRef.current.has(taskKey)) return;
-    completedTaskIdsRef.current.add(taskKey);
 
     // For CM tasks, open the mini-modal to capture real time and retention score
     if (tache.type === 'CM') {

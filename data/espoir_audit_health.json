@@ -1,74 +1,74 @@
 {
-  "timestamp": "2026-07-06T21:10:49.495223",
+  "timestamp": "2026-07-06T18:52:34.958915",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
-    "total_rules": 48,
+    "total_rules": 46,
     "issues": []
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 12.94,
-    "files_scanned": 196,
-    "files_per_second": 15.1,
-    "lines_per_second": 122213.0
+    "elapsed_seconds": 10.72,
+    "files_scanned": 192,
+    "files_per_second": 17.9,
+    "lines_per_second": 147097.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 12,
-    "false_positive_escalations": 14,
+    "total_rules_with_hits": 18,
+    "false_positive_escalations": 13,
     "rule_hit_distribution": {
-      "MAGIC_NUMBERS": 204,
-      "MISSING_TYPE_HINTS": 80,
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER": 53,
+      "MAGIC_NUMBERS": 222,
+      "MISSING_TYPE_HINTS": 77,
+      "EXCESSIVE_NESTING_DEPTH": 74,
       "MISSING_TEST_FILE": 52,
-      "EXCESSIVE_NESTING_DEPTH": 52,
-      "EXCESSIVE_FUNCTION_LENGTH": 30,
+      "EXCESSIVE_FUNCTION_LENGTH": 37,
       "NO_IMPORTANT_IN_CSS": 14,
-      "NO_DUPLICATE_HISTORY_ENTRIES": 5,
+      "NO_PRINT_IN_PRODUCTION": 4,
       "EXCESSIVE_FILE_SIZE": 3,
-      "NO_SQL_INJECTION_PATTERNS": 3
+      "NO_SQL_INJECTION_PATTERNS": 3,
+      "MISSING_KEY_IN_MAP": 3
     }
   },
   "escalation_health": {
-    "status": "HEALTHY",
-    "total_escalations": 1477,
+    "status": "WARNING",
+    "total_escalations": 1463,
     "critical_escalations": 0,
-    "fixes_that_broke_tests": 0
+    "fixes_that_broke_tests": 5
   },
   "rule_activity": {
-    "total_rules": 48,
-    "active_rules": 12,
+    "total_rules": 46,
+    "active_rules": 18,
     "inactive_rules": [
+      "NO_EMPTY_CATCH",
+      "NO_DOUBLE_SEMICOLONS",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
       "MISSING_ALT_ATTRIBUTE",
-      "TEST_WITH_ONLY",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "NO_HARDCODED_SECRETS",
-      "NO_UNSAFE_INNERHTML",
-      "NO_DOUBLE_SUBMISSION",
-      "MISSING_USEEFFECT_DEPS",
+      "INTELLIGENCE_EXPORT_COVERAGE",
       "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_TRAILING_WHITESPACE",
       "NO_CIRCULAR_IMPORTS",
       "NO_WILDCARD_CORS",
-      "NO_CONSOLE_LOG_IN_PROD",
-      "MISSING_REACT_MEMO",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "NO_INDEX_AS_KEY",
       "NO_BARREL_IMPORT_CYCLES",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
-      "PWA_STATIC_ROUTE_EXCLUSION",
-      "NO_BARE_EXCEPT",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "INTELLIGENCE_EXPORT_COVERAGE",
-      "IMPORT_BOUNDARY_VIOLATION"
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "PROP_SPREADING_WARNING",
+      "NO_HARDCODED_SECRETS",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "TEST_WITH_ONLY",
+      "NO_HARDCODED_LOCALHOST",
+      "NO_POSITIVE_TABINDEX"
     ],
-    "inactive_count": 36
+    "inactive_count": 28
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 481.1
+    "size_kb": 467.8
   },
   "overall_status": "HEALTHY",
   "warnings": [],
   "recommendations": [
-    "36 regles inactives. Verifier si elles sont encore pertinentes."
+    "28 regles inactives. Verifier si elles sont encore pertinentes."
   ]
 }

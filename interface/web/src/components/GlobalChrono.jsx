@@ -149,7 +149,7 @@ export default function GlobalChrono() {
   }[type] || '⏱️';
 
   // If the chrono has been fully reset (no active task), hide it completely
-  if (!exoId && !isRunning && (elapsedSeconds === 0)) {
+  if (!exoId && !isRunning && elapsedSeconds === 0) {
     return null;
   }
 

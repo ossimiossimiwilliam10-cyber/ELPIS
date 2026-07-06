@@ -63,35 +63,22 @@ def _python_syntax_check(filepath):
 # Validation Gate 2: Test Suite
 # ---------------------------------------------------------------------------
 
-def _get_js_test_dir():
-    last_file = _last_fixed_file()
-    if 'interface\\web' in last_file or 'interface/web' in last_file:
-        return os.path.join(PROJECT_ROOT, 'interface', 'web')
-    if 'interface\\bridge' in last_file or 'interface/bridge' in last_file:
-        return os.path.join(PROJECT_ROOT, 'interface', 'bridge')
-    return PROJECT_ROOT
-
 def run_test_suite(test_type='quick'):
     """
     Execute la suite de tests et retourne (success, output).
     test_type: 'quick' (tests rapides) ou 'full' (tous les tests).
     """
-    test_dir = _get_js_test_dir()
-
-    # Si pas de package.json dans le dossier de test, on ne peut pas tester (ex: JSON data files)
-    if not os.path.exists(os.path.join(test_dir, 'package.json')):
-        return True, "Tests ignores (aucun package.json trouve)"
-
     try:
+        # Essayer npm test d'abord
         if test_type == 'quick':
-            cmd = ['npm', 'test', '--', os.path.basename(_last_fixed_file())]
+            cmd = ['npm', 'test', '--', '--testPathPattern', os.path.basename(_last_fixed_file())]
         else:
             cmd = ['npm', 'test']
 
         result = subprocess.run(
             cmd,
             capture_output=True, text=True, timeout=120,
-            cwd=test_dir
+            cwd=PROJECT_ROOT
         )
         return result.returncode == 0, result.stdout[-500:] + result.stderr[-500:]
     except (FileNotFoundError, subprocess.TimeoutExpired):
@@ -102,7 +89,7 @@ def run_test_suite(test_type='quick'):
         result = subprocess.run(
             ['npx', 'vitest', 'run', '--reporter=json'],
             capture_output=True, text=True, timeout=120,
-            cwd=test_dir
+            cwd=PROJECT_ROOT
         )
         return result.returncode == 0, result.stdout[-500:] + result.stderr[-500:]
     except (FileNotFoundError, subprocess.TimeoutExpired):

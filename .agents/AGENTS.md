@@ -20,14 +20,10 @@
 
 - **Transparence des erreurs** : Le Global Error Handler du backend doit toujours exposer le message d'erreur réel (err.message) au frontend dans le champ principal 'error' renvoyé en JSON. Ne jamais masquer une erreur métier interceptée derrière un message générique statique.
 
-- **Service Worker SPA Caching (Blank Screen Prevention)** : Ne jamais utiliser une stratégie "Cache-First" (qui retourne toujours la réponse du cache en priorité) pour l'"index.html" d'une Single Page Application (SPA, par exemple React + Vite). Lors du déploiement d'une nouvelle version, l'ancien HTML cherchera des bundles JS supprimés, causant un crash silencieux (écran blanc/noir). Utiliser TOUJOURS une stratégie "Network-First" (avec fallback vers le cache) pour "index.html" afin que l'application reçoive toujours la dernière version du build. **ATTENTION (Workbox/Vite-PWA)** : Configurer `runtimeCaching` ne suffit pas. Il faut impérativement retirer `html` des `globPatterns` de précache (`globPatterns: ['**/*.{js,css,ico,png,svg}']`), car le précache outrepasse les règles dynamiques et agit comme un Cache-First inaltérable.
+- **Service Worker SPA Caching (Blank Screen Prevention)** : Ne jamais utiliser une stratÃ©gie "Cache-First" (qui retourne toujours la rÃ©ponse du cache en prioritÃ©) pour l'"index.html" d'une Single Page Application (SPA, par exemple React + Vite). Lors du dÃ©ploiement d'une nouvelle version, l'ancien HTML cherchera des bundles JS supprimÃ©s, causant un crash silencieux (Ã©cran blanc/noir). Utiliser TOUJOURS une stratÃ©gie "Network-First" (avec fallback vers le cache) pour "index.html" afin que l'application reÃ§oive toujours la derniÃ¨re version du build.
 
 
 - **DÃ©ploiement systÃ©matique (Build & Push)** : AprÃ¨s avoir terminÃ© un bloc logique de modifications sur le projet (surtout pour l'interface web), exÃ©cuter TOUJOURS "npm run build" dans le rÃ©pertoire appropriÃ©, puis crÃ©er un commit ("git commit") clair et le pousser ("git push"). Ne jamais considÃ©rer une tÃ¢che comme achevÃ©e tant que le code n'est pas compilÃ© et sauvegardÃ© sur le dÃ©pÃ´t distant.
-
-- **Anti-Spam UI (Double Submission Prevention)** : Tout bouton déclenchant une sauvegarde de données (addHistoriqueEntry, appels API POST) DOIT impérativement inclure un mécanisme de verrouillage immédiat et synchrone (ex: state `isSaving` ou verrouillage par référence `useRef`) pour empêcher les doublons causés par un double-clic involontaire ou une latence réseau.
-
-- **UX Feedback (Fermeture post-validation)** : Lorsqu'un utilisateur valide ou termine une tâche via un composant superposé (comme un Chronomètre Global, une Modal, ou un Overlay), le composant DOIT se fermer ou disparaître visuellement de l'écran de manière immédiate (ex: `return null` ou `setIsOpen(false)`). Le simple fait de remettre l'état interne à zéro n'est pas suffisant comme feedback visuel.
 
 
 <RULE[project_deployment]>

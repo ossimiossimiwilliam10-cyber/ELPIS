@@ -1,0 +1,541 @@
+"""
+ELPIS Immune System — Multi-Strategy Scanners
+==============================================
+6 strategies de detection :
+1. REGEX         — patterns ligne par ligne (compatible v2)
+2. MULTI_LINE    — patterns qui traversent les lignes
+3. IMPORT_GRAPH  — detection d'imports circulaires
+4. BOUNDARY      — analyse de frontieres (nesting, fonction length)
+5. TEST_PAIRING  — verification que chaque source a un fichier de test
+6. STRUCTURAL    — patterns architecturaux (layer violations)
+"""
+
+import re
+import os
+from collections import defaultdict
+
+# ---------------------------------------------------------------------------
+# Strategy 1: REGEX (line-by-line, V2 compatible)
+# ---------------------------------------------------------------------------
+
+def scan_regex(lines, file_rel_path, filename, rules):
+    """
+    Scanner regex ligne par ligne. C'est le scanner historique v2.
+    Retourne la liste des anomalies avec metadonnees de fix.
+    """
+    anomalies = []
+
+    for rule in rules:
+        # Skip les regles qui utilisent d'autres strategies
+        detection = rule.get('detection_strategy')
+        if detection and detection != 'regex':
+            continue
+
+        # Verifier le file_pattern
+        file_pat = rule.get('file_pattern', '.*')
+        if not re.search(file_pat, filename):
+            continue
+
+        # Verifier l'exclusion — teste sur le chemin relatif COMPLET
+        exclude_pat = rule.get('exclude_pattern')
+        if exclude_pat and re.search(exclude_pat, file_rel_path):
+            continue
+
+        # Skip les regles sans patterns ou avec patterns speciaux
+        patterns = rule.get('patterns', [rule.get('pattern', '')])
+        if not patterns or patterns[0] in ('CIRCULAR_DETECTED', 'LAYER_VIOLATION',
+                                            'FILE_LINE_COUNT_CHECK', 'FUNCTION_LENGTH_CHECK',
+                                            'NESTING_DEPTH_CHECK', 'TEST_COVERAGE_CHECK'):
+            continue
+
+        multi_line = rule.get('multi_line', False)
+
+        if multi_line:
+            # Scanner le fichier entier comme une seule string
+            full_text = ''.join(lines)
+            for pattern in patterns:
+                if not pattern:
+                    continue
+                try:
+                    compiled = re.compile(pattern, re.DOTALL | re.MULTILINE)
+                    for match in compiled.finditer(full_text):
+                        # Trouver le numero de ligne
+                        line_num = full_text[:match.start()].count('\n') + 1
+                        anomaly = _build_anomaly(rule, file_rel_path, line_num, match.group(0).strip()[:200])
+                        anomalies.append(anomaly)
+                except re.error:
+                    continue  # Skip les patterns invalides
+        else:
+            # Scanner ligne par ligne
+            for i, line in enumerate(lines):
+                for pattern in patterns:
+                    if not pattern:
+                        continue
+                    try:
+                        if re.search(pattern, line):
+                            anomaly = _build_anomaly(rule, file_rel_path, i + 1, line.rstrip('\n')[:200])
+                            anomalies.append(anomaly)
+                            break  # Une seule anomalie par ligne par regle
+                    except re.error:
+                        continue
+
+    return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Strategy 2: IMPORT GRAPH (circular dependency detection)
+# ---------------------------------------------------------------------------
+
+def scan_import_graph(all_files_data, rules):
+    """
+    Construit un graphe d'imports et detecte les cycles.
+    all_files_data: dict { rel_path: [imported_modules] }
+    """
+    anomalies = []
+    circular_rules = [r for r in rules if r.get('detection_strategy') == 'import_graph']
+
+    if not circular_rules:
+        return anomalies
+
+    # Construire le graphe
+    graph = defaultdict(set)
+    for filepath, imports in all_files_data.items():
+        for imp in imports:
+            # Resoudre l'import relatif vers un chemin absolu
+            resolved = _resolve_import(filepath, imp, all_files_data.keys())
+            if resolved:
+                graph[filepath].add(resolved)
+
+    # DFS pour detecter les cycles
+    visited = set()
+    rec_stack = set()
+
+    def dfs(node, path):
+        visited.add(node)
+        rec_stack.add(node)
+
+        for neighbor in graph.get(node, set()):
+            if neighbor not in visited:
+                cycle = dfs(neighbor, path + [node])
+                if cycle:
+                    return cycle
+            elif neighbor in rec_stack:
+                # Cycle trouve
+                cycle_path = path + [node, neighbor]
+                return cycle_path
+
+        rec_stack.discard(node)
+        return None
+
+    for node in graph:
+        if node not in visited:
+            cycle = dfs(node, [])
+            if cycle:
+                # Trouver la regle de detection d'imports circulaires
+                for rule in circular_rules:
+                    anomaly = {
+                        'rule_id': rule['id'],
+                        'severity': rule['severity'],
+                        'description': rule['description'],
+                        'category': rule.get('category', 'ARCHITECTURE'),
+                        'file': cycle[0],
+                        'line': 1,
+                        'code_snippet': f'Cycle: {" -> ".join(cycle)}',
+                        '_fixable': False,
+                        '_escalation_message': rule.get('escalation_message', '')
+                    }
+                    anomalies.append(anomaly)
+                break  # Un seul cycle suffit pour declencher l'alerte
+
+    return anomalies
+
+
+def _resolve_import(current_file, import_path, all_files):
+    """Resout un import relatif en chemin de fichier absolu."""
+    current_dir = os.path.dirname(current_file)
+    resolved = os.path.normpath(os.path.join(current_dir, import_path))
+
+    # Chercher avec differentes extensions
+    for ext in ['', '.js', '.jsx', '.ts', '.tsx', '.py', '/index.js', '/index.jsx']:
+        candidate = resolved + ext
+        candidate_norm = candidate.replace('\\', '/')
+        for f in all_files:
+            if f.replace('\\', '/') == candidate_norm:
+                return f
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Strategy 3: STRUCTURAL (function boundaries, nesting, file size)
+# ---------------------------------------------------------------------------
+
+def scan_structural(lines, file_rel_path, filename, rules):
+    """
+    Analyse structurelle : longueur de fonction, nesting depth, taille de fichier.
+    """
+    anomalies = []
+
+    for rule in rules:
+        detection = rule.get('detection_strategy')
+
+        if detection == 'function_boundaries':
+            anomalies.extend(_check_function_length(lines, file_rel_path, filename, rule))
+
+        elif detection == 'nesting_analysis':
+            anomalies.extend(_check_nesting_depth(lines, file_rel_path, filename, rule))
+
+        # File size check (utilise le champ threshold_lines si present)
+        if rule.get('threshold_lines') and len(lines) > rule['threshold_lines']:
+            file_pat = rule.get('file_pattern', '.*')
+            if re.search(file_pat, filename):
+                exclude_pat = rule.get('exclude_pattern')
+                if not (exclude_pat and re.search(exclude_pat, file_rel_path)):
+                    anomaly = _build_anomaly(rule, file_rel_path, 1,
+                                             f'{len(lines)} lignes (limite: {rule["threshold_lines"]})')
+                    anomalies.append(anomaly)
+
+    return anomalies
+
+
+def _check_function_length(lines, file_rel_path, filename, rule):
+    """Detecte les fonctions qui depassent le seuil de lignes."""
+    anomalies = []
+    threshold = rule.get('threshold_lines', 50)
+    ext = os.path.splitext(filename)[1].lower()
+
+    # Patterns pour detecter le debut de fonction selon le langage
+    if ext in ('.js', '.jsx', '.ts', '.tsx'):
+        func_start_pattern = re.compile(
+            r'^\s*(export\s+)?(async\s+)?(function\s+\w+|const\s+\w+\s*=\s*(\([^)]*\)|async\s*\()\s*=>|(\w+)\s*=\s*(\([^)]*\)|async\s*\()\s*=>|\w+\s*\([^)]*\)\s*\{)'
+        )
+    elif ext == '.py':
+        func_start_pattern = re.compile(r'^\s*def\s+\w+\s*\(')
+    else:
+        return anomalies
+
+    # Trouver les fonctions et mesurer leur longueur
+    func_starts = []
+    for i, line in enumerate(lines):
+        if func_start_pattern.search(line):
+            func_starts.append(i)
+
+    for start_idx in func_starts:
+        # Compter jusqu'a la prochaine fonction ou fin de fichier
+        # Simplification: compter les lignes jusqu'a une ligne avec 0 indentation ou prochaine fonction
+        end_idx = len(lines)
+        for j in range(start_idx + 1, len(lines)):
+            if func_start_pattern.search(lines[j]):
+                end_idx = j
+                break
+
+        func_length = end_idx - start_idx
+        if func_length > threshold:
+            anomaly = _build_anomaly(rule, file_rel_path, start_idx + 1,
+                                     f'Fonction de {func_length} lignes (limite: {threshold})')
+            anomalies.append(anomaly)
+
+    return anomalies
+
+
+def _check_nesting_depth(lines, file_rel_path, filename, rule):
+    """Analyse la profondeur d'imbrication."""
+    anomalies = []
+    threshold = rule.get('threshold_depth', 4)
+    ext = os.path.splitext(filename)[1].lower()
+
+    if ext in ('.js', '.jsx', '.ts', '.tsx'):
+        openers = re.compile(r'\b(if|for|while|switch|try|with)\b')
+        # Comptage simplifie : mesurer l'indentation
+        for i, line in enumerate(lines):
+            stripped = line.lstrip()
+            if not stripped or stripped.startswith('//') or stripped.startswith('/*') or stripped.startswith('*'):
+                continue
+            indent = len(line) - len(stripped)
+            depth = indent // 2  # Approximation : 2 espaces par niveau
+            if depth > threshold and openers.search(stripped):
+                anomaly = _build_anomaly(rule, file_rel_path, i + 1,
+                                         f'Nesting depth ~{depth} (limite: {threshold})')
+                anomalies.append(anomaly)
+    elif ext == '.py':
+        openers = re.compile(r'\b(if|for|while|with|try|except|def|class)\b')
+        for i, line in enumerate(lines):
+            stripped = line.lstrip()
+            if not stripped or stripped.startswith('#'):
+                continue
+            indent = len(line) - len(stripped)
+            depth = indent // 4  # Python standard: 4 espaces
+            if depth > threshold and openers.search(stripped):
+                anomaly = _build_anomaly(rule, file_rel_path, i + 1,
+                                         f'Nesting depth ~{depth} (limite: {threshold})')
+                anomalies.append(anomaly)
+
+    return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Strategy 4: TEST PAIRING
+# ---------------------------------------------------------------------------
+
+def scan_test_coverage(source_files, rules, project_root):
+    """Verifie que chaque fichier source a un fichier de test correspondant."""
+    anomalies = []
+    pairing_rules = [r for r in rules if r.get('detection_strategy') == 'test_pairing']
+
+    if not pairing_rules:
+        return anomalies
+
+    test_files = {f for f in source_files if '.test.' in f or '.spec.' in f or f.endswith('_test.py')}
+
+    for src_file in source_files:
+        # Skip fichiers de test eux-memes
+        if '.test.' in src_file or '.spec.' in src_file or src_file.endswith('_test.py'):
+            continue
+        # Skip fichiers exclus
+        basename = os.path.basename(src_file)
+        if basename in ('index.js', 'index.jsx', 'main.jsx', 'setupTests.js',
+                         'eslint.config.js', 'vite.config.js', 'playwright.config.js'):
+            continue
+
+        # Verifier si un test correspondant existe
+        has_test = _has_corresponding_test(src_file, test_files)
+
+        if not has_test:
+            for rule in pairing_rules:
+                file_pat = rule.get('file_pattern', '.*')
+                if not re.search(file_pat, basename):
+                    continue
+                exclude_pat = rule.get('exclude_pattern')
+                if exclude_pat and re.search(exclude_pat, basename):
+                    continue
+
+                anomaly = _build_anomaly(rule, src_file, 1,
+                                         f'Aucun fichier de test pour {basename}')
+                anomalies.append(anomaly)
+
+    return anomalies
+
+
+def _has_corresponding_test(src_file, test_files):
+    """Verifie si un fichier de test correspond a src_file."""
+    base = os.path.splitext(src_file)[0]
+    possible_tests = [
+        f'{base}.test.js', f'{base}.test.jsx', f'{base}.test.ts', f'{base}.test.tsx',
+        f'{base}.spec.js', f'{base}.spec.jsx', f'{base}_test.py',
+        f'{os.path.dirname(src_file)}/__tests__/{os.path.basename(src_file)}'
+    ]
+    for pt in possible_tests:
+        norm = pt.replace('\\', '/')
+        for tf in test_files:
+            if tf.replace('\\', '/') == norm:
+                return True
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Strategy 5: LAYER BOUNDARY (architectural violations)
+# ---------------------------------------------------------------------------
+
+def scan_layer_boundaries(all_files_data, rules):
+    """
+    Verifie les violations de frontieres architecturales.
+    all_files_data: dict { rel_path: [imported_modules] }
+    """
+    anomalies = []
+    boundary_rules = [r for r in rules if r.get('detection_strategy') == 'layer_boundary']
+
+    if not boundary_rules:
+        return anomalies
+
+    for rule in boundary_rules:
+        layer_rules = rule.get('layer_rules', {})
+        if not layer_rules:
+            continue
+
+        for filepath, imports in all_files_data.items():
+            # Determiner le layer du fichier source
+            source_layer = _get_layer(filepath, layer_rules.keys())
+
+            if not source_layer:
+                continue
+
+            allowed = set(layer_rules.get(source_layer, []))
+
+            for imp in imports:
+                target_layer = _get_layer(imp, layer_rules.keys())
+                if target_layer and target_layer not in allowed and target_layer != source_layer:
+                    anomaly = {
+                        'rule_id': rule['id'],
+                        'severity': rule['severity'],
+                        'description': rule['description'],
+                        'category': rule.get('category', 'ARCHITECTURE'),
+                        'file': filepath,
+                        'line': 1,
+                        'code_snippet': f'{source_layer} -> {target_layer}: import "{imp}"',
+                        '_fixable': False,
+                        '_escalation_message': rule.get('escalation_message', '')
+                    }
+                    anomalies.append(anomaly)
+
+    return anomalies
+
+
+def _get_layer(filepath, layers):
+    """Determine le layer architectural d'un fichier."""
+    path_lower = filepath.lower()
+    for layer in layers:
+        if f'/{layer}/' in f'/{path_lower}' or path_lower.startswith(f'{layer}/'):
+            return layer
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Strategy 6: EXTRACT IMPORTS (for import graph and layer analysis)
+# ---------------------------------------------------------------------------
+
+def extract_imports(filepath, lines):
+    """Extrait la liste des imports d'un fichier JS/TS/Python."""
+    imports = []
+    ext = os.path.splitext(filepath)[1].lower()
+
+    if ext in ('.js', '.jsx', '.ts', '.tsx'):
+        import_re = re.compile(r"""(?:import\s+(?:(?:\{[^}]*\}|[^'"\s]+)\s*,?\s*)*\s*from\s*['"]([^'"]+)['"]|require\s*\(['"]([^'"]+)['"]\))""")
+        for line in lines:
+            for match in import_re.finditer(line):
+                imp = match.group(1) or match.group(2)
+                if imp and not imp.startswith('@') and not imp.startswith('node:'):
+                    imports.append(imp)
+
+    elif ext == '.py':
+        import_re = re.compile(r"""(?:from\s+(\S+)\s+import|import\s+(\S+))""")
+        for line in lines:
+            for match in import_re.finditer(line):
+                imp = match.group(1) or match.group(2)
+                if imp and not imp.startswith('__'):
+                    imports.append(imp)
+
+    return imports
+
+
+# ---------------------------------------------------------------------------
+# Unified Scanner Entry Point
+# ---------------------------------------------------------------------------
+
+def scan_custom_python(lines, rel_path, filename, rules, project_root):
+    anomalies = []
+
+    for rule in rules:
+        if rule.get('detection_strategy') != 'custom_python':
+            continue
+
+        file_pat = rule.get('file_pattern', '.*')
+        if not re.search(file_pat, filename):
+            continue
+
+        patterns = rule.get('patterns', [])
+        if 'scan_pwa_static_exclusions' in patterns:
+            # Code specifique au scan PWA
+            server_path = os.path.join(project_root, 'interface', 'bridge', 'server.js')
+            if not os.path.exists(server_path):
+                continue
+
+            with open(server_path, 'r', encoding='utf-8', errors='ignore') as f:
+                server_content = f.read()
+
+            # Extraire app.use('/music', express.static(...))
+            static_routes = re.findall(r"app\.use\(['\"](/[^'\"]+)['\"]\s*,\s*express\.static", server_content)
+
+            content = "".join(lines)
+            for route in static_routes:
+                # ex: route='/music', target: /^\/music\//
+                # the string in vite.config.js is exactly /^\/music\//
+                expected = f"/^\\\\{route}\\\\//"
+                if expected not in content:
+                    anomalies.append(_build_anomaly(
+                        rule, rel_path, 1,
+                        f"Route statique '{route}' manquante dans navigateFallbackDenylist de la PWA."
+                    ))
+
+    return anomalies
+
+def run_all_scanners(filepath, rel_path, lines, rules, all_files_data, source_files, project_root):
+    """
+    Point d'entree unifie : execute tous les scanners applicables et retourne
+    la liste combinee d'anomalies.
+    """
+    filename = os.path.basename(filepath)
+    anomalies = []
+
+    # 1. Scanner regex (inclut multi-line)
+    regex_anomalies = scan_regex(lines, rel_path, filename, rules)
+    anomalies.extend(regex_anomalies)
+
+    # 2. Scanner structurel (function length, nesting, file size)
+    structural_anomalies = scan_structural(lines, rel_path, filename, rules)
+    anomalies.extend(structural_anomalies)
+
+    # 3. Scanner custom python
+    custom_anomalies = scan_custom_python(lines, rel_path, filename, rules, project_root)
+    anomalies.extend(custom_anomalies)
+
+    # 4. Marquer les anomalies fixables
+    for anomaly in anomalies:
+        rule_id = anomaly['rule_id']
+        rule = _find_rule(rules, rule_id)
+        if rule:
+            from engine import should_auto_fix
+            anomaly['_fixable'] = should_auto_fix(rule)
+            anomaly['_escalation_message'] = rule.get('escalation_message', '')
+            anomaly['category'] = rule.get('category', 'UNKNOWN')
+        else:
+            anomaly['_fixable'] = False
+            anomaly['_escalation_message'] = ''
+            anomaly['category'] = 'UNKNOWN'
+
+    return anomalies, len(lines)
+
+
+def run_global_scanners(rules, all_files_data, source_files, project_root):
+    """
+    Execute les scanners globaux (import graph, layer boundaries, test coverage)
+    qui necessitent une vue d'ensemble de tous les fichiers.
+    """
+    anomalies = []
+
+    # Import graph (circular dependencies)
+    anomalies.extend(scan_import_graph(all_files_data, rules))
+
+    # Layer boundaries
+    anomalies.extend(scan_layer_boundaries(all_files_data, rules))
+
+    # Test coverage
+    anomalies.extend(scan_test_coverage(source_files, rules, project_root))
+
+    return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _build_anomaly(rule, file_path, line_num, snippet):
+    """Construit un dictionnaire d'anomalie standardise."""
+    return {
+        'rule_id': rule['id'],
+        'severity': rule['severity'],
+        'description': rule['description'],
+        'category': rule.get('category', 'UNKNOWN'),
+        'file': file_path,
+        'line': line_num,
+        'code_snippet': snippet,
+        'cwe_ref': rule.get('cwe_ref'),
+        'wcag_ref': rule.get('wcag_ref'),
+        '_fixable': False,   # Sera mis a jour par l'engine
+        '_escalation_message': rule.get('escalation_message', ''),
+        '_suppression_comment': rule.get('suppression_comment', '')
+    }
+
+def _find_rule(rules, rule_id):
+    for r in rules:
+        if r.get('id') == rule_id:
+            return r
+    return None

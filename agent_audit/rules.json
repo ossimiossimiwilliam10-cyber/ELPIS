@@ -200,27 +200,8 @@
             "suppression_comment": "AUDIT_SUPPRESS:NO_CONSOLE"
         },
         "=============================================",
-        "CATEGORIE: PERFORMANCE (6 regles)",
+        "CATEGORIE: PERFORMANCE (5 regles)",
         "=============================================",
-        {
-            "id": "NO_DUPLICATE_HISTORY_ENTRIES",
-            "category": "PERFORMANCE",
-            "severity": "warning",
-            "description": "Les entrees d'historique dupliquees (meme titre, meme action, timestamp proche) surchargent la base de donnees et faussent les statistiques. Generalement cause par un double-clic sur l'UI.",
-            "patterns": [
-                "(?i)\"titre\"\\s*:\\s*\"([^\"]+)\".*?\"titre\"\\s*:\\s*\"\\1\""
-            ],
-            "multi_line": true,
-            "file_pattern": "espoir_historique\\.json$",
-            "exclude_pattern": "null",
-            "auto_fix_strategy": "custom_python_fixer",
-            "requires_human": false,
-            "fix_confidence": 95,
-            "false_positive_risk": "low",
-            "cwe_ref": "CWE-834",
-            "escalation_message": "Doublons detectes dans l'historique. Suppression automatique en cours.",
-            "suppression_comment": "AUDIT_SUPPRESS:NO_DUPLICATE_HISTORY_ENTRIES"
-        },
         {
             "id": "LARGE_IMPORT_SIDE_EFFECT",
             "category": "PERFORMANCE",
@@ -933,24 +914,6 @@
             "fix_confidence": 0,
             "false_positive_risk": "low",
             "suppression_comment": "AUDIT_SUPPRESS:PWA_STATIC"
-        },
-        {
-            "id": "NO_DOUBLE_SUBMISSION",
-            "category": "REACT_BEST_PRACTICES",
-            "severity": "warning",
-            "description": "Appel a addHistoriqueEntry ou API POST sans verrouillage synchrone. Risque de doublons en cas de double-clic ou latence.",
-            "patterns": [
-                "(?i)addHistoriqueEntry\\s*\\("
-            ],
-            "multi_line": false,
-            "file_pattern": "\\.(js|jsx|tsx)$",
-            "exclude_pattern": "(store|engine|fixers|main)\\.(js|py)$",
-            "auto_fix_strategy": "none",
-            "requires_human": true,
-            "fix_confidence": 0,
-            "false_positive_risk": "medium",
-            "escalation_message": "Verifier que cet appel est protege par un useRef(new Set()) ou un state isSaving = true.",
-            "suppression_comment": "AUDIT_SUPPRESS:DOUBLE_SUBMIT"
         }
     ]
 }
