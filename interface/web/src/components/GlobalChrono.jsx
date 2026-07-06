@@ -2,14 +2,46 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import useStore, { useChronoStore } from '../store';
+import { useToast } from '../ToastProvider';
 
 export default function GlobalChrono() {
   const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useChronoStore();
   const { isRunning, elapsedSeconds, titre, matiereNom, exoId, type } = globalChrono;
+  const toast = useToast();
 
   const [isVisible, setIsVisible] = useState(true);
   const [pipWindow, setPipWindow] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleSave = () => {
+    if (!exoId) return;
+    const addHistoriqueEntry = useStore.getState().addHistoriqueEntry;
+    
+    // Convertir les secondes en minutes (minimum 1 minute)
+    const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
+    
+    addHistoriqueEntry({
+      type: type || 'PERSO',
+      titre: titre || 'Activité Libre',
+      matiere: matiereNom || '',
+      action: 'Terminé',
+      dureeMinutes: minutes
+    });
+    
+    toast.success(`Activité enregistrée (${minutes} min) !`);
+    
+    import('canvas-confetti').then((module) => {
+      const confetti = module.default;
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#818CF8', '#34D399', '#FBBF24']
+      });
+    });
+
+    resetGlobalChrono();
+  };
 
   // Timer effect
   useEffect(() => {
@@ -225,6 +257,30 @@ export default function GlobalChrono() {
           ↺
         </button>
 
+        {/* Terminer & Sauvegarder */}
+        <button
+          onClick={handleSave}
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.05)',
+            color: 'var(--text-secondary, #94A3B8)',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s',
+          }}
+          title="Terminer & Sauvegarder"
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(52,211,153,0.15)'; e.currentTarget.style.borderColor = 'rgba(52,211,153,0.4)'; e.currentTarget.style.color = '#34D399'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--text-secondary, #94A3B8)'; }}
+        >
+          ✅
+        </button>
+
         {/* Play/Pause - main action */}
         <button
           onClick={toggleGlobalChrono}
@@ -384,6 +440,22 @@ export default function GlobalChrono() {
               title="Réinitialiser"
             >
               ↺
+            </button>
+
+            <button
+              onClick={handleSave}
+              style={{
+                background: 'none', border: 'none',
+                color: 'var(--text-secondary)', cursor: 'pointer',
+                fontSize: '0.9rem', padding: '4px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: '6px', transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#34D399'; e.currentTarget.style.background = 'rgba(52,211,153,0.1)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'none'; }}
+              title="Terminer & Sauvegarder"
+            >
+              ✅
             </button>
 
             {typeof window !== 'undefined' && 'documentPictureInPicture' in window && (

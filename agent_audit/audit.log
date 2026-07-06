@@ -1525,3 +1525,22 @@
 [2026-07-06 19:40:19] [WARNING]   [!] Performance degradee: 9.0 fichiers/s
 [2026-07-06 19:40:19] [INFO]   [i] 35 regles inactives. Verifier si elles sont encore pertinentes.
 [2026-07-06 19:40:19] [INFO] Audit termine en 21.9s. Health Score projet: 0/100
+[2026-07-06 19:52:57] [INFO] ============================================================
+[2026-07-06 19:52:57] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 19:52:57] [INFO] ============================================================
+[2026-07-06 19:52:57] [INFO] Regles chargees: 46 (version 3.1.0)
+[2026-07-06 19:52:57] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 19:52:57] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 19:52:57] [INFO] Phase 1 terminee: 196 fichiers, 1580657 lignes
+[2026-07-06 19:52:57] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 19:52:57] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 19:52:57] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 19:53:18] [INFO]   Passe 1: 1438 anomalies, 0 corrections
+[2026-07-06 19:53:18] [INFO]   Health Score: 0/100
+[2026-07-06 19:53:18] [INFO]   Anomalies: 1490 (C:15 W:524 I:951)
+[2026-07-06 19:53:18] [INFO]   Corrections: 0
+[2026-07-06 19:53:18] [INFO]   Escalades: 1449
+[2026-07-06 19:53:18] [INFO] Agent Health: WARNING
+[2026-07-06 19:53:18] [WARNING]   [!] Performance degradee: 9.0 fichiers/s
+[2026-07-06 19:53:18] [INFO]   [i] 35 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 19:53:18] [INFO] Audit termine en 21.8s. Health Score projet: 0/100

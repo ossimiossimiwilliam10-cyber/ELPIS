@@ -1,8 +1,8 @@
 {
-  "last_scan": "2026-07-06T19:40:19.729312",
+  "last_scan": "2026-07-06T19:53:18.799673",
   "mode": "SCAN + CORRECTION",
   "files_scanned": 196,
-  "total_lines_of_code": 1580640,
+  "total_lines_of_code": 1580657,
   "total_anomalies": 1490,
   "total_corrections": 0,
   "files_corrected": 0,
@@ -386,7 +386,7 @@
   },
   "escalations": [
     {
-      "timestamp": "2026-07-06T19:39:58.205700",
+      "timestamp": "2026-07-06T19:52:57.370597",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -399,7 +399,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.206574",
+      "timestamp": "2026-07-06T19:52:57.371880",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -412,7 +412,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.207465",
+      "timestamp": "2026-07-06T19:52:57.373465",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -425,7 +425,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.208133",
+      "timestamp": "2026-07-06T19:52:57.374268",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -438,7 +438,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.209339",
+      "timestamp": "2026-07-06T19:52:57.375106",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -451,7 +451,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.210458",
+      "timestamp": "2026-07-06T19:52:57.375817",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -464,7 +464,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.211024",
+      "timestamp": "2026-07-06T19:52:57.376450",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -477,7 +477,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.211655",
+      "timestamp": "2026-07-06T19:52:57.377144",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -490,7 +490,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.212216",
+      "timestamp": "2026-07-06T19:52:57.377656",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -503,7 +503,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.212744",
+      "timestamp": "2026-07-06T19:52:57.378263",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -516,7 +516,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.213379",
+      "timestamp": "2026-07-06T19:52:57.379024",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -529,7 +529,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.213914",
+      "timestamp": "2026-07-06T19:52:57.379541",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -542,7 +542,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.214441",
+      "timestamp": "2026-07-06T19:52:57.379998",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -555,7 +555,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.214939",
+      "timestamp": "2026-07-06T19:52:57.380417",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -568,7 +568,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.215398",
+      "timestamp": "2026-07-06T19:52:57.380858",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -581,7 +581,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.216096",
+      "timestamp": "2026-07-06T19:52:57.381309",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -594,7 +594,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.216609",
+      "timestamp": "2026-07-06T19:52:57.381956",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -607,7 +607,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.217064",
+      "timestamp": "2026-07-06T19:52:57.382603",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -620,7 +620,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.217574",
+      "timestamp": "2026-07-06T19:52:57.383115",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -633,7 +633,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.218079",
+      "timestamp": "2026-07-06T19:52:57.384016",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -646,7 +646,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.218539",
+      "timestamp": "2026-07-06T19:52:57.384506",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -659,7 +659,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.219005",
+      "timestamp": "2026-07-06T19:52:57.384941",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -672,7 +672,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.219473",
+      "timestamp": "2026-07-06T19:52:57.385438",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -685,7 +685,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.219932",
+      "timestamp": "2026-07-06T19:52:57.385945",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -698,7 +698,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.220444",
+      "timestamp": "2026-07-06T19:52:57.386404",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -711,7 +711,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.220943",
+      "timestamp": "2026-07-06T19:52:57.386841",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -724,7 +724,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.221445",
+      "timestamp": "2026-07-06T19:52:57.387356",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -737,7 +737,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.221941",
+      "timestamp": "2026-07-06T19:52:57.388026",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -750,7 +750,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.222388",
+      "timestamp": "2026-07-06T19:52:57.389112",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -763,7 +763,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.222889",
+      "timestamp": "2026-07-06T19:52:57.389722",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -776,7 +776,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.223360",
+      "timestamp": "2026-07-06T19:52:57.390417",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -789,7 +789,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.223918",
+      "timestamp": "2026-07-06T19:52:57.391217",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -802,7 +802,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.224362",
+      "timestamp": "2026-07-06T19:52:57.391866",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -815,7 +815,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.224845",
+      "timestamp": "2026-07-06T19:52:57.392530",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -828,7 +828,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.225347",
+      "timestamp": "2026-07-06T19:52:57.393135",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -841,7 +841,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.226014",
+      "timestamp": "2026-07-06T19:52:57.393626",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -854,7 +854,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.226630",
+      "timestamp": "2026-07-06T19:52:57.394100",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -867,7 +867,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.227490",
+      "timestamp": "2026-07-06T19:52:57.394769",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -880,7 +880,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.228813",
+      "timestamp": "2026-07-06T19:52:57.395331",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -893,7 +893,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.229856",
+      "timestamp": "2026-07-06T19:52:57.395884",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -906,7 +906,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.231305",
+      "timestamp": "2026-07-06T19:52:57.396678",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -919,7 +919,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.233387",
+      "timestamp": "2026-07-06T19:52:57.397144",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -932,7 +932,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.234977",
+      "timestamp": "2026-07-06T19:52:57.397582",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -945,7 +945,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.236493",
+      "timestamp": "2026-07-06T19:52:57.398033",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -958,7 +958,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.238246",
+      "timestamp": "2026-07-06T19:52:57.398533",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -971,7 +971,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.240088",
+      "timestamp": "2026-07-06T19:52:57.398995",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -984,7 +984,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.241844",
+      "timestamp": "2026-07-06T19:52:57.399389",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -997,7 +997,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.243794",
+      "timestamp": "2026-07-06T19:52:57.399803",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1010,7 +1010,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.246063",
+      "timestamp": "2026-07-06T19:52:57.400193",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1023,7 +1023,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.254708",
+      "timestamp": "2026-07-06T19:52:57.404492",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1036,7 +1036,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.256376",
+      "timestamp": "2026-07-06T19:52:57.405131",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1049,7 +1049,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.257980",
+      "timestamp": "2026-07-06T19:52:57.405710",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1062,7 +1062,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.259204",
+      "timestamp": "2026-07-06T19:52:57.406206",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1075,7 +1075,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.260546",
+      "timestamp": "2026-07-06T19:52:57.406746",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1088,7 +1088,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.262166",
+      "timestamp": "2026-07-06T19:52:57.407265",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1101,7 +1101,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.263850",
+      "timestamp": "2026-07-06T19:52:57.407779",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1114,7 +1114,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.265458",
+      "timestamp": "2026-07-06T19:52:57.408269",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1127,7 +1127,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.267535",
+      "timestamp": "2026-07-06T19:52:57.408758",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1140,7 +1140,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.269908",
+      "timestamp": "2026-07-06T19:52:57.409269",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1153,7 +1153,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.271682",
+      "timestamp": "2026-07-06T19:52:57.409829",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1166,7 +1166,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.274185",
+      "timestamp": "2026-07-06T19:52:57.410401",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1179,7 +1179,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.275746",
+      "timestamp": "2026-07-06T19:52:57.411116",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1192,7 +1192,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.283531",
+      "timestamp": "2026-07-06T19:52:57.415703",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1205,7 +1205,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.285039",
+      "timestamp": "2026-07-06T19:52:57.416402",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1218,7 +1218,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.286586",
+      "timestamp": "2026-07-06T19:52:57.416963",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_TODO_WITHOUT_TICKET",
@@ -1231,7 +1231,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.288629",
+      "timestamp": "2026-07-06T19:52:57.417853",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_TODO_WITHOUT_TICKET",
@@ -1244,7 +1244,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.290225",
+      "timestamp": "2026-07-06T19:52:57.418542",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1257,7 +1257,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.291573",
+      "timestamp": "2026-07-06T19:52:57.419231",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1270,7 +1270,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.292922",
+      "timestamp": "2026-07-06T19:52:57.419965",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1283,7 +1283,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.294175",
+      "timestamp": "2026-07-06T19:52:57.420802",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1296,7 +1296,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.295512",
+      "timestamp": "2026-07-06T19:52:57.421361",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1309,7 +1309,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.296690",
+      "timestamp": "2026-07-06T19:52:57.422025",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1322,7 +1322,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.298016",
+      "timestamp": "2026-07-06T19:52:57.422710",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1335,7 +1335,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.299317",
+      "timestamp": "2026-07-06T19:52:57.423353",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1348,7 +1348,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.300488",
+      "timestamp": "2026-07-06T19:52:57.424003",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1361,7 +1361,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.301489",
+      "timestamp": "2026-07-06T19:52:57.424739",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1374,7 +1374,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.309122",
+      "timestamp": "2026-07-06T19:52:57.429013",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1387,7 +1387,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.310686",
+      "timestamp": "2026-07-06T19:52:57.429755",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1400,7 +1400,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.312001",
+      "timestamp": "2026-07-06T19:52:57.430362",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1413,7 +1413,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.313122",
+      "timestamp": "2026-07-06T19:52:57.430920",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1426,7 +1426,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.314533",
+      "timestamp": "2026-07-06T19:52:57.431439",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1439,7 +1439,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.316601",
+      "timestamp": "2026-07-06T19:52:57.432014",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1452,7 +1452,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.319677",
+      "timestamp": "2026-07-06T19:52:57.432566",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1465,7 +1465,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.320916",
+      "timestamp": "2026-07-06T19:52:57.433056",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1478,7 +1478,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.349565",
+      "timestamp": "2026-07-06T19:52:57.450607",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1491,7 +1491,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.351313",
+      "timestamp": "2026-07-06T19:52:57.451402",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1504,7 +1504,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.353074",
+      "timestamp": "2026-07-06T19:52:57.452015",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1517,7 +1517,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.354650",
+      "timestamp": "2026-07-06T19:52:57.452539",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1530,7 +1530,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.356424",
+      "timestamp": "2026-07-06T19:52:57.453029",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1543,7 +1543,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.357937",
+      "timestamp": "2026-07-06T19:52:57.453514",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1556,7 +1556,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.371466",
+      "timestamp": "2026-07-06T19:52:57.464273",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1569,7 +1569,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.372247",
+      "timestamp": "2026-07-06T19:52:57.465317",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1582,7 +1582,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.372832",
+      "timestamp": "2026-07-06T19:52:57.466173",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1595,7 +1595,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.373355",
+      "timestamp": "2026-07-06T19:52:57.466944",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1608,7 +1608,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.373838",
+      "timestamp": "2026-07-06T19:52:57.467840",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1621,7 +1621,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.374269",
+      "timestamp": "2026-07-06T19:52:57.468737",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1634,7 +1634,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.374731",
+      "timestamp": "2026-07-06T19:52:57.469469",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1647,7 +1647,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.375343",
+      "timestamp": "2026-07-06T19:52:57.470161",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1660,7 +1660,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.375958",
+      "timestamp": "2026-07-06T19:52:57.470780",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1673,7 +1673,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.376548",
+      "timestamp": "2026-07-06T19:52:57.471643",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1686,7 +1686,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.377175",
+      "timestamp": "2026-07-06T19:52:57.472488",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1699,7 +1699,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.377733",
+      "timestamp": "2026-07-06T19:52:57.473266",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1712,7 +1712,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.378783",
+      "timestamp": "2026-07-06T19:52:57.474019",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1725,7 +1725,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.380282",
+      "timestamp": "2026-07-06T19:52:57.474789",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1738,7 +1738,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.381925",
+      "timestamp": "2026-07-06T19:52:57.476206",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1751,7 +1751,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.383491",
+      "timestamp": "2026-07-06T19:52:57.476889",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1764,7 +1764,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.385015",
+      "timestamp": "2026-07-06T19:52:57.477484",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1777,7 +1777,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.386357",
+      "timestamp": "2026-07-06T19:52:57.477989",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1790,7 +1790,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.387788",
+      "timestamp": "2026-07-06T19:52:57.478556",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1803,7 +1803,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.389245",
+      "timestamp": "2026-07-06T19:52:57.479074",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1816,7 +1816,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.390312",
+      "timestamp": "2026-07-06T19:52:57.479690",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1829,7 +1829,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.391056",
+      "timestamp": "2026-07-06T19:52:57.480211",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1842,7 +1842,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.391713",
+      "timestamp": "2026-07-06T19:52:57.480744",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1855,7 +1855,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.392336",
+      "timestamp": "2026-07-06T19:52:57.481217",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1868,7 +1868,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.393178",
+      "timestamp": "2026-07-06T19:52:57.481626",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1881,7 +1881,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.393999",
+      "timestamp": "2026-07-06T19:52:57.482079",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1894,7 +1894,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.394704",
+      "timestamp": "2026-07-06T19:52:57.482485",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1907,7 +1907,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.395434",
+      "timestamp": "2026-07-06T19:52:57.482872",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1920,7 +1920,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.396073",
+      "timestamp": "2026-07-06T19:52:57.483320",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1933,7 +1933,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.397124",
+      "timestamp": "2026-07-06T19:52:57.483705",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1946,7 +1946,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.398319",
+      "timestamp": "2026-07-06T19:52:57.484092",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1959,7 +1959,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.398913",
+      "timestamp": "2026-07-06T19:52:57.484488",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FILE_SIZE",
@@ -1972,7 +1972,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.399603",
+      "timestamp": "2026-07-06T19:52:57.484879",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1985,7 +1985,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.400266",
+      "timestamp": "2026-07-06T19:52:57.485246",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1998,7 +1998,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.400708",
+      "timestamp": "2026-07-06T19:52:57.485672",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2011,7 +2011,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.401198",
+      "timestamp": "2026-07-06T19:52:57.486084",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2024,7 +2024,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.401911",
+      "timestamp": "2026-07-06T19:52:57.486462",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2037,7 +2037,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.402607",
+      "timestamp": "2026-07-06T19:52:57.486843",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2050,7 +2050,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.403291",
+      "timestamp": "2026-07-06T19:52:57.487238",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2063,7 +2063,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.404049",
+      "timestamp": "2026-07-06T19:52:57.488037",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2076,7 +2076,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.404560",
+      "timestamp": "2026-07-06T19:52:57.489254",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2089,7 +2089,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.405053",
+      "timestamp": "2026-07-06T19:52:57.489934",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2102,7 +2102,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.405522",
+      "timestamp": "2026-07-06T19:52:57.492431",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2115,7 +2115,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.405987",
+      "timestamp": "2026-07-06T19:52:57.493765",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2128,7 +2128,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.406453",
+      "timestamp": "2026-07-06T19:52:57.494499",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2141,7 +2141,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.406903",
+      "timestamp": "2026-07-06T19:52:57.496330",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2154,7 +2154,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.423561",
+      "timestamp": "2026-07-06T19:52:57.513317",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2167,7 +2167,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.424381",
+      "timestamp": "2026-07-06T19:52:57.514067",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2180,7 +2180,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.424998",
+      "timestamp": "2026-07-06T19:52:57.514595",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2193,7 +2193,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.425493",
+      "timestamp": "2026-07-06T19:52:57.515102",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2206,7 +2206,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.425974",
+      "timestamp": "2026-07-06T19:52:57.515708",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2219,7 +2219,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.426440",
+      "timestamp": "2026-07-06T19:52:57.516196",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2232,7 +2232,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.426881",
+      "timestamp": "2026-07-06T19:52:57.516760",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2245,7 +2245,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.427439",
+      "timestamp": "2026-07-06T19:52:57.517230",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2258,7 +2258,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.427935",
+      "timestamp": "2026-07-06T19:52:57.517696",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2271,7 +2271,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.428372",
+      "timestamp": "2026-07-06T19:52:57.518393",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2284,7 +2284,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.428997",
+      "timestamp": "2026-07-06T19:52:57.519822",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2297,7 +2297,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.429904",
+      "timestamp": "2026-07-06T19:52:57.520392",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2310,7 +2310,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.430434",
+      "timestamp": "2026-07-06T19:52:57.520917",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2323,7 +2323,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.430867",
+      "timestamp": "2026-07-06T19:52:57.521440",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2336,7 +2336,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.431331",
+      "timestamp": "2026-07-06T19:52:57.522264",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2349,7 +2349,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.431894",
+      "timestamp": "2026-07-06T19:52:57.523147",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2362,7 +2362,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.433073",
+      "timestamp": "2026-07-06T19:52:57.525564",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2375,7 +2375,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.434732",
+      "timestamp": "2026-07-06T19:52:57.527303",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2388,7 +2388,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.435520",
+      "timestamp": "2026-07-06T19:52:57.529140",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2401,7 +2401,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.436033",
+      "timestamp": "2026-07-06T19:52:57.530743",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2414,7 +2414,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.436491",
+      "timestamp": "2026-07-06T19:52:57.531842",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FILE_SIZE",
@@ -2427,7 +2427,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.436982",
+      "timestamp": "2026-07-06T19:52:57.532802",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2440,7 +2440,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.437436",
+      "timestamp": "2026-07-06T19:52:57.533291",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2453,7 +2453,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.438596",
+      "timestamp": "2026-07-06T19:52:57.533708",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2466,7 +2466,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.439552",
+      "timestamp": "2026-07-06T19:52:57.534173",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2479,7 +2479,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.440558",
+      "timestamp": "2026-07-06T19:52:57.534743",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2492,7 +2492,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.441211",
+      "timestamp": "2026-07-06T19:52:57.535337",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2505,7 +2505,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.441796",
+      "timestamp": "2026-07-06T19:52:57.535943",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2518,7 +2518,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.444912",
+      "timestamp": "2026-07-06T19:52:57.540311",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2531,7 +2531,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.445672",
+      "timestamp": "2026-07-06T19:52:57.541073",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2544,7 +2544,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.446287",
+      "timestamp": "2026-07-06T19:52:57.541727",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2557,7 +2557,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.446886",
+      "timestamp": "2026-07-06T19:52:57.542173",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2570,7 +2570,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.447421",
+      "timestamp": "2026-07-06T19:52:57.542608",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2583,7 +2583,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.447911",
+      "timestamp": "2026-07-06T19:52:57.543022",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2596,7 +2596,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.448620",
+      "timestamp": "2026-07-06T19:52:57.543421",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2609,7 +2609,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.449448",
+      "timestamp": "2026-07-06T19:52:57.543836",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2622,7 +2622,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.449942",
+      "timestamp": "2026-07-06T19:52:57.544294",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2635,7 +2635,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.450431",
+      "timestamp": "2026-07-06T19:52:57.544769",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2648,7 +2648,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.451067",
+      "timestamp": "2026-07-06T19:52:57.545171",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2661,7 +2661,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.451516",
+      "timestamp": "2026-07-06T19:52:57.545582",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2674,7 +2674,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.451948",
+      "timestamp": "2026-07-06T19:52:57.545984",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2687,7 +2687,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.452383",
+      "timestamp": "2026-07-06T19:52:57.546538",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2700,7 +2700,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.452829",
+      "timestamp": "2026-07-06T19:52:57.547190",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2713,7 +2713,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.453279",
+      "timestamp": "2026-07-06T19:52:57.547923",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2726,7 +2726,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.453707",
+      "timestamp": "2026-07-06T19:52:57.548417",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2739,7 +2739,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.454136",
+      "timestamp": "2026-07-06T19:52:57.548815",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2752,7 +2752,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.455386",
+      "timestamp": "2026-07-06T19:52:57.550020",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2765,7 +2765,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.456012",
+      "timestamp": "2026-07-06T19:52:57.550485",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2778,7 +2778,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.457059",
+      "timestamp": "2026-07-06T19:52:57.551638",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2791,7 +2791,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.457524",
+      "timestamp": "2026-07-06T19:52:57.552125",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2804,7 +2804,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.530712",
+      "timestamp": "2026-07-06T19:52:57.625874",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2817,7 +2817,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.532409",
+      "timestamp": "2026-07-06T19:52:57.626749",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2830,7 +2830,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.533371",
+      "timestamp": "2026-07-06T19:52:57.627315",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2843,7 +2843,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.533990",
+      "timestamp": "2026-07-06T19:52:57.628133",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2856,7 +2856,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.534566",
+      "timestamp": "2026-07-06T19:52:57.628634",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2869,7 +2869,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.535029",
+      "timestamp": "2026-07-06T19:52:57.629540",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2882,7 +2882,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.535682",
+      "timestamp": "2026-07-06T19:52:57.630120",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2895,7 +2895,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.536870",
+      "timestamp": "2026-07-06T19:52:57.630848",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2908,7 +2908,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.537687",
+      "timestamp": "2026-07-06T19:52:57.631553",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2921,7 +2921,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.538191",
+      "timestamp": "2026-07-06T19:52:57.632170",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2934,7 +2934,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.538667",
+      "timestamp": "2026-07-06T19:52:57.632952",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2947,7 +2947,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.539163",
+      "timestamp": "2026-07-06T19:52:57.633710",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2960,7 +2960,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.539715",
+      "timestamp": "2026-07-06T19:52:57.634402",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2973,7 +2973,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:39:58.540357",
+      "timestamp": "2026-07-06T19:52:57.635022",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -6619,7 +6619,7 @@
       "description": "Pattern de concatenation SQL vulnerable aux injections. Utiliser des requetes parametrees (prepared statements).",
       "category": "SECURITY",
       "file": "interface\\bridge\\server.js",
-      "line": 180,
+      "line": 188,
       "code_snippet": "update config\napp.post('/api/config', (req, res) => {\n  try {\n    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {\n      return res.status(400).json({ error: \"Données de con",
       "cwe_ref": "CWE-89",
       "wcag_ref": null,
@@ -6633,7 +6633,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 92,
+      "line": 100,
       "code_snippet": "    fs.writeFileSync(tmpPath, data, 'utf8');",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6647,7 +6647,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 98,
+      "line": 106,
       "code_snippet": "      fs.unlinkSync(tmpPath);",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6661,7 +6661,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 103,
+      "line": 111,
       "code_snippet": "    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch {}",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6675,7 +6675,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 111,
+      "line": 119,
       "code_snippet": "    if (!fs.existsSync(BACKUPS_DIR)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6689,7 +6689,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 112,
+      "line": 120,
       "code_snippet": "      fs.mkdirSync(BACKUPS_DIR, { recursive: true });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6703,7 +6703,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 126,
+      "line": 134,
       "code_snippet": "      if (!fs.existsSync(src)) continue;",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6717,7 +6717,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 128,
+      "line": 136,
       "code_snippet": "      if (!fs.existsSync(dest)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6731,7 +6731,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 136,
+      "line": 144,
       "code_snippet": "      const existing = fs.readdirSync(BACKUPS_DIR)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6745,7 +6745,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 141,
+      "line": 149,
       "code_snippet": "        fs.unlinkSync(path.join(BACKUPS_DIR, oldest));",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6759,7 +6759,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 152,
+      "line": 160,
       "code_snippet": "if (!fs.existsSync(DOCUMENTS_DIR)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6773,7 +6773,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 153,
+      "line": 161,
       "code_snippet": "  fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6787,7 +6787,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 238,
+      "line": 246,
       "code_snippet": "    if (!fs.existsSync(AUDIT_FILE)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6801,7 +6801,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 241,
+      "line": 249,
       "code_snippet": "    const data = fs.readFileSync(AUDIT_FILE, 'utf8');",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6815,7 +6815,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 302,
+      "line": 310,
       "code_snippet": "    if (fs.existsSync(HISTORIQUE_FILE)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6829,7 +6829,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 303,
+      "line": 311,
       "code_snippet": "      const data = fs.readFileSync(HISTORIQUE_FILE, 'utf8');",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6843,7 +6843,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 357,
+      "line": 365,
       "code_snippet": "    if (fs.existsSync(p)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6857,7 +6857,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 441,
+      "line": 449,
       "code_snippet": "      fs.writeFileSync(path.join(DOCUMENTS_DIR, filename), req.file.buffer);",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6871,7 +6871,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 491,
+      "line": 499,
       "code_snippet": "  if (fs.existsSync(localPath)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6885,7 +6885,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 527,
+      "line": 535,
       "code_snippet": "    const configMtime = fs.existsSync(CONFIG_PATH) ? fs.statSync(CONFIG_PATH).mtimeMs : 0;",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6899,7 +6899,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 528,
+      "line": 536,
       "code_snippet": "    const coursMtime = fs.existsSync(COURS_PATH) ? fs.statSync(COURS_PATH).mtimeMs : 0;",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6913,7 +6913,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 529,
+      "line": 537,
       "code_snippet": "    const histMtime = fs.existsSync(HISTORIQUE_FILE) ? fs.statSync(HISTORIQUE_FILE).mtimeMs : 0;",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6927,7 +6927,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 591,
+      "line": 599,
       "code_snippet": "    if (fs.existsSync(CHAT_FILE)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6941,7 +6941,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 592,
+      "line": 600,
       "code_snippet": "      const data = fs.readFileSync(CHAT_FILE, 'utf-8');",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6955,7 +6955,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 656,
+      "line": 664,
       "code_snippet": "    const getFiles = (dir) => fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg')) : [];",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6969,7 +6969,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 689,
+      "line": 697,
       "code_snippet": "    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6983,7 +6983,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 713,
+      "line": 721,
       "code_snippet": "      if (fs.existsSync(dir)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6997,7 +6997,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 714,
+      "line": 722,
       "code_snippet": "        result[cat] = fs.readdirSync(dir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg'));",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7011,7 +7011,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 739,
+      "line": 747,
       "code_snippet": "    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7025,7 +7025,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 743,
+      "line": 751,
       "code_snippet": "    if (fs.existsSync(hashesFile)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7039,7 +7039,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 744,
+      "line": 752,
       "code_snippet": "      hashes = JSON.parse(fs.readFileSync(hashesFile, 'utf8'));",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7053,7 +7053,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 756,
+      "line": 764,
       "code_snippet": "          if (fs.existsSync(path.join(ROOT_DIR, 'music', cat, file.originalname))) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7067,7 +7067,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 764,
+      "line": 772,
       "code_snippet": "          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7081,22 +7081,8 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 773,
+      "line": 781,
       "code_snippet": "          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "IO synchrone dans le code serveur. Bloque l'event loop Node.js. Passez aux versions async.",
-      "_suppression_comment": "AUDIT_SUPPRESS:NO_SYNC_IO"
-    },
-    {
-      "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "severity": "warning",
-      "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
-      "category": "PERFORMANCE",
-      "file": "interface\\bridge\\server.js",
-      "line": 780,
-      "code_snippet": "            fs.unlinkSync(file.path);",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -7110,6 +7096,20 @@
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
       "line": 788,
+      "code_snippet": "            fs.unlinkSync(file.path);",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "IO synchrone dans le code serveur. Bloque l'event loop Node.js. Passez aux versions async.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NO_SYNC_IO"
+    },
+    {
+      "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "severity": "warning",
+      "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
+      "category": "PERFORMANCE",
+      "file": "interface\\bridge\\server.js",
+      "line": 796,
       "code_snippet": "    fs.writeFileSync(hashesFile, JSON.stringify(hashes, null, 2));",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7123,7 +7123,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 799,
+      "line": 807,
       "code_snippet": "        if(fs.existsSync(f.path)) fs.unlinkSync(f.path);",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7137,7 +7137,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 816,
+      "line": 824,
       "code_snippet": "    if (fs.existsSync(targetPath)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7151,7 +7151,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 817,
+      "line": 825,
       "code_snippet": "      fs.unlinkSync(targetPath);",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7165,7 +7165,7 @@
       "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
       "category": "PERFORMANCE",
       "file": "interface\\bridge\\server.js",
-      "line": 858,
+      "line": 866,
       "code_snippet": "    if (fs.existsSync(pyScript)) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7179,7 +7179,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 23,
+      "line": 31,
       "code_snippet": "const PORT = process.env.PORT || 3001;",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7193,7 +7193,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 62,
+      "line": 70,
       "code_snippet": "// Sécurité : Rate Limiting (500 requêtes max par IP toutes les 15 minutes)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7207,7 +7207,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 64,
+      "line": 72,
       "code_snippet": "  windowMs: 15 * 60 * 1000,",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7221,7 +7221,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 65,
+      "line": 73,
       "code_snippet": "  max: 500,",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7235,7 +7235,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 160,
+      "line": 168,
       "code_snippet": "    fileSize: 50 * 1024 * 1024, // 50 MB max",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7249,7 +7249,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 176,
+      "line": 184,
       "code_snippet": "    res.status(500).json({ error: \"Erreur lecture configuration: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7263,7 +7263,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 184,
+      "line": 192,
       "code_snippet": "      return res.status(400).json({ error: \"Données de configuration invalides. Objet attendu.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7277,7 +7277,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 187,
+      "line": 195,
       "code_snippet": "      return res.status(400).json({ error: \"targetGrade doit être un nombre.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7291,7 +7291,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 191,
+      "line": 199,
       "code_snippet": "      return res.status(500).json({ error: \"Erreur sauvegarde configuration.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7305,22 +7305,8 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 198,
+      "line": 206,
       "code_snippet": "    res.status(500).json({ error: \"Erreur serveur: \" + err.message });",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\server.js",
-      "line": 208,
-      "code_snippet": "    res.status(500).json({ error: \"Erreur lecture des cours: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -7334,6 +7320,20 @@
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
       "line": 216,
+      "code_snippet": "    res.status(500).json({ error: \"Erreur lecture des cours: \" + err.message });",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\bridge\\server.js",
+      "line": 224,
       "code_snippet": "      return res.status(400).json({ error: \"Données de cours invalides. Objet attendu.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7347,7 +7347,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 219,
+      "line": 227,
       "code_snippet": "      return res.status(400).json({ error: \"Structure de cours invalide ('licences' doit être un tableau).\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7361,7 +7361,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 223,
+      "line": 231,
       "code_snippet": "      return res.status(500).json({ error: \"Erreur sauvegarde des cours.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7375,7 +7375,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 230,
+      "line": 238,
       "code_snippet": "    res.status(500).json({ error: \"Erreur serveur: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7389,7 +7389,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 244,
+      "line": 252,
       "code_snippet": "    res.status(500).json({ error: \"Erreur lecture de l'audit: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7403,7 +7403,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 255,
+      "line": 263,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7417,22 +7417,8 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 266,
+      "line": 274,
       "code_snippet": "    res.status(500).json({ error: err.message });",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\server.js",
-      "line": 276,
-      "code_snippet": "    res.status(500).json({ error: \"Erreur lecture des projets: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -7446,6 +7432,20 @@
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
       "line": 284,
+      "code_snippet": "    res.status(500).json({ error: \"Erreur lecture des projets: \" + err.message });",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\bridge\\server.js",
+      "line": 292,
       "code_snippet": "      return res.status(400).json({ error: \"Les projets doivent être un tableau.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7459,7 +7459,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 288,
+      "line": 296,
       "code_snippet": "      return res.status(500).json({ error: \"Erreur sauvegarde des projets.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7473,7 +7473,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 295,
+      "line": 303,
       "code_snippet": "    res.status(500).json({ error: \"Erreur serveur: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7487,7 +7487,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 309,
+      "line": 317,
       "code_snippet": "    res.status(500).json({ error: \"Erreur lecture historique.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7501,7 +7501,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 317,
+      "line": 325,
       "code_snippet": "      return res.status(400).json({ error: \"L'historique doit être un tableau.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7515,7 +7515,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 319,
+      "line": 327,
       "code_snippet": "    // Limit history to 10 000 entries to prevent unbounded growth",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7529,7 +7529,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 320,
+      "line": 328,
       "code_snippet": "    const trimmed = req.body.length > 10000 ? req.body.slice(req.body.length - 10000) : req.body;",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7543,7 +7543,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 323,
+      "line": 331,
       "code_snippet": "      return res.status(500).json({ error: \"Erreur sauvegarde historique.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7557,7 +7557,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 330,
+      "line": 338,
       "code_snippet": "    res.status(500).json({ error: \"Erreur sauvegarde historique.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7571,7 +7571,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 364,
+      "line": 372,
       "code_snippet": "    return res.status(404).json({ error: \"Anki n'est pas installé ou introuvable.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7585,7 +7585,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 386,
+      "line": 394,
       "code_snippet": "    return res.status(400).json({ error: \"Chemin du fichier manquant.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7599,7 +7599,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 391,
+      "line": 399,
       "code_snippet": "    return res.status(403).json({ error: \"L'ouverture de fichiers locaux est désactivée en mode sécurisé/production.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7613,7 +7613,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 397,
+      "line": 405,
       "code_snippet": "    return res.status(403).json({ error: \"Accès refusé. Le fichier est en dehors du répertoire autorisé.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7627,7 +7627,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 419,
+      "line": 427,
       "code_snippet": "        return res.status(413).json({ error: \"Fichier trop volumineux (50 MB maximum).\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7641,7 +7641,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 421,
+      "line": 429,
       "code_snippet": "      return res.status(500).json({ error: \"Erreur lors de l'upload: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7655,7 +7655,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 424,
+      "line": 432,
       "code_snippet": "      return res.status(400).json({ error: \"Aucun fichier reçu.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7669,7 +7669,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 495,
+      "line": 503,
       "code_snippet": "  res.status(404).json({ error: \"Fichier non trouvé\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7683,7 +7683,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 501,
+      "line": 509,
       "code_snippet": "    return res.status(403).json({ error: \"L'arrêt de l'application est désactivé en mode sécurisé/production.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7697,7 +7697,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 505,
+      "line": 513,
       "code_snippet": "  const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7711,7 +7711,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 508,
+      "line": 516,
       "code_snippet": "    return res.status(403).json({ error: \"Arrêt non autorisé depuis cette origine.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7725,7 +7725,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 512,
+      "line": 520,
       "code_snippet": "  setTimeout(() => process.exit(0), 1000);",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7739,7 +7739,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 559,
+      "line": 567,
       "code_snippet": "    res.status(500).json({ error: \"Erreur génération rapport: \" + err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7753,7 +7753,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 578,
+      "line": 586,
       "code_snippet": "      return res.status(404).json({ error: \"Aucune tâche trouvée pour ces critères.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7767,21 +7767,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 584,
-      "code_snippet": "    res.status(500).json({ error: err.message });",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\server.js",
-      "line": 598,
+      "line": 592,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7796,6 +7782,20 @@
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
       "line": 606,
+      "code_snippet": "    res.status(500).json({ error: err.message });",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\bridge\\server.js",
+      "line": 614,
       "code_snippet": "      return res.status(400).json({ error: \"messages requis\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7809,7 +7809,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 621,
+      "line": 629,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7823,7 +7823,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 630,
+      "line": 638,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7837,7 +7837,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 648,
+      "line": 656,
       "code_snippet": "      if (hour >= 21 || (rapport.tachesDuJour?.length || 0) > 5) {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7851,7 +7851,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 677,
+      "line": 685,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7865,7 +7865,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 698,
+      "line": 706,
       "code_snippet": "  limits: { fileSize: 500 * 1024 * 1024 }, // 500 MB max pour les grosses OSTs",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7879,7 +7879,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 721,
+      "line": 729,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7893,7 +7893,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 735,
+      "line": 743,
       "code_snippet": "app.post('/api/music/upload', uploadMusic.array('files', 10), async (req, res) => {",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7907,7 +7907,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 803,
+      "line": 811,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7921,7 +7921,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 810,
+      "line": 818,
       "code_snippet": "    if (!['calm', 'motivational'].includes(category)) return res.status(400).json({ error: \"Catégorie invalide\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7935,7 +7935,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 820,
+      "line": 828,
       "code_snippet": "      res.status(404).json({ error: \"Fichier introuvable\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7949,7 +7949,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 823,
+      "line": 831,
       "code_snippet": "    res.status(500).json({ error: err.message });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7963,7 +7963,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 839,
+      "line": 847,
       "code_snippet": "  res.status(500).json({ error: err.message || \"Une erreur interne est survenue.\" });",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -7978,7 +7978,7 @@
       "category": "ARCHITECTURE",
       "file": "interface\\bridge\\server.js",
       "line": 1,
-      "code_snippet": "870 lignes (limite: 500)",
+      "code_snippet": "885 lignes (limite: 500)",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -7991,7 +7991,7 @@
       "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 222,
+      "line": 230,
       "code_snippet": "Fonction de 65 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -8005,7 +8005,7 @@
       "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 577,
+      "line": 585,
       "code_snippet": "Fonction de 79 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -8019,7 +8019,7 @@
       "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 669,
+      "line": 677,
       "code_snippet": "Fonction de 56 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -8034,26 +8034,12 @@
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
       "line": 1,
-      "code_snippet": "870 lignes (limite: 50)",
+      "code_snippet": "885 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
       "_escalation_message": "Fonction > 50 lignes. Refactorisez en extrayant des sous-fonctions.",
       "_suppression_comment": "AUDIT_SUPPRESS:FUNC_LENGTH"
-    },
-    {
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "severity": "warning",
-      "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\server.js",
-      "line": 756,
-      "code_snippet": "Nesting depth ~5 (limite: 4)",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nesting > 4 niveaux. Utilisez le pattern 'early return' pour aplatir la structure.",
-      "_suppression_comment": "AUDIT_SUPPRESS:NESTING_DEPTH"
     },
     {
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -8075,7 +8061,7 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 773,
+      "line": 772,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -8089,7 +8075,21 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "interface\\bridge\\server.js",
-      "line": 776,
+      "line": 781,
+      "code_snippet": "Nesting depth ~5 (limite: 4)",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nesting > 4 niveaux. Utilisez le pattern 'early return' pour aplatir la structure.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NESTING_DEPTH"
+    },
+    {
+      "rule_id": "EXCESSIVE_NESTING_DEPTH",
+      "severity": "warning",
+      "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\bridge\\server.js",
+      "line": 784,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
