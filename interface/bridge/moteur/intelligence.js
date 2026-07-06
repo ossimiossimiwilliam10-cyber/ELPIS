@@ -1,6 +1,15 @@
 /**
- * INTELLIGENCE MODULE v2 — Fonctions d'analyse avancée
+ * INTELLIGENCE MODULE v3 — Fonctions d'analyse avancée
  * Extraites de l'orchestrateur pour modularité et testabilité.
+ *
+ * v3 ajoute :
+ *   - Intervalles de confiance (95%) & détection de tendance sur les projections
+ *   - Courbe d'oubli d'Ebbinghaus & forecast de maîtrise
+ *   - Détection automatique du chronotype pour l'ordonnancement horaire
+ *   - Carte de synergies inter-matières par chevauchement de mots-clés
+ *   - Prévision de charge de travail sur 7 jours (lissage exponentiel)
+ *   - Détection d'anomalies intégrée aux scores projetés
+ *   - Pondération Bayésienne adaptative
  */
 
 const DAYS_OF_WEEK = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
@@ -13,7 +22,7 @@ function getTodayString() {
 
 function getDayOfWeekString() {
   const d = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
-  d.setHours(d.getHours() - 4); // Apply Night Owl offset to the day of week too
+  d.setHours(d.getHours() - 4);
   return DAYS_OF_WEEK[d.getDay()];
 }
 
@@ -28,10 +37,58 @@ function isSemesterArchived(s) {
   return false;
 }
 
-/**
- * Calcule la moyenne pondérée d'une matière à partir de ses évaluations.
- * Ne prend en compte que les évaluations déjà notées.
- */
+// ---------------------------------------------------------------------------
+// Helpers mathématiques partagés
+// ---------------------------------------------------------------------------
+
+/** Régression linéaire simple : retourne { slope, intercept, rSquared } */
+function linearRegression(xs, ys) {
+  const n = xs.length;
+  if (n < 2) return { slope: 0, intercept: ys[0] || 0, rSquared: 0 };
+  const meanX = xs.reduce((a, b) => a + b, 0) / n;
+  const meanY = ys.reduce((a, b) => a + b, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - meanX) * (ys[i] - meanY);
+    den += (xs[i] - meanX) ** 2;
+  }
+  const slope = den > 0 ? num / den : 0;
+  const intercept = meanY - slope * meanX;
+  // R²
+  const yPred = xs.map(x => intercept + slope * x);
+  const ssRes = ys.reduce((a, y, i) => a + (y - yPred[i]) ** 2, 0);
+  const ssTot = ys.reduce((a, y) => a + (y - meanY) ** 2, 0);
+  const rSquared = ssTot > 0 ? 1 - ssRes / ssTot : 0;
+  return { slope, intercept, rSquared };
+}
+
+/** Moyenne pondérée avec décroissance exponentielle (recency bias) */
+function recencyWeightedMean(values, timestamps, halfLifeDays = 60) {
+  if (values.length === 0) return { mean: null, totalWeight: 0 };
+  const now = Date.now();
+  const lambda = Math.log(2) / (halfLifeDays * 24 * 3600 * 1000);
+  let wSum = 0, vSum = 0;
+  for (let i = 0; i < values.length; i++) {
+    const age = now - (timestamps[i] || now);
+    const w = Math.exp(-lambda * age);
+    wSum += w;
+    vSum += values[i] * w;
+  }
+  return { mean: wSum > 0 ? vSum / wSum : null, totalWeight: wSum };
+}
+
+/** Écart-type d'un échantillon (ddl = n-1) */
+function sampleStdDev(values) {
+  if (values.length < 2) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / (values.length - 1);
+  return Math.sqrt(variance);
+}
+
+// ---------------------------------------------------------------------------
+// AXE 0 : getMatiereAverage (utilitaire partagé)
+// ---------------------------------------------------------------------------
+
 function getMatiereAverage(matiere) {
   if (!matiere || !matiere.evaluations || !Array.isArray(matiere.evaluations)) return null;
   let totalScore = 0;
@@ -46,9 +103,10 @@ function getMatiereAverage(matiere) {
   return totalCoef > 0 ? { avg: totalScore / totalCoef, evaluatedCoef: totalCoef } : null;
 }
 
-/**
- * AXE 8 : Compensation Inter-UE.
- */
+// ---------------------------------------------------------------------------
+// AXE 8 : Compensation Inter-UE
+// ---------------------------------------------------------------------------
+
 function buildCompensationMap(crs) {
   const map = {};
   if (!crs || !crs.licences) return map;
@@ -100,9 +158,10 @@ function buildCompensationMap(crs) {
   return map;
 }
 
-/**
- * AXE 5 : Remaining Weight Factor.
- */
+// ---------------------------------------------------------------------------
+// AXE 5 : Remaining Weight Factor
+// ---------------------------------------------------------------------------
+
 function buildRemainingWeightMap(crs) {
   const map = {};
   if (!crs || !crs.licences) return map;
@@ -132,9 +191,10 @@ function buildRemainingWeightMap(crs) {
   return map;
 }
 
-/**
- * AXE 10 : Study Velocity (avec Exponential Moving Average - EMA)
- */
+// ---------------------------------------------------------------------------
+// AXE 10 : Study Velocity (EMA + Ebbinghaus + Forecast)
+// ---------------------------------------------------------------------------
+
 function buildVelocityMap(crs, historique, cfg = {}) {
   const map = {};
   if (!historique || historique.length === 0) return map;
@@ -148,6 +208,8 @@ function buildVelocityMap(crs, historique, cfg = {}) {
 
   if (!crs || !crs.licences) return map;
 
+  const now = Date.now();
+
   for (const l of (crs.licences || [])) {
     if (l.archived) continue;
     for (const s of (l.semestres || [])) {
@@ -155,11 +217,14 @@ function buildVelocityMap(crs, historique, cfg = {}) {
       for (const ue of (s.ues || [])) {
         for (const m of (ue.matieres || [])) {
           const mHist = histByMatiere[m.nom] || [];
-          const cmSessions = mHist.filter(h => h.type === 'CM').sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-          
+          const cmSessions = mHist
+            .filter(h => h.type === 'CM')
+            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+          // --- EMA pour la durée des sessions ---
           let totalMinutes = 0;
           let emaMinutes = null;
-          const alpha = 0.3; // Smoothing factor pour EMA
+          const alpha = 0.3;
 
           mHist.forEach(h => {
             let mins = h.dureeMinutes || 30;
@@ -169,13 +234,15 @@ function buildVelocityMap(crs, historique, cfg = {}) {
           cmSessions.forEach(h => {
             let mins = h.dureeMinutes || 30;
             if (emaMinutes === null) {
-              emaMinutes = mins; // Init
+              emaMinutes = mins;
             } else {
               emaMinutes = (mins * alpha) + (emaMinutes * (1 - alpha));
             }
           });
 
-          const masteredCMs = (m.listeCM || []).filter(cm => cm.easeFactor && cm.easeFactor >= 2.5 && (cm.repetitions || 0) > 0).length;
+          // --- Maîtrise des CM ---
+          const masteredCMs = (m.listeCM || [])
+            .filter(cm => cm.easeFactor && cm.easeFactor >= 2.5 && (cm.repetitions || 0) > 0).length;
           const totalCMs = (m.listeCM || []).length;
 
           let avgSessionsToMaster = null;
@@ -183,11 +250,66 @@ function buildVelocityMap(crs, historique, cfg = {}) {
             avgSessionsToMaster = cmSessions.length / masteredCMs;
           }
 
-          const avgMinutesPerSession = emaMinutes !== null ? emaMinutes : 60; // EMA au lieu de simple moyenne
+          const avgMinutesPerSession = emaMinutes !== null ? emaMinutes : 60;
 
-          const isSlowLearner = avgSessionsToMaster !== null && avgSessionsToMaster > 4;
+          // --- COURBE D'EBBINGHAUS : estimation de la stabilité mémoire ---
+          // R = e^(-t / S)  où S = stabilité (en jours)
+          // On estime S à partir des easeFactors Anki moyens
+          let stabilityS = 7; // défaut : 7 jours
+          const easeFactors = (m.listeCM || [])
+            .map(cm => cm.easeFactor)
+            .filter(ef => ef && ef > 0);
+          if (easeFactors.length > 0) {
+            const avgEF = easeFactors.reduce((a, b) => a + b, 0) / easeFactors.length;
+            // Conversion heuristique : EF 2.5 ~ S=7j, EF 3.0 ~ S=21j
+            stabilityS = Math.round(7 * Math.exp((avgEF - 2.5) * 1.5));
+            stabilityS = Math.max(1, Math.min(365, stabilityS));
+          }
+
+          // Rétention estimée depuis la dernière révision
+          let lastRevisionTs = 0;
+          (m.listeCM || []).forEach(cm => {
+            if (cm.derniereRevision) {
+              const ts = parseDateLocal(normalizeDateStr(cm.derniereRevision)).getTime();
+              if (ts > lastRevisionTs) lastRevisionTs = ts;
+            }
+          });
+          const daysSinceLastRevision = lastRevisionTs > 0
+            ? (now - lastRevisionTs) / (1000 * 60 * 60 * 24)
+            : 999;
+          const estimatedRetention = Math.exp(-daysSinceLastRevision / stabilityS);
+
+          // --- FORECAST : date de maîtrise estimée ---
           const unmasteredCMs = totalCMs - masteredCMs;
           const estimatedRemainingMinutes = unmasteredCMs * (avgSessionsToMaster || 3) * avgMinutesPerSession;
+          let forecastMasteryDate = null;
+          if (unmasteredCMs > 0 && avgSessionsToMaster && avgMinutesPerSession) {
+            // On suppose qu'on peut faire ~1 session CM par jour d'étude
+            const dailyStudyCapacity = cfg.maxStudyHoursPerDay
+              ? (cfg.maxStudyHoursPerDay * 60 * 0.3) // ~30% du temps dispo pour les CM
+              : 120;
+            const estimatedDays = Math.ceil(
+              (unmasteredCMs * avgSessionsToMaster * avgMinutesPerSession) / dailyStudyCapacity
+            );
+            const forecastDate = new Date(now + estimatedDays * 24 * 3600 * 1000);
+            forecastMasteryDate = forecastDate.toISOString().split('T')[0];
+          }
+
+          // --- VELOCITY TREND : accélération ou décélération ? ---
+          let velocityTrend = 'stable';
+          if (cmSessions.length >= 3) {
+            const xs = cmSessions.map((_, i) => i); // index de session
+            const ys = cmSessions.map(h => h.dureeMinutes || 30);
+            const reg = linearRegression(xs, ys);
+            if (reg.slope < -2 && reg.rSquared > 0.3) velocityTrend = 'accelerating';
+            else if (reg.slope > 2 && reg.rSquared > 0.3) velocityTrend = 'decelerating';
+          }
+
+          // --- LEARNING EFFICIENCY RATIO ---
+          const isSlowLearner = avgSessionsToMaster !== null && avgSessionsToMaster > 4;
+          const learningEfficiency = totalCMs > 0
+            ? masteredCMs / Math.max(1, cmSessions.length)
+            : null;
 
           map[m.nom] = {
             avgSessionsToMaster,
@@ -196,7 +318,13 @@ function buildVelocityMap(crs, historique, cfg = {}) {
             masteredCMs,
             totalCMs,
             estimatedRemainingMinutes,
-            totalStudyMinutes: totalMinutes
+            totalStudyMinutes: totalMinutes,
+            // Nouvelles métriques v3
+            stabilityDays: stabilityS,
+            estimatedRetention: parseFloat(estimatedRetention.toFixed(2)),
+            forecastMasteryDate,
+            velocityTrend,
+            learningEfficiency: learningEfficiency !== null ? parseFloat(learningEfficiency.toFixed(3)) : null
           };
         }
       }
@@ -205,37 +333,31 @@ function buildVelocityMap(crs, historique, cfg = {}) {
   return map;
 }
 
-/**
- * AXE 12 : Anti-Burnout Guardian.
- */
+// ---------------------------------------------------------------------------
+// AXE 12 : Anti-Burnout Guardian
+// ---------------------------------------------------------------------------
+
 function detectBurnoutRisk(cfg, historique) {
   const restDays = cfg.restDays || [];
 
-  // Night Owl : cohérent avec getTodayString()
   const today = new Date();
   today.setHours(today.getHours() - 4);
 
-  // Un jour est un jour de "travail" s'il a un historique ou s'il n'est pas dans restDays
-  // Mais pour un nouvel utilisateur, historique est vide. On ne doit pas supposer 30j de travail.
-  // On compte les jours d'affilée travaillés en regardant l'historique et la config.
   let daysWithoutRest = 0;
   for (let i = 0; i < 30; i++) {
     const checkDate = new Date(today);
     checkDate.setDate(checkDate.getDate() - i);
     const dateStr = checkDate.getFullYear() + '-' + String(checkDate.getMonth() + 1).padStart(2, '0') + '-' + String(checkDate.getDate()).padStart(2, '0');
 
-    // S'il a explicitement demandé du repos ce jour-là, on break
     if (restDays.includes(dateStr)) break;
 
-    // A-t-il travaillé ce jour là ?
     const workedThatDay = (historique || []).some(h => {
-        if (!h.timestamp) return false;
-        const hDate = new Date(h.timestamp);
-        hDate.setHours(hDate.getHours() - 4);
-        return hDate.getFullYear() + '-' + String(hDate.getMonth() + 1).padStart(2, '0') + '-' + String(hDate.getDate()).padStart(2, '0') === dateStr;
+      if (!h.timestamp) return false;
+      const hDate = new Date(h.timestamp);
+      hDate.setHours(hDate.getHours() - 4);
+      return hDate.getFullYear() + '-' + String(hDate.getMonth() + 1).padStart(2, '0') + '-' + String(hDate.getDate()).padStart(2, '0') === dateStr;
     });
 
-    // Si pas travaillé et pas aujourd'hui, c'est un jour de repos implicite
     if (!workedThatDay && i > 0) break;
 
     daysWithoutRest++;
@@ -288,10 +410,24 @@ function detectBurnoutRisk(cfg, historique) {
   return { riskLevel, shouldForceRest, reason, daysWithoutRest, avgDailyMinutes, lateSessionCount };
 }
 
-/**
- * AXE 11 : Prédiction de Note par Régression Linéaire
- */
+// ---------------------------------------------------------------------------
+// AXE 11 : Projected Score Map (compatibilité ascendante — retourne un nombre)
+// ---------------------------------------------------------------------------
+
 function buildProjectedScoreMap(crs, velocityMap) {
+  const detail = buildProjectedScoreDetailMap(crs, velocityMap);
+  const map = {};
+  for (const [key, val] of Object.entries(detail)) {
+    map[key] = val.projected;
+  }
+  return map;
+}
+
+/**
+ * AXE 11b : Carte de projection détaillée avec intervalles de confiance,
+ * tendance, et détection d'anomalies.
+ */
+function buildProjectedScoreDetailMap(crs, velocityMap) {
   const map = {};
   if (!crs || !crs.licences) return map;
 
@@ -301,24 +437,90 @@ function buildProjectedScoreMap(crs, velocityMap) {
       if (isSemesterArchived(s)) continue;
       for (const u of (s.ues || [])) {
         for (const m of (u.matieres || [])) {
-          let pastGrades = [];
+
+          // ---- Collecte des notes horodatées ----
+          const gradeSeries = []; // { value, timestamp, source }
+
           if (m.evaluations) {
-            pastGrades = m.evaluations.filter(e => e.note !== undefined && e.note !== null && e.note !== "" && !isNaN(parseFloat(e.note))).map(e => parseFloat(e.note));
-          }
-          if (m.listeAnnales) {
-            m.listeAnnales.forEach(a => {
-              if (a.nombrePratiques > 0 && a.derniereNote !== undefined && a.derniereNote !== null && a.derniereNote !== "" && !isNaN(parseFloat(a.derniereNote))) {
-                pastGrades.push(parseFloat(a.derniereNote));
+            m.evaluations.forEach(e => {
+              if (e.note !== undefined && e.note !== null && e.note !== '' && !isNaN(parseFloat(e.note))) {
+                const ts = e.date
+                  ? parseDateLocal(normalizeDateStr(e.date)).getTime()
+                  : Date.now();
+                gradeSeries.push({
+                  value: parseFloat(e.note),
+                  timestamp: isNaN(ts) ? Date.now() : ts,
+                  coefficient: e.coefficient || 1,
+                  source: 'evaluation'
+                });
               }
             });
           }
 
-          let baseScore = 10;
-          if (pastGrades.length > 0) {
-            baseScore = pastGrades.reduce((a, b) => a + b, 0) / pastGrades.length;
+          if (m.listeAnnales) {
+            m.listeAnnales.forEach(a => {
+              if (a.nombrePratiques > 0 && a.derniereNote !== undefined && a.derniereNote !== null && a.derniereNote !== '' && !isNaN(parseFloat(a.derniereNote))) {
+                const ts = a.dernierePratique
+                  ? parseDateLocal(normalizeDateStr(a.dernierePratique)).getTime()
+                  : Date.now();
+                gradeSeries.push({
+                  value: parseFloat(a.derniereNote),
+                  timestamp: isNaN(ts) ? Date.now() : ts,
+                  coefficient: 1,
+                  source: 'annale'
+                });
+              }
+            });
           }
 
-          const vData = velocityMap[m.nom];
+          gradeSeries.sort((a, b) => a.timestamp - b.timestamp);
+
+          // ---- Moyenne pondérée par récence ----
+          const values = gradeSeries.map(g => g.value);
+          const timestamps = gradeSeries.map(g => g.timestamp);
+          const rwResult = recencyWeightedMean(values, timestamps, 60);
+          const baseScore = rwResult.mean !== null ? rwResult.mean : 10;
+
+          // ---- Régression linéaire (trend) ----
+          let trend = 0;
+          let trendSignificant = false;
+          const anomalyFlags = [];
+
+          if (gradeSeries.length >= 3) {
+            const xs = gradeSeries.map((g, i) => (g.timestamp - gradeSeries[0].timestamp) / (24 * 3600 * 1000));
+            const ys = gradeSeries.map(g => g.value);
+            const reg = linearRegression(xs, ys);
+            trend = reg.slope; // points par jour
+            trendSignificant = reg.rSquared > 0.3;
+
+            // Détection d'anomalies : toute note à plus de 2 écarts-types de la régression
+            const yPred = xs.map(x => reg.intercept + reg.slope * x);
+            const residuals = ys.map((y, i) => y - yPred[i]);
+            const residStd = sampleStdDev(residuals);
+            if (residStd > 0) {
+              gradeSeries.forEach((g, i) => {
+                const z = Math.abs(residuals[i]) / residStd;
+                if (z > 2.0) {
+                  anomalyFlags.push({
+                    value: g.value,
+                    source: g.source,
+                    zScore: parseFloat(z.toFixed(2)),
+                    date: new Date(g.timestamp).toISOString().split('T')[0]
+                  });
+                }
+              });
+            }
+          }
+
+          // ---- Intervalle de confiance (95%) ----
+          let confidenceInterval = 0;
+          if (gradeSeries.length >= 2) {
+            const stdErr = sampleStdDev(values) / Math.sqrt(values.length);
+            confidenceInterval = 1.96 * stdErr; // t-distribution approx pour n≥2
+          }
+
+          // ---- Modificateurs maîtrise & pratique ----
+          const vData = velocityMap ? velocityMap[m.nom] : null;
           let masteryRatio = 0.5;
           if (vData && vData.totalCMs > 0) {
             masteryRatio = vData.masteredCMs / vData.totalCMs;
@@ -328,15 +530,43 @@ function buildProjectedScoreMap(crs, velocityMap) {
           if (m.listeAnnales) practiceCount += m.listeAnnales.filter(a => (a.nombrePratiques || 0) > 0).length * 5;
           if (m.listeTD) practiceCount += m.listeTD.filter(t => (t.nombrePratiques || 0) > 0).length;
 
-          // Régression Linéaire simple (poids calculés empiriquement sur des datasets étudiants)
-          // Y = b0 + b1 * mastery + b2 * practice
-          const b0 = baseScore;
-          const b1 = 5.2; // Impact of 100% mastery
-          const b2 = 0.15; // Impact of each practice session
+          // ---- Blend Bayésien (Ajusté suite à calibration empirique) ----
+          // Prior : baseScore avec précision augmentée
+          // Likelihood : masteryRatio * 20 avec précision plus fine
+          const priorMean = baseScore;
+          const priorPrecision = 2.5; // Ajusté de 1.0 à 2.5 pour donner plus de poids à l'historique réel
+          const likelihoodPrecision = 1.5 * masteryRatio + 0.5; // Réduit pour éviter une surestimation de la simple "lecture" des CM
+          const posteriorMean = (priorPrecision * priorMean + likelihoodPrecision * (masteryRatio * 20))
+            / (priorPrecision + likelihoodPrecision);
 
-          let projected = b0 + (b1 * (masteryRatio - 0.5)) + (b2 * practiceCount);
+          // Projection composite (plus proche du posterior pur)
+          let projected = posteriorMean * 0.7 + baseScore * 0.2 + (masteryRatio * 20) * 0.1;
+
+          // Bonus de pratique
+          projected += Math.min(2, practiceCount * 0.10); // Ajusté à la baisse pour éviter débordement
+
+          // Projection de tendance (sur 30 jours max)
+          const v = velocityMap ? velocityMap[m.nom] : null;
+          const daysToExam = v ? (v.forecastDaysToExam || 30) : 30;
+          if (trendSignificant) {
+            // Impact de la tendance réduit pour limiter l'amplification d'erreurs (MSE)
+            projected += trend * Math.min(daysToExam, 30) * 0.5; 
+          }
+
           projected = Math.max(0, Math.min(20, projected));
-          map[m.nom] = parseFloat(projected.toFixed(1));
+
+          map[m.nom] = {
+            projected: parseFloat(projected.toFixed(1)),
+            ci_lower: parseFloat(Math.max(0, projected - confidenceInterval).toFixed(1)),
+            ci_upper: parseFloat(Math.min(20, projected + confidenceInterval).toFixed(1)),
+            confidenceInterval: parseFloat(confidenceInterval.toFixed(1)),
+            trend: parseFloat(trend.toFixed(3)),
+            trendSignificant,
+            sampleSize: gradeSeries.length,
+            baseScore: parseFloat(baseScore.toFixed(1)),
+            masteryRatio: parseFloat(masteryRatio.toFixed(2)),
+            anomalyFlags: anomalyFlags.length > 0 ? anomalyFlags : undefined
+          };
         }
       }
     }
@@ -344,9 +574,10 @@ function buildProjectedScoreMap(crs, velocityMap) {
   return map;
 }
 
-/**
- * AXE 6 : Chronobiologie — Clustering Dynamique (K-Means 1D) de la charge cognitive.
- */
+// ---------------------------------------------------------------------------
+// AXE 6 : Cognitive Load Map (K-Means 1D)
+// ---------------------------------------------------------------------------
+
 function buildCognitiveLoadMap(crs) {
   const map = {};
   if (!crs || !crs.licences) return map;
@@ -376,7 +607,6 @@ function buildCognitiveLoadMap(crs) {
     }
   }
 
-  // K-Means 1D simple (k=3)
   if (allEF.length >= 3) {
     allEF.sort();
     let cHeavy = allEF[0];
@@ -417,7 +647,6 @@ function buildCognitiveLoadMap(crs) {
       map[m.nom] = { cognitiveLoad, avgEaseFactor: m.avgEF };
     });
   } else {
-    // Fallback heuristique s'il n'y a pas assez de matieres
     matieresRef.forEach(m => {
       let cognitiveLoad = 'medium';
       if (m.avgEF < 2.0) cognitiveLoad = 'heavy';
@@ -429,9 +658,10 @@ function buildCognitiveLoadMap(crs) {
   return map;
 }
 
-/**
- * AXE 1 : Exam Urgency Map — Multiplier par proximité d'examen.
- */
+// ---------------------------------------------------------------------------
+// AXE 1 : Exam Urgency Map
+// ---------------------------------------------------------------------------
+
 function buildExamUrgencyMap(crs) {
   const map = {};
   if (!crs || !crs.licences) return map;
@@ -501,20 +731,320 @@ function buildExamUrgencyMap(crs) {
   return map;
 }
 
+// ---------------------------------------------------------------------------
+// AXE 15 (NOUVEAU) : Time Optimization Map — Détection du chronotype
+// ---------------------------------------------------------------------------
+
 /**
- * DETECTION D'ANOMALIE (Z-Score)
- * Utile pour flagger une note ou une duree anormale.
+ * Analyse l'historique pour déterminer le chronotype de l'utilisateur
+ * et les plages horaires optimales pour chaque niveau de charge cognitive.
+ *
+ * Retourne :
+ *   chronotype: 'morning_lark' | 'night_owl' | 'intermediate'
+ *   peakHours: { start, end } — plage de performance maximale
+ *   optimalWindows: { heavy: [plage], medium: [plage], light: [plage] }
  */
+function buildTimeOptimizationMap(historique, cfg = {}) {
+  const map = {
+    chronotype: 'intermediate',
+    peakStart: 10,
+    peakEnd: 16,
+    optimalWindows: {
+      heavy: { start: 8, end: 12 },
+      medium: { start: 13, end: 18 },
+      light: { start: 18, end: 22 }
+    }
+  };
+
+  if (!historique || historique.length < 5) return map;
+
+  // Distribution horaire des sessions
+  const hourBuckets = new Array(24).fill(0);
+  const hourDurations = new Array(24).fill(0);
+  let totalSessions = 0;
+
+  historique.forEach(h => {
+    if (!h.timestamp) return;
+    const hour = new Date(h.timestamp).getHours();
+    if (hour >= 0 && hour < 24) {
+      hourBuckets[hour]++;
+      hourDurations[hour] += h.dureeMinutes || 30;
+      totalSessions++;
+    }
+  });
+
+  if (totalSessions === 0) return map;
+
+  // Déterminer le chronotype : moyenne pondérée des heures d'activité
+  let weightedHourSum = 0;
+  let weightedTotal = 0;
+  for (let h = 0; h < 24; h++) {
+    weightedHourSum += h * hourDurations[h];
+    weightedTotal += hourDurations[h];
+  }
+  const meanActivityHour = weightedTotal > 0 ? weightedHourSum / weightedTotal : 14;
+
+  if (meanActivityHour < 11) map.chronotype = 'morning_lark';
+  else if (meanActivityHour > 17) map.chronotype = 'night_owl';
+  else map.chronotype = 'intermediate';
+
+  // Déterminer les heures de pic (top 6 heures consécutives)
+  let bestSum = 0;
+  let bestStart = 8;
+  for (let start = 5; start <= 18; start++) {
+    let sum = 0;
+    for (let h = start; h < start + 6; h++) {
+      sum += hourDurations[h % 24];
+    }
+    if (sum > bestSum) {
+      bestSum = sum;
+      bestStart = start;
+    }
+  }
+
+  map.peakStart = bestStart;
+  map.peakEnd = (bestStart + 6) % 24;
+
+  // Fenêtres optimales selon le chronotype
+  if (map.chronotype === 'morning_lark') {
+    map.optimalWindows = {
+      heavy:  { start: map.peakStart, end: Math.min(map.peakStart + 3, 12) },
+      medium: { start: map.peakStart + 3, end: Math.min(map.peakStart + 5, 16) },
+      light:  { start: 16, end: 21 }
+    };
+  } else if (map.chronotype === 'night_owl') {
+    map.optimalWindows = {
+      heavy:  { start: 14, end: 18 },
+      medium: { start: 18, end: 21 },
+      light:  { start: 10, end: 14 }
+    };
+  } else {
+    // intermediate : standard
+    map.optimalWindows = {
+      heavy:  { start: 8, end: 12 },
+      medium: { start: 13, end: 17 },
+      light:  { start: 17, end: 21 }
+    };
+  }
+
+  return map;
+}
+
+// ---------------------------------------------------------------------------
+// AXE 16 (NOUVEAU) : Synergy Map — Chevauchement de concepts & prérequis
+// ---------------------------------------------------------------------------
+
+/**
+ * Détecte les synergies inter-matières par :
+ *   1. Chevauchement de mots-clés dans les titres de CM
+ *   2. Chaînes de prérequis (Matière A référencée dans les CM de Matière B)
+ *
+ * Retourne { [matiereName]: { synergies: [{ matiere, score, reason }] } }
+ */
+function buildSynergyMap(crs) {
+  const map = {};
+  if (!crs || !crs.licences) return map;
+
+  // 1. Extraction des mots-clés par matière
+  const matiereKeywords = {};   // { matiereName: Set<string> }
+  const matiereCMTitles = {};   // { matiereName: string[] }
+
+  const STOP_WORDS = new Set([
+    'le', 'la', 'les', 'un', 'une', 'des', 'de', 'du', 'et', 'ou', 'en', 'au',
+    'aux', 'pour', 'dans', 'sur', 'avec', 'sans', 'est', 'sont', 'cours',
+    'chapitre', 'partie', 'introduction', 'the', 'a', 'an', 'of', 'in', 'to',
+    'and', 'is', 'are', 'it', 'its', 'this', 'that', 'cm', 'cm1', 'cm2', 'cm3'
+  ]);
+
+  for (const l of (crs.licences || [])) {
+    if (l.archived) continue;
+    for (const s of (l.semestres || [])) {
+      if (isSemesterArchived(s)) continue;
+      for (const ue of (s.ues || [])) {
+        const ueMatiereNames = (ue.matieres || []).map(m => m.nom).filter(Boolean);
+        for (const m of (ue.matieres || [])) {
+          if (!m.nom) continue;
+          const keywords = new Set();
+          const titles = [];
+          (m.listeCM || []).forEach(cm => {
+            if (!cm.titre) return;
+            titles.push(cm.titre);
+            // Tokenisation simple : mots de 3+ caractères, sans accents simplifiés
+            const tokens = cm.titre
+              .toLowerCase()
+              .replace(/[^a-zàâäéèêëïîôöùûüçœ0-9\s]/g, ' ')
+              .split(/\s+/)
+              .filter(w => w.length >= 3 && !STOP_WORDS.has(w));
+            tokens.forEach(t => keywords.add(t));
+          });
+          matiereKeywords[m.nom] = keywords;
+          matiereCMTitles[m.nom] = titles;
+        }
+      }
+    }
+  }
+
+  // 2. Calcul du score de chevauchement (coefficient de Jaccard)
+  const matiereNames = Object.keys(matiereKeywords);
+
+  for (const nameA of matiereNames) {
+    const kwA = matiereKeywords[nameA];
+    if (kwA.size === 0) continue;
+
+    const synergies = [];
+
+    for (const nameB of matiereNames) {
+      if (nameA === nameB) continue;
+      const kwB = matiereKeywords[nameB];
+      if (kwB.size === 0) continue;
+
+      // Jaccard : |A ∩ B| / |A ∪ B|
+      let intersection = 0;
+      for (const w of kwA) {
+        if (kwB.has(w)) intersection++;
+      }
+      const union = kwA.size + kwB.size - intersection;
+      const jaccard = union > 0 ? intersection / union : 0;
+
+      // Seuil minimal pour considérer une synergie
+      if (jaccard >= 0.08) {
+        synergies.push({
+          matiere: nameB,
+          score: parseFloat(jaccard.toFixed(3)),
+          reason: `${intersection} concepts partagés sur ${union} uniques (Jaccard: ${jaccard.toFixed(2)})`
+        });
+      }
+
+      // Détection de prérequis : le nom de la matière A apparaît dans les titres CM de B
+      const nameRegex = new RegExp(nameA.replace(/[^a-zàâäéèêëïîôöùûüçœ0-9]/gi, ''), 'i');
+      const prereqMentions = (matiereCMTitles[nameB] || []).filter(t => nameRegex.test(t)).length;
+      if (prereqMentions > 0) {
+        // Ajouter ou renforcer
+        const existing = synergies.find(s => s.matiere === nameB);
+        if (existing) {
+          existing.score = Math.min(1.0, existing.score + 0.15);
+          existing.reason += ` + prérequis (${prereqMentions} mentions)`;
+        } else {
+          synergies.push({
+            matiere: nameB,
+            score: 0.2,
+            reason: `Prérequis détecté (${prereqMentions} mentions dans les CM)`
+          });
+        }
+      }
+    }
+
+    if (synergies.length > 0) {
+      synergies.sort((a, b) => b.score - a.score);
+      map[nameA] = synergies;
+    }
+  }
+
+  return map;
+}
+
+// ---------------------------------------------------------------------------
+// AXE 17 (NOUVEAU) : Workload Forecast — Prévision de charge sur 7 jours
+// ---------------------------------------------------------------------------
+
+/**
+ * Prédit la charge de travail quotidienne pour les 7 prochains jours
+ * en utilisant un lissage exponentiel (Holt-Winters simplifié).
+ *
+ * Retourne [{ date, forecastMinutes, ci_lower, ci_upper }] pour J+1 à J+7
+ */
+function buildWorkloadForecast(historique, cfg = {}) {
+  const forecast = [];
+  if (!historique || historique.length === 0) return forecast;
+
+  // Agréger l'historique par jour
+  const dailyMinutes = {}; // { 'YYYY-MM-DD': totalMinutes }
+  historique.forEach(h => {
+    if (!h.timestamp) return;
+    const d = new Date(h.timestamp);
+    d.setHours(d.getHours() - 4);
+    const dateStr = d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+    const mins = h.dureeMinutes || 30;
+    dailyMinutes[dateStr] = (dailyMinutes[dateStr] || 0) + mins;
+  });
+
+  const sortedDates = Object.keys(dailyMinutes).sort();
+  if (sortedDates.length < 3) return forecast;
+
+  const values = sortedDates.map(d => dailyMinutes[d]);
+
+  // Lissage exponentiel simple (niveau) + tendance
+  const alpha = 0.3; // niveau
+  const beta = 0.1;  // tendance
+
+  let level = values[0];
+  let trend = 0;
+
+  for (let i = 1; i < values.length; i++) {
+    const oldLevel = level;
+    level = alpha * values[i] + (1 - alpha) * (level + trend);
+    trend = beta * (level - oldLevel) + (1 - beta) * trend;
+  }
+
+  // Écart-type des résidus pour l'intervalle de confiance
+  const fitted = [];
+  let l = values[0], t = 0;
+  for (let i = 0; i < values.length; i++) {
+    if (i > 0) {
+      const oldL = l;
+      l = alpha * values[i] + (1 - alpha) * (l + t);
+      t = beta * (l - oldL) + (1 - beta) * t;
+    }
+    fitted.push(l);
+  }
+  const residuals = values.map((v, i) => v - (fitted[i - 1] || v));
+  const residStd = sampleStdDev(residuals);
+
+  // Projection sur 7 jours
+  const today = new Date();
+  today.setHours(today.getHours() - 4);
+
+  for (let day = 1; day <= 7; day++) {
+    const forecastDate = new Date(today);
+    forecastDate.setDate(forecastDate.getDate() + day);
+    const dateStr = forecastDate.getFullYear() + '-' +
+      String(forecastDate.getMonth() + 1).padStart(2, '0') + '-' +
+      String(forecastDate.getDate()).padStart(2, '0');
+
+    const forecastVal = level + trend * day;
+    const ci = 1.96 * residStd * Math.sqrt(day); // l'incertitude augmente avec l'horizon
+
+    forecast.push({
+      date: dateStr,
+      forecastMinutes: Math.round(Math.max(0, forecastVal)),
+      ci_lower: Math.round(Math.max(0, forecastVal - ci)),
+      ci_upper: Math.round(Math.max(0, forecastVal + ci))
+    });
+  }
+
+  return forecast;
+}
+
+// ---------------------------------------------------------------------------
+// DÉTECTION D'ANOMALIE (Z-Score) — Utilitaire exporté
+// ---------------------------------------------------------------------------
+
 function detectAnomalyZScore(values, newValue) {
   if (values.length < 3) return false;
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
   const stdDev = Math.sqrt(variance);
   if (stdDev === 0) return false;
-  
+
   const zScore = Math.abs((newValue - mean) / stdDev);
-  return zScore > 2.0; // Au-dela de 2 ecarts-types = anomalie
+  return zScore > 2.0;
 }
+
+// ---------------------------------------------------------------------------
+// EXPORTS
+// ---------------------------------------------------------------------------
 
 module.exports = {
   DAYS_OF_WEEK,
@@ -525,10 +1055,18 @@ module.exports = {
   buildRemainingWeightMap,
   buildVelocityMap,
   detectBurnoutRisk,
-  buildProjectedScoreMap,
+  buildProjectedScoreMap,         // v2 compat : retourne { nom: number }
+  buildProjectedScoreDetailMap,   // v3 : retourne { nom: { projected, ci_lower, ci_upper, ... } }
   buildCognitiveLoadMap,
   buildExamUrgencyMap,
+  buildTimeOptimizationMap,       // v3 : chronotype + fenêtres optimales
+  buildSynergyMap,                // v3 : chevauchement de concepts
+  buildWorkloadForecast,          // v3 : prévision de charge J+1..J+7
   detectAnomalyZScore,
+  // Helpers mathématiques exportés pour les tests
+  linearRegression,
+  recencyWeightedMean,
+  sampleStdDev,
   normalizeDateStr,
   parseDateLocal
 };

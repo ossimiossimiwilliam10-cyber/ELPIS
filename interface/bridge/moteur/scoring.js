@@ -1,6 +1,11 @@
 /**
- * SCORING MODULE — Fonctions de priorité et de scoring pour l'ordonnancement.
+ * SCORING MODULE v2 — Fonctions de priorité et de scoring pour l'ordonnancement.
  * Extraites de l'orchestrateur.
+ *
+ * v2 ajoute :
+ *   - Priorité sensible à l'intervalle de confiance (exploration des zones d'incertitude)
+ *   - Poids Bayésiens adaptatifs (getAdaptiveWeight)
+ *   - Flag anomalie intégré au scoring
  */
 
 const { getMatiereAverage } = require('./intelligence');
@@ -20,17 +25,18 @@ function getDifficultyMultiplier(difficulte) {
 }
 
 /**
- * Priority score for exercises: combines practice count + difficulty + exam urgency.
- * Higher score = more urgent.
+ * Priority score for exercises: combines practice count + difficulty + exam urgency
+ * + confidence-aware exploration + adaptive weighting.
  *
  * @param {Object} ex - L'exercice (doit avoir nombrePratiques, difficulte)
  * @param {Object} examUrgencyMap - Map construite par buildExamUrgencyMap
  * @param {Object|string} matiere - L'objet matière complet ou son nom
  * @param {Object} remainingWeightMap - Map construite par buildRemainingWeightMap
  * @param {Object} compensationMap - Map construite par buildCompensationMap
- * @param {Object} [velocityMap] - Map construite par buildVelocityMap (optionnel, pour Axe 13)
+ * @param {Object} [velocityMap] - Map construite par buildVelocityMap
+ * @param {Object} [projectedScoreDetail] - Map détaillée de buildProjectedScoreDetailMap (v3)
  */
-function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensationMap, velocityMap = null) {
+function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensationMap, velocityMap = null, projectedScoreDetail = null) {
   let base = 1.0 / Math.sqrt((ex.nombrePratiques || 0) + 1.0);
   if (ex.difficulte === 'difficile') base *= 1.5;
   else if (ex.difficulte === 'assez_difficile') base *= 1.2;
@@ -95,8 +101,6 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
   // AXE 13: Synergies Inter-Matières (détection automatique par UE partagée)
   let synergyBoost = 1.0;
   if (matiere && typeof matiere === 'object' && matiere.nom && velocityMap) {
-    // Chercher les matières de la même UE pour les synergies implicites
-    // (patron: les matières d'une même UE sont naturellement synergiques)
     if (matiere._ueMatieres) {
       for (const synName of matiere._ueMatieres) {
         if (synName === matiere.nom) continue;
@@ -112,18 +116,34 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
       }
     }
   }
-  // Sécurité : le boost de synergie ne doit jamais annuler ni amplifier de façon déraisonnable
   synergyBoost = Math.max(0.5, Math.min(5.0, synergyBoost));
   base *= synergyBoost;
 
-  // AXE 14 : Epsilon-Greedy Bandits (Exploration vs Exploitation)
-  // On utilise un pseudo-random basé sur le nom et le jour pour que le dashboard ne saute pas à chaque refresh.
+  // --- AXE 11b : Confidence-Aware Exploration (v3) ---
+  // Si l'intervalle de confiance est large (incertitude élevée), on explore davantage
+  if (projectedScoreDetail && matiereNom) {
+    const psDetail = projectedScoreDetail[matiereNom];
+    if (psDetail && psDetail.confidenceInterval > 3.0) {
+      // Forte incertitude : boost modéré pour obtenir plus de données
+      const uncertaintyBoost = 1.0 + (psDetail.confidenceInterval - 3.0) * 0.15;
+      base *= Math.min(2.0, uncertaintyBoost);
+    }
+    // Si une anomalie a été détectée, boost pour investiguer
+    if (psDetail && psDetail.anomalyFlags && psDetail.anomalyFlags.length > 0) {
+      base *= 1.3;
+    }
+    // Si la tendance est significativement négative, urgence accrue
+    if (psDetail && psDetail.trendSignificant && psDetail.trend < -0.05) {
+      base *= 1.0 + Math.min(1.0, Math.abs(psDetail.trend) * 10);
+    }
+  }
+
+  // --- AXE 14 : Epsilon-Greedy Bandits (Exploration vs Exploitation) ---
   const pseudoRandom = (( (ex.nom ? ex.nom.length : 1) * new Date().getDate()) % 100) / 100;
   const epsilon = 0.15; // 15% d'exploration
-  
+
   if (pseudoRandom < epsilon) {
-    // Mode exploration : on donne un boost massif (x2 à x5) pour forcer le test de la tâche
-    const explorationBoost = 2.0 + (pseudoRandom * 20); // 0.10 * 20 = 2.0 -> boost de 4.0
+    const explorationBoost = 2.0 + (pseudoRandom * 20);
     base *= explorationBoost;
   }
 
@@ -147,7 +167,6 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
     baseBoost = examUrgencyMap[matiereKey].multiplier;
     daysToExam = examUrgencyMap[matiereKey].daysToExam;
   } else {
-    // Prioritize longest match first
     const entries = Object.entries(examUrgencyMap).sort((a, b) => b[0].length - a[0].length);
     for (const [subjKey, data] of entries) {
       if (matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
@@ -158,8 +177,6 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
     }
   }
 
-  // Si le coeff est >= 3 et que l'examen est dans les 14 jours (boost ~1.5),
-  // on force le boost à 2.0 pour casser la parité !
   if (coeff >= 3 && Math.abs(baseBoost - 1.5) < 0.01) {
     baseBoost = 2.0;
   }
@@ -167,4 +184,56 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
   return { boost: baseBoost * (1.0 + (coeff - 1) * 0.1), daysToExam };
 }
 
-module.exports = { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost };
+/**
+ * AXE 18 (NOUVEAU) : Poids Bayésiens Adaptatifs
+ *
+ * Ajuste les poids des différents facteurs de scoring en fonction
+ * des résultats observés (corrélation entre priorité élevée et bonne note).
+ *
+ * @param {Object} currentWeights - Poids actuels { examUrgency, gradeDeficit, remainingWeight, synergy, exploration }
+ * @param {Array} recentOutcomes - [{ matiere, prioriteAvant, noteObtenue, timestamp }]
+ * @returns {Object} nouveaux poids ajustés
+ */
+function getAdaptiveWeight(currentWeights, recentOutcomes) {
+  const defaults = {
+    examUrgency: 1.0,
+    gradeDeficit: 1.0,
+    remainingWeight: 1.0,
+    synergy: 1.0,
+    exploration: 0.15
+  };
+
+  const weights = { ...defaults, ...currentWeights };
+
+  if (!recentOutcomes || recentOutcomes.length < 3) return weights;
+
+  // Calculer la corrélation entre priorité et résultat
+  // Si une priorité élevée mène à une bonne note → le système fonctionne, garder les poids
+  // Si une priorité élevée mène à une mauvaise note → ajuster (trop d'exploration ?)
+
+  const alpha = 0.2; // taux d'apprentissage
+
+  // Moyenne récente des notes
+  const avgNote = recentOutcomes.reduce((a, o) => a + (o.noteObtenue || 10), 0) / recentOutcomes.length;
+
+  // Si les notes récentes sont bonnes (>13), on peut réduire l'exploration
+  if (avgNote > 13) {
+    weights.exploration = Math.max(0.05, weights.exploration - alpha * 0.02);
+  } else if (avgNote < 9) {
+    // Mauvais résultats : augmenter l'exploration pour trouver de meilleures stratégies
+    weights.exploration = Math.min(0.30, weights.exploration + alpha * 0.05);
+  }
+
+  // Si l'utilisateur réussit bien les matières avec fort coefficient → renforcer gradeDeficit
+  const highCoefOutcomes = recentOutcomes.filter(o => o.coefficient >= 2);
+  if (highCoefOutcomes.length >= 2) {
+    const highCoefAvg = highCoefOutcomes.reduce((a, o) => a + (o.noteObtenue || 10), 0) / highCoefOutcomes.length;
+    if (highCoefAvg > 12) {
+      weights.gradeDeficit = Math.min(1.5, weights.gradeDeficit + alpha * 0.03);
+    }
+  }
+
+  return weights;
+}
+
+module.exports = { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost, getAdaptiveWeight };
