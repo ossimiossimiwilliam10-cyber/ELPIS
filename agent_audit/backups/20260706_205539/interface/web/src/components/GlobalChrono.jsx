@@ -18,10 +18,10 @@ export default function GlobalChrono() {
     if (!exoId || saveLockRef.current) return;
     saveLockRef.current = true; // Lock the save function immediately
     const addHistoriqueEntry = useStore.getState().addHistoriqueEntry;
-
+    
     // Convertir les secondes en minutes (minimum 1 minute)
     const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
-
+    
     addHistoriqueEntry({
       type: type || 'PERSO',
       titre: titre || 'Activité Libre',
@@ -29,9 +29,9 @@ export default function GlobalChrono() {
       action: 'Terminé',
       dureeMinutes: minutes
     });
-
+    
     toast.success(`Activité enregistrée (${minutes} min) !`);
-
+    
     import('canvas-confetti').then((module) => {
       const confetti = module.default;
       confetti({
@@ -149,7 +149,7 @@ export default function GlobalChrono() {
   }[type] || '⏱️';
 
   // If the chrono has been fully reset (no active task), hide it completely
-  if (!exoId && !isRunning && (elapsedSeconds === 0)) {
+  if (!exoId && !isRunning && elapsedSeconds === 0) {
     return null;
   }
 

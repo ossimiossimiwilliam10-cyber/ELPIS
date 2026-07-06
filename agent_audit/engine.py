@@ -76,6 +76,7 @@ def save_hashes(cache_path, hashes):
 SEVERITY_WEIGHTS = {
     'critical': 100,
     'warning':  40,
+    'medium':   25,
     'info':     10
 }
 

@@ -13,10 +13,12 @@ Strategies de fix supportees :
 - replace_regex        : Remplacement regex avec groupes de capture
 - comment_out          : Commente la ligne avec un message TODO
 - delete_line_or_comment : Supprime si safe, sinon commente
+- custom_python_fixer  : Fixer specialise Python (ex: deduplication JSON)
 """
 
 import os
 import re
+import json
 import shutil
 import datetime
 
@@ -59,6 +61,20 @@ def apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run=False):
     """
     corrections = []
     escalations = []
+
+    # --- Custom Python Fixer (handles special cases like JSON dedup) ---
+    custom_anomalies = [a for a in fixable_anomalies
+                        if _find_rule_for_anomaly(a) and
+                        _find_rule_for_anomaly(a).get('auto_fix_strategy') == 'custom_python_fixer']
+    if custom_anomalies:
+        custom_corr, custom_esc = _apply_custom_python_fixer(
+            filepath, rel_path, custom_anomalies, dry_run
+        )
+        corrections.extend(custom_corr)
+        escalations.extend(custom_esc)
+        # Remove custom anomalies from the standard pipeline
+        fixable_anomalies = [a for a in fixable_anomalies
+                             if a not in custom_anomalies]
 
     # Trier: les delete_line en premier (ordre decroissant de ligne pour preserver les index)
     delete_anomalies = []
@@ -234,3 +250,143 @@ def set_rule_cache(rules):
     """Initialise le cache de regles pour lookup rapide."""
     global _rule_cache
     _rule_cache = {r['id']: r for r in rules if isinstance(r, dict) and 'id' in r}
+
+
+# ---------------------------------------------------------------------------
+# Custom Python Fixers (Specialized correction strategies)
+# ---------------------------------------------------------------------------
+
+def _apply_custom_python_fixer(filepath, rel_path, anomalies, dry_run=False):
+    """
+    Applique des corrections specialisees basees sur Python pur.
+    Dispatche vers le bon sous-fixer selon la regle.
+    """
+    corrections = []
+    escalations = []
+
+    for anomaly in anomalies:
+        rule = _find_rule_for_anomaly(anomaly)
+        if not rule:
+            continue
+
+        rule_id = rule['id']
+
+        if rule_id == 'NO_DUPLICATE_HISTORY_ENTRIES':
+            corr, esc = _fix_duplicate_history_entries(filepath, rel_path, dry_run)
+            corrections.extend(corr)
+            escalations.extend(esc)
+        else:
+            escalations.append({
+                'type': 'UNKNOWN_CUSTOM_FIXER',
+                'file': rel_path,
+                'line': anomaly.get('line', 0),
+                'message': f'Pas de custom_python_fixer implemente pour {rule_id}',
+                'severity': 'warning',
+                'rule_id': rule_id
+            })
+
+    return corrections, escalations
+
+
+def _fix_duplicate_history_entries(filepath, rel_path, dry_run=False):
+    """
+    Fixer specialise : detecte et supprime les doublons dans espoir_historique.json.
+    Un doublon = meme titre + meme matiere + meme action + timestamp < 10 secondes d'ecart.
+    """
+    corrections = []
+    escalations = []
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            history = json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        escalations.append({
+            'type': 'JSON_READ_ERROR',
+            'file': rel_path,
+            'line': 0,
+            'message': f'Impossible de lire le fichier JSON: {e}',
+            'severity': 'critical',
+            'rule_id': 'NO_DUPLICATE_HISTORY_ENTRIES'
+        })
+        return corrections, escalations
+
+    if not isinstance(history, list):
+        return corrections, escalations
+
+    new_history = []
+    seen = {}
+    removed_count = 0
+
+    for entry in history:
+        key = f"{entry.get('titre', '')}_{entry.get('matiere', '')}_{entry.get('action', '')}"
+        ts_str = entry.get('timestamp', '')
+        try:
+            from datetime import datetime as dt
+            ts = dt.fromisoformat(ts_str.replace('Z', '+00:00'))
+            ts_epoch = ts.timestamp()
+        except (ValueError, AttributeError):
+            new_history.append(entry)
+            continue
+
+        if key in seen:
+            last_ts = seen[key]
+            if abs(ts_epoch - last_ts) < 10:
+                removed_count += 1
+                seen[key] = ts_epoch
+                continue
+
+        seen[key] = ts_epoch
+        new_history.append(entry)
+
+    if removed_count > 0:
+        corrections.append({
+            'rule_id': 'NO_DUPLICATE_HISTORY_ENTRIES',
+            'file': rel_path,
+            'line': 0,
+            'before': f'{len(history)} entries',
+            'after': f'{len(new_history)} entries ({removed_count} doublons supprimes)',
+            'action': 'custom_python_fixer',
+            'fix_confidence': 95
+        })
+
+        if not dry_run:
+            # Backup
+            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            timestamp_dir = os.path.join(
+                BACKUPS_DIR or os.path.join(os.path.dirname(__file__), 'backups'),
+                timestamp
+            )
+            try:
+                create_backup(filepath, timestamp_dir)
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    json.dump(new_history, f, indent=4, ensure_ascii=False)
+            except (PermissionError, OSError) as e:
+                escalations.append({
+                    'type': 'WRITE_FAILED',
+                    'file': rel_path,
+                    'line': 0,
+                    'message': f'Impossible d\'ecrire le fichier corrige: {e}',
+                    'severity': 'critical',
+                    'rule_id': 'NO_DUPLICATE_HISTORY_ENTRIES'
+                })
+
+            # Validate: re-read and check JSON is valid
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    validation = json.load(f)
+                if not isinstance(validation, list):
+                    raise ValueError('JSON root n\'est pas un tableau')
+            except (json.JSONDecodeError, ValueError) as e:
+                # ROLLBACK
+                rollback_file(filepath, os.path.join(timestamp_dir, rel_path))
+                escalations.append({
+                    'type': 'JSON_VALIDATION_FAILED',
+                    'file': rel_path,
+                    'line': 0,
+                    'message': f'Rollback apres validation echouee: {e}',
+                    'severity': 'critical',
+                    'rule_id': 'NO_DUPLICATE_HISTORY_ENTRIES'
+                })
+                corrections.clear()
+
+    return corrections, escalations

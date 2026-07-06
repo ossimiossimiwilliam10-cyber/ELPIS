@@ -131,6 +131,7 @@ function Dashboard() {
 
   // Fetch orchestrator via store (global) — triggers on param changes
   useEffect(() => {
+    console.log('Testing immune system');
     const doFetch = async () => {
       try {
         await fetchOrchestrator({ extraTime, fillGap: dailyFillGap });

@@ -437,10 +437,10 @@ if (typeof window !== 'undefined') {
       // But debouncedSaveConfig is not exported. We can just do a fetch here.
       try {
         await Promise.all([
-          fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
-          fetch('/api/cours', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
-          fetch('/api/historique', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
-          fetch('/api/projets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
+          fetch(`${API_URL}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
+          fetch(`${API_URL}/cours`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
+          fetch(`${API_URL}/historique`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
+          fetch(`${API_URL}/projets`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
         ]);
         localStorage.removeItem('elpis_offline_pending_sync');
       } catch (e) {

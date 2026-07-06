@@ -84,7 +84,7 @@ def run_test_suite(test_type='quick'):
 
     try:
         if test_type == 'quick':
-            cmd = ['npm', 'test', '--', os.path.basename(_last_fixed_file())]
+            cmd = ['npm', 'test', '--', '--testPathPattern', os.path.basename(_last_fixed_file())]
         else:
             cmd = ['npm', 'test']
 

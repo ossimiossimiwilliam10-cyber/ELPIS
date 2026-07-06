@@ -1544,3 +1544,163 @@
 [2026-07-06 19:53:18] [WARNING]   [!] Performance degradee: 9.0 fichiers/s
 [2026-07-06 19:53:18] [INFO]   [i] 35 regles inactives. Verifier si elles sont encore pertinentes.
 [2026-07-06 19:53:18] [INFO] Audit termine en 21.8s. Health Score projet: 0/100
+[2026-07-06 20:55:26] [INFO] ============================================================
+[2026-07-06 20:55:26] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 20:55:26] [INFO] ============================================================
+[2026-07-06 20:55:26] [INFO] Regles chargees: 47 (version 3.1.0)
+[2026-07-06 20:55:26] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 20:55:27] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 20:55:35] [INFO] Phase 1 terminee: 196 fichiers, 1580890 lignes
+[2026-07-06 20:55:35] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 20:55:36] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 20:55:36] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 20:55:39] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\Dashboard.jsx
+[2026-07-06 20:55:40] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\components\GlobalChrono.jsx
+[2026-07-06 20:55:58] [INFO]   Passe 1: 1457 anomalies, 0 corrections
+[2026-07-06 20:55:58] [INFO]   Health Score: 0/100
+[2026-07-06 20:55:58] [INFO]   Anomalies: 1509 (C:15 W:525 I:964)
+[2026-07-06 20:55:58] [INFO]   Corrections: 0
+[2026-07-06 20:55:58] [INFO]   Escalades: 1468
+[2026-07-06 20:55:58] [INFO] Agent Health: WARNING
+[2026-07-06 20:55:58] [WARNING]   [!] Problemes dans les regles: Severite invalide pour NO_DUPLICATE_HISTORY_ENTRIES: medium
+[2026-07-06 20:55:58] [WARNING]   [!] Performance degradee: 6.2 fichiers/s
+[2026-07-06 20:55:58] [INFO]   [i] 35 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 20:55:58] [INFO] Audit termine en 31.9s. Health Score projet: 0/100
+[2026-07-06 20:57:28] [INFO] ============================================================
+[2026-07-06 20:57:28] [INFO] Demarrage de l'audit | Mode: RAPPORT SEUL
+[2026-07-06 20:57:28] [INFO] ============================================================
+[2026-07-06 20:57:28] [INFO] Regles chargees: 47 (version 3.1.0)
+[2026-07-06 20:57:28] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 20:57:28] [INFO] Phase 1 terminee: 196 fichiers, 1580920 lignes
+[2026-07-06 20:57:28] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 20:57:28] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 20:57:28] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 20:57:37] [INFO]   Passe 1: 1452 anomalies, 0 corrections
+[2026-07-06 20:57:37] [INFO]   Health Score: 40/100
+[2026-07-06 20:57:37] [INFO]   Anomalies: 1504 (C:15 W:525 I:959)
+[2026-07-06 20:57:37] [INFO]   Corrections: 0
+[2026-07-06 20:57:37] [INFO]   Escalades: 13
+[2026-07-06 20:57:37] [INFO] Agent Health: WARNING
+[2026-07-06 20:57:37] [WARNING]   [!] Problemes dans les regles: Severite invalide pour NO_DUPLICATE_HISTORY_ENTRIES: medium
+[2026-07-06 20:57:37] [INFO]   [i] 35 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 20:57:37] [INFO] Audit termine en 9.6s. Health Score projet: 40/100
+[2026-07-06 21:04:37] [INFO] ============================================================
+[2026-07-06 21:04:37] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 21:04:37] [INFO] ============================================================
+[2026-07-06 21:04:37] [INFO] Regles chargees: 48 (version 3.1.0)
+[2026-07-06 21:04:37] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 21:04:37] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 21:04:37] [INFO] Phase 1 terminee: 196 fichiers, 1578780 lignes
+[2026-07-06 21:04:37] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 21:04:37] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 21:04:37] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 21:04:47] [INFO]   Passe 1: 1469 anomalies, 0 corrections
+[2026-07-06 21:04:47] [INFO]   Health Score: 0/100
+[2026-07-06 21:04:47] [INFO]   Anomalies: 1521 (C:15 W:540 I:966)
+[2026-07-06 21:04:47] [INFO]   Corrections: 0
+[2026-07-06 21:04:47] [INFO]   Escalades: 1481
+[2026-07-06 21:04:47] [INFO] Agent Health: HEALTHY
+[2026-07-06 21:04:47] [INFO]   [i] 36 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 21:04:47] [INFO] Audit termine en 10.6s. Health Score projet: 0/100
+[2026-07-06 21:05:27] [INFO] Agent demarre en mode continu. Intervalle: 1h
+[2026-07-06 21:05:27] [INFO] Mode: SCAN + CORRECTION
+[2026-07-06 21:05:27] [INFO] ============================================================
+[2026-07-06 21:05:27] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 21:05:27] [INFO] ============================================================
+[2026-07-06 21:05:27] [INFO] Regles chargees: 48 (version 3.1.0)
+[2026-07-06 21:05:27] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 21:05:27] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 21:05:27] [INFO] Phase 1 terminee: 196 fichiers, 1581102 lignes
+[2026-07-06 21:05:27] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 21:05:27] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 21:05:27] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 21:05:28] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\Dashboard.jsx
+[2026-07-06 21:05:37] [INFO]   Passe 1: 1470 anomalies, 0 corrections
+[2026-07-06 21:05:37] [INFO]   Health Score: 0/100
+[2026-07-06 21:05:37] [INFO]   Anomalies: 1522 (C:15 W:541 I:966)
+[2026-07-06 21:05:37] [INFO]   Corrections: 0
+[2026-07-06 21:05:37] [INFO]   Escalades: 1482
+[2026-07-06 21:05:37] [INFO] Agent Health: HEALTHY
+[2026-07-06 21:05:37] [INFO]   [i] 36 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 21:05:37] [INFO] Audit termine en 10.5s. Health Score projet: 0/100
+[2026-07-06 21:05:37] [INFO] Prochain audit dans 1h...
+[2026-07-06 21:07:17] [INFO] ============================================================
+[2026-07-06 21:07:17] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 21:07:17] [INFO] ============================================================
+[2026-07-06 21:07:17] [INFO] Regles chargees: 48 (version 3.1.0)
+[2026-07-06 21:07:17] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 21:07:17] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 21:07:18] [INFO] Phase 1 terminee: 196 fichiers, 1581130 lignes
+[2026-07-06 21:07:18] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 21:07:18] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 21:07:18] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 21:07:28] [INFO]   Passe 1: 1471 anomalies, 0 corrections
+[2026-07-06 21:07:28] [INFO]   Health Score: 0/100
+[2026-07-06 21:07:28] [INFO]   Anomalies: 1523 (C:15 W:541 I:967)
+[2026-07-06 21:07:28] [INFO]   Corrections: 0
+[2026-07-06 21:07:28] [INFO]   Escalades: 1483
+[2026-07-06 21:07:28] [INFO] Agent Health: HEALTHY
+[2026-07-06 21:07:28] [INFO]   [i] 36 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 21:07:28] [INFO] Audit termine en 10.4s. Health Score projet: 0/100
+[2026-07-06 21:08:18] [INFO] ============================================================
+[2026-07-06 21:08:18] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 21:08:18] [INFO] ============================================================
+[2026-07-06 21:08:18] [INFO] Regles chargees: 48 (version 3.1.0)
+[2026-07-06 21:08:18] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 21:08:18] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 21:08:18] [INFO] Phase 1 terminee: 196 fichiers, 1581117 lignes
+[2026-07-06 21:08:18] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 21:08:18] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 21:08:18] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 21:08:28] [INFO]   Passe 1: 1471 anomalies, 0 corrections
+[2026-07-06 21:08:28] [INFO]   Health Score: 0/100
+[2026-07-06 21:08:28] [INFO]   Anomalies: 1523 (C:15 W:541 I:967)
+[2026-07-06 21:08:28] [INFO]   Corrections: 0
+[2026-07-06 21:08:28] [INFO]   Escalades: 1483
+[2026-07-06 21:08:28] [INFO] Agent Health: HEALTHY
+[2026-07-06 21:08:28] [INFO]   [i] 36 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 21:08:28] [INFO] Audit termine en 10.7s. Health Score projet: 0/100
+[2026-07-06 21:10:03] [INFO] ============================================================
+[2026-07-06 21:10:03] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 21:10:03] [INFO] ============================================================
+[2026-07-06 21:10:03] [INFO] Regles chargees: 48 (version 3.1.0)
+[2026-07-06 21:10:03] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 21:10:03] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 21:10:04] [INFO] Phase 1 terminee: 196 fichiers, 1581123 lignes
+[2026-07-06 21:10:04] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 21:10:04] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 21:10:04] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 21:10:05] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\Dashboard.jsx
+[2026-07-06 21:10:14] [INFO]   Passe 1: 1473 anomalies, 2 corrections
+[2026-07-06 21:10:16] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\Dashboard.jsx
+[2026-07-06 21:10:24] [INFO]   Passe 2: 1473 anomalies, 1 corrections
+[2026-07-06 21:10:26] [WARNING]   [ROLLBACK] Validation echouee pour interface\web\src\Dashboard.jsx
+[2026-07-06 21:10:35] [INFO]   Passe 3: 1473 anomalies, 1 corrections
+[2026-07-06 21:10:35] [INFO]   Health Score: 0/100
+[2026-07-06 21:10:35] [INFO]   Anomalies: 4471 (C:45 W:1626 I:2800)
+[2026-07-06 21:10:35] [INFO]   Corrections: 4
+[2026-07-06 21:10:35] [INFO]   Escalades: 4409
+[2026-07-06 21:10:35] [INFO] Agent Health: WARNING
+[2026-07-06 21:10:35] [WARNING]   [!] Performance degradee: 6.2 fichiers/s
+[2026-07-06 21:10:35] [INFO]   [i] 35 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 21:10:35] [INFO] Auto-commit de 2 fichier(s) corrige(s)...
+[2026-07-06 21:10:35] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'data\\espoir_historique.json']' returned non-zero exit status 1.
+[2026-07-06 21:10:35] [INFO] Audit termine en 31.6s. Health Score projet: 0/100
+[2026-07-06 21:10:36] [INFO] ============================================================
+[2026-07-06 21:10:36] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-06 21:10:36] [INFO] ============================================================
+[2026-07-06 21:10:36] [INFO] Regles chargees: 48 (version 3.1.0)
+[2026-07-06 21:10:36] [INFO] Etablissement de la baseline de tests...
+[2026-07-06 21:10:36] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-06 21:10:36] [INFO] Phase 1 terminee: 196 fichiers, 1581179 lignes
+[2026-07-06 21:10:36] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-06 21:10:36] [INFO]   -> 52 anomalies globales detectees
+[2026-07-06 21:10:36] [INFO] Phase 3: Scan individuel des fichiers et corrections...
+[2026-07-06 21:10:49] [INFO]   Passe 1: 1470 anomalies, 0 corrections
+[2026-07-06 21:10:49] [INFO]   Health Score: 0/100
+[2026-07-06 21:10:49] [INFO]   Anomalies: 1522 (C:15 W:540 I:967)
+[2026-07-06 21:10:49] [INFO]   Corrections: 0
+[2026-07-06 21:10:49] [INFO]   Escalades: 1477
+[2026-07-06 21:10:49] [INFO] Agent Health: HEALTHY
+[2026-07-06 21:10:49] [INFO]   [i] 36 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-06 21:10:49] [INFO] Audit termine en 13.0s. Health Score projet: 0/100

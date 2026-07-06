@@ -77,14 +77,14 @@ def run_test_suite(test_type='quick'):
     test_type: 'quick' (tests rapides) ou 'full' (tous les tests).
     """
     test_dir = _get_js_test_dir()
-
+    
     # Si pas de package.json dans le dossier de test, on ne peut pas tester (ex: JSON data files)
     if not os.path.exists(os.path.join(test_dir, 'package.json')):
         return True, "Tests ignores (aucun package.json trouve)"
 
     try:
         if test_type == 'quick':
-            cmd = ['npm', 'test', '--', os.path.basename(_last_fixed_file())]
+            cmd = ['npm', 'test', '--', '--testPathPattern', os.path.basename(_last_fixed_file())]
         else:
             cmd = ['npm', 'test']
 

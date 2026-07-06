@@ -1,33 +1,33 @@
 {
-  "last_scan": "2026-07-06T19:53:18.799673",
+  "last_scan": "2026-07-06T21:10:49.494827",
   "mode": "SCAN + CORRECTION",
   "files_scanned": 196,
-  "total_lines_of_code": 1580657,
-  "total_anomalies": 1490,
+  "total_lines_of_code": 1581179,
+  "total_anomalies": 1522,
   "total_corrections": 0,
   "files_corrected": 0,
-  "total_escalations": 1449,
+  "total_escalations": 1477,
   "anomalies_by_severity": {
     "critical": 15,
-    "warning": 524,
-    "info": 951
+    "warning": 540,
+    "info": 967
   },
   "anomalies_by_category": {
     "TESTING": 54,
-    "CODE_QUALITY": 1171,
-    "PYTHON_SPECIFIC": 81,
+    "CODE_QUALITY": 1187,
+    "PYTHON_SPECIFIC": 84,
     "DOCUMENTATION": 12,
-    "ARCHITECTURE": 10,
-    "PERFORMANCE": 89,
+    "ARCHITECTURE": 11,
+    "PERFORMANCE": 94,
     "SECURITY": 13,
     "CSS_SPECIFIC": 45,
     "INTELLIGENCE_MODULE": 1,
     "PWA": 2,
-    "REACT_BEST_PRACTICES": 12
+    "REACT_BEST_PRACTICES": 19
   },
   "rule_stats": {
     "MAGIC_NUMBERS": {
-      "count": 790,
+      "count": 803,
       "severity": "info",
       "category": "CODE_QUALITY",
       "files_affected": 57,
@@ -40,26 +40,26 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 53.0
+      "pct_of_total": 52.8
     },
     "EXCESSIVE_NESTING_DEPTH": {
-      "count": 265,
+      "count": 267,
       "severity": "warning",
       "category": "CODE_QUALITY",
-      "files_affected": 27,
+      "files_affected": 28,
       "top_files": [
         "agent_audit\\engine.py",
+        "agent_audit\\fixers.py",
         "agent_audit\\main.py",
         "agent_audit\\scanners.py",
-        "interface\\bridge\\aiAdapter.js",
-        "interface\\bridge\\coverage\\sorter.js"
+        "interface\\bridge\\aiAdapter.js"
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 17.8
+      "pct_of_total": 17.5
     },
     "EXCESSIVE_FUNCTION_LENGTH": {
-      "count": 114,
+      "count": 115,
       "severity": "warning",
       "category": "CODE_QUALITY",
       "files_affected": 65,
@@ -72,10 +72,10 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 7.7
+      "pct_of_total": 7.6
     },
     "MISSING_TYPE_HINTS": {
-      "count": 77,
+      "count": 80,
       "severity": "info",
       "category": "PYTHON_SPECIFIC",
       "files_affected": 7,
@@ -88,7 +88,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 5.2
+      "pct_of_total": 5.3
     },
     "NO_SYNCHRONOUS_FILE_IO_IN_SERVER": {
       "count": 69,
@@ -104,7 +104,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 4.6
+      "pct_of_total": 4.5
     },
     "MISSING_TEST_FILE": {
       "count": 52,
@@ -120,7 +120,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 3.5
+      "pct_of_total": 3.4
     },
     "NO_IMPORTANT_IN_CSS": {
       "count": 45,
@@ -136,6 +136,22 @@
       "auto_fixed_count": 0,
       "pct_of_total": 3.0
     },
+    "EXCESSIVE_FILE_SIZE": {
+      "count": 11,
+      "severity": "warning",
+      "category": "ARCHITECTURE",
+      "files_affected": 11,
+      "top_files": [
+        "agent_audit\\main.py",
+        "agent_audit\\scanners.py",
+        "interface\\bridge\\moteur\\intelligence.js",
+        "interface\\bridge\\moteur\\orchestrateur.js",
+        "interface\\bridge\\server.js"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 0.7
+    },
     "MISSING_REACT_MEMO": {
       "count": 11,
       "severity": "info",
@@ -147,22 +163,6 @@
         "interface\\web\\src\\components\\CMCompletionModal.jsx",
         "interface\\web\\src\\components\\DisclaimerModal.jsx",
         "interface\\web\\src\\components\\InfoTooltip.jsx"
-      ],
-      "fixable_count": 0,
-      "auto_fixed_count": 0,
-      "pct_of_total": 0.7
-    },
-    "EXCESSIVE_FILE_SIZE": {
-      "count": 10,
-      "severity": "warning",
-      "category": "ARCHITECTURE",
-      "files_affected": 10,
-      "top_files": [
-        "agent_audit\\main.py",
-        "agent_audit\\scanners.py",
-        "interface\\bridge\\moteur\\intelligence.js",
-        "interface\\bridge\\moteur\\orchestrateur.js",
-        "interface\\bridge\\server.js"
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
@@ -216,6 +216,21 @@
       "auto_fixed_count": 0,
       "pct_of_total": 0.5
     },
+    "NO_DOUBLE_SUBMISSION": {
+      "count": 7,
+      "severity": "warning",
+      "category": "REACT_BEST_PRACTICES",
+      "files_affected": 4,
+      "top_files": [
+        "interface\\web\\src\\Dashboard.jsx",
+        "interface\\web\\src\\EntrainementPage.jsx",
+        "interface\\web\\src\\components\\GlobalChrono.jsx",
+        "interface\\web\\src\\store.test.js"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 0.5
+    },
     "USE_OPTIONAL_CHAINING": {
       "count": 6,
       "severity": "info",
@@ -230,6 +245,18 @@
       "fixable_count": 0,
       "auto_fixed_count": 0,
       "pct_of_total": 0.4
+    },
+    "NO_DUPLICATE_HISTORY_ENTRIES": {
+      "count": 5,
+      "severity": "warning",
+      "category": "PERFORMANCE",
+      "files_affected": 1,
+      "top_files": [
+        "data\\espoir_historique.json"
+      ],
+      "fixable_count": 5,
+      "auto_fixed_count": 0,
+      "pct_of_total": 0.3
     },
     "MISSING_USEEFFECT_DEPS": {
       "count": 4,
@@ -369,16 +396,16 @@
       "pct_of_total": 0.1
     }
   },
-  "signal_count": 539,
-  "noise_count": 951,
+  "signal_count": 555,
+  "noise_count": 967,
   "escalation_stats": {
-    "total": 1449,
+    "total": 1477,
     "by_type": {
-      "UNFIXABLE": 1436,
-      "PATTERN_TOO_BROAD": 13
+      "UNFIXABLE": 1463,
+      "PATTERN_TOO_BROAD": 14
     },
     "by_level": {
-      "standard": 1432,
+      "standard": 1460,
       "elevated": 17
     },
     "emergencies": [],
@@ -386,7 +413,7 @@
   },
   "escalations": [
     {
-      "timestamp": "2026-07-06T19:52:57.370597",
+      "timestamp": "2026-07-06T21:10:36.896533",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -399,7 +426,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.371880",
+      "timestamp": "2026-07-06T21:10:36.897325",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -412,7 +439,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.373465",
+      "timestamp": "2026-07-06T21:10:36.897970",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -425,280 +452,293 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.374268",
+      "timestamp": "2026-07-06T21:10:36.898743",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 79,
-      "code_snippet": "    'info':     10",
+      "code_snippet": "    'medium':   25,",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 79\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.375106",
+      "timestamp": "2026-07-06T21:10:36.899857",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 268,
+      "line": 80,
+      "code_snippet": "    'info':     10",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 80\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.900524",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\engine.py",
+      "line": 269,
       "code_snippet": "                f.read(512)",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 268\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 269\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.375817",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MAGIC_NUMBERS",
-      "file": "agent_audit\\engine.py",
-      "line": 295,
-      "code_snippet": "        'anomalies': anomalies[:500],  # Tronquer pour eviter des fichiers JSON geants",
-      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 295\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.376450",
+      "timestamp": "2026-07-06T21:10:36.901018",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 296,
-      "code_snippet": "        'corrections_applied': corrections[:500],",
+      "code_snippet": "        'anomalies': anomalies[:500],  # Tronquer pour eviter des fichiers JSON geants",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 296\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.377144",
+      "timestamp": "2026-07-06T21:10:36.901475",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 297,
-      "code_snippet": "        '_anomalies_truncated': len(anomalies) > 500",
+      "code_snippet": "        'corrections_applied': corrections[:500],",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 297\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.377656",
+      "timestamp": "2026-07-06T21:10:36.901990",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 313,
+      "line": 298,
+      "code_snippet": "        '_anomalies_truncated': len(anomalies) > 500",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 298\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.902562",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\engine.py",
+      "line": 314,
       "code_snippet": "    Calcule un score de sante du projet (0-100) base sur le rapport d'audit.",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 313\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 314\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.378263",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MAGIC_NUMBERS",
-      "file": "agent_audit\\engine.py",
-      "line": 316,
-      "code_snippet": "    - Les regles avec false_positive_risk='high' comptent pour 10% de leur poids normal",
-      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 316\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.379024",
+      "timestamp": "2026-07-06T21:10:36.903815",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 317,
-      "code_snippet": "    - Les regles avec false_positive_risk='medium' comptent pour 40%",
+      "code_snippet": "    - Les regles avec false_positive_risk='high' comptent pour 10% de leur poids normal",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 317\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.379541",
+      "timestamp": "2026-07-06T21:10:36.904725",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 318,
-      "code_snippet": "    - Les regles avec false_positive_risk='low' comptent a 100%",
+      "code_snippet": "    - Les regles avec false_positive_risk='medium' comptent pour 40%",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 318\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.379998",
+      "timestamp": "2026-07-06T21:10:36.905368",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 319,
-      "code_snippet": "    - 0 anomaly critique (low fp risk) + 0 escalation = 100",
+      "code_snippet": "    - Les regles avec false_positive_risk='low' comptent a 100%",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 319\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.380417",
+      "timestamp": "2026-07-06T21:10:36.905931",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 321,
+      "line": 320,
+      "code_snippet": "    - 0 anomaly critique (low fp risk) + 0 escalation = 100",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 320\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.906528",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\engine.py",
+      "line": 322,
       "code_snippet": "    score = 100",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 321\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 322\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.380858",
+      "timestamp": "2026-07-06T21:10:36.907203",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 347,
+      "line": 348,
       "code_snippet": "            # 1 hit = 1.0, 10 hits = 3.5, 100 hits = 6.6, 1000 hits = 10.0",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 347\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 348\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.381309",
+      "timestamp": "2026-07-06T21:10:36.907841",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 369,
+      "line": 370,
       "code_snippet": "    total_penalty = (weighted_crit * 15 + weighted_warn * 3 + weighted_info * 0.5)",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 369\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 370\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.381956",
+      "timestamp": "2026-07-06T21:10:36.908302",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 373,
+      "line": 374,
       "code_snippet": "        total_penalty -= min(report['total_corrections'] * 2, 20)",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 373\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 374\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.382603",
+      "timestamp": "2026-07-06T21:10:36.908765",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 378,
+      "line": 379,
       "code_snippet": "    total_penalty += esc_by_level.get('critical', 0) * 15",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 378\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 379\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.383115",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MAGIC_NUMBERS",
-      "file": "agent_audit\\engine.py",
-      "line": 383,
-      "code_snippet": "    # Score = 100 * e^(-penalty/200)",
-      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 383\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.384016",
+      "timestamp": "2026-07-06T21:10:36.909213",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 384,
-      "code_snippet": "    # - 0 penalty = 100",
+      "code_snippet": "    # Score = 100 * e^(-penalty/200)",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 384\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.384506",
+      "timestamp": "2026-07-06T21:10:36.909720",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 385,
-      "code_snippet": "    # - 200 penalty = 37",
+      "code_snippet": "    # - 0 penalty = 100",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 385\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.384941",
+      "timestamp": "2026-07-06T21:10:36.910212",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
       "line": 386,
-      "code_snippet": "    # - 400 penalty = 14",
+      "code_snippet": "    # - 200 penalty = 37",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 386\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.385438",
+      "timestamp": "2026-07-06T21:10:36.910686",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 388,
+      "line": 387,
+      "code_snippet": "    # - 400 penalty = 14",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 387\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.911112",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\engine.py",
+      "line": 389,
       "code_snippet": "    score = 100 * math.exp(-max(0, total_penalty) / 200)",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 388\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 389\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.385945",
+      "timestamp": "2026-07-06T21:10:36.911644",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\engine.py",
-      "line": 390,
+      "line": 391,
       "code_snippet": "    return max(0, min(100, int(score)))",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 390\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 391\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.386404",
+      "timestamp": "2026-07-06T21:10:36.912132",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -711,7 +751,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.386841",
+      "timestamp": "2026-07-06T21:10:36.912643",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -724,7 +764,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.387356",
+      "timestamp": "2026-07-06T21:10:36.913111",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -737,7 +777,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.388026",
+      "timestamp": "2026-07-06T21:10:36.913617",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -750,215 +790,202 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.389112",
+      "timestamp": "2026-07-06T21:10:36.914254",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\engine.py",
-      "line": 81,
+      "line": 82,
       "code_snippet": "def severity_sort_key(anomaly):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 81\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 82\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.389722",
+      "timestamp": "2026-07-06T21:10:36.914831",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\engine.py",
-      "line": 85,
+      "line": 86,
       "code_snippet": "def prioritize_anomalies(anomalies):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 85\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 86\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.390417",
+      "timestamp": "2026-07-06T21:10:36.915376",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\engine.py",
-      "line": 93,
+      "line": 94,
       "code_snippet": "def should_auto_fix(rule, anomaly_context=None):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 93\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 94\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.391217",
+      "timestamp": "2026-07-06T21:10:36.916448",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\engine.py",
-      "line": 115,
+      "line": 116,
       "code_snippet": "def is_emergency(rule):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 115\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 116\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.391866",
+      "timestamp": "2026-07-06T21:10:36.917055",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
-      "file": "agent_audit\\engine.py",
-      "line": 123,
-      "code_snippet": "def run_multi_pass(scanner_fn, fixer_fn, validator_fn, reporter_fn,\n                   project_root, rules, cache_path, max_passes=3, dry_run=False):",
-      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 123\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.392530",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MISSING_TYPE_HINTS",
-      "file": "agent_audit\\engine.py",
-      "line": 257,
-      "code_snippet": "def _is_text_file(filepath):",
-      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 257\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.393135",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MISSING_TYPE_HINTS",
-      "file": "agent_audit\\engine.py",
-      "line": 273,
-      "code_snippet": "def _build_report(anomalies, corrections, escalations,\n                  files_scanned, total_lines, lines_by_ext,\n                  files_corrected, dry_run):",
-      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 273\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.393626",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MISSING_TYPE_HINTS",
-      "file": "agent_audit\\engine.py",
-      "line": 299,
-      "code_snippet": "def _count_by(items, key):",
-      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 299\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.394100",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MISSING_TYPE_HINTS",
-      "file": "agent_audit\\engine.py",
-      "line": 310,
-      "code_snippet": "def calculate_health_score(report, rules=None):",
-      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 310\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.394769",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
       "file": "agent_audit\\engine.py",
       "line": 124,
-      "code_snippet": "Fonction de 134 lignes (limite: 50)",
-      "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 124\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
+      "code_snippet": "def run_multi_pass(scanner_fn, fixer_fn, validator_fn, reporter_fn,\n                   project_root, rules, cache_path, max_passes=3, dry_run=False):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 124\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.395331",
+      "timestamp": "2026-07-06T21:10:36.917703",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MISSING_TYPE_HINTS",
+      "file": "agent_audit\\engine.py",
+      "line": 258,
+      "code_snippet": "def _is_text_file(filepath):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 258\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.918279",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MISSING_TYPE_HINTS",
+      "file": "agent_audit\\engine.py",
+      "line": 274,
+      "code_snippet": "def _build_report(anomalies, corrections, escalations,\n                  files_scanned, total_lines, lines_by_ext,\n                  files_corrected, dry_run):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 274\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.918869",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MISSING_TYPE_HINTS",
+      "file": "agent_audit\\engine.py",
+      "line": 300,
+      "code_snippet": "def _count_by(items, key):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 300\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.919973",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MISSING_TYPE_HINTS",
+      "file": "agent_audit\\engine.py",
+      "line": 311,
+      "code_snippet": "def calculate_health_score(report, rules=None):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 311\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.920947",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
       "file": "agent_audit\\engine.py",
-      "line": 311,
-      "code_snippet": "Fonction de 80 lignes (limite: 50)",
+      "line": 125,
+      "code_snippet": "Fonction de 134 lignes (limite: 50)",
       "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 311\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 125\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.395884",
+      "timestamp": "2026-07-06T21:10:36.921518",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
+      "file": "agent_audit\\engine.py",
+      "line": 312,
+      "code_snippet": "Fonction de 80 lignes (limite: 50)",
+      "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 312\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.922003",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
       "file": "agent_audit\\engine.py",
       "line": 1,
-      "code_snippet": "390 lignes (limite: 50)",
+      "code_snippet": "391 lignes (limite: 50)",
       "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 1\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.396678",
+      "timestamp": "2026-07-06T21:10:36.922589",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
       "file": "agent_audit\\engine.py",
-      "line": 168,
+      "line": 169,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 168\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 169\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.397144",
+      "timestamp": "2026-07-06T21:10:36.923139",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
       "file": "agent_audit\\engine.py",
-      "line": 172,
+      "line": 173,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 172\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 173\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.397582",
+      "timestamp": "2026-07-06T21:10:36.923851",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
       "file": "agent_audit\\engine.py",
-      "line": 179,
+      "line": 180,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 179\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 180\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.398033",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "file": "agent_audit\\engine.py",
-      "line": 195,
-      "code_snippet": "Nesting depth ~5 (limite: 4)",
-      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 195\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.398533",
+      "timestamp": "2026-07-06T21:10:36.924411",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -971,59 +998,72 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.398995",
+      "timestamp": "2026-07-06T21:10:36.924884",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
       "file": "agent_audit\\engine.py",
-      "line": 198,
-      "code_snippet": "Nesting depth ~6 (limite: 4)",
+      "line": 197,
+      "code_snippet": "Nesting depth ~5 (limite: 4)",
       "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 198\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 197\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.399389",
+      "timestamp": "2026-07-06T21:10:36.925397",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
       "file": "agent_audit\\engine.py",
-      "line": 204,
+      "line": 199,
+      "code_snippet": "Nesting depth ~6 (limite: 4)",
+      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 199\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.925921",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "EXCESSIVE_NESTING_DEPTH",
+      "file": "agent_audit\\engine.py",
+      "line": 205,
       "code_snippet": "Nesting depth ~7 (limite: 4)",
       "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 204\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 205\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.399803",
+      "timestamp": "2026-07-06T21:10:36.927069",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
       "file": "agent_audit\\engine.py",
-      "line": 210,
+      "line": 211,
       "code_snippet": "Nesting depth ~9 (limite: 4)",
       "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 210\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 211\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.400193",
+      "timestamp": "2026-07-06T21:10:36.928429",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
       "file": "agent_audit\\engine.py",
-      "line": 213,
+      "line": 214,
       "code_snippet": "Nesting depth ~6 (limite: 4)",
       "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 213\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\engine.py a la ligne 214\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.404492",
+      "timestamp": "2026-07-06T21:10:36.933831",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1036,7 +1076,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.405131",
+      "timestamp": "2026-07-06T21:10:36.934520",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1049,7 +1089,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.405710",
+      "timestamp": "2026-07-06T21:10:36.935193",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1062,7 +1102,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.406206",
+      "timestamp": "2026-07-06T21:10:36.935829",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1075,7 +1115,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.406746",
+      "timestamp": "2026-07-06T21:10:36.937222",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1088,7 +1128,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.407265",
+      "timestamp": "2026-07-06T21:10:36.937920",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1101,7 +1141,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.407779",
+      "timestamp": "2026-07-06T21:10:36.938658",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1114,7 +1154,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.408269",
+      "timestamp": "2026-07-06T21:10:36.939344",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1127,7 +1167,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.408758",
+      "timestamp": "2026-07-06T21:10:36.939982",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1140,7 +1180,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.409269",
+      "timestamp": "2026-07-06T21:10:36.940700",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1153,7 +1193,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.409829",
+      "timestamp": "2026-07-06T21:10:36.941324",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1166,7 +1206,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.410401",
+      "timestamp": "2026-07-06T21:10:36.941852",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1179,7 +1219,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.411116",
+      "timestamp": "2026-07-06T21:10:36.942373",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1192,189 +1232,306 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.415703",
+      "timestamp": "2026-07-06T21:10:36.950277",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\fixers.py",
-      "line": 133,
+      "line": 149,
       "code_snippet": "            if rule.get('fix_confidence', 0) >= 90:",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 133\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 149\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.416402",
+      "timestamp": "2026-07-06T21:10:36.951431",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\fixers.py",
-      "line": 205,
+      "line": 221,
       "code_snippet": "def cleanup_old_backups(max_keep=10):",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 205\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 221\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.416963",
+      "timestamp": "2026-07-06T21:10:36.952057",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\fixers.py",
+      "line": 294,
+      "code_snippet": "    Un doublon = meme titre + meme matiere + meme action + timestamp < 10 secondes d'ecart.",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 294\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.952671",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\fixers.py",
+      "line": 325,
+      "code_snippet": "            ts = dt.fromisoformat(ts_str.replace('Z', '+00:00'))",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 325\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.954114",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\fixers.py",
+      "line": 333,
+      "code_snippet": "            if abs(ts_epoch - last_ts) < 10:",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 333\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.955271",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MAGIC_NUMBERS",
+      "file": "agent_audit\\fixers.py",
+      "line": 349,
+      "code_snippet": "            'fix_confidence': 95",
+      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 349\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.955954",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_TODO_WITHOUT_TICKET",
       "file": "agent_audit\\fixers.py",
-      "line": 126,
+      "line": 142,
       "code_snippet": "            prefix = fix.get('comment_prefix', '// TODO [AUDIT]: Review this line')",
       "diagnosis": "La regle 'NO_TODO_WITHOUT_TICKET' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 126\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:UNTICKETED_TODO' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 142\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:UNTICKETED_TODO' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.417853",
+      "timestamp": "2026-07-06T21:10:36.956526",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_TODO_WITHOUT_TICKET",
       "file": "agent_audit\\fixers.py",
-      "line": 136,
+      "line": 152,
       "code_snippet": "                prefix = fix.get('comment_prefix', '// TODO [AUDIT]: Review this line')",
       "diagnosis": "La regle 'NO_TODO_WITHOUT_TICKET' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 136\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:UNTICKETED_TODO' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 152\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:UNTICKETED_TODO' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.418542",
+      "timestamp": "2026-07-06T21:10:36.957063",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 28,
+      "line": 30,
       "code_snippet": "def set_backup_dir(path):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 28\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 30\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.419231",
+      "timestamp": "2026-07-06T21:10:36.957540",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 32,
+      "line": 34,
       "code_snippet": "def create_backup(filepath, timestamp_dir):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 32\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 34\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.419965",
+      "timestamp": "2026-07-06T21:10:36.958064",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 40,
+      "line": 42,
       "code_snippet": "def _get_project_root():",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 40\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 42\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.420802",
+      "timestamp": "2026-07-06T21:10:36.958567",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 48,
+      "line": 50,
       "code_snippet": "def apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run=False):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 48\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 50\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.421361",
+      "timestamp": "2026-07-06T21:10:36.959125",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 189,
+      "line": 205,
       "code_snippet": "def rollback_file(filepath, backup_path):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 189\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 205\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.422025",
+      "timestamp": "2026-07-06T21:10:36.981205",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 204,
+      "line": 220,
       "code_snippet": "def cleanup_old_backups(max_keep=10):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 204\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 220\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.422710",
+      "timestamp": "2026-07-06T21:10:36.982158",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 223,
+      "line": 239,
       "code_snippet": "def _find_rule_for_anomaly(anomaly):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 223\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 239\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.423353",
+      "timestamp": "2026-07-06T21:10:36.982806",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\fixers.py",
-      "line": 232,
+      "line": 248,
       "code_snippet": "def set_rule_cache(rules):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 232\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 248\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.424003",
+      "timestamp": "2026-07-06T21:10:36.983470",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MISSING_TYPE_HINTS",
+      "file": "agent_audit\\fixers.py",
+      "line": 258,
+      "code_snippet": "def _apply_custom_python_fixer(filepath, rel_path, anomalies, dry_run=False):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 258\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.984079",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MISSING_TYPE_HINTS",
+      "file": "agent_audit\\fixers.py",
+      "line": 289,
+      "code_snippet": "def _fix_duplicate_history_entries(filepath, rel_path, dry_run=False):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 289\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.984695",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
       "file": "agent_audit\\fixers.py",
-      "line": 49,
-      "code_snippet": "Fonction de 141 lignes (limite: 50)",
+      "line": 51,
+      "code_snippet": "Fonction de 155 lignes (limite: 50)",
       "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 49\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 51\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.424739",
+      "timestamp": "2026-07-06T21:10:36.985922",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
+      "file": "agent_audit\\fixers.py",
+      "line": 291,
+      "code_snippet": "Fonction de 102 lignes (limite: 50)",
+      "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 291\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.986971",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
       "file": "agent_audit\\fixers.py",
       "line": 1,
-      "code_snippet": "236 lignes (limite: 50)",
+      "code_snippet": "392 lignes (limite: 50)",
       "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 1\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.429013",
+      "timestamp": "2026-07-06T21:10:36.988197",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "EXCESSIVE_NESTING_DEPTH",
+      "file": "agent_audit\\fixers.py",
+      "line": 67,
+      "code_snippet": "Nesting depth ~6 (limite: 4)",
+      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 67\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.988894",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "EXCESSIVE_NESTING_DEPTH",
+      "file": "agent_audit\\fixers.py",
+      "line": 77,
+      "code_snippet": "Nesting depth ~7 (limite: 4)",
+      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\fixers.py a la ligne 77\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:36.993240",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1387,7 +1544,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.429755",
+      "timestamp": "2026-07-06T21:10:36.994031",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1400,7 +1557,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.430362",
+      "timestamp": "2026-07-06T21:10:36.994619",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1413,7 +1570,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.430920",
+      "timestamp": "2026-07-06T21:10:36.995109",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1426,7 +1583,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.431439",
+      "timestamp": "2026-07-06T21:10:36.995602",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1439,7 +1596,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.432014",
+      "timestamp": "2026-07-06T21:10:36.996087",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1452,7 +1609,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.432566",
+      "timestamp": "2026-07-06T21:10:36.996525",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1465,7 +1622,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.433056",
+      "timestamp": "2026-07-06T21:10:36.996965",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1478,7 +1635,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.450607",
+      "timestamp": "2026-07-06T21:10:36.997948",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1491,7 +1648,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.451402",
+      "timestamp": "2026-07-06T21:10:36.999367",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1504,7 +1661,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.452015",
+      "timestamp": "2026-07-06T21:10:37.000976",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1517,7 +1674,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.452539",
+      "timestamp": "2026-07-06T21:10:37.002088",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1530,7 +1687,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.453029",
+      "timestamp": "2026-07-06T21:10:37.003391",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1543,7 +1700,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.453514",
+      "timestamp": "2026-07-06T21:10:37.004491",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1556,7 +1713,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.464273",
+      "timestamp": "2026-07-06T21:10:37.017497",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1569,7 +1726,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.465317",
+      "timestamp": "2026-07-06T21:10:37.018266",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1582,7 +1739,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.466173",
+      "timestamp": "2026-07-06T21:10:37.018818",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1595,7 +1752,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.466944",
+      "timestamp": "2026-07-06T21:10:37.019514",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1608,7 +1765,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.467840",
+      "timestamp": "2026-07-06T21:10:37.020065",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1621,7 +1778,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.468737",
+      "timestamp": "2026-07-06T21:10:37.020553",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1634,7 +1791,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.469469",
+      "timestamp": "2026-07-06T21:10:37.021111",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1647,7 +1804,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.470161",
+      "timestamp": "2026-07-06T21:10:37.021627",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1660,7 +1817,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.470780",
+      "timestamp": "2026-07-06T21:10:37.022107",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1673,7 +1830,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.471643",
+      "timestamp": "2026-07-06T21:10:37.022569",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1686,7 +1843,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.472488",
+      "timestamp": "2026-07-06T21:10:37.023036",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1699,7 +1856,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.473266",
+      "timestamp": "2026-07-06T21:10:37.023543",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1712,7 +1869,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.474019",
+      "timestamp": "2026-07-06T21:10:37.023983",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1725,7 +1882,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.474789",
+      "timestamp": "2026-07-06T21:10:37.024784",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1738,7 +1895,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.476206",
+      "timestamp": "2026-07-06T21:10:37.025531",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1751,7 +1908,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.476889",
+      "timestamp": "2026-07-06T21:10:37.026231",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1764,7 +1921,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.477484",
+      "timestamp": "2026-07-06T21:10:37.027400",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1777,7 +1934,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.477989",
+      "timestamp": "2026-07-06T21:10:37.028226",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1790,7 +1947,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.478556",
+      "timestamp": "2026-07-06T21:10:37.029446",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1803,7 +1960,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.479074",
+      "timestamp": "2026-07-06T21:10:37.030201",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1816,7 +1973,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.479690",
+      "timestamp": "2026-07-06T21:10:37.030727",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1829,7 +1986,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.480211",
+      "timestamp": "2026-07-06T21:10:37.031199",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1842,7 +1999,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.480744",
+      "timestamp": "2026-07-06T21:10:37.031729",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1855,7 +2012,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.481217",
+      "timestamp": "2026-07-06T21:10:37.032210",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1868,7 +2025,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.481626",
+      "timestamp": "2026-07-06T21:10:37.032657",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1881,7 +2038,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.482079",
+      "timestamp": "2026-07-06T21:10:37.033108",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1894,7 +2051,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.482485",
+      "timestamp": "2026-07-06T21:10:37.033594",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1907,7 +2064,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.482872",
+      "timestamp": "2026-07-06T21:10:37.034106",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1920,7 +2077,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.483320",
+      "timestamp": "2026-07-06T21:10:37.034592",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1933,7 +2090,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.483705",
+      "timestamp": "2026-07-06T21:10:37.035025",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1946,7 +2103,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.484092",
+      "timestamp": "2026-07-06T21:10:37.035486",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1959,7 +2116,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.484488",
+      "timestamp": "2026-07-06T21:10:37.036101",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FILE_SIZE",
@@ -1972,7 +2129,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.484879",
+      "timestamp": "2026-07-06T21:10:37.036640",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1985,7 +2142,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.485246",
+      "timestamp": "2026-07-06T21:10:37.037240",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1998,7 +2155,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.485672",
+      "timestamp": "2026-07-06T21:10:37.037957",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2011,7 +2168,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.486084",
+      "timestamp": "2026-07-06T21:10:37.038556",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2024,7 +2181,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.486462",
+      "timestamp": "2026-07-06T21:10:37.039015",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2037,7 +2194,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.486843",
+      "timestamp": "2026-07-06T21:10:37.039478",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2050,7 +2207,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.487238",
+      "timestamp": "2026-07-06T21:10:37.039969",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2063,7 +2220,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.488037",
+      "timestamp": "2026-07-06T21:10:37.040568",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2076,7 +2233,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.489254",
+      "timestamp": "2026-07-06T21:10:37.041389",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2089,7 +2246,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.489934",
+      "timestamp": "2026-07-06T21:10:37.042371",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2102,7 +2259,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.492431",
+      "timestamp": "2026-07-06T21:10:37.043369",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2115,7 +2272,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.493765",
+      "timestamp": "2026-07-06T21:10:37.044154",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2128,7 +2285,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.494499",
+      "timestamp": "2026-07-06T21:10:37.044768",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2141,7 +2298,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.496330",
+      "timestamp": "2026-07-06T21:10:37.045495",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2154,7 +2311,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.513317",
+      "timestamp": "2026-07-06T21:10:37.064298",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2167,7 +2324,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.514067",
+      "timestamp": "2026-07-06T21:10:37.065064",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2180,7 +2337,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.514595",
+      "timestamp": "2026-07-06T21:10:37.065641",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2193,7 +2350,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.515102",
+      "timestamp": "2026-07-06T21:10:37.066187",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2206,7 +2363,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.515708",
+      "timestamp": "2026-07-06T21:10:37.066678",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2219,7 +2376,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.516196",
+      "timestamp": "2026-07-06T21:10:37.067485",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2232,7 +2389,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.516760",
+      "timestamp": "2026-07-06T21:10:37.068024",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2245,7 +2402,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.517230",
+      "timestamp": "2026-07-06T21:10:37.068500",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2258,7 +2415,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.517696",
+      "timestamp": "2026-07-06T21:10:37.069159",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2271,7 +2428,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.518393",
+      "timestamp": "2026-07-06T21:10:37.069800",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2284,7 +2441,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.519822",
+      "timestamp": "2026-07-06T21:10:37.070338",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2297,7 +2454,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.520392",
+      "timestamp": "2026-07-06T21:10:37.070811",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2310,7 +2467,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.520917",
+      "timestamp": "2026-07-06T21:10:37.071278",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2323,7 +2480,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.521440",
+      "timestamp": "2026-07-06T21:10:37.071785",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2336,7 +2493,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.522264",
+      "timestamp": "2026-07-06T21:10:37.072306",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2349,7 +2506,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.523147",
+      "timestamp": "2026-07-06T21:10:37.072801",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2362,7 +2519,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.525564",
+      "timestamp": "2026-07-06T21:10:37.073257",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2375,7 +2532,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.527303",
+      "timestamp": "2026-07-06T21:10:37.073701",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2388,7 +2545,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.529140",
+      "timestamp": "2026-07-06T21:10:37.074208",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2401,7 +2558,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.530743",
+      "timestamp": "2026-07-06T21:10:37.074715",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2414,7 +2571,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.531842",
+      "timestamp": "2026-07-06T21:10:37.075267",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FILE_SIZE",
@@ -2427,7 +2584,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.532802",
+      "timestamp": "2026-07-06T21:10:37.075719",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2440,7 +2597,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.533291",
+      "timestamp": "2026-07-06T21:10:37.076159",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2453,7 +2610,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.533708",
+      "timestamp": "2026-07-06T21:10:37.076619",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2466,7 +2623,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.534173",
+      "timestamp": "2026-07-06T21:10:37.077132",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2479,7 +2636,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.534743",
+      "timestamp": "2026-07-06T21:10:37.077594",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2492,7 +2649,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.535337",
+      "timestamp": "2026-07-06T21:10:37.078026",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2505,7 +2662,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.535943",
+      "timestamp": "2026-07-06T21:10:37.078442",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2518,7 +2675,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.540311",
+      "timestamp": "2026-07-06T21:10:37.082394",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2531,7 +2688,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.541073",
+      "timestamp": "2026-07-06T21:10:37.083143",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2544,72 +2701,72 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.541727",
+      "timestamp": "2026-07-06T21:10:37.083803",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\validators.py",
-      "line": 80,
+      "line": 93,
       "code_snippet": "            capture_output=True, text=True, timeout=120,",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 80\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 93\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.542173",
+      "timestamp": "2026-07-06T21:10:37.084304",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\validators.py",
-      "line": 83,
+      "line": 96,
       "code_snippet": "        return result.returncode == 0, result.stdout[-500:] + result.stderr[-500:]",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 83\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 96\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.542608",
+      "timestamp": "2026-07-06T21:10:37.084794",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\validators.py",
-      "line": 91,
+      "line": 104,
       "code_snippet": "            capture_output=True, text=True, timeout=120,",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 91\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 104\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.543022",
+      "timestamp": "2026-07-06T21:10:37.085473",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\validators.py",
-      "line": 94,
+      "line": 107,
       "code_snippet": "        return result.returncode == 0, result.stdout[-500:] + result.stderr[-500:]",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 94\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 107\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.543421",
+      "timestamp": "2026-07-06T21:10:37.086558",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
       "file": "agent_audit\\validators.py",
-      "line": 123,
+      "line": 136,
       "code_snippet": "            capture_output=True, text=True, timeout=30,",
       "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 123\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 136\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.543836",
+      "timestamp": "2026-07-06T21:10:37.087255",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2622,7 +2779,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.544294",
+      "timestamp": "2026-07-06T21:10:37.087984",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2635,7 +2792,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.544769",
+      "timestamp": "2026-07-06T21:10:37.088548",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2648,111 +2805,124 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.545171",
+      "timestamp": "2026-07-06T21:10:37.089040",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\validators.py",
       "line": 65,
-      "code_snippet": "def run_test_suite(test_type='quick'):",
+      "code_snippet": "def _get_js_test_dir():",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 65\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.545582",
+      "timestamp": "2026-07-06T21:10:37.089528",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\validators.py",
-      "line": 99,
+      "line": 73,
+      "code_snippet": "def run_test_suite(test_type='quick'):",
+      "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 73\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "rule_improvement_suggestion": null,
+      "details": {}
+    },
+    {
+      "timestamp": "2026-07-06T21:10:37.090086",
+      "type": "UNFIXABLE",
+      "level": "standard",
+      "rule_id": "MISSING_TYPE_HINTS",
+      "file": "agent_audit\\validators.py",
+      "line": 112,
       "code_snippet": "def _last_fixed_file():",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 99\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 112\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.545984",
+      "timestamp": "2026-07-06T21:10:37.090658",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\validators.py",
-      "line": 103,
+      "line": 116,
       "code_snippet": "def mark_last_fixed(filepath):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 103\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 116\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.546538",
+      "timestamp": "2026-07-06T21:10:37.091153",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\validators.py",
-      "line": 111,
+      "line": 124,
       "code_snippet": "def run_lint_check(filepath):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 111\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 124\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.547190",
+      "timestamp": "2026-07-06T21:10:37.091691",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\validators.py",
-      "line": 136,
+      "line": 149,
       "code_snippet": "def validate_after_fix(filepath, run_tests=True):",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 136\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 149\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.547923",
+      "timestamp": "2026-07-06T21:10:37.092165",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\validators.py",
-      "line": 166,
+      "line": 179,
       "code_snippet": "def run_pre_fix_baseline():",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 166\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 179\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.548417",
+      "timestamp": "2026-07-06T21:10:37.092677",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
       "file": "agent_audit\\validators.py",
-      "line": 173,
+      "line": 186,
       "code_snippet": "def get_baseline_result():",
       "diagnosis": "La regle 'MISSING_TYPE_HINTS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 173\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
+      "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 186\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire '# AUDIT_SUPPRESS:MISSING_TYPE_HINTS' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.548815",
+      "timestamp": "2026-07-06T21:10:37.093143",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
       "file": "agent_audit\\validators.py",
       "line": 1,
-      "code_snippet": "175 lignes (limite: 50)",
+      "code_snippet": "188 lignes (limite: 50)",
       "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier agent_audit\\validators.py a la ligne 1\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.550020",
+      "timestamp": "2026-07-06T21:10:37.094281",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2765,7 +2935,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.550485",
+      "timestamp": "2026-07-06T21:10:37.094776",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2778,7 +2948,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.551638",
+      "timestamp": "2026-07-06T21:10:37.095798",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2791,7 +2961,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.552125",
+      "timestamp": "2026-07-06T21:10:37.096363",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2804,7 +2974,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.625874",
+      "timestamp": "2026-07-06T21:10:37.171737",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2817,7 +2987,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.626749",
+      "timestamp": "2026-07-06T21:10:37.172566",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2830,7 +3000,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T19:52:57.627315",
+      "timestamp": "2026-07-06T21:10:37.173384",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -2839,149 +3009,6 @@
       "code_snippet": "        const rawCours = JSON.parse(fs.readFileSync(coursPath, 'utf-8'));",
       "diagnosis": "La regle 'NO_SYNCHRONOUS_FILE_IO_IN_SERVER' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
       "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 26\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NO_SYNC_IO' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.628133",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 50,
-      "code_snippet": "        cours = fs.readFileSync(coursPath, 'utf-8');",
-      "diagnosis": "La regle 'NO_SYNCHRONOUS_FILE_IO_IN_SERVER' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 50\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NO_SYNC_IO' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.628634",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 55,
-      "code_snippet": "    if (fs.existsSync(histPath)) {",
-      "diagnosis": "La regle 'NO_SYNCHRONOUS_FILE_IO_IN_SERVER' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 55\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NO_SYNC_IO' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.629540",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 57,
-      "code_snippet": "        const rawHist = JSON.parse(fs.readFileSync(histPath, 'utf-8'));",
-      "diagnosis": "La regle 'NO_SYNCHRONOUS_FILE_IO_IN_SERVER' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 57\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NO_SYNC_IO' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.630120",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "MAGIC_NUMBERS",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 129,
-      "code_snippet": "        max_tokens: 1000,",
-      "diagnosis": "La regle 'MAGIC_NUMBERS' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 129\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:MAGIC_NUMBERS' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.630848",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 34,
-      "code_snippet": "Fonction de 57 lignes (limite: 50)",
-      "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 34\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.631553",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 1,
-      "code_snippet": "150 lignes (limite: 50)",
-      "diagnosis": "La regle 'EXCESSIVE_FUNCTION_LENGTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 1\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:FUNC_LENGTH' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.632170",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 30,
-      "code_snippet": "Nesting depth ~6 (limite: 4)",
-      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 30\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.632952",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 32,
-      "code_snippet": "Nesting depth ~8 (limite: 4)",
-      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 32\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.633710",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 34,
-      "code_snippet": "Nesting depth ~10 (limite: 4)",
-      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 34\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.634402",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 37,
-      "code_snippet": "Nesting depth ~12 (limite: 4)",
-      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 37\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
-      "rule_improvement_suggestion": null,
-      "details": {}
-    },
-    {
-      "timestamp": "2026-07-06T19:52:57.635022",
-      "type": "UNFIXABLE",
-      "level": "standard",
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "file": "interface\\bridge\\aiAdapter.js",
-      "line": 38,
-      "code_snippet": "Nesting depth ~12 (limite: 4)",
-      "diagnosis": "La regle 'EXCESSIVE_NESTING_DEPTH' a detecte une anomalie, mais la correction automatique est desactivee (requires_human: true). Raison probable : la correction est trop contextuelle ou risquee pour etre automatisee.",
-      "recommendation": "1. Ouvrir le fichier interface\\bridge\\aiAdapter.js a la ligne 38\n2. Corriger manuellement selon la description de la regle\n3. OU si c'est un faux positif, ajouter le commentaire 'AUDIT_SUPPRESS:NESTING_DEPTH' sur la ligne precedente",
       "rule_improvement_suggestion": null,
       "details": {}
     }
@@ -3764,6 +3791,20 @@
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
       "line": 79,
+      "code_snippet": "    'medium':   25,",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\engine.py",
+      "line": 80,
       "code_snippet": "    'info':     10",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3777,7 +3818,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 268,
+      "line": 269,
       "code_snippet": "                f.read(512)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3791,7 +3832,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 295,
+      "line": 296,
       "code_snippet": "        'anomalies': anomalies[:500],  # Tronquer pour eviter des fichiers JSON geants",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3805,7 +3846,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 296,
+      "line": 297,
       "code_snippet": "        'corrections_applied': corrections[:500],",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3819,7 +3860,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 297,
+      "line": 298,
       "code_snippet": "        '_anomalies_truncated': len(anomalies) > 500",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3833,7 +3874,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 313,
+      "line": 314,
       "code_snippet": "    Calcule un score de sante du projet (0-100) base sur le rapport d'audit.",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3847,7 +3888,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 316,
+      "line": 317,
       "code_snippet": "    - Les regles avec false_positive_risk='high' comptent pour 10% de leur poids normal",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3861,7 +3902,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 317,
+      "line": 318,
       "code_snippet": "    - Les regles avec false_positive_risk='medium' comptent pour 40%",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3875,7 +3916,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 318,
+      "line": 319,
       "code_snippet": "    - Les regles avec false_positive_risk='low' comptent a 100%",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3889,7 +3930,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 319,
+      "line": 320,
       "code_snippet": "    - 0 anomaly critique (low fp risk) + 0 escalation = 100",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3903,7 +3944,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 321,
+      "line": 322,
       "code_snippet": "    score = 100",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3917,7 +3958,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 347,
+      "line": 348,
       "code_snippet": "            # 1 hit = 1.0, 10 hits = 3.5, 100 hits = 6.6, 1000 hits = 10.0",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3931,7 +3972,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 369,
+      "line": 370,
       "code_snippet": "    total_penalty = (weighted_crit * 15 + weighted_warn * 3 + weighted_info * 0.5)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3945,7 +3986,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 373,
+      "line": 374,
       "code_snippet": "        total_penalty -= min(report['total_corrections'] * 2, 20)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3959,7 +4000,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 378,
+      "line": 379,
       "code_snippet": "    total_penalty += esc_by_level.get('critical', 0) * 15",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3973,7 +4014,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 383,
+      "line": 384,
       "code_snippet": "    # Score = 100 * e^(-penalty/200)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -3987,7 +4028,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 384,
+      "line": 385,
       "code_snippet": "    # - 0 penalty = 100",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4001,7 +4042,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 385,
+      "line": 386,
       "code_snippet": "    # - 200 penalty = 37",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4015,7 +4056,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 386,
+      "line": 387,
       "code_snippet": "    # - 400 penalty = 14",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4029,7 +4070,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 388,
+      "line": 389,
       "code_snippet": "    score = 100 * math.exp(-max(0, total_penalty) / 200)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4043,7 +4084,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 390,
+      "line": 391,
       "code_snippet": "    return max(0, min(100, int(score)))",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4113,7 +4154,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 81,
+      "line": 82,
       "code_snippet": "def severity_sort_key(anomaly):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4127,7 +4168,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 85,
+      "line": 86,
       "code_snippet": "def prioritize_anomalies(anomalies):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4141,7 +4182,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 93,
+      "line": 94,
       "code_snippet": "def should_auto_fix(rule, anomaly_context=None):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4155,7 +4196,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 115,
+      "line": 116,
       "code_snippet": "def is_emergency(rule):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4169,7 +4210,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 123,
+      "line": 124,
       "code_snippet": "def run_multi_pass(scanner_fn, fixer_fn, validator_fn, reporter_fn,\n                   project_root, rules, cache_path, max_passes=3, dry_run=False):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4183,7 +4224,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 257,
+      "line": 258,
       "code_snippet": "def _is_text_file(filepath):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4197,7 +4238,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 273,
+      "line": 274,
       "code_snippet": "def _build_report(anomalies, corrections, escalations,\n                  files_scanned, total_lines, lines_by_ext,\n                  files_corrected, dry_run):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4211,7 +4252,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 299,
+      "line": 300,
       "code_snippet": "def _count_by(items, key):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4225,7 +4266,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\engine.py",
-      "line": 310,
+      "line": 311,
       "code_snippet": "def calculate_health_score(report, rules=None):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4239,7 +4280,7 @@
       "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 124,
+      "line": 125,
       "code_snippet": "Fonction de 134 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4253,7 +4294,7 @@
       "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 311,
+      "line": 312,
       "code_snippet": "Fonction de 80 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4268,7 +4309,7 @@
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
       "line": 1,
-      "code_snippet": "390 lignes (limite: 50)",
+      "code_snippet": "391 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -4281,7 +4322,7 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 168,
+      "line": 169,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4295,7 +4336,7 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 172,
+      "line": 173,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4309,21 +4350,7 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 179,
-      "code_snippet": "Nesting depth ~5 (limite: 4)",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nesting > 4 niveaux. Utilisez le pattern 'early return' pour aplatir la structure.",
-      "_suppression_comment": "AUDIT_SUPPRESS:NESTING_DEPTH"
-    },
-    {
-      "rule_id": "EXCESSIVE_NESTING_DEPTH",
-      "severity": "warning",
-      "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
-      "category": "CODE_QUALITY",
-      "file": "agent_audit\\engine.py",
-      "line": 195,
+      "line": 180,
       "code_snippet": "Nesting depth ~5 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4351,7 +4378,21 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 198,
+      "line": 197,
+      "code_snippet": "Nesting depth ~5 (limite: 4)",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nesting > 4 niveaux. Utilisez le pattern 'early return' pour aplatir la structure.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NESTING_DEPTH"
+    },
+    {
+      "rule_id": "EXCESSIVE_NESTING_DEPTH",
+      "severity": "warning",
+      "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\engine.py",
+      "line": 199,
       "code_snippet": "Nesting depth ~6 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4365,7 +4406,7 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 204,
+      "line": 205,
       "code_snippet": "Nesting depth ~7 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4379,7 +4420,7 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 210,
+      "line": 211,
       "code_snippet": "Nesting depth ~9 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4393,7 +4434,7 @@
       "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\engine.py",
-      "line": 213,
+      "line": 214,
       "code_snippet": "Nesting depth ~6 (limite: 4)",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4589,7 +4630,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\fixers.py",
-      "line": 133,
+      "line": 149,
       "code_snippet": "            if rule.get('fix_confidence', 0) >= 90:",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4603,8 +4644,64 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\fixers.py",
-      "line": 205,
+      "line": 221,
       "code_snippet": "def cleanup_old_backups(max_keep=10):",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\fixers.py",
+      "line": 294,
+      "code_snippet": "    Un doublon = meme titre + meme matiere + meme action + timestamp < 10 secondes d'ecart.",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\fixers.py",
+      "line": 325,
+      "code_snippet": "            ts = dt.fromisoformat(ts_str.replace('Z', '+00:00'))",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\fixers.py",
+      "line": 333,
+      "code_snippet": "            if abs(ts_epoch - last_ts) < 10:",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
+      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "MAGIC_NUMBERS",
+      "severity": "info",
+      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\fixers.py",
+      "line": 349,
+      "code_snippet": "            'fix_confidence': 95",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -4617,7 +4714,7 @@
       "description": "Commentaire TODO sans reference a un ticket/issue.",
       "category": "DOCUMENTATION",
       "file": "agent_audit\\fixers.py",
-      "line": 126,
+      "line": 142,
       "code_snippet": "            prefix = fix.get('comment_prefix', '// TODO [AUDIT]: Review this line')",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4631,7 +4728,7 @@
       "description": "Commentaire TODO sans reference a un ticket/issue.",
       "category": "DOCUMENTATION",
       "file": "agent_audit\\fixers.py",
-      "line": 136,
+      "line": 152,
       "code_snippet": "                prefix = fix.get('comment_prefix', '// TODO [AUDIT]: Review this line')",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4645,7 +4742,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 28,
+      "line": 30,
       "code_snippet": "def set_backup_dir(path):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4659,7 +4756,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 32,
+      "line": 34,
       "code_snippet": "def create_backup(filepath, timestamp_dir):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4673,7 +4770,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 40,
+      "line": 42,
       "code_snippet": "def _get_project_root():",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4687,7 +4784,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 48,
+      "line": 50,
       "code_snippet": "def apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run=False):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4701,7 +4798,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 189,
+      "line": 205,
       "code_snippet": "def rollback_file(filepath, backup_path):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4715,7 +4812,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 204,
+      "line": 220,
       "code_snippet": "def cleanup_old_backups(max_keep=10):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4729,7 +4826,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 223,
+      "line": 239,
       "code_snippet": "def _find_rule_for_anomaly(anomaly):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -4743,8 +4840,36 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\fixers.py",
-      "line": 232,
+      "line": 248,
       "code_snippet": "def set_rule_cache(rules):",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Fonction sans type hints. Ajoutez les annotations de type.",
+      "_suppression_comment": "# AUDIT_SUPPRESS:MISSING_TYPE_HINTS"
+    },
+    {
+      "rule_id": "MISSING_TYPE_HINTS",
+      "severity": "info",
+      "description": "Fonction Python sans annotations de type.",
+      "category": "PYTHON_SPECIFIC",
+      "file": "agent_audit\\fixers.py",
+      "line": 258,
+      "code_snippet": "def _apply_custom_python_fixer(filepath, rel_path, anomalies, dry_run=False):",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Fonction sans type hints. Ajoutez les annotations de type.",
+      "_suppression_comment": "# AUDIT_SUPPRESS:MISSING_TYPE_HINTS"
+    },
+    {
+      "rule_id": "MISSING_TYPE_HINTS",
+      "severity": "info",
+      "description": "Fonction Python sans annotations de type.",
+      "category": "PYTHON_SPECIFIC",
+      "file": "agent_audit\\fixers.py",
+      "line": 289,
+      "code_snippet": "def _fix_duplicate_history_entries(filepath, rel_path, dry_run=False):",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -4757,8 +4882,22 @@
       "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\fixers.py",
-      "line": 49,
-      "code_snippet": "Fonction de 141 lignes (limite: 50)",
+      "line": 51,
+      "code_snippet": "Fonction de 155 lignes (limite: 50)",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Fonction > 50 lignes. Refactorisez en extrayant des sous-fonctions.",
+      "_suppression_comment": "AUDIT_SUPPRESS:FUNC_LENGTH"
+    },
+    {
+      "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
+      "severity": "warning",
+      "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\fixers.py",
+      "line": 291,
+      "code_snippet": "Fonction de 102 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -4772,12 +4911,40 @@
       "category": "CODE_QUALITY",
       "file": "agent_audit\\fixers.py",
       "line": 1,
-      "code_snippet": "236 lignes (limite: 50)",
+      "code_snippet": "392 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
       "_escalation_message": "Fonction > 50 lignes. Refactorisez en extrayant des sous-fonctions.",
       "_suppression_comment": "AUDIT_SUPPRESS:FUNC_LENGTH"
+    },
+    {
+      "rule_id": "EXCESSIVE_NESTING_DEPTH",
+      "severity": "warning",
+      "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\fixers.py",
+      "line": 67,
+      "code_snippet": "Nesting depth ~6 (limite: 4)",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nesting > 4 niveaux. Utilisez le pattern 'early return' pour aplatir la structure.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NESTING_DEPTH"
+    },
+    {
+      "rule_id": "EXCESSIVE_NESTING_DEPTH",
+      "severity": "warning",
+      "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
+      "category": "CODE_QUALITY",
+      "file": "agent_audit\\fixers.py",
+      "line": 77,
+      "code_snippet": "Nesting depth ~7 (limite: 4)",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Nesting > 4 niveaux. Utilisez le pattern 'early return' pour aplatir la structure.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NESTING_DEPTH"
     },
     {
       "rule_id": "MAGIC_NUMBERS",
@@ -6045,7 +6212,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\validators.py",
-      "line": 80,
+      "line": 93,
       "code_snippet": "            capture_output=True, text=True, timeout=120,",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6059,7 +6226,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\validators.py",
-      "line": 83,
+      "line": 96,
       "code_snippet": "        return result.returncode == 0, result.stdout[-500:] + result.stderr[-500:]",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6073,7 +6240,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\validators.py",
-      "line": 91,
+      "line": 104,
       "code_snippet": "            capture_output=True, text=True, timeout=120,",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6087,7 +6254,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\validators.py",
-      "line": 94,
+      "line": 107,
       "code_snippet": "        return result.returncode == 0, result.stdout[-500:] + result.stderr[-500:]",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6101,7 +6268,7 @@
       "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
       "category": "CODE_QUALITY",
       "file": "agent_audit\\validators.py",
-      "line": 123,
+      "line": 136,
       "code_snippet": "            capture_output=True, text=True, timeout=30,",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6158,6 +6325,20 @@
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\validators.py",
       "line": 65,
+      "code_snippet": "def _get_js_test_dir():",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Fonction sans type hints. Ajoutez les annotations de type.",
+      "_suppression_comment": "# AUDIT_SUPPRESS:MISSING_TYPE_HINTS"
+    },
+    {
+      "rule_id": "MISSING_TYPE_HINTS",
+      "severity": "info",
+      "description": "Fonction Python sans annotations de type.",
+      "category": "PYTHON_SPECIFIC",
+      "file": "agent_audit\\validators.py",
+      "line": 73,
       "code_snippet": "def run_test_suite(test_type='quick'):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6171,7 +6352,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\validators.py",
-      "line": 99,
+      "line": 112,
       "code_snippet": "def _last_fixed_file():",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6185,7 +6366,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\validators.py",
-      "line": 103,
+      "line": 116,
       "code_snippet": "def mark_last_fixed(filepath):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6199,7 +6380,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\validators.py",
-      "line": 111,
+      "line": 124,
       "code_snippet": "def run_lint_check(filepath):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6213,7 +6394,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\validators.py",
-      "line": 136,
+      "line": 149,
       "code_snippet": "def validate_after_fix(filepath, run_tests=True):",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6227,7 +6408,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\validators.py",
-      "line": 166,
+      "line": 179,
       "code_snippet": "def run_pre_fix_baseline():",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6241,7 +6422,7 @@
       "description": "Fonction Python sans annotations de type.",
       "category": "PYTHON_SPECIFIC",
       "file": "agent_audit\\validators.py",
-      "line": 173,
+      "line": 186,
       "code_snippet": "def get_baseline_result():",
       "cwe_ref": null,
       "wcag_ref": null,
@@ -6256,7 +6437,7 @@
       "category": "CODE_QUALITY",
       "file": "agent_audit\\validators.py",
       "line": 1,
-      "code_snippet": "175 lignes (limite: 50)",
+      "code_snippet": "188 lignes (limite: 50)",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -6318,6 +6499,76 @@
       "_fixable": false,
       "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
       "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
+    },
+    {
+      "rule_id": "NO_DUPLICATE_HISTORY_ENTRIES",
+      "severity": "warning",
+      "description": "Les entrees d'historique dupliquees (meme titre, meme action, timestamp proche) surchargent la base de donnees et faussent les statistiques. Generalement cause par un double-clic sur l'UI.",
+      "category": "PERFORMANCE",
+      "file": "data\\espoir_historique.json",
+      "line": 18,
+      "code_snippet": "\"titre\": \"Chapitre 1 : Rédiger un protocole d'essai technique (Experimental / Testing Procedures)\",\n        \"matiere\": \"Anglais Lansad - Semestre impair\",\n        \"action\": \"Révisé (J1)\",\n        \"tim",
+      "cwe_ref": "CWE-834",
+      "wcag_ref": null,
+      "_fixable": true,
+      "_escalation_message": "Doublons detectes dans l'historique. Suppression automatique en cours.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NO_DUPLICATE_HISTORY_ENTRIES"
+    },
+    {
+      "rule_id": "NO_DUPLICATE_HISTORY_ENTRIES",
+      "severity": "warning",
+      "description": "Les entrees d'historique dupliquees (meme titre, meme action, timestamp proche) surchargent la base de donnees et faussent les statistiques. Generalement cause par un double-clic sur l'UI.",
+      "category": "PERFORMANCE",
+      "file": "data\\espoir_historique.json",
+      "line": 60,
+      "code_snippet": "\"titre\": \"Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).\",\n        \"matiere\": \"Anglais Lansad - Semestre impair\",\n        \"action\": \"Terminé\",\n        \"t",
+      "cwe_ref": "CWE-834",
+      "wcag_ref": null,
+      "_fixable": true,
+      "_escalation_message": "Doublons detectes dans l'historique. Suppression automatique en cours.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NO_DUPLICATE_HISTORY_ENTRIES"
+    },
+    {
+      "rule_id": "NO_DUPLICATE_HISTORY_ENTRIES",
+      "severity": "warning",
+      "description": "Les entrees d'historique dupliquees (meme titre, meme action, timestamp proche) surchargent la base de donnees et faussent les statistiques. Generalement cause par un double-clic sur l'UI.",
+      "category": "PERFORMANCE",
+      "file": "data\\espoir_historique.json",
+      "line": 126,
+      "code_snippet": "\"titre\": \"Exercice 1 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée\",\n        \"matiere\": \"Algèbre\",\n        \"action\": \"Terminé\",\n        \"dureeMinutes\": 7,\n        \"t",
+      "cwe_ref": "CWE-834",
+      "wcag_ref": null,
+      "_fixable": true,
+      "_escalation_message": "Doublons detectes dans l'historique. Suppression automatique en cours.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NO_DUPLICATE_HISTORY_ENTRIES"
+    },
+    {
+      "rule_id": "NO_DUPLICATE_HISTORY_ENTRIES",
+      "severity": "warning",
+      "description": "Les entrees d'historique dupliquees (meme titre, meme action, timestamp proche) surchargent la base de donnees et faussent les statistiques. Generalement cause par un double-clic sur l'UI.",
+      "category": "PERFORMANCE",
+      "file": "data\\espoir_historique.json",
+      "line": 365,
+      "code_snippet": "\"titre\": \"Révision Flashcards\",\n        \"matiere\": \"Routine\",\n        \"action\": \"Terminé\",\n        \"dureeMinutes\": 39,\n        \"timestamp\": \"2026-07-04T12:44:27.114Z\"\n    },\n    {\n        \"type\": \"CM\"",
+      "cwe_ref": "CWE-834",
+      "wcag_ref": null,
+      "_fixable": true,
+      "_escalation_message": "Doublons detectes dans l'historique. Suppression automatique en cours.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NO_DUPLICATE_HISTORY_ENTRIES"
+    },
+    {
+      "rule_id": "NO_DUPLICATE_HISTORY_ENTRIES",
+      "severity": "warning",
+      "description": "Les entrees d'historique dupliquees (meme titre, meme action, timestamp proche) surchargent la base de donnees et faussent les statistiques. Generalement cause par un double-clic sur l'UI.",
+      "category": "PERFORMANCE",
+      "file": "data\\espoir_historique.json",
+      "line": 434,
+      "code_snippet": "\"titre\": \"anki\",\n        \"matiere\": \"Algèbre\",\n        \"action\": \"Terminé\",\n        \"dureeMinutes\": 36,\n        \"timestamp\": \"2026-07-06T18:35:40.810Z\"\n    },\n    {\n        \"type\": \"ANKI\",\n        \"ti",
+      "cwe_ref": "CWE-834",
+      "wcag_ref": null,
+      "_fixable": true,
+      "_escalation_message": "Doublons detectes dans l'historique. Suppression automatique en cours.",
+      "_suppression_comment": "AUDIT_SUPPRESS:NO_DUPLICATE_HISTORY_ENTRIES"
     },
     {
       "rule_id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
@@ -9757,230 +10008,6 @@
       "file": "interface\\bridge\\moteur\\intelligence.js",
       "line": 771,
       "code_snippet": "      hourDurations[hour] += h.dureeMinutes || 30;",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 781,
-      "code_snippet": "  for (let h = 0; h < 24; h++) {",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 785,
-      "code_snippet": "  const meanActivityHour = weightedTotal > 0 ? weightedHourSum / weightedTotal : 14;",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 787,
-      "code_snippet": "  if (meanActivityHour < 11) map.chronotype = 'morning_lark';",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 788,
-      "code_snippet": "  else if (meanActivityHour > 17) map.chronotype = 'night_owl';",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 794,
-      "code_snippet": "  for (let start = 5; start <= 18; start++) {",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 797,
-      "code_snippet": "      sum += hourDurations[h % 24];",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 806,
-      "code_snippet": "  map.peakEnd = (bestStart + 6) % 24;",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 811,
-      "code_snippet": "      heavy:  { start: map.peakStart, end: Math.min(map.peakStart + 3, 12) },",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 812,
-      "code_snippet": "      medium: { start: map.peakStart + 3, end: Math.min(map.peakStart + 5, 16) },",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 813,
-      "code_snippet": "      light:  { start: 16, end: 21 }",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 817,
-      "code_snippet": "      heavy:  { start: 14, end: 18 },",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 818,
-      "code_snippet": "      medium: { start: 18, end: 21 },",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 819,
-      "code_snippet": "      light:  { start: 10, end: 14 }",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 824,
-      "code_snippet": "      heavy:  { start: 8, end: 12 },",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 825,
-      "code_snippet": "      medium: { start: 13, end: 17 },",
-      "cwe_ref": null,
-      "wcag_ref": null,
-      "_fixable": false,
-      "_escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
-      "_suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
-    },
-    {
-      "rule_id": "MAGIC_NUMBERS",
-      "severity": "info",
-      "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\bridge\\moteur\\intelligence.js",
-      "line": 826,
-      "code_snippet": "      light:  { start: 17, end: 21 }",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,

@@ -1,4 +1,103 @@
 {
-  "sessions": [],
+  "sessions": [
+    {
+      "timestamp": "2026-07-06T18:35:41.357Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 36,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-06T18:35:43.006Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 36,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-06T18:35:44.033Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 36,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-06T18:40:43.233Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 36,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-06T18:45:22.600Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 36,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-06T18:49:26.868Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 36,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-06T18:55:17.017Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 36,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    }
+  ],
   "actions": []
 }
