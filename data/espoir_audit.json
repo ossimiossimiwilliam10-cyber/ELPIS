@@ -1,8 +1,8 @@
 {
-  "last_scan": "2026-07-06T20:50:08.736724",
+  "last_scan": "2026-07-06T22:10:31.816458",
   "mode": "SCAN + CORRECTION",
   "files_scanned": 192,
-  "total_lines_of_code": 1577268,
+  "total_lines_of_code": 1577254,
   "total_anomalies": 1499,
   "total_corrections": 0,
   "files_corrected": 0,
@@ -386,7 +386,7 @@
   },
   "escalations": [
     {
-      "timestamp": "2026-07-06T20:49:59.009001",
+      "timestamp": "2026-07-06T22:10:26.729731",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -399,7 +399,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009136",
+      "timestamp": "2026-07-06T22:10:26.729860",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -412,7 +412,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009223",
+      "timestamp": "2026-07-06T22:10:26.729905",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_TODO_WITHOUT_TICKET",
@@ -425,7 +425,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009311",
+      "timestamp": "2026-07-06T22:10:26.729955",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "NO_TODO_WITHOUT_TICKET",
@@ -438,7 +438,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009382",
+      "timestamp": "2026-07-06T22:10:26.729985",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -451,7 +451,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009449",
+      "timestamp": "2026-07-06T22:10:26.730013",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -464,7 +464,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009518",
+      "timestamp": "2026-07-06T22:10:26.730043",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -477,7 +477,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009585",
+      "timestamp": "2026-07-06T22:10:26.730074",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -490,7 +490,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009652",
+      "timestamp": "2026-07-06T22:10:26.730104",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -503,7 +503,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009739",
+      "timestamp": "2026-07-06T22:10:26.730150",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -516,7 +516,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009808",
+      "timestamp": "2026-07-06T22:10:26.730178",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -529,7 +529,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009869",
+      "timestamp": "2026-07-06T22:10:26.730213",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -542,7 +542,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009929",
+      "timestamp": "2026-07-06T22:10:26.730238",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -555,7 +555,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.009993",
+      "timestamp": "2026-07-06T22:10:26.730263",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -568,7 +568,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.011342",
+      "timestamp": "2026-07-06T22:10:26.730931",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -581,7 +581,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.011428",
+      "timestamp": "2026-07-06T22:10:26.730969",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -594,7 +594,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015430",
+      "timestamp": "2026-07-06T22:10:26.732972",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -607,7 +607,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015513",
+      "timestamp": "2026-07-06T22:10:26.733018",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -620,7 +620,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015586",
+      "timestamp": "2026-07-06T22:10:26.733047",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -633,7 +633,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015665",
+      "timestamp": "2026-07-06T22:10:26.733079",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -646,7 +646,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015754",
+      "timestamp": "2026-07-06T22:10:26.733105",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -659,7 +659,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015825",
+      "timestamp": "2026-07-06T22:10:26.733151",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -672,7 +672,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015891",
+      "timestamp": "2026-07-06T22:10:26.733182",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -685,7 +685,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.015955",
+      "timestamp": "2026-07-06T22:10:26.733209",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -698,7 +698,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.016020",
+      "timestamp": "2026-07-06T22:10:26.733235",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -711,7 +711,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.016082",
+      "timestamp": "2026-07-06T22:10:26.733264",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -724,7 +724,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.016142",
+      "timestamp": "2026-07-06T22:10:26.733289",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -737,7 +737,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.016203",
+      "timestamp": "2026-07-06T22:10:26.733315",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -750,7 +750,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.016265",
+      "timestamp": "2026-07-06T22:10:26.733371",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -763,7 +763,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.016329",
+      "timestamp": "2026-07-06T22:10:26.733400",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -776,7 +776,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023244",
+      "timestamp": "2026-07-06T22:10:26.736829",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -789,7 +789,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023326",
+      "timestamp": "2026-07-06T22:10:26.736874",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -802,7 +802,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023398",
+      "timestamp": "2026-07-06T22:10:26.736903",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -815,7 +815,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023460",
+      "timestamp": "2026-07-06T22:10:26.736929",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -828,7 +828,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023520",
+      "timestamp": "2026-07-06T22:10:26.736953",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -841,7 +841,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023585",
+      "timestamp": "2026-07-06T22:10:26.736979",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -854,7 +854,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023647",
+      "timestamp": "2026-07-06T22:10:26.737007",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -867,7 +867,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023732",
+      "timestamp": "2026-07-06T22:10:26.737033",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -880,7 +880,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023809",
+      "timestamp": "2026-07-06T22:10:26.737057",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -893,7 +893,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023869",
+      "timestamp": "2026-07-06T22:10:26.737082",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -906,7 +906,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023931",
+      "timestamp": "2026-07-06T22:10:26.737106",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -919,7 +919,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.023996",
+      "timestamp": "2026-07-06T22:10:26.737152",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -932,7 +932,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024057",
+      "timestamp": "2026-07-06T22:10:26.737178",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -945,7 +945,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024114",
+      "timestamp": "2026-07-06T22:10:26.737203",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -958,7 +958,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024174",
+      "timestamp": "2026-07-06T22:10:26.737227",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -971,7 +971,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024239",
+      "timestamp": "2026-07-06T22:10:26.737252",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -984,7 +984,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024303",
+      "timestamp": "2026-07-06T22:10:26.737278",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -997,7 +997,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024362",
+      "timestamp": "2026-07-06T22:10:26.737302",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1010,7 +1010,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024418",
+      "timestamp": "2026-07-06T22:10:26.737327",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1023,7 +1023,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024474",
+      "timestamp": "2026-07-06T22:10:26.737356",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1036,7 +1036,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024529",
+      "timestamp": "2026-07-06T22:10:26.737380",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1049,7 +1049,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024590",
+      "timestamp": "2026-07-06T22:10:26.737404",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1062,7 +1062,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024654",
+      "timestamp": "2026-07-06T22:10:26.737432",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1075,7 +1075,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024731",
+      "timestamp": "2026-07-06T22:10:26.737457",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1088,7 +1088,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024796",
+      "timestamp": "2026-07-06T22:10:26.737482",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1101,7 +1101,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024856",
+      "timestamp": "2026-07-06T22:10:26.737508",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1114,7 +1114,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024914",
+      "timestamp": "2026-07-06T22:10:26.737534",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1127,7 +1127,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.024983",
+      "timestamp": "2026-07-06T22:10:26.737563",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1140,7 +1140,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025046",
+      "timestamp": "2026-07-06T22:10:26.737590",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1153,7 +1153,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025104",
+      "timestamp": "2026-07-06T22:10:26.737615",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1166,7 +1166,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025162",
+      "timestamp": "2026-07-06T22:10:26.737640",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1179,7 +1179,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025218",
+      "timestamp": "2026-07-06T22:10:26.737665",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1192,7 +1192,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025285",
+      "timestamp": "2026-07-06T22:10:26.737692",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1205,7 +1205,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025347",
+      "timestamp": "2026-07-06T22:10:26.737720",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1218,7 +1218,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025404",
+      "timestamp": "2026-07-06T22:10:26.737745",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1231,7 +1231,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025462",
+      "timestamp": "2026-07-06T22:10:26.737770",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1244,7 +1244,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025519",
+      "timestamp": "2026-07-06T22:10:26.737795",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1257,7 +1257,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025580",
+      "timestamp": "2026-07-06T22:10:26.737820",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1270,7 +1270,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025646",
+      "timestamp": "2026-07-06T22:10:26.737847",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1283,7 +1283,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025724",
+      "timestamp": "2026-07-06T22:10:26.737872",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1296,7 +1296,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025794",
+      "timestamp": "2026-07-06T22:10:26.737898",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1309,7 +1309,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025851",
+      "timestamp": "2026-07-06T22:10:26.737922",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1322,7 +1322,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025913",
+      "timestamp": "2026-07-06T22:10:26.737948",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1335,7 +1335,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.025973",
+      "timestamp": "2026-07-06T22:10:26.737974",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1348,7 +1348,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.026031",
+      "timestamp": "2026-07-06T22:10:26.737998",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1361,7 +1361,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.026086",
+      "timestamp": "2026-07-06T22:10:26.738022",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1374,7 +1374,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.026141",
+      "timestamp": "2026-07-06T22:10:26.738046",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1387,7 +1387,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.026198",
+      "timestamp": "2026-07-06T22:10:26.738070",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1400,7 +1400,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.026263",
+      "timestamp": "2026-07-06T22:10:26.738096",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -1413,7 +1413,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.026874",
+      "timestamp": "2026-07-06T22:10:26.738418",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1426,7 +1426,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.026952",
+      "timestamp": "2026-07-06T22:10:26.738451",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1439,7 +1439,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.029891",
+      "timestamp": "2026-07-06T22:10:26.739930",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1452,7 +1452,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.029974",
+      "timestamp": "2026-07-06T22:10:26.739965",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1465,7 +1465,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030044",
+      "timestamp": "2026-07-06T22:10:26.739992",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1478,7 +1478,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030111",
+      "timestamp": "2026-07-06T22:10:26.740021",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1491,7 +1491,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030170",
+      "timestamp": "2026-07-06T22:10:26.740046",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1504,7 +1504,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030228",
+      "timestamp": "2026-07-06T22:10:26.740070",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1517,7 +1517,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030525",
+      "timestamp": "2026-07-06T22:10:26.740387",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1530,7 +1530,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030591",
+      "timestamp": "2026-07-06T22:10:26.740420",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1543,7 +1543,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030664",
+      "timestamp": "2026-07-06T22:10:26.740453",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1556,7 +1556,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030751",
+      "timestamp": "2026-07-06T22:10:26.740479",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1569,7 +1569,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030814",
+      "timestamp": "2026-07-06T22:10:26.740504",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1582,7 +1582,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030879",
+      "timestamp": "2026-07-06T22:10:26.740530",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1595,7 +1595,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.030937",
+      "timestamp": "2026-07-06T22:10:26.740555",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1608,7 +1608,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.031000",
+      "timestamp": "2026-07-06T22:10:26.740580",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1621,7 +1621,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.031064",
+      "timestamp": "2026-07-06T22:10:26.740608",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1634,7 +1634,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.031123",
+      "timestamp": "2026-07-06T22:10:26.740633",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1647,7 +1647,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.031181",
+      "timestamp": "2026-07-06T22:10:26.740657",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1660,7 +1660,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.031244",
+      "timestamp": "2026-07-06T22:10:26.740681",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -1673,7 +1673,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042181",
+      "timestamp": "2026-07-06T22:10:26.746375",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1686,7 +1686,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042271",
+      "timestamp": "2026-07-06T22:10:26.746434",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1699,7 +1699,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042342",
+      "timestamp": "2026-07-06T22:10:26.746466",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1712,7 +1712,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042405",
+      "timestamp": "2026-07-06T22:10:26.746492",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1725,7 +1725,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042464",
+      "timestamp": "2026-07-06T22:10:26.746518",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1738,7 +1738,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042523",
+      "timestamp": "2026-07-06T22:10:26.746543",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1751,7 +1751,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042586",
+      "timestamp": "2026-07-06T22:10:26.746569",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1764,7 +1764,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042650",
+      "timestamp": "2026-07-06T22:10:26.746597",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1777,7 +1777,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042731",
+      "timestamp": "2026-07-06T22:10:26.746622",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1790,7 +1790,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042797",
+      "timestamp": "2026-07-06T22:10:26.746646",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1803,7 +1803,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042856",
+      "timestamp": "2026-07-06T22:10:26.746671",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1816,7 +1816,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042919",
+      "timestamp": "2026-07-06T22:10:26.746696",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1829,7 +1829,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.042978",
+      "timestamp": "2026-07-06T22:10:26.746722",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1842,7 +1842,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043035",
+      "timestamp": "2026-07-06T22:10:26.746746",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1855,7 +1855,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043091",
+      "timestamp": "2026-07-06T22:10:26.746770",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1868,7 +1868,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043148",
+      "timestamp": "2026-07-06T22:10:26.746794",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1881,7 +1881,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043210",
+      "timestamp": "2026-07-06T22:10:26.746822",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1894,7 +1894,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043278",
+      "timestamp": "2026-07-06T22:10:26.746849",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1907,7 +1907,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043352",
+      "timestamp": "2026-07-06T22:10:26.746880",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1920,7 +1920,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043411",
+      "timestamp": "2026-07-06T22:10:26.746904",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -1933,7 +1933,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043469",
+      "timestamp": "2026-07-06T22:10:26.746929",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1946,7 +1946,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043528",
+      "timestamp": "2026-07-06T22:10:26.746956",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1959,7 +1959,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043597",
+      "timestamp": "2026-07-06T22:10:26.746983",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1972,7 +1972,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043659",
+      "timestamp": "2026-07-06T22:10:26.747010",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1985,7 +1985,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043740",
+      "timestamp": "2026-07-06T22:10:26.747035",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -1998,7 +1998,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043805",
+      "timestamp": "2026-07-06T22:10:26.747059",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2011,7 +2011,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043863",
+      "timestamp": "2026-07-06T22:10:26.747084",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2024,7 +2024,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043931",
+      "timestamp": "2026-07-06T22:10:26.747110",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2037,7 +2037,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.043992",
+      "timestamp": "2026-07-06T22:10:26.747152",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2050,7 +2050,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044049",
+      "timestamp": "2026-07-06T22:10:26.747177",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2063,7 +2063,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044107",
+      "timestamp": "2026-07-06T22:10:26.747202",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2076,7 +2076,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044168",
+      "timestamp": "2026-07-06T22:10:26.747228",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FILE_SIZE",
@@ -2089,7 +2089,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044224",
+      "timestamp": "2026-07-06T22:10:26.747252",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2102,7 +2102,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044285",
+      "timestamp": "2026-07-06T22:10:26.747279",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2115,7 +2115,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044343",
+      "timestamp": "2026-07-06T22:10:26.747303",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2128,7 +2128,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044399",
+      "timestamp": "2026-07-06T22:10:26.747327",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2141,7 +2141,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044455",
+      "timestamp": "2026-07-06T22:10:26.747352",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2154,7 +2154,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044517",
+      "timestamp": "2026-07-06T22:10:26.747378",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2167,7 +2167,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044579",
+      "timestamp": "2026-07-06T22:10:26.747402",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2180,7 +2180,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044637",
+      "timestamp": "2026-07-06T22:10:26.747430",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2193,7 +2193,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044698",
+      "timestamp": "2026-07-06T22:10:26.747456",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2206,7 +2206,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044793",
+      "timestamp": "2026-07-06T22:10:26.747480",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2219,7 +2219,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044852",
+      "timestamp": "2026-07-06T22:10:26.747504",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2232,7 +2232,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044907",
+      "timestamp": "2026-07-06T22:10:26.747528",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2245,7 +2245,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.044968",
+      "timestamp": "2026-07-06T22:10:26.747554",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2258,7 +2258,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.045026",
+      "timestamp": "2026-07-06T22:10:26.747579",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2271,7 +2271,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.049657",
+      "timestamp": "2026-07-06T22:10:26.749956",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2284,7 +2284,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.049761",
+      "timestamp": "2026-07-06T22:10:26.749997",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2297,7 +2297,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.049836",
+      "timestamp": "2026-07-06T22:10:26.750027",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2310,7 +2310,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.049904",
+      "timestamp": "2026-07-06T22:10:26.750054",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2323,7 +2323,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.049968",
+      "timestamp": "2026-07-06T22:10:26.750083",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2336,7 +2336,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050028",
+      "timestamp": "2026-07-06T22:10:26.750109",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2349,7 +2349,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050086",
+      "timestamp": "2026-07-06T22:10:26.750142",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2362,7 +2362,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050145",
+      "timestamp": "2026-07-06T22:10:26.750168",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2375,7 +2375,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050214",
+      "timestamp": "2026-07-06T22:10:26.750194",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2388,7 +2388,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050276",
+      "timestamp": "2026-07-06T22:10:26.750221",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2401,7 +2401,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050335",
+      "timestamp": "2026-07-06T22:10:26.750246",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2414,7 +2414,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050393",
+      "timestamp": "2026-07-06T22:10:26.750271",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2427,7 +2427,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.050450",
+      "timestamp": "2026-07-06T22:10:26.750295",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2440,7 +2440,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068429",
+      "timestamp": "2026-07-06T22:10:26.759419",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2453,7 +2453,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068525",
+      "timestamp": "2026-07-06T22:10:26.759469",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2466,7 +2466,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068625",
+      "timestamp": "2026-07-06T22:10:26.759498",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2479,7 +2479,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068720",
+      "timestamp": "2026-07-06T22:10:26.759525",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2492,7 +2492,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068798",
+      "timestamp": "2026-07-06T22:10:26.759553",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2505,7 +2505,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068860",
+      "timestamp": "2026-07-06T22:10:26.759579",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2518,7 +2518,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068925",
+      "timestamp": "2026-07-06T22:10:26.759611",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2531,7 +2531,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.068992",
+      "timestamp": "2026-07-06T22:10:26.759640",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2544,7 +2544,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069051",
+      "timestamp": "2026-07-06T22:10:26.759666",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2557,7 +2557,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069109",
+      "timestamp": "2026-07-06T22:10:26.759691",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2570,7 +2570,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069167",
+      "timestamp": "2026-07-06T22:10:26.759716",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2583,7 +2583,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069230",
+      "timestamp": "2026-07-06T22:10:26.759742",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2596,7 +2596,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069290",
+      "timestamp": "2026-07-06T22:10:26.759769",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2609,7 +2609,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069347",
+      "timestamp": "2026-07-06T22:10:26.759793",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2622,7 +2622,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069404",
+      "timestamp": "2026-07-06T22:10:26.759818",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2635,7 +2635,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069460",
+      "timestamp": "2026-07-06T22:10:26.759843",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2648,7 +2648,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069526",
+      "timestamp": "2026-07-06T22:10:26.759867",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2661,7 +2661,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069594",
+      "timestamp": "2026-07-06T22:10:26.759903",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2674,7 +2674,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069653",
+      "timestamp": "2026-07-06T22:10:26.759929",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2687,7 +2687,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069732",
+      "timestamp": "2026-07-06T22:10:26.759953",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MISSING_TYPE_HINTS",
@@ -2700,7 +2700,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069800",
+      "timestamp": "2026-07-06T22:10:26.759979",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FILE_SIZE",
@@ -2713,7 +2713,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069858",
+      "timestamp": "2026-07-06T22:10:26.760004",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2726,7 +2726,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069920",
+      "timestamp": "2026-07-06T22:10:26.760031",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_FUNCTION_LENGTH",
@@ -2739,7 +2739,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.069979",
+      "timestamp": "2026-07-06T22:10:26.760056",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2752,7 +2752,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.070039",
+      "timestamp": "2026-07-06T22:10:26.760081",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2765,7 +2765,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.070099",
+      "timestamp": "2026-07-06T22:10:26.760106",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2778,7 +2778,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.070154",
+      "timestamp": "2026-07-06T22:10:26.760147",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2791,7 +2791,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:49:59.070219",
+      "timestamp": "2026-07-06T22:10:26.760173",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "EXCESSIVE_NESTING_DEPTH",
@@ -2804,7 +2804,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.822559",
+      "timestamp": "2026-07-06T22:10:31.339549",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2817,7 +2817,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.822746",
+      "timestamp": "2026-07-06T22:10:31.339722",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2830,7 +2830,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.822828",
+      "timestamp": "2026-07-06T22:10:31.339760",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2843,7 +2843,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.822897",
+      "timestamp": "2026-07-06T22:10:31.339789",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2856,7 +2856,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.822977",
+      "timestamp": "2026-07-06T22:10:31.339819",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2869,7 +2869,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823042",
+      "timestamp": "2026-07-06T22:10:31.339854",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2882,7 +2882,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823105",
+      "timestamp": "2026-07-06T22:10:31.339882",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2895,7 +2895,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823166",
+      "timestamp": "2026-07-06T22:10:31.339908",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2908,7 +2908,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823225",
+      "timestamp": "2026-07-06T22:10:31.339933",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2921,7 +2921,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823291",
+      "timestamp": "2026-07-06T22:10:31.339959",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2934,7 +2934,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823352",
+      "timestamp": "2026-07-06T22:10:31.339987",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2947,7 +2947,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823410",
+      "timestamp": "2026-07-06T22:10:31.340011",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2960,7 +2960,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823474",
+      "timestamp": "2026-07-06T22:10:31.340038",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
@@ -2973,7 +2973,7 @@
       "details": {}
     },
     {
-      "timestamp": "2026-07-06T20:50:07.823540",
+      "timestamp": "2026-07-06T22:10:31.340064",
       "type": "UNFIXABLE",
       "level": "standard",
       "rule_id": "MAGIC_NUMBERS",
