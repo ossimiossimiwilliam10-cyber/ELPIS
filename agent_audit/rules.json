@@ -1,9 +1,9 @@
 {
     "meta": {
-        "version": "3.0.0",
-        "description": "ELPIS Immune System \u2014 NASA-grade audit rules. Each rule is a precision instrument. Do not disable rules without understanding the blast radius.",
+        "version": "3.1.0",
+        "description": "ELPIS Immune System — NASA-grade audit rules. v3.1: merged duplicates, added v3 intelligence architecture rules.",
         "last_updated": "2026-07-06",
-        "total_rules": 42,
+        "total_rules": 46,
         "categories": [
             "SECURITY",
             "PERFORMANCE",
@@ -14,7 +14,9 @@
             "ACCESSIBILITY",
             "DOCUMENTATION",
             "PYTHON_SPECIFIC",
-            "CSS_SPECIFIC"
+            "CSS_SPECIFIC",
+            "INTELLIGENCE_MODULE",
+            "PWA"
         ]
     },
     "rules": [
@@ -41,7 +43,7 @@
             "fix_confidence": 0,
             "false_positive_risk": "low",
             "cwe_ref": "CWE-798",
-            "escalation_message": "SECRETS HARDCODES DETECTES. Intervention humaine obligatoire. Remplacez par process.env.VARIABLE. Si c'est un faux positif (ex: string de test), ajoutez le commentaire // AUDIT_SUPPRESS:NO_HARDCODED_SECRETS sur la ligne precedente.",
+            "escalation_message": "SECRETS HARDCODES DETECTES. Intervention humaine obligatoire. Remplacez par process.env.VARIABLE. Si c'est un faux positif, ajoutez le commentaire // AUDIT_SUPPRESS:NO_HARDCODED_SECRETS sur la ligne precedente.",
             "suppression_comment": "AUDIT_SUPPRESS:NO_HARDCODED_SECRETS",
             "emergency_mode": true
         },
@@ -216,14 +218,14 @@
             "requires_human": false,
             "fix_confidence": 40,
             "false_positive_risk": "medium",
-            "escalation_message": "Import lourd detecte. Preferez des imports cibles (tree-shaking). L'agent ne peut pas determiner automatiquement les imports individuels necessaires.",
+            "escalation_message": "Import lourd detecte. Preferez des imports cibles (tree-shaking).",
             "suppression_comment": "AUDIT_SUPPRESS:LARGE_IMPORT"
         },
         {
             "id": "MISSING_REACT_MEMO",
             "category": "PERFORMANCE",
             "severity": "info",
-            "description": "Composant React exporte sans React.memo() qui pourrait beneficier de la memoisation (composant avec props complexes).",
+            "description": "Composant React exporte sans React.memo() qui pourrait beneficier de la memoisation.",
             "patterns": [
                 "export\\s+(default\\s+)?function\\s+\\w+\\s*\\(\\s*\\{\\s*\\w+"
             ],
@@ -234,7 +236,7 @@
             "requires_human": false,
             "fix_confidence": 30,
             "false_positive_risk": "high",
-            "escalation_message": "Composant potentiellement optimisable avec React.memo(). L'agent ne peut pas determiner si c'est necessaire \u2014 signale pour revue humaine.",
+            "escalation_message": "Composant potentiellement optimisable avec React.memo().",
             "suppression_comment": "AUDIT_SUPPRESS:MISSING_MEMO"
         },
         {
@@ -252,7 +254,7 @@
             "requires_human": false,
             "fix_confidence": 45,
             "false_positive_risk": "high",
-            "escalation_message": "Chaine de verifications && detectee. Considerer l'optional chaining (obj?.prop?.subprop) pour la lisibilite.",
+            "escalation_message": "Chaine de verifications && detectee. Considerer l'optional chaining (obj?.prop?.subprop).",
             "suppression_comment": "AUDIT_SUPPRESS:USE_OPTIONAL_CHAINING"
         },
         {
@@ -281,7 +283,7 @@
             "id": "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
             "category": "PERFORMANCE",
             "severity": "warning",
-            "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop. Utiliser les versions async.",
+            "description": "Fonction synchrone de fichier (readFileSync, writeFileSync, existsSync) dans le code serveur. Bloque l'event loop.",
             "patterns": [
                 "\\b(readFileSync|writeFileSync|existsSync|mkdirSync|unlinkSync|statSync|readdirSync)\\s*\\("
             ],
@@ -292,7 +294,7 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "medium",
-            "escalation_message": "IO synchrone dans le code serveur. Bloque l'event loop Node.js. Passez aux versions async (readFile, writeFile, etc.).",
+            "escalation_message": "IO synchrone dans le code serveur. Bloque l'event loop Node.js. Passez aux versions async.",
             "suppression_comment": "AUDIT_SUPPRESS:NO_SYNC_IO"
         },
         "=============================================",
@@ -302,10 +304,8 @@
             "id": "NO_CIRCULAR_IMPORTS",
             "category": "ARCHITECTURE",
             "severity": "critical",
-            "description": "Import circulaire potentiel detecte (Fichier A importe B qui importe A). Cause des bugs subtils et des problemes d'initialisation.",
-            "patterns": [
-                "CIRCULAR_DETECTED"
-            ],
+            "description": "Import circulaire potentiel detecte (Fichier A importe B qui importe A). Cause des bugs subtils.",
+            "patterns": ["CIRCULAR_DETECTED"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx|py)$",
             "exclude_pattern": "(test|spec|mock)\\.(js|jsx)$",
@@ -313,7 +313,7 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "low",
-            "escalation_message": "Import circulaire detecte. Restructurez les modules pour briser le cycle (extraction d'un module partage, inversion de dependance).",
+            "escalation_message": "Import circulaire detecte. Restructurez les modules pour briser le cycle.",
             "suppression_comment": "AUDIT_SUPPRESS:NO_CIRCULAR_IMPORTS",
             "detection_strategy": "import_graph"
         },
@@ -321,7 +321,7 @@
             "id": "NO_BARREL_IMPORT_CYCLES",
             "category": "ARCHITECTURE",
             "severity": "warning",
-            "description": "Fichier index.js (barrel) qui re-exporte tout. Peut creer des imports circulaires caches et gonfler le bundle.",
+            "description": "Fichier index.js (barrel) qui re-exporte tout. Peut creer des imports circulaires caches.",
             "patterns": [
                 "^export\\s+(\\*|\\{)\\s+from\\s+['\"]\\.\\/"
             ],
@@ -339,10 +339,8 @@
             "id": "IMPORT_BOUNDARY_VIOLATION",
             "category": "ARCHITECTURE",
             "severity": "warning",
-            "description": "Violation de frontiere architecturale. Un module d'un layer importe un module d'un layer superieur qu'il ne devrait pas connaitre.",
-            "patterns": [
-                "LAYER_VIOLATION"
-            ],
+            "description": "Violation de frontiere architecturale. Un module d'un layer importe un module d'un layer superieur.",
+            "patterns": ["LAYER_VIOLATION"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx)$",
             "exclude_pattern": "(test|spec|mock)\\.(js|jsx)$",
@@ -353,26 +351,16 @@
             "escalation_message": "Violation de frontiere detectee. Le layer inferieur ne doit pas importer depuis le layer superieur.",
             "suppression_comment": "AUDIT_SUPPRESS:LAYER_VIOLATION",
             "layer_rules": {
-                "store": [
-                    "components",
-                    "pages",
-                    "utils",
-                    "constants"
-                ],
-                "components": [
-                    "utils",
-                    "constants"
-                ]
+                "store": ["components", "pages", "utils", "constants"],
+                "components": ["utils", "constants"]
             }
         },
         {
             "id": "EXCESSIVE_FILE_SIZE",
             "category": "ARCHITECTURE",
             "severity": "warning",
-            "description": "Fichier depassant 500 lignes. Les fichiers volumineux sont difficiles a maintenir. Scinder en modules plus petits.",
-            "patterns": [
-                "FILE_LINE_COUNT_CHECK"
-            ],
+            "description": "Fichier depassant 500 lignes. Les fichiers volumineux sont difficiles a maintenir.",
+            "patterns": ["FILE_LINE_COUNT_CHECK"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx|py|css)$",
             "exclude_pattern": "(test|spec|mock|package-lock|espoir_audit|espoir_cours|\\.html)\\.(js|jsx|json)$",
@@ -391,10 +379,8 @@
             "id": "EXCESSIVE_FUNCTION_LENGTH",
             "category": "CODE_QUALITY",
             "severity": "warning",
-            "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester et a comprendre. Extraire des sous-fonctions.",
-            "patterns": [
-                "FUNCTION_LENGTH_CHECK"
-            ],
+            "description": "Fonction depassant 50 lignes. Les fonctions longues sont difficiles a tester.",
+            "patterns": ["FUNCTION_LENGTH_CHECK"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx|py)$",
             "exclude_pattern": "(test|spec|mock)\\.(js|jsx)$",
@@ -402,7 +388,7 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "medium",
-            "escalation_message": "Fonction > 50 lignes. Refactorisez en extrayant des sous-fonctions avec des responsabilites claires.",
+            "escalation_message": "Fonction > 50 lignes. Refactorisez en extrayant des sous-fonctions.",
             "suppression_comment": "AUDIT_SUPPRESS:FUNC_LENGTH",
             "detection_strategy": "function_boundaries",
             "threshold_lines": 50
@@ -411,10 +397,8 @@
             "id": "EXCESSIVE_NESTING_DEPTH",
             "category": "CODE_QUALITY",
             "severity": "warning",
-            "description": "Profondeur d'imbrication > 4 niveaux (if dans for dans if dans try...). Code difficile a lire. Utiliser le pattern de retour precoce (early return).",
-            "patterns": [
-                "NESTING_DEPTH_CHECK"
-            ],
+            "description": "Profondeur d'imbrication > 4 niveaux. Code difficile a lire. Utiliser le pattern early return.",
+            "patterns": ["NESTING_DEPTH_CHECK"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx|py)$",
             "exclude_pattern": "(test|spec|mock)\\.(js|jsx)$",
@@ -432,9 +416,7 @@
             "category": "CODE_QUALITY",
             "severity": "warning",
             "description": "Mot-cle 'var' au lieu de 'const' ou 'let'. var a un scope de fonction et provoque des bugs de hoisting.",
-            "patterns": [
-                "\\bvar\\s+"
-            ],
+            "patterns": ["\\bvar\\s+"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx)$",
             "exclude_pattern": "(test|spec)\\.(js|jsx)$",
@@ -446,14 +428,14 @@
                 "search": "\\bvar\\s+",
                 "replacement": "const "
             },
-            "escalation_message": "var detecte. L'agent remplace par 'const' automatiquement. Si la variable est reassignee, changez en 'let' manuellement.",
+            "escalation_message": "var detecte. L'agent remplace par 'const' automatiquement.",
             "suppression_comment": "AUDIT_SUPPRESS:NO_VAR"
         },
         {
             "id": "MAGIC_NUMBERS",
             "category": "CODE_QUALITY",
             "severity": "info",
-            "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre et a maintenir.",
+            "description": "Nombre magique (valeur numerique sans constante nommee). Rend le code difficile a comprendre.",
             "patterns": [
                 "(?<![\\w.\\/])(?<!['\"])[0-9]{2,}(?![\\w])(?!['\"])"
             ],
@@ -464,7 +446,7 @@
             "requires_human": false,
             "fix_confidence": 20,
             "false_positive_risk": "high",
-            "escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees (ex: const MAX_RETRIES = 3).",
+            "escalation_message": "Nombres magiques detectes. Remplacez par des constantes nommees.",
             "suppression_comment": "AUDIT_SUPPRESS:MAGIC_NUMBERS"
         },
         {
@@ -472,9 +454,7 @@
             "category": "CODE_QUALITY",
             "severity": "warning",
             "description": "Double point-virgule (typo probable).",
-            "patterns": [
-                ";;"
-            ],
+            "patterns": [";;"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx|css)$",
             "exclude_pattern": "(test|spec)\\.(js|jsx)$",
@@ -494,9 +474,7 @@
             "category": "CODE_QUALITY",
             "severity": "info",
             "description": "Espaces inutiles en fin de ligne. Pollue les diffs git.",
-            "patterns": [
-                "[ \\t]+$"
-            ],
+            "patterns": ["[ \\t]+$"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx|css|py|md|html|json)$",
             "exclude_pattern": "\\.test\\.(js|jsx)$",
@@ -515,10 +493,8 @@
             "id": "NO_EMPTY_CATCH",
             "category": "CODE_QUALITY",
             "severity": "warning",
-            "description": "Bloc catch vide. Les erreurs sont silencieusement ignores, rendant le debugging impossible.",
-            "patterns": [
-                "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}"
-            ],
+            "description": "Bloc catch vide. Les erreurs sont silencieusement ignores.",
+            "patterns": ["catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}"],
             "multi_line": true,
             "file_pattern": "\\.(js|jsx|ts|tsx|py)$",
             "exclude_pattern": "(test|spec)\\.(js|jsx)$",
@@ -536,10 +512,8 @@
             "id": "MISSING_KEY_IN_MAP",
             "category": "REACT_BEST_PRACTICES",
             "severity": "warning",
-            "description": "Appel a .map() dans du JSX sans prop 'key'. Cause des problemes de reconciliation React et des bugs de rendu.",
-            "patterns": [
-                "\\.map\\s*\\([^)]*\\)\\s*(?!.*\\bkey\\s*=)"
-            ],
+            "description": "Appel a .map() dans du JSX sans prop 'key'. Cause des problemes de reconciliation React.",
+            "patterns": ["\\.map\\s*\\([^)]*\\)\\s*(?!.*\\bkey\\s*=)"],
             "multi_line": true,
             "file_pattern": "\\.(jsx|tsx)$",
             "exclude_pattern": "(test|spec)\\.(jsx|tsx)$",
@@ -547,14 +521,14 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "medium",
-            "escalation_message": ".map() sans key prop dans du JSX. Ajoutez une prop key unique (pas l'index du tableau).",
+            "escalation_message": ".map() sans key prop dans du JSX. Ajoutez une prop key unique.",
             "suppression_comment": "AUDIT_SUPPRESS:MISSING_KEY"
         },
         {
             "id": "MISSING_USEEFFECT_DEPS",
             "category": "REACT_BEST_PRACTICES",
             "severity": "warning",
-            "description": "useEffect avec un tableau de dependances vide alors que le corps utilise des variables externes. Potentiel bug de stale closure.",
+            "description": "useEffect avec un tableau de dependances vide alors que le corps utilise des variables externes.",
             "patterns": [
                 "useEffect\\s*\\(\\s*\\(\\s*\\)\\s*=>\\s*\\{[^}]*\\}\\s*,\\s*\\[\\s*\\]\\s*\\)"
             ],
@@ -565,14 +539,14 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "high",
-            "escalation_message": "useEffect avec deps [] mais utilisant des variables externes. Ajoutez les dependances manquantes ou refactorisez.",
+            "escalation_message": "useEffect avec deps [] mais utilisant des variables externes.",
             "suppression_comment": "AUDIT_SUPPRESS:MISSING_DEPS"
         },
         {
             "id": "NO_INDEX_AS_KEY",
             "category": "REACT_BEST_PRACTICES",
             "severity": "warning",
-            "description": "Utilisation de l'index du tableau comme key dans une liste. Provoque des bugs si la liste est reordonnee ou filtree.",
+            "description": "Utilisation de l'index du tableau comme key dans une liste. Provoque des bugs si la liste est reordonnee.",
             "patterns": [
                 "\\.map\\s*\\(\\s*\\([^,]*,\\s*index\\)[^}]*key\\s*=\\s*\\{?\\s*index\\s*\\}?"
             ],
@@ -583,17 +557,15 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "low",
-            "escalation_message": "Index utilise comme key. Utilisez un identifiant unique et stable de vos donnees.",
+            "escalation_message": "Index utilise comme key. Utilisez un identifiant unique et stable.",
             "suppression_comment": "AUDIT_SUPPRESS:NO_INDEX_KEY"
         },
         {
             "id": "PROP_SPREADING_WARNING",
             "category": "REACT_BEST_PRACTICES",
             "severity": "info",
-            "description": "Spread operator sur les props ({...props}) sans restriction. Passe des props non intentionnelles au composant enfant.",
-            "patterns": [
-                "\\{\\s*\\.\\.\\.(props|rest)\\s*\\}"
-            ],
+            "description": "Spread operator sur les props ({...props}) sans restriction.",
+            "patterns": ["\\{\\s*\\.\\.\\.(props|rest)\\s*\\}"],
             "multi_line": false,
             "file_pattern": "\\.(jsx|tsx)$",
             "exclude_pattern": "(test|spec|App)\\.(jsx|tsx)$",
@@ -608,7 +580,7 @@
             "id": "UNCONTROLLED_TO_CONTROLLED_INPUT",
             "category": "REACT_BEST_PRACTICES",
             "severity": "warning",
-            "description": "Input avec value mais sans onChange, ou defaultValue avec onChange. L'input doit etre soit controle soit non-controle, pas les deux.",
+            "description": "Input avec value mais sans onChange, ou defaultValue avec onChange.",
             "patterns": [
                 "<(input|textarea|select)[^>]*\\bvalue\\s*=\\s*\\{[^}]*\\}[^>]*\\/>"
             ],
@@ -619,7 +591,7 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "high",
-            "escalation_message": "Input potentiellement hybride controle/non-controle. Verifiez le pattern onChange/value.",
+            "escalation_message": "Input potentiellement hybride controle/non-controle.",
             "suppression_comment": "AUDIT_SUPPRESS:UNCONTROLLED_INPUT"
         },
         "=============================================",
@@ -629,10 +601,8 @@
             "id": "MISSING_TEST_FILE",
             "category": "TESTING",
             "severity": "info",
-            "description": "Fichier source sans fichier de test correspondant. Toute fonction exportee devrait avoir des tests.",
-            "patterns": [
-                "TEST_COVERAGE_CHECK"
-            ],
+            "description": "Fichier source sans fichier de test correspondant.",
+            "patterns": ["TEST_COVERAGE_CHECK"],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx|py)$",
             "exclude_pattern": "(test|spec|mock|config|index|main|setupTests|eslint|vite\\.config|playwright)\\.(js|jsx|ts)$",
@@ -640,7 +610,7 @@
             "requires_human": false,
             "fix_confidence": 0,
             "false_positive_risk": "medium",
-            "escalation_message": "Pas de fichier de test correspondant. Creez un fichier .test.js(x) avec les tests unitaires.",
+            "escalation_message": "Pas de fichier de test correspondant. Creez un fichier .test.js(x).",
             "suppression_comment": "AUDIT_SUPPRESS:MISSING_TEST",
             "detection_strategy": "test_pairing"
         },
@@ -648,10 +618,8 @@
             "id": "TEST_WITH_SKIP",
             "category": "TESTING",
             "severity": "warning",
-            "description": "Test desactive avec .skip(). Les tests desactives masquent des bugs potentiels.",
-            "patterns": [
-                "(test|it|describe)\\.skip\\s*\\("
-            ],
+            "description": "Test desactive avec .skip(). Les tests desactives masquent des bugs.",
+            "patterns": ["(test|it|describe)\\.skip\\s*\\("],
             "multi_line": false,
             "file_pattern": "\\.test\\.(js|jsx|ts|tsx)$",
             "exclude_pattern": "",
@@ -659,17 +627,15 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "low",
-            "escalation_message": "Test en .skip() detecte. Reactivez ce test ou supprimez-le s'il est obsolete.",
+            "escalation_message": "Test en .skip() detecte. Reactivez ce test ou supprimez-le.",
             "suppression_comment": "AUDIT_SUPPRESS:SKIPPED_TEST"
         },
         {
             "id": "TEST_WITH_ONLY",
             "category": "TESTING",
             "severity": "critical",
-            "description": "Test avec .only() dans le code versionne. Empeche l'execution des autres tests et masque des regressions.",
-            "patterns": [
-                "(test|it|describe)\\.only\\s*\\("
-            ],
+            "description": "Test avec .only() dans le code versionne. Empeche l'execution des autres tests.",
+            "patterns": ["(test|it|describe)\\.only\\s*\\("],
             "multi_line": false,
             "file_pattern": "\\.test\\.(js|jsx|ts|tsx)$",
             "exclude_pattern": "",
@@ -681,7 +647,7 @@
                 "search": "\\.only(",
                 "replacement": "("
             },
-            "escalation_message": ".only() dans les tests. L'agent le supprime automatiquement. C'est un bug connu de commit accidentel.",
+            "escalation_message": ".only() dans les tests. L'agent le supprime automatiquement.",
             "suppression_comment": "AUDIT_SUPPRESS:ONLY_TEST"
         },
         {
@@ -710,9 +676,7 @@
             "category": "ACCESSIBILITY",
             "severity": "warning",
             "description": "Balise <img> sans attribut alt. Necessaire pour les lecteurs d'ecran et le SEO.",
-            "patterns": [
-                "<img\\s+(?![^>]*\\balt\\s*=)"
-            ],
+            "patterns": ["<img\\s+(?![^>]*\\balt\\s*=)"],
             "multi_line": false,
             "file_pattern": "\\.(jsx|tsx|html)$",
             "exclude_pattern": "(test|spec)\\.(jsx|tsx)$",
@@ -721,14 +685,14 @@
             "fix_confidence": 0,
             "false_positive_risk": "low",
             "wcag_ref": "WCAG 1.1.1",
-            "escalation_message": "Image sans alt. Ajoutez un attribut alt descriptif (ou alt='' si decorative).",
+            "escalation_message": "Image sans alt. Ajoutez un attribut alt descriptif.",
             "suppression_comment": "AUDIT_SUPPRESS:MISSING_ALT"
         },
         {
             "id": "MISSING_ARIA_LABEL_ON_INTERACTIVE",
             "category": "ACCESSIBILITY",
             "severity": "warning",
-            "description": "Element interactif (bouton, lien) sans texte ni aria-label. Les lecteurs d'ecran ne peuvent pas l'identifier.",
+            "description": "Element interactif sans texte ni aria-label.",
             "patterns": [
                 "<(button|a|div\\s+role\\s*=\\s*['\"]button['\"])[^>]*>\\s*<(?!.*\\b(aria-label|aria-labelledby))"
             ],
@@ -740,17 +704,15 @@
             "fix_confidence": 0,
             "false_positive_risk": "high",
             "wcag_ref": "WCAG 4.1.2",
-            "escalation_message": "Element interactif sans aria-label. Ajoutez un aria-label ou un texte visible.",
+            "escalation_message": "Element interactif sans aria-label.",
             "suppression_comment": "AUDIT_SUPPRESS:MISSING_ARIA"
         },
         {
             "id": "NO_POSITIVE_TABINDEX",
             "category": "ACCESSIBILITY",
             "severity": "info",
-            "description": "tabIndex > 0 cree un ordre de tabulation non naturel et perturbe la navigation clavier.",
-            "patterns": [
-                "tabIndex\\s*=\\s*\\{?\\s*[1-9][0-9]*\\s*\\}?"
-            ],
+            "description": "tabIndex > 0 cree un ordre de tabulation non naturel.",
+            "patterns": ["tabIndex\\s*=\\s*\\{?\\s*[1-9][0-9]*\\s*\\}?"],
             "multi_line": false,
             "file_pattern": "\\.(jsx|tsx|html)$",
             "exclude_pattern": "(test|spec)\\.(jsx|tsx)$",
@@ -759,7 +721,7 @@
             "fix_confidence": 0,
             "false_positive_risk": "low",
             "wcag_ref": "WCAG 2.4.3",
-            "escalation_message": "tabIndex > 0 detecte. Utilisez tabIndex='0' ou '-1' et structurez le DOM dans l'ordre naturel.",
+            "escalation_message": "tabIndex > 0 detecte. Utilisez tabIndex='0' ou '-1'.",
             "suppression_comment": "AUDIT_SUPPRESS:POSITIVE_TABINDEX"
         },
         "=============================================",
@@ -769,7 +731,7 @@
             "id": "MISSING_JSDOC_ON_EXPORT",
             "category": "DOCUMENTATION",
             "severity": "info",
-            "description": "Fonction exportee sans commentaire JSDoc. Les fonctions publiques doivent etre documentees.",
+            "description": "Fonction exportee sans commentaire JSDoc.",
             "patterns": [
                 "^export\\s+(async\\s+)?(function|const\\s+\\w+\\s*=\\s*(async\\s+)?\\()"
             ],
@@ -780,14 +742,14 @@
             "requires_human": false,
             "fix_confidence": 0,
             "false_positive_risk": "medium",
-            "escalation_message": "Fonction exportee sans JSDoc. Ajoutez un commentaire /** ... */ decrivant les parametres et la valeur de retour.",
+            "escalation_message": "Fonction exportee sans JSDoc. Ajoutez /** ... */.",
             "suppression_comment": "AUDIT_SUPPRESS:MISSING_JSDOC"
         },
         {
             "id": "NO_TODO_WITHOUT_TICKET",
             "category": "DOCUMENTATION",
             "severity": "info",
-            "description": "Commentaire TODO sans reference a un ticket/issue. Les TODOs sans ticket ne sont jamais resolus.",
+            "description": "Commentaire TODO sans reference a un ticket/issue.",
             "patterns": [
                 "(?i)//\\s*todo(?!\\s*(#|ELPIS-|ISSUE-|GH-)\\d+)",
                 "(?i)/\\*\\s*todo(?!\\s*(#|ELPIS-|ISSUE-|GH-)\\d+)"
@@ -799,7 +761,7 @@
             "requires_human": false,
             "fix_confidence": 0,
             "false_positive_risk": "low",
-            "escalation_message": "TODO sans reference ticket. Associez un numero d'issue (ex: TODO #42 ou TODO ELPIS-15).",
+            "escalation_message": "TODO sans reference ticket. Associez un numero d'issue (ex: TODO #42).",
             "suppression_comment": "AUDIT_SUPPRESS:UNTICKETED_TODO"
         },
         "=============================================",
@@ -809,10 +771,8 @@
             "id": "NO_BARE_EXCEPT",
             "category": "PYTHON_SPECIFIC",
             "severity": "warning",
-            "description": "except: sans specifier l'exception capture tout (y compris SystemExit, KeyboardInterrupt). Utilisez except Exception: a minima.",
-            "patterns": [
-                "^\\s*except\\s*:"
-            ],
+            "description": "except: sans specifier l'exception capture tout.",
+            "patterns": ["^\\s*except\\s*:"],
             "multi_line": false,
             "file_pattern": "\\.py$",
             "exclude_pattern": "",
@@ -832,9 +792,7 @@
             "category": "PYTHON_SPECIFIC",
             "severity": "warning",
             "description": "print() dans du code de production Python. Utiliser le module logging.",
-            "patterns": [
-                "^\\s*print\\s*\\("
-            ],
+            "patterns": ["^\\s*print\\s*\\("],
             "multi_line": false,
             "file_pattern": "\\.py$",
             "exclude_pattern": "(__pycache__|test_|_test|agent_audit)",
@@ -842,17 +800,15 @@
             "requires_human": false,
             "fix_confidence": 40,
             "false_positive_risk": "medium",
-            "escalation_message": "print() detecte. Remplacez par logging.info() ou le logger approprie.",
+            "escalation_message": "print() detecte. Remplacez par logging.info().",
             "suppression_comment": "# AUDIT_SUPPRESS:NO_PRINT"
         },
         {
             "id": "MISSING_TYPE_HINTS",
             "category": "PYTHON_SPECIFIC",
             "severity": "info",
-            "description": "Fonction Python sans annotations de type (type hints). Les types ameliorent la documentation et la detection d'erreurs.",
-            "patterns": [
-                "^\\s*def\\s+\\w+\\s*\\([^)]*\\)\\s*:"
-            ],
+            "description": "Fonction Python sans annotations de type.",
+            "patterns": ["^\\s*def\\s+\\w+\\s*\\([^)]*\\)\\s*:"],
             "multi_line": true,
             "file_pattern": "\\.py$",
             "exclude_pattern": "(__pycache__|test_|_test)",
@@ -860,7 +816,7 @@
             "requires_human": false,
             "fix_confidence": 0,
             "false_positive_risk": "medium",
-            "escalation_message": "Fonction sans type hints. Ajoutez les annotations de type pour les parametres et la valeur de retour.",
+            "escalation_message": "Fonction sans type hints. Ajoutez les annotations de type.",
             "suppression_comment": "# AUDIT_SUPPRESS:MISSING_TYPE_HINTS"
         },
         "=============================================",
@@ -870,10 +826,8 @@
             "id": "NO_IMPORTANT_IN_CSS",
             "category": "CSS_SPECIFIC",
             "severity": "warning",
-            "description": "!important dans le CSS. Court-circuite la cascade et rend le CSS difficile a maintenir.",
-            "patterns": [
-                "!important"
-            ],
+            "description": "!important dans le CSS. Court-circuite la cascade.",
+            "patterns": ["!important"],
             "multi_line": false,
             "file_pattern": "\\.css$",
             "exclude_pattern": "(test|spec|prettify)",
@@ -881,49 +835,85 @@
             "requires_human": true,
             "fix_confidence": 0,
             "false_positive_risk": "low",
-            "escalation_message": "!important detecte dans le CSS. Resolvez le conflit de specificite plutot que d'utiliser !important.",
+            "escalation_message": "!important detecte. Resolvez le conflit de specificite.",
             "suppression_comment": "/* AUDIT_SUPPRESS:NO_IMPORTANT */"
         },
+        "=============================================",
+        "CATEGORIE: INTELLIGENCE MODULE v3 (3 regles)",
+        "=============================================",
         {
-            "id": "AVOID_LARGE_FILES",
-            "category": "architecture",
+            "id": "INTELLIGENCE_EXPORT_COVERAGE",
+            "category": "INTELLIGENCE_MODULE",
             "severity": "warning",
-            "description": "Fichier depassant 500 lignes (dette technique sous surveillance)",
-            "detection_strategy": "regex",
-            "file_pattern": "\\.(js|jsx|ts|tsx)$",
-            "threshold_lines": 500,
-            "fix": null,
-            "escalation_message": "Refactoring recommande pour diviser ce composant/fichier.",
+            "description": "Fonction du module intelligence utilisee dans l'orchestrateur mais non exportee. Verifier module.exports.",
             "patterns": [
-                "FILE_LINE_COUNT_CHECK"
-            ]
+                "^(buildTimeOptimizationMap|buildSynergyMap|buildWorkloadForecast|buildProjectedScoreDetailMap)\\b"
+            ],
+            "multi_line": true,
+            "file_pattern": "orchestrateur\\.js$",
+            "exclude_pattern": "",
+            "auto_fix_strategy": "none",
+            "requires_human": false,
+            "fix_confidence": 0,
+            "false_positive_risk": "low",
+            "escalation_message": "Verifier que les fonctions v3 sont bien exportees depuis intelligence.js et importees dans orchestrateur.js.",
+            "suppression_comment": "AUDIT_SUPPRESS:INTEL_EXPORT"
         },
         {
-            "id": "AVOID_LARGE_FUNCTIONS",
-            "category": "architecture",
-            "severity": "warning",
-            "description": "Composant ou fonction depassant 250 lignes",
-            "detection_strategy": "function_boundaries",
-            "file_pattern": "\\.(js|jsx|ts|tsx)$",
-            "threshold_lines": 250,
-            "fix": null,
-            "escalation_message": "Extraire la logique de cette fonction dans des sous-composants ou hooks.",
+            "id": "SCORING_NEW_PARAM_SIGNATURE",
+            "category": "INTELLIGENCE_MODULE",
+            "severity": "info",
+            "description": "Verifier que getPrioScore accepte le nouveau parametre projectedScoreDetail (7eme param optionnel).",
             "patterns": [
-                "FUNCTION_LENGTH_CHECK"
-            ]
+                "getPrioScore\\s*\\([^)]{200,}\\)"
+            ],
+            "multi_line": true,
+            "file_pattern": "orchestrateur\\.js$",
+            "exclude_pattern": "",
+            "auto_fix_strategy": "none",
+            "requires_human": false,
+            "fix_confidence": 0,
+            "false_positive_risk": "medium",
+            "escalation_message": "Les appels a getPrioScore dans l'orchestrateur doivent passer projectedScoreDetail en 7eme parametre.",
+            "suppression_comment": "AUDIT_SUPPRESS:SCORING_SIG"
         },
+        {
+            "id": "RAPPORT_INTELLIGENCE_V3_KEYS",
+            "category": "INTELLIGENCE_MODULE",
+            "severity": "info",
+            "description": "Verifier que rapport.intelligence contient les cles v3 (projectedScoreDetail, timeOptimizationMap, synergyMap, workloadForecast).",
+            "patterns": [
+                "rapport\\.intelligence\\s*=\\s*\\{"
+            ],
+            "multi_line": true,
+            "file_pattern": "orchestrateur\\.js$",
+            "exclude_pattern": "",
+            "auto_fix_strategy": "none",
+            "requires_human": false,
+            "fix_confidence": 0,
+            "false_positive_risk": "low",
+            "escalation_message": "Le rapport d'intelligence doit inclure les 4 nouvelles cartes v3.",
+            "suppression_comment": "AUDIT_SUPPRESS:RAPPORT_V3"
+        },
+        "=============================================",
+        "CATEGORIE: PWA (1 regle)",
+        "=============================================",
         {
             "id": "PWA_STATIC_ROUTE_EXCLUSION",
-            "category": "architecture",
+            "category": "PWA",
             "severity": "critical",
-            "description": "Vérifie que tous les dossiers statiques du backend sont exclus du Service Worker PWA.",
+            "description": "Verifie que tous les dossiers statiques du backend sont exclus du Service Worker PWA.",
             "detection_strategy": "custom_python",
             "file_pattern": "vite\\.config\\.js",
             "fix": null,
             "escalation_message": "Ajouter les routes manquantes dans navigateFallbackDenylist du vite.config.js.",
-            "patterns": [
-                "scan_pwa_static_exclusions"
-            ]
+            "patterns": ["scan_pwa_static_exclusions"],
+            "multi_line": false,
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "low",
+            "suppression_comment": "AUDIT_SUPPRESS:PWA_STATIC"
         }
     ]
 }

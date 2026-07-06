@@ -574,8 +574,12 @@ def _build_report(anomalies, corrections, escalations,
         # NOUVEAU: stats par regle (full, non tronque)
         'rule_stats': rule_stats_serializable,
         # NOUVEAU: signal vs bruit (critiques + warnings hors high_fp_risk)
-        'signal_count': 0,  # Rempli ci-dessous
-        'noise_count': 0,
+        'signal_count': sum(1 for a in anomalies
+                          if a.get('severity') in ('critical', 'warning')
+                          and a.get('_fp_risk', 'medium') != 'high'),
+        'noise_count': sum(1 for a in anomalies
+                         if a.get('severity') == 'info'
+                         or a.get('_fp_risk') == 'high'),
         'escalation_stats': esc_stats,
         'escalations': escalations[:200],
         'anomalies': anomalies[:500],

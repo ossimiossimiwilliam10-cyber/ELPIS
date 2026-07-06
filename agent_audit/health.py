@@ -19,7 +19,7 @@ import time
 # Health Check
 # ---------------------------------------------------------------------------
 
-def run_health_check(rules, report, escalations, corrections, #rlm:ignore
+def run_health_check(rules, report, escalations, corrections,
                      rules_path, output_path, start_time):
     """
     Execute un diagnostic complet de l'agent lui-meme.

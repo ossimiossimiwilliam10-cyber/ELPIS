@@ -546,11 +546,11 @@ function buildProjectedScoreDetailMap(crs, velocityMap) {
           projected += Math.min(2, practiceCount * 0.10); // Ajusté à la baisse pour éviter débordement
 
           // Projection de tendance (sur 30 jours max)
-          const v = velocityMap ? velocityMap[m.nom] : null;
-          const daysToExam = v ? (v.forecastDaysToExam || 30) : 30;
+
+                    const trendWindowDays = 30;
           if (trendSignificant) {
-            // Impact de la tendance réduit pour limiter l'amplification d'erreurs (MSE)
-            projected += trend * Math.min(daysToExam, 30) * 0.5;
+
+            projected += trend * trendWindowDays * 0.5;
           }
 
           projected = Math.max(0, Math.min(20, projected));
