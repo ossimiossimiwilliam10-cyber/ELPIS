@@ -41,6 +41,18 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//, /^\/documents\//, /^\/music\//],
         runtimeCaching: [
           {
+            // Règle imposée par le système : Network-First pour les pages HTML (SPA)
+            urlPattern: ({ request, url }) => request.mode === 'navigate' || url.pathname === '/' || url.pathname.match(/index\.html$/),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'html-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 1 semaine
+              }
+            }
+          },
+          {
             urlPattern: /^https:\/\/elpis-app\.onrender\.com\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
