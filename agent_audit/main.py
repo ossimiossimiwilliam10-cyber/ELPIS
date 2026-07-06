@@ -18,6 +18,8 @@ import time
 import shutil
 import datetime
 import sys
+import logging
+from logging.handlers import RotatingFileHandler
 
 # ============================================================
 # CONFIGURATION
@@ -29,8 +31,8 @@ OUTPUT_FILE = os.path.join(PROJECT_ROOT, 'data', 'espoir_audit.json')
 BACKUPS_DIR = os.path.join(os.path.dirname(__file__), 'backups')
 LOG_FILE = os.path.join(os.path.dirname(__file__), 'audit.log')
 
-# Intervalle entre deux scans (en secondes) : 4 heures
-SCAN_INTERVAL_SECONDS = 14400
+# Intervalle entre deux scans (en secondes) : 1 heure
+SCAN_INTERVAL_SECONDS = 3600
 
 # Extensions de fichiers texte à scanner
 TEXT_EXTENSIONS = {
@@ -74,15 +76,39 @@ def load_rules():
         return []
 
 
+# ============================================================
+# INITIALISATION DU LOGGER
+# ============================================================
+
+def setup_logger():
+    """Configure le logger avec rotation (max 5 Mo, 3 backups)."""
+    logger = logging.getLogger("ElpisAudit")
+    logger.setLevel(logging.INFO)
+    
+    # Ne pas ajouter de handlers si déjà configuré
+    if not logger.handlers:
+        # Format du log
+        formatter = logging.Formatter('[%(asctime)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+        # Handler Console
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+        # Handler Fichier avec rotation (5 Mo)
+        file_handler = RotatingFileHandler(
+            LOG_FILE, maxBytes=5 * 1024 * 1024, backupCount=3, encoding='utf-8'
+        )
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    return logger
+
+audit_logger = setup_logger()
+
 def log(message):
-    """Affiche un message horodaté et l'écrit dans le fichier de log."""
-    msg = f"[{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}"
-    print(msg)
-    try:
-        with open(LOG_FILE, 'a', encoding='utf-8') as f:
-            f.write(msg + '\n')
-    except Exception:
-        pass
+    """Alias pour garder la compatibilité avec le reste du code."""
+    audit_logger.info(message)
 
 
 # ============================================================
