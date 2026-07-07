@@ -13,7 +13,7 @@ graph TD
     App[App.jsx - Layout & Navigation]
     App --> Sidebar[Menu Latéral]
     App --> MainArea[Zone de Contenu]
-    
+
     MainArea --> DB[Dashboard]
     MainArea --> CP[CoursPage]
     MainArea --> BP[BulletinPage]
@@ -21,7 +21,7 @@ graph TD
 
     DB --> Orch[Orchestrateur UI]
     DB --> GlobalChrono[Global Chrono]
-    
+
     Orch --> ExCard[ExerciceCard]
     ExCard --> Action[Terminer / Reporter]
 
@@ -51,7 +51,7 @@ historique: [],     // Logs d'études
 
 // Actions synchronisées
 fetchCours: async () => { ... } // Appelle /api/cours
-addHistoriqueEntry: async (entry) => { 
+addHistoriqueEntry: async (entry) => {
   // 1. Mise à jour optimiste du store (UI rapide)
   // 2. Appel POST /api/historique (Backend)
 }

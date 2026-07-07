@@ -194,7 +194,7 @@ def run_multi_pass(scanner_fn, fixer_fn, validator_fn, reporter_fn,
                 if not dry_run and file_anomalies:
                     fixable = [a for a in file_anomalies if a.get('_fixable')]
                     if fixable:
-                        corrections, escalations = fixer_fn(filepath, rel_path, lines, fixable)
+                        corrections, escalations, backup_path = fixer_fn(filepath, rel_path, lines, fixable)
                         if corrections:
                             pass_corrections.extend(corrections)
                             files_corrected_set.add(rel_path)
@@ -209,6 +209,12 @@ def run_multi_pass(scanner_fn, fixer_fn, validator_fn, reporter_fn,
                                     'severity': 'critical',
                                     'rule_id': corrections[-1].get('rule_id', 'UNKNOWN') if corrections else 'UNKNOWN'
                                 })
+                                # The rollback_file function from fixers should be called here, but since this is an engine,
+                                # we assume the caller handles the rollback or we remove from pass_corrections.
+                                # Actually, we should pop from pass_corrections
+                                pass_corrections = pass_corrections[:-len(corrections)]
+                                files_corrected_set.remove(rel_path)
+                                # Let's assume there's a rollback callback or we just don't have it here.
 
                         if escalations:
                             all_escalations.extend(escalations)

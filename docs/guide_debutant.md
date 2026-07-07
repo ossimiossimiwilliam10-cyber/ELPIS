@@ -118,7 +118,7 @@ Lis le message complet. Il donne souvent un indice clair :
 - `SyntaxError: Unexpected token` : un fichier JSON est probablement mal formaté.
 - `EADDRINUSE: address already in use :::3001` : le port 3001 est bloqué (un autre serveur tourne déjà).
 
-> **💡 Astuce pour les logs** : 
+> **💡 Astuce pour les logs** :
 > - Les logs en **vert** `[INFO]` indiquent que tout va bien.
 > - Les logs en **jaune** `[WARN]` sont des avertissements.
 > - Les logs en **rouge** `[ERROR]` nécessitent ton attention immédiate.
