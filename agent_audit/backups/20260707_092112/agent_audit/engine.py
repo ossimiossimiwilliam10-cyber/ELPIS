@@ -373,7 +373,7 @@ def calculate_health_score(report, rules=None):
     penalty_crit = min(weighted_crit * 15, 60)
     penalty_warn = min(weighted_warn * 3, 25)
     penalty_info = min(weighted_info * 0.5, 10)
-
+    
     total_penalty = penalty_crit + penalty_warn + penalty_info
 
     # Bonus si des corrections ont ete appliquees

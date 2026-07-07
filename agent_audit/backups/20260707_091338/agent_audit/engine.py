@@ -207,7 +207,7 @@ def run_multi_pass(scanner_fn, fixer_fn, validator_fn, reporter_fn,
                                     'severity': 'critical',
                                     'rule_id': corrections[-1].get('rule_id', 'UNKNOWN') if corrections else 'UNKNOWN'
                                 })
-                                # The rollback_file function from fixers should be called here, but since this is an engine,
+                                # The rollback_file function from fixers should be called here, but since this is an engine, 
                                 # we assume the caller handles the rollback or we remove from pass_corrections.
                                 # Actually, we should pop from pass_corrections
                                 pass_corrections = pass_corrections[:-len(corrections)]
@@ -369,12 +369,8 @@ def calculate_health_score(report, rules=None):
         weighted_warn = warn_count
         weighted_info = info_count
 
-    # Penalites ponderees (plafonnees pour eviter d'atteindre 0 immediatement)
-    penalty_crit = min(weighted_crit * 15, 60)
-    penalty_warn = min(weighted_warn * 3, 25)
-    penalty_info = min(weighted_info * 0.5, 10)
-
-    total_penalty = penalty_crit + penalty_warn + penalty_info
+    # Penalite totale ponderee
+    total_penalty = (weighted_crit * 15 + weighted_warn * 3 + weighted_info * 0.5)
 
     # Bonus si des corrections ont ete appliquees
     if report.get('total_corrections', 0) > 0:

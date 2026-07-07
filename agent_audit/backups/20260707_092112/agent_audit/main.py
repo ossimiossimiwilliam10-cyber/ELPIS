@@ -13,12 +13,10 @@ Usage:
 """
 
 import os
-from linters import get_all_linter_anomalies
-from collections import defaultdict
-import datetime
 import sys
 import json
 import time
+import datetime
 import logging
 import subprocess
 from logging.handlers import RotatingFileHandler
@@ -26,12 +24,15 @@ from logging.handlers import RotatingFileHandler
 # ---------------------------------------------------------------------------
 # Imports internes
 # ---------------------------------------------------------------------------
-from engine import (load_rules, should_auto_fix, calculate_health_score)
+from engine import (load_rules, should_auto_fix, is_emergency,
+                    calculate_health_score)
 from scanners import (run_all_scanners, run_global_scanners, extract_imports)
 from fixers import (apply_fixes, set_backup_dir, set_rule_cache,
                     cleanup_old_backups, rollback_file)
-from validators import (validate_after_fix, run_pre_fix_baseline)
-from escalation import (create_escalation, process_escalations,
+from validators import (validate_after_fix, mark_last_fixed,
+                        run_pre_fix_baseline)
+from escalation import (create_escalation, trigger_emergency,
+                        process_escalations,
                         set_escalation_log, set_emergency_alert_file)
 from health import run_health_check
 
@@ -139,7 +140,7 @@ def reporter_fn(report, rules=None):
     crit = report['anomalies_by_severity']['critical']
     warn = report['anomalies_by_severity']['warning']
     info = report['anomalies_by_severity']['info']
-
+    
     log.info(f"  Health Score: {score}/100")
     log.info(f"  Anomalies Critiques: {crit}")
     log.info(f"  Avertissements (Warning): {warn}")
@@ -281,53 +282,97 @@ def run_full_audit(dry_run=False, emergency_only=False):
                 anomaly['_escalation_message'] = rule.get('escalation_message', '')
 
     # --- 6. Phase 3 : Scan fichier par fichier + corrections ---
-    log.info("Phase 3: Execution des linters standards (ESLint, Ruff)...")
-    
+    log.info("Phase 3: Scan individuel des fichiers et corrections...")
+
     all_anomalies = list(global_anomalies)
     all_corrections = []
     all_escalations = []
     files_corrected = set()
-    rule_hit_count = defaultdict(int)
-    
-    if not dry_run:
-        linter_anomalies = get_all_linter_anomalies(PROJECT_ROOT, fix=False)
-        fixable_by_file = defaultdict(list)
-        for a in linter_anomalies:
-            if a.get("_fixable"):
-                fixable_by_file[a["file"]].append(a)
-                
-        for rel_path, anomalies in fixable_by_file.items():
+
+    # Tracker les regles avec potentiel faux positifs
+    rule_hit_count = {}
+
+    for pass_num in range(1, MAX_PASSES + 1):
+        pass_anomalies = []
+        pass_corrections = []
+
+        for rel_path, lines in files_content.items():
             filepath = os.path.join(PROJECT_ROOT, rel_path)
-            ext = os.path.splitext(filepath)[1].lower()
-            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            timestamp_dir = os.path.join(BACKUPS_DIR, timestamp)
-            from fixers import create_backup
-            try:
-                backup_path = create_backup(filepath, timestamp_dir)
-            except Exception:
-                backup_path = None
-                
-            if ext in (".js", ".jsx", ".ts", ".tsx"):
-                subprocess.run(["npx", "eslint", rel_path, "--fix"], cwd=PROJECT_ROOT, capture_output=True)
-            elif ext == ".py":
-                subprocess.run(["python", "-m", "ruff", "check", rel_path, "--fix"], cwd=PROJECT_ROOT, capture_output=True)
-                
-            validation_ok = validate_after_fix(filepath, run_tests=True)
-            if not validation_ok:
-                log.warning(f"  [ROLLBACK] Validation echouee pour {rel_path}")
-                if backup_path:
-                    rollback_file(filepath, backup_path)
-            else:
-                files_corrected.add(rel_path)
-                for a in anomalies:
-                    all_corrections.append({"rule_id": a["rule_id"], "file": rel_path, "line": a["line"], "before": "", "after": "Fixed by linter"})
-    
-    final_anomalies = get_all_linter_anomalies(PROJECT_ROOT, fix=False)
-    for a in final_anomalies:
-        rule_hit_count[a["rule_id"]] += 1
-    all_anomalies.extend(final_anomalies)
-    
-    log.info(f"  Passe 1: {len(final_anomalies)} defauts trouves, {len(all_corrections)} corrections appliquees")
+
+            # Scanner le fichier
+            file_anomalies, _ = scan_single_file(
+                filepath, rel_path, lines, rules,
+                all_files_data, source_files
+            )
+            pass_anomalies.extend(file_anomalies)
+
+            # Compter les hits par regle
+            for a in file_anomalies:
+                rid = a['rule_id']
+                rule_hit_count[rid] = rule_hit_count.get(rid, 0) + 1
+
+            # Corriger si applicable
+            if not dry_run:
+                fixable = [a for a in file_anomalies if a.get('_fixable')]
+                unfixable = [a for a in file_anomalies if not a.get('_fixable')]
+
+                # Escalader les unfixable
+                for anomaly in unfixable:
+                    rule = _find_rule(rules, anomaly['rule_id'])
+                    if rule:
+                        reason = 'EMERGENCY' if is_emergency(rule) else 'UNFIXABLE'
+                        esc = create_escalation(anomaly, rule, reason)
+
+                        # Mode urgence : alerte immediate
+                        if is_emergency(rule):
+                            trigger_emergency(anomaly, rule)
+                            log.warning(f"  [URGENCE] {rule['id']} dans {rel_path}:{anomaly['line']}")
+
+                        all_escalations.append(esc)
+
+                # Appliquer les corrections
+                if fixable:
+                    corrections, escs, backup_path = fix_single_file(
+                        filepath, rel_path, lines, fixable, dry_run
+                    )
+
+                    if corrections:
+                        mark_last_fixed(filepath)
+
+                        # Validation post-fix
+                        validation_ok = validate_after_fix(filepath, run_tests=not dry_run)
+                        if not validation_ok:
+                            log.warning(f"  [ROLLBACK] Validation echouee pour {rel_path}")
+                            # Escalader l'echec
+                            for c in corrections:
+                                rule = _find_rule(rules, c['rule_id'])
+                                if rule:
+                                    esc = create_escalation(
+                                        {'rule_id': c['rule_id'], 'file': rel_path,
+                                         'line': c['line'], 'code_snippet': c['before']},
+                                        rule, 'FIX_BROKE_TESTS'
+                                    )
+                                    all_escalations.append(esc)
+
+                            # Annuler toutes les corrections de ce fichier via le backup
+                            if backup_path:
+                                rollback_file(filepath, backup_path)
+                        else:
+                            pass_corrections.extend(corrections)
+                            files_corrected.add(rel_path)
+
+                    if escs:
+                        all_escalations.extend(escs)
+
+        all_anomalies.extend(pass_anomalies)
+        all_corrections.extend(pass_corrections)
+
+        log.info(f"  Passe {pass_num}: {len(pass_anomalies)} defauts trouves, "
+                 f"{len(pass_corrections)} corrections appliquees")
+
+        if not pass_corrections:
+            break
+
     # --- 7. Verifier les faux positifs potentiels ---
     for rule_id, count in rule_hit_count.items():
         if count >= 3:

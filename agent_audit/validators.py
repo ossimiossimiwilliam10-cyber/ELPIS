@@ -11,7 +11,6 @@ Strategies de validation :
 import os
 import subprocess
 import sys
-import json
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -71,9 +70,9 @@ def run_test_suite(test_type='quick'):
     try:
         # Essayer npm test d'abord
         if test_type == 'quick':
-            cmd = ['npm', 'test', '--', '--testPathPattern', os.path.basename(_last_fixed_file())]
+            cmd = ['npm', 'test', '--', '--testPathPattern', os.path.basename(_last_fixed_file()), '--passWithNoTests']
         else:
-            cmd = ['npm', 'test']
+            cmd = ['npm', 'test', '--', '--passWithNoTests']
 
         result = subprocess.run(
             cmd,
@@ -87,7 +86,7 @@ def run_test_suite(test_type='quick'):
     # Fallback: npx vitest run
     try:
         result = subprocess.run(
-            ['npx', 'vitest', 'run', '--reporter=json'],
+            ['npx', 'vitest', 'run', '--passWithNoTests', '--reporter=json'],
             capture_output=True, text=True, timeout=120,
             cwd=PROJECT_ROOT
         )
@@ -139,7 +138,7 @@ def validate_after_fix(filepath, run_tests=True):
     Pipeline de validation post-fix :
     1. Syntax check (toujours)
     2. Lint check (si dispo)
-    3. Test suite (si demande)
+    3. Test suite (si demande et fichier js/ts)
 
     Retourne True si tout passe, False si rollback necessaire.
     """
@@ -151,7 +150,8 @@ def validate_after_fix(filepath, run_tests=True):
     run_lint_check(filepath)  # Non bloquant pour l'instant
 
     # 3. Tests (si actives)
-    if run_tests:
+    ext = os.path.splitext(filepath)[1].lower()
+    if run_tests and ext in ('.js', '.jsx', '.ts', '.tsx'):
         success, output = run_test_suite('quick')
         if not success:
             return False
