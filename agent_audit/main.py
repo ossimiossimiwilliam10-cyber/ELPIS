@@ -107,8 +107,8 @@ def scan_single_file(filepath, rel_path, lines, rules, all_files_data, source_fi
 
 def fix_single_file(filepath, rel_path, lines, fixable_anomalies, dry_run=False):
     """Applique les corrections a un fichier et valide."""
-    corrections, escalations = apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run)
-    return corrections, escalations
+    corrections, escalations, backup_path = apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run)
+    return corrections, escalations, backup_path
 
 # ---------------------------------------------------------------------------
 # REPORT GENERATION
@@ -138,13 +138,17 @@ def generate_output(report, health_report, output_path, health_path, rules=None)
 def reporter_fn(report, rules=None):
     """Callback appele par l'engine apres chaque rapport genere."""
     score = calculate_health_score(report, rules)
+    crit = report['anomalies_by_severity']['critical']
+    warn = report['anomalies_by_severity']['warning']
+    info = report['anomalies_by_severity']['info']
+
     log.info(f"  Health Score: {score}/100")
-    log.info(f"  Anomalies: {report['total_anomalies']} "
-             f"(C:{report['anomalies_by_severity']['critical']} "
-             f"W:{report['anomalies_by_severity']['warning']} "
-             f"I:{report['anomalies_by_severity']['info']})")
-    log.info(f"  Corrections: {report['total_corrections']}")
-    log.info(f"  Escalades: {report['total_escalations']}")
+    log.info(f"  Anomalies Critiques: {crit}")
+    log.info(f"  Avertissements (Warning): {warn}")
+    log.info(f"  Suggestions & Code Smells (Info): {info}")
+    log.info(f"  Total defauts detectes: {report['total_anomalies']}")
+    log.info(f"  Corrections appliquees: {report['total_corrections']}")
+    log.info(f"  Escalades (verifications manuelles requises): {report['total_escalations']}")
 
 # ---------------------------------------------------------------------------
 # AUTO COMMIT & PUSH
@@ -329,7 +333,7 @@ def run_full_audit(dry_run=False, emergency_only=False):
 
                 # Appliquer les corrections
                 if fixable:
-                    corrections, escs = fix_single_file(
+                    corrections, escs, backup_path = fix_single_file(
                         filepath, rel_path, lines, fixable, dry_run
                     )
 
@@ -352,7 +356,8 @@ def run_full_audit(dry_run=False, emergency_only=False):
                                     all_escalations.append(esc)
 
                             # Annuler toutes les corrections de ce fichier via le backup
-                            # (le backup est gere dans fixers.py)
+                            if backup_path:
+                                rollback_file(filepath, backup_path)
                         else:
                             pass_corrections.extend(corrections)
                             files_corrected.add(rel_path)
@@ -363,8 +368,8 @@ def run_full_audit(dry_run=False, emergency_only=False):
         all_anomalies.extend(pass_anomalies)
         all_corrections.extend(pass_corrections)
 
-        log.info(f"  Passe {pass_num}: {len(pass_anomalies)} anomalies, "
-                 f"{len(pass_corrections)} corrections")
+        log.info(f"  Passe {pass_num}: {len(pass_anomalies)} defauts trouves, "
+                 f"{len(pass_corrections)} corrections appliquees")
 
         if not pass_corrections:
             break
