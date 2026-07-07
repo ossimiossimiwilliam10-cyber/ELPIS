@@ -1,16 +1,31 @@
-# ELPIS - Assistant d'Étude Intelligent
+# ELPIS - Assistant d’étude intelligent
 
 ELPIS est un assistant personnel intelligent conçu pour optimiser l'apprentissage et les révisions universitaires. Il repose sur un algorithme d'ordonnancement multi-critères (FSRS + Intelligence Pédagogique) pour générer des plannings quotidiens adaptés à la fatigue, l'urgence des examens, et la charge cognitive de l'étudiant.
 
-## 🚀 Fonctionnalités Principales
+---
 
-- **Moteur FSRS** : Répétition espacée algorithmique.
-- **Ordonnancement Intelligent** : 10 axes de priorité (Urgence examen, Anti-Burnout, Compensation inter-UE, Interleaving, etc.).
-- **Génération de Planning (Rapport Quotidien)** : Sélection dynamique des tâches (CM, TD, TP, Annales) avec mode "fill-gap" et chronobiologie (Matin, Aprèm, Soir).
-- **Coach IA (DeepSeek)** : Intégration conversationnelle injectée avec le contexte étudiant.
-- **Double Persistance** : Mode Cloud (MongoDB) avec fallback Automatique Local (Fichiers JSON).
-- **Sécurité** : Basic Auth (mode Cloud), Rate Limiting, Protection Path Traversal, CSP, Mode Night Owl, Écritures Atomiques.
-- **Outils Intégrés** : Lecteur musical (calm/motivational), lecteur/scanneur de PDF (extraction d'exercices).
+## 🚀 Guide Rapide (Pour commencer)
+
+Si tu veux simplement utiliser le projet :
+
+1. Ouvre le dossier du projet sur Windows.
+2. Double-clique sur [start_elpis.bat](start_elpis.bat) pour lancer ELPIS.
+3. Ouvre ton navigateur sur `http://localhost:3001`.
+
+**Si tu veux comprendre le projet sans te perdre, commence par [docs/guide_debutant.md](docs/guide_debutant.md).**
+
+### La structure du projet en une phrase :
+- [interface/web](interface/web) : l’interface que tu vois dans le navigateur.
+- [interface/bridge](interface/bridge) : le cœur du serveur et de la logique métier.
+- [data](data) : les fichiers locaux où sont stockées tes données.
+- [docs](docs) : la documentation du projet.
+- [agent_audit](agent_audit) : un outil automatique pour surveiller la qualité du code.
+
+### Si quelque chose ne fonctionne pas :
+- Vérifie que Node.js et Python sont installés.
+- Vérifie que le port `3001` est libre.
+- Relis les messages affichés dans le terminal (voir le guide débutant pour les décoder).
+- Consulte [docs/guide_debutant.md](docs/guide_debutant.md) pour la procédure de dépannage.
 
 ---
 
@@ -48,7 +63,7 @@ graph TD
 
 1. **Chargement** : Le frontend interroge le backend (`/api/cours`, `/api/config`, `/api/historique`). Le backend lit MongoDB (ou les fichiers locaux) et renvoie les données.
 2. **Génération du Rapport** : Le frontend demande `/api/orchestrateur`. L'orchestrateur charge les données, calcule le **Boost Examen** via `scoring.js`, filtre via l'**Anti-Burnout** (`intelligence.js`), trie les candidats, et répartit l'effort (Matin/Après-midi/Soir). Le rapport est mis en cache (60s).
-3. **Mise à Jour** : Une validation de tâche envoie un POST au bridge. L'écriture est **atomique** (écriture sur `.tmp`, puis `fs.renameSync` protégé avec `fs.copyFileSync` en fallback) pour éviter toute corruption. La synchronisation MongoDB est déclenchée en asynchrone (debounced).
+3. **Mise à Jour Atomique** : Une validation de tâche envoie un POST au bridge. L'écriture est **atomique** (écriture sur `.tmp`, puis `fs.renameSync` avec `fs.copyFileSync` en fallback) pour éviter toute corruption.
 
 ---
 
@@ -65,78 +80,47 @@ Le backend (Express.js) expose les routes suivantes sur le port `3001`.
 | POST    | `/api/cours` | Sauvegarde l'arbre des cours. |
 | GET     | `/api/historique` | Récupère l'historique d'étude complet. |
 | POST    | `/api/historique` | Sauvegarde l'historique. |
-| GET     | `/api/orchestrateur` | Génère ou renvoie le rapport quotidien mis en cache. Accepte `?extraTime=...&fillGap=...` |
+| GET     | `/api/orchestrateur` | Génère ou renvoie le rapport quotidien mis en cache. |
 | POST    | `/api/orchestrateur/specific-task`| Génère une tâche forcée pour un CM/TD spécifique. |
-| POST    | `/api/chat` | Discute avec l'IA (DeepSeek). Le contexte utilisateur est injecté automatiquement. |
-| POST    | `/api/pdf/scan` | (Multipart) Upload un PDF, extrait le texte et suggère des exercices détectés. |
-| POST    | `/api/music/upload` | (Multipart) Ajoute une piste audio (`audio/*`). |
-| POST    | `/api/open/file` | Ouvre un fichier local sur l'OS (Désactivé en production). |
-| GET     | `/api/audit` | Récupère le dernier rapport de l'Agent d'Audit Python (santé du code). |
+| POST    | `/api/chat` | Discute avec l'IA (DeepSeek). |
+| GET     | `/api/audit` | Récupère le dernier rapport de l'Agent d'Audit Python. |
 
 ---
 
 ## 🔒 Sécurité et Mises en Garde
 
 - **Basic Auth** : En production (Render, Heroku, etc.), définir la variable `ADMIN_PASSWORD` activera l'authentification HTTP Basic.
-- **Path Traversal** : L'accès aux fichiers locaux (via `/api/open/file`) est verrouillé au répertoire `DOCUMENTS_DIR` et complètement désactivé en mode production.
+- **Path Traversal** : L'accès aux fichiers locaux (via `/api/open/file`) est verrouillé au répertoire autorisé et complètement désactivé en mode production.
 - **CSP & CORS** : Le backend est protégé par Helmet avec des directives CSP strictes.
 
 ---
 
-## 🛠️ Déploiement
+## 🛠️ Déploiement & Environnement
 
 Le projet est configuré pour être déployé sur des plateformes PaaS comme [Render](https://render.com) grâce au fichier `render.yaml` à la racine.
 
-Variables d'environnement nécessaires en production :
-- `MONGODB_URI` : URI de connexion MongoDB Atlas.
+Variables d'environnement nécessaires en production (fichier `.env`) :
+- `MONGODB_URI` : URI de connexion MongoDB Atlas (Ex: `mongodb+srv://...`). Optionnel si l'on veut rester 100% en local.
 - `DEEPSEEK_API_KEY` : Clé API pour le coach IA.
-- `ADMIN_PASSWORD` : Mot de passe pour bloquer l'accès à l'interface.
+- `ADMIN_PASSWORD` : Mot de passe pour bloquer l'accès à l'interface (sécurité production).
 
 ---
 
 ## 🛡️ Agent d'Audit Autonome (Python)
 
-ELPIS intègre un **agent d'audit de code** écrit en Python qui tourne en arrière-plan et scanne automatiquement le code source toutes les 4 heures.
+ELPIS intègre un **agent d'audit de code** écrit en Python qui tourne en arrière-plan et scanne automatiquement le code source toutes les heures.
 
-- **Fonctionnement** : Analyse par Regex de chaque fichier `.js` / `.jsx` pour détecter les non-conformités (URLs en dur, `console.log` oubliés, styles inline, etc.).
-- **Configuration** : Les règles sont définies dans `agent_audit/rules.json` (modifiable sans toucher au code Python).
-- **Résultats** : Sauvegardés dans `data/espoir_audit.json` et consultables via le bouton **🛡️ Code Health** sur le tableau de bord.
-- **Lancement** : Automatique au démarrage du serveur, ou manuel avec `python agent_audit/main.py --once`.
+- **Fonctionnement** : Scanne les fichiers JS/React pour détecter des anomalies (URLs en dur, bugs de hooks, doublons dans la DB JSON).
+- **Auto-Correction** : Le "Système Immunitaire" peut corriger les fichiers et les push automatiquement s'il est confiant.
+- **Configuration** : Les règles sont définies dans `agent_audit/rules.json`.
 
-📚 Pour la documentation complète (ajout de règles, configuration, format du rapport), voir [`agent_audit/README.md`](agent_audit/README.md).
+📚 [Voir la documentation de l'agent](agent_audit/README.md)
 
 ---
 
-## 📁 Arborescence du Projet
+## 📚 Pour aller plus loin (Documentation détaillée)
 
-```
-ELPIS/
-├── agent_audit/           # Agent Python d'audit autonome
-│   ├── main.py            # Script principal (boucle 4h)
-│   ├── rules.json         # Règles d'audit modifiables
-│   └── README.md          # Documentation de l'agent
-├── backups/               # Backups automatiques (5 jours glissants)
-├── data/                  # Données persistantes (JSON)
-│   ├── espoir_config.json # Configuration utilisateur
-│   ├── espoir_cours.json  # Arbre des cours
-│   ├── espoir_historique.json # Historique d'étude
-│   └── espoir_audit.json  # Rapport d'audit (généré automatiquement)
-├── documents/             # PDFs et fiches stockées
-├── interface/
-│   ├── bridge/            # Backend Express.js (API REST)
-│   │   ├── server.js      # Serveur principal
-│   │   ├── moteur/        # Logique métier (orchestrateur, scoring, intelligence)
-│   │   ├── mongoAdapter.js # Adaptateur MongoDB (Cloud ↔ Local)
-│   │   └── aiAdapter.js   # Adaptateur IA (DeepSeek)
-│   └── web/               # Frontend React/Vite
-│       ├── src/           # Code source React
-│       │   ├── components/# Composants réutilisables
-│       │   ├── store.js   # État global (Zustand)
-│       │   └── *.jsx      # Pages (Dashboard, Cours, Stats...)
-│       └── dist/          # Build de production
-├── music/                 # Fichiers audio (calm/motivational)
-├── scripts/               # Scripts utilitaires
-├── start_elpis.bat        # Lanceur Windows (CMD)
-├── Lancer ELPIS.vbs       # Lanceur Windows (Double-clic)
-└── README.md              # Ce fichier
-```
+Si vous souhaitez plonger dans les entrailles du projet, lisez dans cet ordre :
+1. [docs/backend.md](docs/backend.md) : Compréhension de l’API, de la logique d'intelligence et de l'orchestrateur.
+2. [docs/frontend.md](docs/frontend.md) : Compréhension de l’interface React, de Zustand et du cache de la PWA.
+3. [agent_audit/README.md](agent_audit/README.md) : Fonctionnement de l’outil d’audit automatique et de l'architecture "Système Immunitaire".

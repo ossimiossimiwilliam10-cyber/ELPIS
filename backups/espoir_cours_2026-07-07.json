@@ -15,8 +15,25 @@
                                     "listeCM": [
                                         {
                                             "titre": "Chapitre 1 : Rédiger un protocole d'essai technique (Experimental / Testing Procedures)",
-                                            "jActuel": 3,
-                                            "derniereRevision": "2026-06-16"
+                                            "jActuel": 50,
+                                            "derniereRevision": "2026-07-06",
+                                            "fsrsCard": {
+                                                "due": "2026-08-25T07:36:04.563Z",
+                                                "stability": 50.33960516,
+                                                "difficulty": 3.31446137,
+                                                "elapsed_days": 20,
+                                                "scheduled_days": 50,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-06T07:36:04.563Z"
+                                            },
+                                            "easeFactor": 2.9713846575,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-08-25",
+                                            "tempsMoyen": 85,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).",
@@ -27,47 +44,47 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Les pièges du \"Frenglish\"",
-                                            "jActuel": 1,
-                                            "derniereRevision": "2026-06-24",
-                                            "easeFactor": 3.2704740075,
-                                            "repetitions": 1,
+                                            "jActuel": 29,
+                                            "derniereRevision": "2026-07-06",
+                                            "easeFactor": 3.27219644,
+                                            "repetitions": 2,
                                             "fsrsCard": {
-                                                "due": "2026-06-24T10:18:20.693Z",
-                                                "stability": 2.3065,
-                                                "difficulty": 2.11810397,
-                                                "elapsed_days": 0,
-                                                "scheduled_days": 0,
-                                                "reps": 1,
+                                                "due": "2026-08-04T07:51:10.599Z",
+                                                "stability": 29.31182504,
+                                                "difficulty": 2.11121424,
+                                                "elapsed_days": 12,
+                                                "scheduled_days": 29,
+                                                "reps": 2,
                                                 "lapses": 0,
-                                                "learning_steps": 1,
-                                                "state": 1,
-                                                "last_review": "2026-06-24T10:08:20.693Z"
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-06T07:51:10.599Z"
                                             },
-                                            "prochaineRevisionDate": "2026-06-24",
-                                            "tempsMoyen": 16,
-                                            "nombreRevisionsTemps": 1
+                                            "prochaineRevisionDate": "2026-08-04",
+                                            "tempsMoyen": 15,
+                                            "nombreRevisionsTemps": 2
                                         },
                                         {
                                             "titre": "Chapitre 4 : Étude de cas : La Nanocar Race",
                                             "jActuel": 1,
-                                            "derniereRevision": "2026-06-24",
-                                            "easeFactor": 3.2704740075,
-                                            "repetitions": 1,
+                                            "derniereRevision": "2026-07-06",
+                                            "easeFactor": 2.6117853775,
+                                            "repetitions": 2,
                                             "fsrsCard": {
-                                                "due": "2026-06-24T10:42:06.882Z",
-                                                "stability": 2.3065,
-                                                "difficulty": 2.11810397,
-                                                "elapsed_days": 0,
+                                                "due": "2026-07-06T11:40:45.471Z",
+                                                "stability": 18.73137666,
+                                                "difficulty": 4.75285849,
+                                                "elapsed_days": 12,
                                                 "scheduled_days": 0,
-                                                "reps": 1,
+                                                "reps": 2,
                                                 "lapses": 0,
                                                 "learning_steps": 1,
                                                 "state": 1,
-                                                "last_review": "2026-06-24T10:32:06.882Z"
+                                                "last_review": "2026-07-06T11:34:45.471Z"
                                             },
-                                            "prochaineRevisionDate": "2026-06-24",
-                                            "tempsMoyen": 18,
-                                            "nombreRevisionsTemps": 1
+                                            "prochaineRevisionDate": "2026-07-06",
+                                            "tempsMoyen": 20,
+                                            "nombreRevisionsTemps": 2
                                         }
                                     ],
                                     "listeTD": [
@@ -245,13 +262,13 @@
                                     "listeTD": [
                                         {
                                             "titre": "Exercice 1 - page 2 - TD 1 - Echelonnage d’une matrice-résolution d’un système par remontée",
-                                            "dernierePratique": "2026-06-17",
-                                            "nombrePratiques": 2,
+                                            "dernierePratique": "2026-07-03",
+                                            "nombrePratiques": 3,
                                             "notes": "",
-                                            "difficulte": "tres_facile",
+                                            "difficulte": "assez_difficile",
                                             "page": 1,
-                                            "tempsMoyen": 7,
-                                            "nombreRevisionsTemps": 1,
+                                            "tempsMoyen": 11,
+                                            "nombreRevisionsTemps": 2,
                                             "difficulteInitiale": 3,
                                             "pdfPath": "/documents/doc-1781701451622-559499730.pdf"
                                         },
@@ -348,16 +365,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Contrôle du 26 Octobre 2023",
-                                            "dernierePratique": "2026-07-01",
-                                            "nombrePratiques": 1,
+                                            "dernierePratique": "2026-07-03",
+                                            "nombrePratiques": 2,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781722402030-670357573.pdf",
                                             "difficulteInitiale": 4,
                                             "page": 1,
-                                            "derniereNote": 14,
-                                            "difficulte": "moyen",
-                                            "tempsMoyen": 59,
-                                            "nombreRevisionsTemps": 1
+                                            "derniereNote": 18,
+                                            "difficulte": "tres_facile",
+                                            "tempsMoyen": 63.5,
+                                            "nombreRevisionsTemps": 2
                                         }
                                     ],
                                     "coefficient": 3,
@@ -708,9 +725,26 @@
                                         },
                                         {
                                             "titre": "Chapitre 4 - Les boucles",
-                                            "jActuel": 7,
-                                            "derniereRevision": "2026-06-15",
-                                            "pdfPath": "/documents/doc-1781724856463-181902148.pdf"
+                                            "jActuel": 26,
+                                            "derniereRevision": "2026-07-06",
+                                            "pdfPath": "/documents/doc-1781724856463-181902148.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-08-01T09:49:45.183Z",
+                                                "stability": 26.4595236,
+                                                "difficulty": 6.66599536,
+                                                "elapsed_days": 21,
+                                                "scheduled_days": 26,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-06T09:49:45.183Z"
+                                            },
+                                            "easeFactor": 2.13350116,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-08-01",
+                                            "tempsMoyen": 62,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 5 - Les listes",
@@ -821,16 +855,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Programmation - 2024-25 - Épreuve écrite n°1",
-                                            "dernierePratique": "2026-06-24",
-                                            "nombrePratiques": 1,
+                                            "dernierePratique": "2026-07-06",
+                                            "nombrePratiques": 2,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781725016341-573263425.pdf",
                                             "difficulteInitiale": 2,
                                             "page": 1,
-                                            "derniereNote": 9,
-                                            "difficulte": "assez_difficile",
-                                            "tempsMoyen": 83,
-                                            "nombreRevisionsTemps": 1
+                                            "derniereNote": 13,
+                                            "difficulte": "moyen",
+                                            "tempsMoyen": 78,
+                                            "nombreRevisionsTemps": 2
                                         }
                                     ],
                                     "coefficient": 3,
@@ -894,8 +928,25 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Magnétostatique",
-                                            "jActuel": 7,
-                                            "derniereRevision": "2026-06-15"
+                                            "jActuel": 37,
+                                            "derniereRevision": "2026-07-03",
+                                            "fsrsCard": {
+                                                "due": "2026-08-09T12:08:15.751Z",
+                                                "stability": 36.77501076,
+                                                "difficulty": 4.99022837,
+                                                "elapsed_days": 18,
+                                                "scheduled_days": 37,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-03T12:08:15.751Z"
+                                            },
+                                            "easeFactor": 2.5524429075,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-08-09",
+                                            "tempsMoyen": 114,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 4 : Induction électromagnétique",
@@ -991,16 +1042,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Contrôle continu d'électromagnétisme - Novembre 2022",
-                                            "dernierePratique": "2026-07-01",
-                                            "nombrePratiques": 1,
+                                            "dernierePratique": "2026-07-03",
+                                            "nombrePratiques": 3,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781726276803-18306733.pdf",
                                             "difficulteInitiale": 2,
                                             "page": 1,
-                                            "derniereNote": 0,
-                                            "difficulte": "difficile",
-                                            "tempsMoyen": 28,
-                                            "nombreRevisionsTemps": 1
+                                            "derniereNote": 16.5,
+                                            "difficulte": "facile",
+                                            "tempsMoyen": 96,
+                                            "nombreRevisionsTemps": 3
                                         }
                                     ],
                                     "coefficient": 3,
@@ -1030,11 +1081,26 @@
                                     "listeCM": [
                                         {
                                             "titre": "Chapitre 1 : Outils et théorèmes fondamentaux de l'électrocinétique",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0,
-                                            "pdfPath": "/documents/doc-1781853358939-971488381.pdf"
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-07-04",
+                                            "easeFactor": 2.5219573225,
+                                            "repetitions": 1,
+                                            "pdfPath": "/documents/doc-1781853358939-971488381.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-07-04T10:12:04.848Z",
+                                                "stability": 1.2931,
+                                                "difficulty": 5.11217071,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 1,
+                                                "last_review": "2026-07-04T10:06:04.848Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-07-04",
+                                            "tempsMoyen": 115,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 2 : Les amplificateurs linéaires : concepts généraux et modélisation",

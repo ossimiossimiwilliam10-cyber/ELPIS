@@ -63,7 +63,7 @@ sequenceDiagram
     participant Orch as orchestrateur.js
     participant Score as scoring.js
     participant Intel as intelligence.js
-
+    
     React->>Server: GET /api/orchestrateur
     Server->>Orch: generateDailyTasks()
     Orch->>Score: calculateUrgency(cours)
