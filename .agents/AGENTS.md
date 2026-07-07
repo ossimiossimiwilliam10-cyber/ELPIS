@@ -90,3 +90,7 @@ pm run build dans le répertoire approprié comme interface/web).
   1. La priorité est de mettre à jour les fichiers globaux existants dans le dossier docs/ (ex: rontend.md, ackend.md, devops.md).
   2. Je ne créerai de nouveaux fichiers Markdown dans docs/ que pour des très gros modules justifiant une séparation.
 </RULE[project_systematic_docs]>
+
+<RULE[agent_audit_backups_ignore]>
+- **Exclusion des Backups (Anti Recursive-Loop)** : Tout système d'auto-correction (comme le Système Immunitaire) générant des sauvegardes locales (ex: gent_audit/backups/) DOIT impérativement avoir ce dossier inscrit dans le .gitignore. Cela évite que les linters (ESLint, Ruff) ne scannent récursivement les anciens fichiers et que l'agent ne commit des milliers de lignes de backups par erreur.
+</RULE[agent_audit_backups_ignore]>

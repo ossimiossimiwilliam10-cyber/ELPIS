@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-07T09:27:55.153676",
+  "timestamp": "2026-07-07T09:49:44.312969",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 6.56,
-    "files_scanned": 198,
-    "files_per_second": 30.2,
-    "lines_per_second": 241036.0
+    "elapsed_seconds": 5.63,
+    "files_scanned": 200,
+    "files_per_second": 35.5,
+    "lines_per_second": 279309.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 7,
@@ -20,7 +20,7 @@
       "MISSING_TEST_FILE": 54,
       "F401": 44,
       "F541": 17,
-      "E402": 6,
+      "E402": 12,
       "F811": 1,
       "E741": 1,
       "E902": 1
@@ -36,32 +36,32 @@
     "total_rules": 57,
     "active_rules": 7,
     "inactive_rules": [
-      "MISSING_REACT_MEMO",
-      "NO_EMPTY_CATCH",
+      "ZUSTAND_FULL_STORE_DESTRUCTURE",
+      "NO_BARREL_IMPORT_CYCLES",
       "PWA_STATIC_ROUTE_EXCLUSION",
-      "EXCESSIVE_FUNCTION_LENGTH",
-      "MISSING_ALT_ATTRIBUTE",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "EXCESSIVE_FILE_SIZE",
       "EXCESSIVE_NESTING_DEPTH",
-      "EMPTY_PROMISE_CATCH",
-      "NO_CONSOLE_LOG_IN_PROD",
       "AVOID_ARRAY_CONSTRUCTOR",
-      "PROP_SPREADING_WARNING",
-      "USE_OPTIONAL_CHAINING",
-      "MISSING_USEEFFECT_DEPS",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "NO_TRAILING_WHITESPACE",
-      "NO_PRINT_IN_PRODUCTION",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "TOAST_DIRECT_CALL",
+      "NO_VAR_KEYWORD",
+      "NO_SQL_INJECTION_PATTERNS",
+      "TEST_WITH_SKIP",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "FIX_CONFIDENCE_DECIMAL",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_IMPORTANT_IN_CSS",
+      "FETCH_WITHOUT_ABORT",
       "NO_HARDCODED_SECRETS",
-      "IMPORT_BOUNDARY_VIOLATION"
+      "MISSING_TYPE_HINTS",
+      "NO_POSITIVE_TABINDEX",
+      "MISSING_USEEFFECT_DEPS",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "EMPTY_PROMISE_CATCH"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 480.9
+    "size_kb": 79.4
   },
   "overall_status": "HEALTHY",
   "warnings": [],
