@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-07T08:19:16.160483",
+  "timestamp": "2026-07-07T11:44:27.738222",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 7.4,
+    "elapsed_seconds": 11.46,
     "files_scanned": 196,
-    "files_per_second": 26.5,
-    "lines_per_second": 212242.0
+    "files_per_second": 17.1,
+    "lines_per_second": 136919.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,32 +30,32 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "NO_POSITIVE_TABINDEX",
-      "MISSING_USEEFFECT_DEPS",
+      "JSON_DEEP_CLONE",
       "MISSING_REACT_MEMO",
-      "NO_BARE_EXCEPT",
-      "FETCH_WITHOUT_ABORT",
-      "NO_WINDOW_PROMPT",
-      "NO_CONSOLE_LOG_IN_PROD",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "IMPORT_BOUNDARY_VIOLATION",
-      "NO_HARDCODED_LOCALHOST",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_VAR_KEYWORD",
-      "MISSING_KEY_IN_MAP",
-      "NO_DOUBLE_SEMICOLONS",
-      "NO_UNSAFE_INNERHTML",
-      "EXCESSIVE_NESTING_DEPTH",
+      "MISSING_TYPE_HINTS",
       "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "TEST_WITH_ONLY"
+      "TEST_WITH_ONLY",
+      "PWA_STATIC_ROUTE_EXCLUSION",
+      "NO_TRAILING_WHITESPACE",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "NO_CIRCULAR_IMPORTS",
+      "MISSING_USEEFFECT_DEPS",
+      "UNGUARDED_JSON_PARSE",
+      "NO_BARREL_IMPORT_CYCLES",
+      "EMPTY_PROMISE_CATCH",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "TOAST_DIRECT_CALL",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "ZUSTAND_FULL_STORE_DESTRUCTURE",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "EXCESSIVE_FILE_SIZE"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 83.9
+    "size_kb": 30.1
   },
   "overall_status": "HEALTHY",
   "warnings": [],
