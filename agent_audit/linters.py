@@ -8,25 +8,25 @@ def run_eslint(project_root, fix=False):
     cmd = ['npx', 'eslint', '.', '--format', 'json']
     if fix:
         cmd.append('--fix')
-    
+
     try:
         # Check if eslint is there
         if not os.path.exists(os.path.join(web_dir, 'package.json')):
             return []
-            
+
         result = subprocess.run(
             cmd,
             cwd=web_dir,
             capture_output=True,
             text=True
         )
-        
+
         # ESLint returns exit code 1 if errors exist, which is normal
         try:
             output = json.loads(result.stdout)
         except json.JSONDecodeError:
             return []
-            
+
         anomalies = []
         for file_report in output:
             filepath = file_report.get('filePath', '')
@@ -54,7 +54,7 @@ def run_ruff(project_root, fix=False):
     cmd = ['python', '-m', 'ruff', 'check', '.', '--output-format', 'json']
     if fix:
         cmd.append('--fix')
-        
+
     try:
         result = subprocess.run(
             cmd,
@@ -62,12 +62,12 @@ def run_ruff(project_root, fix=False):
             capture_output=True,
             text=True
         )
-        
+
         try:
             output = json.loads(result.stdout)
         except json.JSONDecodeError:
             return []
-            
+
         anomalies = []
         for msg in output:
             filepath = msg.get('filename', '')

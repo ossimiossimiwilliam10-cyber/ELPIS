@@ -282,20 +282,20 @@ def run_full_audit(dry_run=False, emergency_only=False):
 
     # --- 6. Phase 3 : Scan fichier par fichier + corrections ---
     log.info("Phase 3: Execution des linters standards (ESLint, Ruff)...")
-    
+
     all_anomalies = list(global_anomalies)
     all_corrections = []
     all_escalations = []
     files_corrected = set()
     rule_hit_count = defaultdict(int)
-    
+
     if not dry_run:
         linter_anomalies = get_all_linter_anomalies(PROJECT_ROOT, fix=False)
         fixable_by_file = defaultdict(list)
         for a in linter_anomalies:
             if a.get("_fixable"):
                 fixable_by_file[a["file"]].append(a)
-                
+
         for rel_path, anomalies in fixable_by_file.items():
             filepath = os.path.join(PROJECT_ROOT, rel_path)
             ext = os.path.splitext(filepath)[1].lower()
@@ -306,12 +306,12 @@ def run_full_audit(dry_run=False, emergency_only=False):
                 backup_path = create_backup(filepath, timestamp_dir)
             except Exception:
                 backup_path = None
-                
+
             if ext in (".js", ".jsx", ".ts", ".tsx"):
                 subprocess.run(["npx", "eslint", rel_path, "--fix"], cwd=PROJECT_ROOT, capture_output=True)
             elif ext == ".py":
                 subprocess.run(["python", "-m", "ruff", "check", rel_path, "--fix"], cwd=PROJECT_ROOT, capture_output=True)
-                
+
             validation_ok = validate_after_fix(filepath, run_tests=True)
             if not validation_ok:
                 log.warning(f"  [ROLLBACK] Validation echouee pour {rel_path}")
@@ -321,12 +321,12 @@ def run_full_audit(dry_run=False, emergency_only=False):
                 files_corrected.add(rel_path)
                 for a in anomalies:
                     all_corrections.append({"rule_id": a["rule_id"], "file": rel_path, "line": a["line"], "before": "", "after": "Fixed by linter"})
-    
+
     final_anomalies = get_all_linter_anomalies(PROJECT_ROOT, fix=False)
     for a in final_anomalies:
         rule_hit_count[a["rule_id"]] += 1
     all_anomalies.extend(final_anomalies)
-    
+
     log.info(f"  Passe 1: {len(final_anomalies)} defauts trouves, {len(all_corrections)} corrections appliquees")
     # --- 7. Verifier les faux positifs potentiels ---
     for rule_id, count in rule_hit_count.items():

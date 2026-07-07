@@ -64,10 +64,10 @@ for i, line in enumerate(lines):
         new_lines.append('    \n')
         new_lines.append('    log.info(f"  Passe 1: {len(final_anomalies)} defauts trouves, {len(all_corrections)} corrections appliquees")\n')
         continue
-        
+
     if skip and "--- 7. Verifier les faux positifs potentiels ---" in line:
         skip = False
-        
+
     if not skip:
         new_lines.append(line)
 
