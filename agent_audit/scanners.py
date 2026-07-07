@@ -417,7 +417,7 @@ def extract_imports(filepath, lines):
 
 
 # ---------------------------------------------------------------------------
-# Unified Scanner Entry Point
+# Custom Python Scanners
 # ---------------------------------------------------------------------------
 
 def scan_custom_python(lines, rel_path, filename, rules, project_root):
@@ -431,7 +431,12 @@ def scan_custom_python(lines, rel_path, filename, rules, project_root):
         if not re.search(file_pat, filename):
             continue
 
+        exclude_pat = rule.get('exclude_pattern')
+        if exclude_pat and re.search(exclude_pat, rel_path):
+            continue
+
         patterns = rule.get('patterns', [])
+
         if 'scan_pwa_static_exclusions' in patterns:
             # Code specifique au scan PWA
             server_path = os.path.join(project_root, 'interface', 'bridge', 'server.js')
@@ -448,14 +453,216 @@ def scan_custom_python(lines, rel_path, filename, rules, project_root):
             for route in static_routes:
                 # ex: route='/music', target: /^\/music\//
                 # the string in vite.config.js is exactly /^\/music\//
-                expected = f"/^\\\\{route}\\\\//"
+                expected = f"/^\\\\{route}\\\\/"
                 if expected not in content:
                     anomalies.append(_build_anomaly(
                         rule, rel_path, 1,
                         f"Route statique '{route}' manquante dans navigateFallbackDenylist de la PWA."
                     ))
 
+        elif 'scan_useeffect_cleanup_interval' in patterns:
+            anomalies.extend(_scan_useeffect_cleanup(lines, rel_path, rule, 'setInterval', 'clearInterval'))
+
+        elif 'scan_useeffect_cleanup_listener' in patterns:
+            anomalies.extend(_scan_useeffect_cleanup(lines, rel_path, rule, 'addEventListener', 'removeEventListener'))
+
+        elif 'scan_unguarded_json_parse' in patterns:
+            anomalies.extend(_scan_unguarded_json_parse(lines, rel_path, rule))
+
+        elif 'scan_express_async_handlers' in patterns:
+            anomalies.extend(_scan_express_async_handlers(lines, rel_path, rule))
+
+        elif 'scan_fetch_without_abort' in patterns:
+            anomalies.extend(_scan_fetch_without_abort(lines, rel_path, rule))
+
     return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Custom Scanner: useEffect cleanup detection
+# ---------------------------------------------------------------------------
+
+def _scan_useeffect_cleanup(lines, rel_path, rule, target_call, cleanup_call):
+    """
+    Detecte les useEffect contenant `target_call` (ex: setInterval)
+    sans `cleanup_call` (ex: clearInterval) dans le bloc return.
+    Utilise un compteur de profondeur d'accolades pour delimiter le bloc useEffect.
+    """
+    anomalies = []
+    content = ''.join(lines)
+
+    # Trouver tous les useEffect
+    useeffect_re = re.compile(r'useEffect\s*\(\s*\(\s*\)\s*=>\s*\{')
+    for match in useeffect_re.finditer(content):
+        start = match.end()
+        line_num = content[:match.start()].count('\n') + 1
+
+        # Trouver la fin du bloc useEffect avec compteur d'accolades
+        depth = 1
+        pos = start
+        while pos < len(content) and depth > 0:
+            if content[pos] == '{':
+                depth += 1
+            elif content[pos] == '}':
+                depth -= 1
+            pos += 1
+
+        block = content[start:pos]
+
+        # Verifier si le bloc contient target_call
+        if target_call not in block:
+            continue
+
+        # Verifier si le bloc contient un return () => ... avec cleanup_call
+        # On cherche le pattern return dans le useEffect
+        has_cleanup = False
+        return_re = re.compile(r'return\s*\(\s*\)\s*=>\s*\{?')
+        for ret_match in return_re.finditer(block):
+            # Extraire le contenu du cleanup
+            ret_start = ret_match.end()
+            # Chercher le cleanup_call apres le return
+            remaining = block[ret_start:]
+            if cleanup_call in remaining:
+                has_cleanup = True
+                break
+
+        if not has_cleanup:
+            snippet = f"useEffect contient {target_call}() sans {cleanup_call}() dans le return"
+            anomalies.append(_build_anomaly(rule, rel_path, line_num, snippet))
+
+    return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Custom Scanner: unguarded JSON.parse
+# ---------------------------------------------------------------------------
+
+def _scan_unguarded_json_parse(lines, rel_path, rule):
+    """
+    Detecte les JSON.parse() qui ne sont pas dans un bloc try.
+    Remonte les lignes precedentes pour verifier la presence d'un 'try {'.
+    """
+    anomalies = []
+    json_parse_re = re.compile(r'JSON\.parse\(')
+
+    for i, line in enumerate(lines):
+        if not json_parse_re.search(line):
+            continue
+
+        # Verifier si on est deja dans un try block
+        # Remonter les lignes (max 15) pour chercher 'try {'
+        in_try = False
+        depth = 0
+        for j in range(i, max(i - 15, -1), -1):
+            check_line = lines[j].strip()
+            # Compter les accolades en remontant
+            depth += check_line.count('}')
+            depth -= check_line.count('{')
+            if re.search(r'\btry\s*\{', check_line):
+                in_try = True
+                break
+            # Si on remonte au-dela de la portee (depth > 0 = sorti du bloc)
+            if depth > 1:
+                break
+
+        if not in_try:
+            snippet = line.strip()[:200]
+            anomalies.append(_build_anomaly(rule, rel_path, i + 1, snippet))
+
+    return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Custom Scanner: Express async handlers without try/catch
+# ---------------------------------------------------------------------------
+
+def _scan_express_async_handlers(lines, rel_path, rule):
+    """
+    Detecte les handlers Express async (req, res) sans try/catch.
+    Cherche le pattern 'async (req, res' puis verifie que le corps contient 'try {'.
+    """
+    anomalies = []
+    content = ''.join(lines)
+
+    # Pattern : async (req, res...) => { ou async function(req, res) {
+    handler_re = re.compile(r'async\s*\(\s*req\s*,\s*res(?:\s*,\s*\w+)?\s*\)\s*(?:=>)?\s*\{')
+
+    for match in handler_re.finditer(content):
+        start = match.end()
+        line_num = content[:match.start()].count('\n') + 1
+
+        # Trouver la fin du bloc handler
+        depth = 1
+        pos = start
+        while pos < len(content) and depth > 0:
+            if content[pos] == '{':
+                depth += 1
+            elif content[pos] == '}':
+                depth -= 1
+            pos += 1
+
+        block = content[start:pos]
+
+        # Verifier si le bloc contient 'try {'
+        if not re.search(r'\btry\s*\{', block):
+            snippet = f"async (req, res) handler sans try/catch (ligne {line_num})"
+            anomalies.append(_build_anomaly(rule, rel_path, line_num, snippet))
+
+    return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Custom Scanner: fetch() without AbortController in React components
+# ---------------------------------------------------------------------------
+
+def _scan_fetch_without_abort(lines, rel_path, rule):
+    """
+    Detecte les composants React avec useEffect contenant fetch()
+    mais sans AbortController dans le meme scope.
+    """
+    anomalies = []
+    content = ''.join(lines)
+
+    # Verifier d'abord si c'est un composant React (contient useEffect)
+    if 'useEffect' not in content:
+        return anomalies
+
+    # Verifier si le fichier utilise fetch
+    if 'fetch(' not in content:
+        return anomalies
+
+    # Verifier si AbortController est utilise quelque part
+    if 'AbortController' in content:
+        return anomalies
+
+    # Chercher les useEffect contenant fetch
+    useeffect_re = re.compile(r'useEffect\s*\(\s*\(\s*\)\s*=>\s*\{')
+    for match in useeffect_re.finditer(content):
+        start = match.end()
+        line_num = content[:match.start()].count('\n') + 1
+
+        depth = 1
+        pos = start
+        while pos < len(content) and depth > 0:
+            if content[pos] == '{':
+                depth += 1
+            elif content[pos] == '}':
+                depth -= 1
+            pos += 1
+
+        block = content[start:pos]
+
+        if 'fetch(' in block:
+            snippet = f"useEffect avec fetch() sans AbortController (ligne {line_num})"
+            anomalies.append(_build_anomaly(rule, rel_path, line_num, snippet))
+
+    return anomalies
+
+
+# ---------------------------------------------------------------------------
+# Unified Scanner Entry Point
+# ---------------------------------------------------------------------------
+
 
 def run_all_scanners(filepath, rel_path, lines, rules, all_files_data, source_files, project_root):
     """

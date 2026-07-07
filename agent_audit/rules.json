@@ -1,9 +1,9 @@
 {
     "meta": {
-        "version": "3.1.0",
-        "description": "ELPIS Immune System — NASA-grade audit rules. v3.1: merged duplicates, added v3 intelligence architecture rules.",
-        "last_updated": "2026-07-06",
-        "total_rules": 46,
+        "version": "3.2.0",
+        "description": "ELPIS Immune System — NASA-grade audit rules. v3.2: 12 nouveaux antivirus (React memory leaks, JSON.parse safety, toast API, Express async, Zustand perf, accessibility).",
+        "last_updated": "2026-07-07",
+        "total_rules": 57,
         "categories": [
             "SECURITY",
             "PERFORMANCE",
@@ -16,7 +16,8 @@
             "PYTHON_SPECIFIC",
             "CSS_SPECIFIC",
             "INTELLIGENCE_MODULE",
-            "PWA"
+            "PWA",
+            "ELPIS_SPECIFIC"
         ]
     },
     "rules": [
@@ -914,6 +915,217 @@
             "fix_confidence": 0,
             "false_positive_risk": "low",
             "suppression_comment": "AUDIT_SUPPRESS:PWA_STATIC"
+        },
+        "=============================================",
+        "CATEGORIE: REACT MEMORY LEAKS (2 regles)",
+        "=============================================",
+        {
+            "id": "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+            "category": "REACT_BEST_PRACTICES",
+            "severity": "critical",
+            "description": "useEffect contenant setInterval sans cleanup (clearInterval dans le return). Fuite memoire : l'intervalle continue apres le demontage du composant.",
+            "patterns": ["scan_useeffect_cleanup_interval"],
+            "detection_strategy": "custom_python",
+            "multi_line": true,
+            "file_pattern": "\\.(jsx|tsx)$",
+            "exclude_pattern": "(test|spec)\\.(jsx|tsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "low",
+            "cwe_ref": "CWE-401",
+            "escalation_message": "useEffect avec setInterval sans clearInterval dans le return. Ajoutez un return () => clearInterval(id) dans le useEffect.",
+            "suppression_comment": "AUDIT_SUPPRESS:USEEFFECT_INTERVAL"
+        },
+        {
+            "id": "USEEFFECT_MISSING_CLEANUP_LISTENER",
+            "category": "REACT_BEST_PRACTICES",
+            "severity": "warning",
+            "description": "useEffect contenant addEventListener sans removeEventListener dans le cleanup. Les listeners s'accumulent a chaque re-rendu.",
+            "patterns": ["scan_useeffect_cleanup_listener"],
+            "detection_strategy": "custom_python",
+            "multi_line": true,
+            "file_pattern": "\\.(jsx|tsx)$",
+            "exclude_pattern": "(test|spec)\\.(jsx|tsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "medium",
+            "cwe_ref": "CWE-401",
+            "escalation_message": "useEffect avec addEventListener sans removeEventListener dans le return. Ajoutez un cleanup pour eviter l'accumulation de listeners.",
+            "suppression_comment": "AUDIT_SUPPRESS:USEEFFECT_LISTENER"
+        },
+        "=============================================",
+        "CATEGORIE: ROBUSTESSE CODE (4 regles)",
+        "=============================================",
+        {
+            "id": "UNGUARDED_JSON_PARSE",
+            "category": "CODE_QUALITY",
+            "severity": "warning",
+            "description": "JSON.parse() appele sans try/catch englobant. Si les donnees sont corrompues ou invalides, l'application crashe.",
+            "patterns": ["scan_unguarded_json_parse"],
+            "detection_strategy": "custom_python",
+            "multi_line": true,
+            "file_pattern": "\\.(js|jsx|ts|tsx)$",
+            "exclude_pattern": "(test|spec|mock|coverage)\\.(js|jsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "medium",
+            "cwe_ref": "CWE-20",
+            "escalation_message": "JSON.parse() sans try/catch. Enveloppez dans un try/catch avec un fallback par defaut.",
+            "suppression_comment": "AUDIT_SUPPRESS:UNGUARDED_JSON"
+        },
+        {
+            "id": "EMPTY_PROMISE_CATCH",
+            "category": "CODE_QUALITY",
+            "severity": "warning",
+            "description": "Promise .catch() avec un callback vide. Les erreurs sont silencieusement avalees.",
+            "patterns": [
+                "\\.catch\\s*\\(\\s*\\(\\s*\\)\\s*=>"
+            ],
+            "multi_line": false,
+            "file_pattern": "\\.(js|jsx|ts|tsx)$",
+            "exclude_pattern": "(test|spec|mock|sw)\\.(js|jsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "medium",
+            "cwe_ref": "CWE-390",
+            "escalation_message": "Promise .catch() vide. Ajoutez au minimum un console.error() ou gerez l'erreur.",
+            "suppression_comment": "AUDIT_SUPPRESS:EMPTY_PROMISE_CATCH"
+        },
+        {
+            "id": "JSON_DEEP_CLONE",
+            "category": "PERFORMANCE",
+            "severity": "info",
+            "description": "Deep clone via JSON.parse(JSON.stringify()). Pattern lent et lossy : perd les fonctions, les Dates, undefined, et les references circulaires.",
+            "patterns": [
+                "JSON\\.parse\\(\\s*JSON\\.stringify\\("
+            ],
+            "multi_line": false,
+            "file_pattern": "\\.(js|jsx|ts|tsx)$",
+            "exclude_pattern": "(test|spec|mock)\\.(js|jsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": false,
+            "fix_confidence": 0,
+            "false_positive_risk": "medium",
+            "escalation_message": "Deep clone via JSON roundtrip. Preferez structuredClone() (ES2022) ou une fonction de deep clone dediee.",
+            "suppression_comment": "AUDIT_SUPPRESS:JSON_DEEP_CLONE"
+        },
+        {
+            "id": "EXPRESS_ASYNC_NO_TRY_CATCH",
+            "category": "SECURITY",
+            "severity": "warning",
+            "description": "Handler Express async sans try/catch englobant. Les rejections non attrapees crashent le serveur Node.js.",
+            "patterns": ["scan_express_async_handlers"],
+            "detection_strategy": "custom_python",
+            "multi_line": true,
+            "file_pattern": "server\\.js$",
+            "exclude_pattern": "(test|spec)\\.(js|jsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "medium",
+            "cwe_ref": "CWE-755",
+            "escalation_message": "Handler Express async sans try/catch. Enveloppez le corps du handler dans un try/catch avec next(err) ou res.status(500).json().",
+            "suppression_comment": "AUDIT_SUPPRESS:EXPRESS_ASYNC"
+        },
+        "=============================================",
+        "CATEGORIE: ELPIS-SPECIFIC (2 regles)",
+        "=============================================",
+        {
+            "id": "TOAST_DIRECT_CALL",
+            "category": "ELPIS_SPECIFIC",
+            "severity": "critical",
+            "description": "Appel direct de toast() comme une fonction. Dans ELPIS, useToast() retourne un objet avec des methodes (toast.success, toast.error, etc.), pas une fonction.",
+            "patterns": [
+                "\\btoast\\s*\\(\\s*['\"].*['\"]\\s*[,)]"
+            ],
+            "multi_line": false,
+            "file_pattern": "\\.(jsx|tsx)$",
+            "exclude_pattern": "(test|spec|ToastProvider)\\.(jsx|tsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "low",
+            "escalation_message": "toast() appele directement. Utilisez toast.success(), toast.error(), toast.info(), ou toast.warning().",
+            "suppression_comment": "AUDIT_SUPPRESS:TOAST_DIRECT"
+        },
+        {
+            "id": "ZUSTAND_FULL_STORE_DESTRUCTURE",
+            "category": "PERFORMANCE",
+            "severity": "info",
+            "description": "Utilisation de useStore() sans selecteur. Force un re-rendu complet du composant a chaque changement d'etat. Preferez useStore(state => state.field).",
+            "patterns": [
+                "useStore\\(\\s*\\)"
+            ],
+            "multi_line": false,
+            "file_pattern": "\\.(jsx|tsx)$",
+            "exclude_pattern": "(test|spec)\\.(jsx|tsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": false,
+            "fix_confidence": 0,
+            "false_positive_risk": "high",
+            "escalation_message": "useStore() sans selecteur. Les composants re-rendent a chaque mutation du store. Utilisez useStore(s => s.field) pour un rendu selectif.",
+            "suppression_comment": "AUDIT_SUPPRESS:ZUSTAND_FULL_STORE"
+        },
+        "=============================================",
+        "CATEGORIE: ACCESSIBILITE AVANCEE (2 regles)",
+        "=============================================",
+        {
+            "id": "NO_WINDOW_PROMPT",
+            "category": "ACCESSIBILITY",
+            "severity": "warning",
+            "description": "window.prompt() bloque le thread UI, n'est pas stylisable et est inaccessible aux lecteurs d'ecran. Utilisez un composant modal React.",
+            "patterns": [
+                "window\\.prompt\\s*\\("
+            ],
+            "multi_line": false,
+            "file_pattern": "\\.(js|jsx|ts|tsx)$",
+            "exclude_pattern": "(test|spec|mock)\\.(js|jsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "low",
+            "wcag_ref": "WCAG 4.1.2",
+            "escalation_message": "window.prompt() detecte. Remplacez par un composant modal React pour une meilleure UX et accessibilite.",
+            "suppression_comment": "AUDIT_SUPPRESS:NO_PROMPT"
+        },
+        {
+            "id": "FETCH_WITHOUT_ABORT",
+            "category": "REACT_BEST_PRACTICES",
+            "severity": "info",
+            "description": "fetch() dans un composant React sans AbortController. Les requetes ne sont pas annulees au demontage, pouvant causer des state updates sur un composant demonte.",
+            "patterns": ["scan_fetch_without_abort"],
+            "detection_strategy": "custom_python",
+            "multi_line": true,
+            "file_pattern": "\\.(jsx|tsx)$",
+            "exclude_pattern": "(test|spec|store|mock)\\.(js|jsx)$",
+            "auto_fix_strategy": "none",
+            "requires_human": false,
+            "fix_confidence": 0,
+            "false_positive_risk": "high",
+            "escalation_message": "fetch() sans AbortController. Utilisez un AbortController dans le useEffect pour annuler les requetes au demontage.",
+            "suppression_comment": "AUDIT_SUPPRESS:FETCH_NO_ABORT"
+        },
+        {
+            "id": "FIX_CONFIDENCE_DECIMAL",
+            "category": "PYTHON_SPECIFIC",
+            "severity": "warning",
+            "description": "fix_confidence en valeur decimale (0.xx) au lieu d'entier sur 100 (xx). Regle AGENTS.md : les fix_confidence DOIVENT etre des entiers.",
+            "patterns": [
+                "\"fix_confidence\"\\s*:\\s*0\\.\\d+"
+            ],
+            "multi_line": false,
+            "file_pattern": "rules\\.json$",
+            "exclude_pattern": "",
+            "auto_fix_strategy": "none",
+            "requires_human": true,
+            "fix_confidence": 0,
+            "false_positive_risk": "low",
+            "escalation_message": "fix_confidence en decimal. Convertissez en entier sur 100 (ex: 0.95 -> 95).",
+            "suppression_comment": "AUDIT_SUPPRESS:FIX_CONF_DECIMAL"
         }
     ]
 }

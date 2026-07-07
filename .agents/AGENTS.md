@@ -58,6 +58,10 @@ pm test ou Ã©quivalent) AVANT de dÃ©clencher la procÃ©dure de Build & Push
   2. Implementer un systeme de **Rollback** (annuler la correction si la verification post-fix echoue via les tests ou la syntaxe).
   3. Utiliser un systeme d'**Escalade** formelle pour les anomalies detectees qu'il ne peut pas corriger en toute securite, plutot que de laisser des anomalies orphelines dans les rapports standards.
   4. **Anticipation post-correction (Continuous Learning)** : Dès qu'un bug complexe est résolu manuellement, le système immunitaire DOIT être mis à jour immédiatement avec de nouvelles règles (dans rules.json ou scanners.py) pour détecter automatiquement la régression de ce cas précis, et pour généraliser la détection à des cas similaires.
+  5. **Paramètres de Confiance** : Les `fix_confidence` dans `rules.json` doivent TOUJOURS être des entiers sur 100 (ex: `95` et non `0.95`).
+  6. **Validation par les Tests** : Le système de validation (ex: `validators.py`) doit impérativement exécuter les tests dans le dossier exact contenant le `package.json` correspondant au fichier modifié. Ne jamais supposer que le `package.json` se trouve à la racine.
+  7. **Compatibilité des Test Runners** : Préférer les arguments positionnels (`npm test -- nomFichier`) plutôt que des drapeaux spécifiques (`--testPathPattern`) pour garantir la compatibilité entre Jest et Vitest.
+  8. **Bypass pour les données** : Les fichiers ne possédant pas de tests associés (ex: fichiers JSON ou de configuration brute) doivent automatiquement réussir l'étape de validation des tests pour éviter des rollbacks inutiles.
 </RULE[agent_architecture_immune_system]>
 
 <RULE[daemon_lifecycle_management]>
