@@ -67,3 +67,7 @@ pm test ou ÃƒÂ©quivalent) AVANT de dÃƒÂ©clencher la procÃƒÂ©dure de Build & Push
 <RULE[daemon_lifecycle_management]>
 - **Gestion du Cycle de Vie des Processus (DÃ©mons)** : Lors de la modification du code source d'un processus s'exÃ©cutant en arriÃ¨re-plan (serveur Node.js, agent Python, etc.), il faut SYSTEMATIQUEMENT identifier l'instance en cours d'exÃ©cution (via `manage_task` ou les outils systÃ¨me) et la redÃ©marrer ou la tuer. Cela Ã©vite les crashs fatals dus Ã  une dÃ©synchronisation entre le code en mÃ©moire vive et les nouveaux fichiers de configuration sur le disque.
 </RULE[daemon_lifecycle_management]>
+
+<RULE[documentation_double_audience]>
+- **Documentation Multi-Niveaux** : Lors de la mise à jour ou de la simplification des fichiers de documentation principaux (comme README.md), il faut TOUJOURS préserver les sections d'architecture technique (diagrammes, API, déploiement). Si du contenu pour débutants ("Guide Rapide") est ajouté, il doit être placé au sommet du document sans pour autant écraser les explications de bas niveau destinées aux développeurs.
+</RULE[documentation_double_audience]>
