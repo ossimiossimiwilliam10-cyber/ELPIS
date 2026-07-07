@@ -10,9 +10,8 @@ import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from engine import load_rules
-from scanners import (scan_regex, scan_structural, scan_custom_python,
-                       _scan_useeffect_cleanup, _scan_unguarded_json_parse,
-                       _scan_express_async_handlers, _scan_fetch_without_abort)
+from scanners import (scan_regex, _scan_useeffect_cleanup, _scan_unguarded_json_parse,
+                       _scan_express_async_handlers)
 
 PASSED = 0
 FAILED = 0

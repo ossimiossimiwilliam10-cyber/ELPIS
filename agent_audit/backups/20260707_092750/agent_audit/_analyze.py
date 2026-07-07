@@ -27,6 +27,6 @@ for rid, cnt in cc.most_common():
     if sample.get('file'):
         print(f"    -> {sample['file']}:{sample['line']}")
 
-print(f"\n=== ESCALATIONS ===")
+print("\n=== ESCALATIONS ===")
 for e in d.get('escalations', [])[:5]:
     print(f"  [{e.get('type')}] {e.get('rule_id')} lvl={e.get('level')}")

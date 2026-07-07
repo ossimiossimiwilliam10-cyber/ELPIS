@@ -11,7 +11,6 @@ Strategies de validation :
 import os
 import subprocess
 import sys
-import json
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 

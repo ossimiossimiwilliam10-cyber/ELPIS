@@ -7,9 +7,7 @@ Ne modifie jamais un fichier sans passer par les validateurs.
 """
 
 import os
-import re
 import json
-import time
 import hashlib
 import datetime
 from collections import defaultdict

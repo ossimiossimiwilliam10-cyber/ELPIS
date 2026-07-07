@@ -1,5 +1,3 @@
-import sys
-import os
 
 filepath = r'c:\Users\User\Desktop\ELPIS\agent_audit\main.py'
 with open(filepath, 'r', encoding='utf-8') as f:

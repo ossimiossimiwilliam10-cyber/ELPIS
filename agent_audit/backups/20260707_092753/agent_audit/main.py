@@ -19,7 +19,6 @@ import datetime
 import sys
 import json
 import time
-import datetime
 import logging
 import subprocess
 from logging.handlers import RotatingFileHandler
@@ -27,16 +26,12 @@ from logging.handlers import RotatingFileHandler
 # ---------------------------------------------------------------------------
 # Imports internes
 # ---------------------------------------------------------------------------
-from engine import (load_rules, should_auto_fix, is_emergency,
-                    prioritize_anomalies, calculate_health_score,
-                    load_last_hashes, save_hashes, file_hash)
+from engine import (load_rules, should_auto_fix, calculate_health_score)
 from scanners import (run_all_scanners, run_global_scanners, extract_imports)
 from fixers import (apply_fixes, set_backup_dir, set_rule_cache,
                     cleanup_old_backups, rollback_file)
-from validators import (validate_after_fix, mark_last_fixed,
-                        run_pre_fix_baseline, get_baseline_result)
-from escalation import (create_escalation, trigger_emergency,
-                        process_escalations,
+from validators import (validate_after_fix, run_pre_fix_baseline)
+from escalation import (create_escalation, process_escalations,
                         set_escalation_log, set_emergency_alert_file)
 from health import run_health_check
 
@@ -405,15 +400,15 @@ def run_health_only():
 
     health = run_health_check(rules, report, [], [], RULES_FILE, OUTPUT_FILE, time.time())
 
-    print(f"\n+========================================+")
-    print(f"|  AGENT SELF-DIAGNOSTIC                  |")
-    print(f"+========================================+")
+    print("\n+========================================+")
+    print("|  AGENT SELF-DIAGNOSTIC                  |")
+    print("+========================================+")
     print(f"|  Status: {health['overall_status']:<29}|")
     print(f"|  Regles: {health['rules_health']['total_rules']:<29}|")
     print(f"|  Regles actives: {health['rule_activity']['active_rules']:<23}|")
     print(f"|  Regles inactives: {health['rule_activity']['inactive_count']:<21}|")
     print(f"|  Escalades critiques: {health['escalation_health']['critical_escalations']:<19}|")
-    print(f"+========================================+")
+    print("+========================================+")
 
     if health['warnings']:
         print("\n[!] WARNINGS:")
