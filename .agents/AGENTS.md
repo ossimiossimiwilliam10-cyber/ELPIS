@@ -71,3 +71,22 @@ pm test ou ÃƒÂ©quivalent) AVANT de dÃƒÂ©clencher la procÃƒÂ©dure de Build & Push
 <RULE[documentation_double_audience]>
 - **Documentation Multi-Niveaux** : Lors de la mise à jour ou de la simplification des fichiers de documentation principaux (comme README.md), il faut TOUJOURS préserver les sections d'architecture technique (diagrammes, API, déploiement). Si du contenu pour débutants ("Guide Rapide") est ajouté, il doit être placé au sommet du document sans pour autant écraser les explications de bas niveau destinées aux développeurs.
 </RULE[documentation_double_audience]>
+
+<RULE[agent_architecture_linters]>
+- **Délégation aux Linters Standards** : Lors de la conception de systèmes d'auto-correction ou d'audit de code, ne jamais utiliser de scripts regex personnalisés. Déléguer l'analyse et la correction sûre aux standards de l'industrie (ESLint pour JS, Ruff/Black pour Python). L'agent personnalisé doit servir d'orchestrateur (lancement, parsing de rapport JSON, rollbacks) et non de moteur d'analyse de code.
+</RULE[agent_architecture_linters]>
+
+
+<RULE[project_ci_cd_sync]>
+- **Compilation et Push SystÃ©matique (Sync Local/Remote)** : Ã€ la fin de chaque tÃ¢che de modification de code, je dois **TOUJOURS** :
+  1. Compiler le code pour m'assurer qu'il ne casse rien (ex: 
+pm run build dans le rÃ©pertoire appropriÃ© comme interface/web).
+  2. Ajouter, commiter et pusher les modifications sur Git (git add ., git commit, git push) pour garder le dÃ©pÃ´t distant synchronisÃ© avec le local.
+  3. Utiliser le format **Conventional Commits** pour les messages (ex: eat: ..., ix: ..., docs: ...).
+</RULE[project_ci_cd_sync]>
+
+<RULE[project_systematic_docs]>
+- **Documentation SystÃ©matique** : Pour chaque section modifiÃ©e, ajoutÃ©e ou supprimÃ©e, je dois **SYSTÃ‰MATIQUEMENT** mettre Ã  jour la documentation du projet.
+  1. La prioritÃ© est de mettre Ã  jour les fichiers globaux existants dans le dossier docs/ (ex: rontend.md, ackend.md, devops.md).
+  2. Je ne crÃ©erai de nouveaux fichiers Markdown dans docs/ que pour des trÃ¨s gros modules justifiant une sÃ©paration.
+</RULE[project_systematic_docs]>

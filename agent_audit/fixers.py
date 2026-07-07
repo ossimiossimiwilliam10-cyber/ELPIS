@@ -161,13 +161,14 @@ def apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run=False):
     # Filtrer les lignes None (supprimees)
     final_lines = [l for l in modified_lines if l is not None]
 
+    backup_path = None
     # --- Ecrire le fichier si non dry_run ---
     if not dry_run and file_corrections:
         timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         timestamp_dir = os.path.join(BACKUPS_DIR or os.path.join(os.path.dirname(__file__), 'backups'), timestamp)
 
         try:
-            create_backup(filepath, timestamp_dir)
+            backup_path = create_backup(filepath, timestamp_dir)
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.writelines(final_lines)
         except (PermissionError, OSError) as e:
@@ -180,7 +181,7 @@ def apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run=False):
                 'rule_id': 'SYSTEM'
             })
 
-    return corrections, escalations
+    return corrections, escalations, backup_path
 
 
 # ---------------------------------------------------------------------------
