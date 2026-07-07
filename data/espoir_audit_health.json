@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-07T09:49:44.312969",
+  "timestamp": "2026-07-07T08:19:16.160483",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,22 +8,16 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 5.63,
-    "files_scanned": 200,
-    "files_per_second": 35.5,
-    "lines_per_second": 279309.0
+    "elapsed_seconds": 7.4,
+    "files_scanned": 196,
+    "files_per_second": 26.5,
+    "lines_per_second": 212242.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 7,
+    "total_rules_with_hits": 1,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 54,
-      "F401": 44,
-      "F541": 17,
-      "E402": 12,
-      "F811": 1,
-      "E741": 1,
-      "E902": 1
+      "MISSING_TEST_FILE": 54
     }
   },
   "escalation_health": {
@@ -34,34 +28,34 @@
   },
   "rule_activity": {
     "total_rules": 57,
-    "active_rules": 7,
+    "active_rules": 1,
     "inactive_rules": [
-      "ZUSTAND_FULL_STORE_DESTRUCTURE",
-      "NO_BARREL_IMPORT_CYCLES",
-      "PWA_STATIC_ROUTE_EXCLUSION",
-      "EXCESSIVE_FILE_SIZE",
-      "EXCESSIVE_NESTING_DEPTH",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_VAR_KEYWORD",
-      "NO_SQL_INJECTION_PATTERNS",
-      "TEST_WITH_SKIP",
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "FIX_CONFIDENCE_DECIMAL",
-      "EXCESSIVE_FUNCTION_LENGTH",
-      "NO_IMPORTANT_IN_CSS",
-      "FETCH_WITHOUT_ABORT",
-      "NO_HARDCODED_SECRETS",
-      "MISSING_TYPE_HINTS",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
       "NO_POSITIVE_TABINDEX",
       "MISSING_USEEFFECT_DEPS",
-      "INTELLIGENCE_EXPORT_COVERAGE",
-      "EMPTY_PROMISE_CATCH"
+      "MISSING_REACT_MEMO",
+      "NO_BARE_EXCEPT",
+      "FETCH_WITHOUT_ABORT",
+      "NO_WINDOW_PROMPT",
+      "NO_CONSOLE_LOG_IN_PROD",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "NO_HARDCODED_LOCALHOST",
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "NO_VAR_KEYWORD",
+      "MISSING_KEY_IN_MAP",
+      "NO_DOUBLE_SEMICOLONS",
+      "NO_UNSAFE_INNERHTML",
+      "EXCESSIVE_NESTING_DEPTH",
+      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "TEST_WITH_ONLY"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 79.4
+    "size_kb": 83.9
   },
   "overall_status": "HEALTHY",
   "warnings": [],
