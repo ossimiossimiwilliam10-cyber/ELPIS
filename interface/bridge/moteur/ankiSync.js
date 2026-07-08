@@ -10,6 +10,7 @@ function invokeAnkiConnect(action, params = {}) {
       hostname: '127.0.0.1',
       port: 8765,
       method: 'POST',
+      agent: false,
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data)
@@ -47,38 +48,24 @@ async function syncAnkiRetention() {
       return { success: true, retentionRate: null, totalCards: 0, message: "Aucune carte révisée aujourd'hui." };
     }
 
-    let totalReviews = 0;
-    let failedReviews = 0;
-    
-    // Batch process to avoid AnkiConnect ECONNRESET on large arrays
-    for (let i = 0; i < allCardsToday.length; i += 50) {
-      const batch = allCardsToday.slice(i, i + 50);
-      const reviews = await invokeAnkiConnect('getReviewsOfCards', { cards: batch });
-      
-      for (const cardId in reviews) {
-        const revs = reviews[cardId];
-        const todayMs = Date.now() - 24 * 60 * 60 * 1000;
-        const todayRevs = revs.filter(r => r.id > todayMs);
-        for (const r of todayRevs) {
-          totalReviews++;
-          // ease = 1 means Again (failed)
-          if (r.ease === 1) failedReviews++;
-        }
-      }
+    const totalCards = allCardsToday.length;
+    let failedCards = [];
+    try {
+        failedCards = await invokeAnkiConnect('findCards', { query: 'rated:1:1' });
+    } catch (e) {
+        console.error("AnkiConnect rated:1:1 error: ", e.message);
+        return { success: false, error: e.message, message: "AnkiConnect a refusé la requête rated:1:1." };
     }
 
-    if (totalReviews === 0) {
-       return { success: true, retentionRate: null, totalCards: 0 };
-    }
-
-    const successfulReviews = totalReviews - failedReviews;
-    const retentionRate = (successfulReviews / totalReviews) * 100;
+    const totalFailed = failedCards && failedCards.length ? failedCards.length : 0;
+    const successfulReviews = totalCards - totalFailed;
+    const retentionRate = totalCards > 0 ? (successfulReviews / totalCards) * 100 : 0;
 
     return {
       success: true,
       retentionRate: retentionRate,
-      totalCards: totalReviews,
-      totalFailed: failedReviews
+      totalCards: totalCards,
+      totalFailed: totalFailed
     };
 
   } catch (error) {

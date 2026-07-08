@@ -97,6 +97,20 @@
           "note": "calculé au prochain cycle"
         }
       }
+    },
+    {
+      "timestamp": "2026-07-08T21:19:17.280Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 118,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
     }
   ],
   "actions": []
