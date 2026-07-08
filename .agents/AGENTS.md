@@ -128,3 +128,11 @@ pm run build dans le rÃ©pertoire appropriÃ© comme interface/web).
   3) L'effort et la charge de travail accomplis (via `useWorkloadEngine`). 
 Cela permet de récompenser la rigueur quotidienne et pas seulement la performance aux examens finaux.
 </RULE[composite_virtual_ranking]>
+
+<RULE[grade_parsing_nan_prevention]>
+- **Prévention des crashs mathématiques (NaN)** : Lors du calcul de moyennes ou de scores basés sur la liste des `evaluations` dans les fichiers JSON, le système ne doit JAMAIS supposer que les champs `note` et `sur` sont valides. Les évaluations non passées ont une `note` à `null`, et le champ `sur` est souvent absent.
+  Il faut **SYSTÉMATIQUEMENT** :
+  1. Filtrer les évaluations valides : `evals.filter(ev => typeof ev.note === 'number')`
+  2. Fournir une valeur par défaut de 20 au dénominateur : `(ev.sur || 20)`
+  Cela empêchera la génération et la propagation de valeurs `NaN` ou `Infinity` dans l'interface.
+</RULE[grade_parsing_nan_prevention]>

@@ -21,7 +21,7 @@ function erf(x) {
 }
 
 export default function ClassementPage() {
-  const { coursConfig, historique, rankingBaseline } = useStore();
+  const { coursConfig, historique, rankingBaseline, intelligence } = useStore();
 
   const data = useMemo(() => {
     let globalSumNotes = 0;
@@ -35,10 +35,20 @@ export default function ClassementPage() {
           ue.matieres?.forEach(m => {
              const evals = m.evaluations || [];
              const validEvals = evals.filter(ev => typeof ev.note === 'number');
+             
+             let avg = null;
+             let isEstimated = false;
+
              if (validEvals.length > 0) {
                const sum = validEvals.reduce((acc, ev) => acc + (ev.note / (ev.sur || 20)) * 20, 0);
-               const avg = sum / validEvals.length;
-               
+               avg = sum / validEvals.length;
+             } else if (intelligence?.projectedScoreMap?.[m.nom]) {
+               // Fallback: use AI estimated note if available
+               avg = intelligence.projectedScoreMap[m.nom];
+               isEstimated = true;
+             }
+             
+             if (avg !== null) {
                const ects = m.coefficient !== undefined ? Number(m.coefficient) : (ue.ects || 1);
                if (ects > 0) {
                  globalSumNotes += avg * ects;
@@ -57,6 +67,7 @@ export default function ClassementPage() {
                    note: avg,
                    mean: baseline.mean,
                    sd: baseline.sd,
+                   isEstimated,
                    rank: Math.max(100 - percentile, 0.1) // Top X %
                  });
                }
@@ -98,7 +109,7 @@ export default function ClassementPage() {
       rankPercentage: rankPercentage.toFixed(1),
       subjectRanks
     };
-  }, [coursConfig, historique, rankingBaseline]);
+  }, [coursConfig, historique, rankingBaseline, intelligence]);
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', color: 'var(--text-primary)' }}>
@@ -114,7 +125,7 @@ export default function ClassementPage() {
           Top {data.rankPercentage}%
         </div>
         <p style={{ marginTop: '1rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '1rem auto' }}>
-          Basé sur un score composite incluant ta charge de travail, tes notes, et l'algorithme de mémoire FSRS.
+          Basé sur un score composite incluant ta charge de travail, tes notes (estimées ou réelles), et l'algorithme de mémoire FSRS.
         </p>
       </div>
 
@@ -154,7 +165,10 @@ export default function ClassementPage() {
         {data.subjectRanks.map((sub, i) => (
           <div key={i} className="card glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem' }}>
             <div>
-              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.25rem' }}>{sub.nom}</h4>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '0.25rem' }}>
+                {sub.nom}
+                {sub.isEstimated && <span style={{fontSize: '0.7rem', color: 'var(--accent-primary)', marginLeft: '0.5rem', border: '1px solid var(--accent-primary)', padding: '2px 4px', borderRadius: '4px', textTransform: 'uppercase'}}>Estimée par IA</span>}
+              </h4>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 Ta note: {sub.note.toFixed(2)}/20 | Moyenne promotion: {sub.mean.toFixed(1)} (±{sub.sd.toFixed(1)})
               </div>
