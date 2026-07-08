@@ -10,6 +10,9 @@ export default function MesVideosPage() {
   const [title, setTitle] = useState('');
   const [selectedMatiere, setSelectedMatiere] = useState('');
 
+  const [editingVideoId, setEditingVideoId] = useState(null);
+  const [editData, setEditData] = useState({ title: '', url: '', matiereNom: '' });
+
   const videos = config.mesVideos || [];
 
   // Get all matieres for the select dropdown
@@ -62,6 +65,39 @@ export default function MesVideosPage() {
       setConfig({ ...config, mesVideos: videos.filter(v => v.id !== id) });
       addToast("Vidéo supprimée.", 'info');
     }
+  };
+
+  const startEditing = (video) => {
+    setEditingVideoId(video.id);
+    setEditData({ title: video.title, url: video.url, matiereNom: video.matiereNom });
+  };
+
+  const cancelEditing = () => {
+    setEditingVideoId(null);
+    setEditData({ title: '', url: '', matiereNom: '' });
+  };
+
+  const saveEdit = (id) => {
+    if (!editData.title || !editData.url || !editData.matiereNom) {
+      addToast("Veuillez remplir tous les champs.", 'error');
+      return;
+    }
+    // Check duplicates but exclude current video
+    if (videos.some(v => v.url === editData.url && v.id !== id)) {
+      addToast("Cette URL est déjà utilisée par une autre vidéo.", 'error');
+      return;
+    }
+    
+    const updatedVideos = videos.map(v => {
+      if (v.id === id) {
+        return { ...v, ...editData };
+      }
+      return v;
+    });
+
+    setConfig({ ...config, mesVideos: updatedVideos });
+    addToast("Vidéo modifiée avec succès !", 'success');
+    cancelEditing();
   };
 
   // Group videos by matiere
@@ -138,28 +174,72 @@ export default function MesVideosPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
               {vids.map(video => (
                 <div key={video.id} className="card glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column' }}>
-                  <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>{video.title}</h4>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginBottom: '1rem' }}>
-                    Ajoutée le {new Date(video.addedAt).toLocaleDateString()}
-                  </span>
-                  
-                  <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem' }}>
-                    <button 
-                      onClick={() => window.open(video.url, '_blank')}
-                      className="btn-primary" 
-                      style={{ flex: 1, padding: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
-                    >
-                      <span>▶️</span> Ouvrir
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(video.id)}
-                      className="btn-secondary"
-                      style={{ padding: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}
-                      title="Supprimer la vidéo"
-                    >
-                      🗑️
-                    </button>
-                  </div>
+                  {editingVideoId === video.id ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                      <input
+                        type="text"
+                        value={editData.title}
+                        onChange={e => setEditData({...editData, title: e.target.value})}
+                        placeholder="Titre"
+                        style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', background: 'var(--bg-primary)', border: '1px solid var(--bg-tertiary)', color: 'white' }}
+                      />
+                      <input
+                        type="url"
+                        value={editData.url}
+                        onChange={e => setEditData({...editData, url: e.target.value})}
+                        placeholder="Lien YouTube"
+                        style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', background: 'var(--bg-primary)', border: '1px solid var(--bg-tertiary)', color: 'white' }}
+                      />
+                      <select
+                        value={editData.matiereNom}
+                        onChange={e => setEditData({...editData, matiereNom: e.target.value})}
+                        style={{ width: '100%', padding: '0.4rem', borderRadius: '4px', background: 'var(--bg-primary)', border: '1px solid var(--bg-tertiary)', color: 'white' }}
+                      >
+                        {matieres.map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                      <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                        <button onClick={() => saveEdit(video.id)} className="btn-primary" style={{ flex: 1, padding: '0.4rem' }}>
+                          💾
+                        </button>
+                        <button onClick={cancelEditing} className="btn-secondary" style={{ padding: '0.4rem', border: '1px solid var(--bg-tertiary)' }} title="Annuler">
+                          ❌
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>{video.title}</h4>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginBottom: '1rem' }}>
+                        Ajoutée le {new Date(video.addedAt).toLocaleDateString()}
+                      </span>
+                      
+                      <div style={{ marginTop: 'auto', display: 'flex', gap: '0.5rem' }}>
+                        <button 
+                          onClick={() => window.open(video.url, '_blank')}
+                          className="btn-primary" 
+                          style={{ flex: 2, padding: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
+                        >
+                          <span>▶️</span> Ouvrir
+                        </button>
+                        <button 
+                          onClick={() => startEditing(video)}
+                          className="btn-secondary"
+                          style={{ padding: '0.5rem', border: '1px solid var(--bg-tertiary)' }}
+                          title="Modifier la vidéo"
+                        >
+                          ✏️
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(video.id)}
+                          className="btn-secondary"
+                          style={{ padding: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}
+                          title="Supprimer la vidéo"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>

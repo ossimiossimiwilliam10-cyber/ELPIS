@@ -103,3 +103,7 @@ pm run build dans le rÃ©pertoire appropriÃ© comme interface/web).
   4. Ajoutez le lien correspondant dans `Sidebar.jsx` (dans le groupe approprié).
   5. Évitez les bibliothèques UI externes ; utilisez le design system de `index.css` (Glassmorphism, animations Framer Motion).
 </RULE[elpis_new_features]>
+
+<RULE[ux_full_crud]>
+- **Complétude CRUD obligatoire** : Lors de la création d'une fonctionnalité permettant de gérer une liste d'éléments (vidéos, liens, tâches, etc.), il est OBLIGATOIRE d'implémenter l'intégralité du cycle CRUD (Create, Read, Update, Delete). Ne jamais omettre la fonctionnalité de modification (Update), même si elle n'est pas explicitement demandée par l'utilisateur, afin d'éviter qu'il ne doive supprimer et recréer un élément pour corriger une faute de frappe. Privilégier une édition "en ligne" (inline) directement sur la carte de l'élément pour une meilleure UX.
+</RULE[ux_full_crud]>
