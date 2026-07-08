@@ -102,17 +102,22 @@ export default function BulletinPage() {
 
     sem.ues?.forEach(ue => {
       let ueSumWeight = 0;
-      let ueSumNotes = 0;
-      ue.matieres?.forEach(m => {
-        const avg = getSubjectAverage(m.evaluations);
-        if (avg !== null) {
-          const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-          ueSumWeight += coef;
-          ueSumNotes += avg * coef;
-        }
-      });
+        let ueSumNotes = 0;
+        let ueBonus = 0;
+        ue.matieres?.forEach(m => {
+          const avg = getSubjectAverage(m.evaluations);
+          if (avg !== null) {
+            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+            if (coef === 0) {
+              ueBonus += avg;
+            } else {
+              ueSumWeight += coef;
+              ueSumNotes += avg * coef;
+            }
+          }
+        });
 
-      const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
+      const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
       if (ueAvg !== null) {
         const ects = ue.ects || 0; // Use ECTS for UE weighting
         semSumNotes += ueAvg * ects;
@@ -133,15 +138,20 @@ export default function BulletinPage() {
       sem.ues?.forEach(ue => {
         let ueSumWeight = 0;
         let ueSumNotes = 0;
+        let ueBonus = 0;
         ue.matieres?.forEach(m => {
           const avg = getSubjectAverage(m.evaluations);
           if (avg !== null) {
             const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            ueSumWeight += coef;
-            ueSumNotes += avg * coef;
+            if (coef === 0) {
+              ueBonus += avg;
+            } else {
+              ueSumWeight += coef;
+              ueSumNotes += avg * coef;
+            }
           }
         });
-        const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
+        const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
         if (ueAvg !== null) {
           const ects = ue.ects || 0;
           globalSumNotes += ueAvg * ects;
@@ -257,15 +267,20 @@ export default function BulletinPage() {
       {ues.map((ue, idx) => {
         let ueSumWeight = 0;
         let ueSumNotes = 0;
+        let ueBonus = 0;
         ue.matieres?.forEach(m => {
           const avg = getSubjectAverage(m.evaluations);
           if (avg !== null) {
             const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            ueSumWeight += coef;
-            ueSumNotes += avg * coef;
+            if (coef === 0) {
+              ueBonus += avg;
+            } else {
+              ueSumWeight += coef;
+              ueSumNotes += avg * coef;
+            }
           }
         });
-        const ueAverage = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight).toFixed(2) : '--';
+        const ueAverage = ueSumWeight > 0 ? ((ueSumNotes / ueSumWeight) + ueBonus).toFixed(2) : '--';
         const isCollapsed = expandedUEs[idx];
 
         return (
@@ -290,16 +305,21 @@ export default function BulletinPage() {
                   let semSumNotes = 0;
                   (licence.semestres[ue.semIndex]?.ues || []).forEach(siblingUe => {
                      let ueSumWeight = 0;
-                     let ueSumNotes = 0;
-                     siblingUe.matieres?.forEach(m => {
-                       const avg = getSubjectAverage(m.evaluations);
-                       if (avg !== null) {
-                         const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-                         ueSumWeight += coef;
-                         ueSumNotes += avg * coef;
-                       }
-                     });
-                     const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
+        let ueSumNotes = 0;
+        let ueBonus = 0;
+        siblingUe.matieres?.forEach(m => {
+          const avg = getSubjectAverage(m.evaluations);
+          if (avg !== null) {
+            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+            if (coef === 0) {
+              ueBonus += avg;
+            } else {
+              ueSumWeight += coef;
+              ueSumNotes += avg * coef;
+            }
+          }
+        });
+                     const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
                      if (ueAvg !== null) {
                          const ects = siblingUe.ects || 0;
                          semSumNotes += ueAvg * ects;
