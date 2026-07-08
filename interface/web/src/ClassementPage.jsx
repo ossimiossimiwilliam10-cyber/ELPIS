@@ -34,9 +34,10 @@ export default function ClassementPage() {
         sem.ues?.forEach(ue => {
           ue.matieres?.forEach(m => {
              const evals = m.evaluations || [];
-             if (evals.length > 0) {
-               const sum = evals.reduce((acc, ev) => acc + (ev.note / ev.sur)*20, 0);
-               const avg = sum / evals.length;
+             const validEvals = evals.filter(ev => typeof ev.note === 'number');
+             if (validEvals.length > 0) {
+               const sum = validEvals.reduce((acc, ev) => acc + (ev.note / (ev.sur || 20)) * 20, 0);
+               const avg = sum / validEvals.length;
                
                const ects = m.coefficient !== undefined ? Number(m.coefficient) : (ue.ects || 1);
                if (ects > 0) {
