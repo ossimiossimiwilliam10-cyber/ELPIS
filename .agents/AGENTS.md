@@ -141,3 +141,7 @@ Cela permet de récompenser la rigueur quotidienne et pas seulement la performan
 - **Utilisation des Notes Estimées (Fallback IA)** : Lors du calcul de moyennes globales, de classements virtuels ou de statistiques avancées (ex: `ClassementPage.jsx`), si une matière ne possède aucune note officielle valide (évaluations absentes ou à `null`), le système **DOIT TOUJOURS** tenter d'utiliser en solution de repli (fallback) la note projetée par l'IA présente dans le store : `intelligence.projectedScoreMap[matiere.nom]`. 
   Cela permet à l'étudiant de suivre ses progrès et son rang potentiel même en début de semestre. L'interface devra idéalement préciser visuellement que la note utilisée est "Estimée par IA".
 </RULE[fallback_note_estimee]>
+
+<RULE[historique_structure_fields]>
+- **Analyse de l'Historique (Champs Valides)** : Lors de la lecture, du filtrage ou de l'analyse des entrées de l'historique de l'utilisateur (`historique`), il faut **TOUJOURS** utiliser le champ temporel `timestamp` (et non `date`). De plus, les sessions de flashcards/Anki sont identifiées par `type === 'ANKI'`, et leur complétion se vérifie via `action === 'Terminé'` (ou en vérifiant la présence de `difficulty` le cas échéant), et non uniquement en cherchant le type `revision`.
+</RULE[historique_structure_fields]>
