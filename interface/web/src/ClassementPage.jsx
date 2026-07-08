@@ -86,17 +86,7 @@ export default function ClassementPage() {
 
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const recentSessions = historique.filter(h => new Date(h.timestamp || h.date).getTime() > thirtyDaysAgo).length;
-    
-    // Dynamic Window (Cold-Start prevention)
-    let expectedSessions = 60; // default 30 days * 2
-    if (historique.length > 0) {
-      const firstSessionTime = Math.min(...historique.map(h => new Date(h.timestamp || h.date).getTime()));
-      const daysSinceFirst = (Date.now() - firstSessionTime) / (1000 * 60 * 60 * 24);
-      const activeWindow = Math.min(30, Math.max(1, daysSinceFirst));
-      expectedSessions = activeWindow * 2;
-    }
-    
-    const workloadScore = Math.min((recentSessions / expectedSessions) * 100, 100);
+    const workloadScore = Math.min((recentSessions / 60) * 100, 100);
 
     const compositeScore = (academicScore * 0.4) + (fsrsScore * 0.4) + (workloadScore * 0.2);
 
