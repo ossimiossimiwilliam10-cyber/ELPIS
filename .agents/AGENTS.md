@@ -141,3 +141,7 @@ Cela permet de récompenser la rigueur quotidienne et pas seulement la performan
 - **Utilisation des Notes Estimées (Fallback IA)** : Lors du calcul de moyennes globales, de classements virtuels ou de statistiques avancées (ex: `ClassementPage.jsx`), si une matière ne possède aucune note officielle valide (évaluations absentes ou à `null`), le système **DOIT TOUJOURS** tenter d'utiliser en solution de repli (fallback) la note projetée par l'IA présente dans le store : `intelligence.projectedScoreMap[matiere.nom]`. 
   Cela permet à l'étudiant de suivre ses progrès et son rang potentiel même en début de semestre. L'interface devra idéalement préciser visuellement que la note utilisée est "Estimée par IA".
 </RULE[fallback_note_estimee]>
+
+<RULE[cours_json_structure]>
+- **Structure JSON des Cours** : Le fichier "espoir_cours.json" (ou �quivalent) poss�de toujours un n�ud racine "licences", qui contient les "semestres". Ne jamais tenter d'it�rer directement sur "coursData.semestres" ou "coursData.ues" sans passer par la hi�rarchie compl�te : "licences -> semestres -> ues -> matieres".
+</RULE[cours_json_structure]>

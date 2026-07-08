@@ -538,13 +538,21 @@ app.get('/api/anki/today-stats', async (req, res) => {
     const { syncAnkiRetention } = require('./moteur/ankiSync');
     const coursData = require(COURS_PATH);
     const subjects = [];
-    if (coursData && coursData.semestres) {
-       coursData.semestres.forEach(s => {
-         s.ues.forEach(u => {
-           u.matieres.forEach(m => {
-             if (m.nom) subjects.push(m.nom);
+    if (coursData && coursData.licences) {
+       coursData.licences.forEach(l => {
+         if (l.semestres) {
+           l.semestres.forEach(s => {
+             if (s.ues) {
+               s.ues.forEach(u => {
+                 if (u.matieres) {
+                   u.matieres.forEach(m => {
+                     if (m.nom) subjects.push(m.nom);
+                   });
+                 }
+               });
+             }
            });
-         });
+         }
        });
     }
     const ankiStats = await syncAnkiRetention(subjects, 1);
@@ -574,13 +582,21 @@ app.get('/api/orchestrateur', async (req, res) => {
         const { syncAnkiRetention } = require('./moteur/ankiSync');
         const coursData = require(COURS_PATH);
         const subjects = [];
-        if (coursData && coursData.semestres) {
-           coursData.semestres.forEach(s => {
-             s.ues.forEach(u => {
-               u.matieres.forEach(m => {
-                 if (m.nom) subjects.push(m.nom);
+        if (coursData && coursData.licences) {
+           coursData.licences.forEach(l => {
+             if (l.semestres) {
+               l.semestres.forEach(s => {
+                 if (s.ues) {
+                   s.ues.forEach(u => {
+                     if (u.matieres) {
+                       u.matieres.forEach(m => {
+                         if (m.nom) subjects.push(m.nom);
+                       });
+                     }
+                   });
+                 }
                });
-             });
+             }
            });
         }
         ankiStats = await syncAnkiRetention(subjects, 365);
