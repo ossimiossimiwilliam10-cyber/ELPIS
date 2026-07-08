@@ -89,6 +89,12 @@ const useStore = create(persist(immer((set, get) => ({
   dailyFillGap: false,
   orchestratorData: null,
   intelligence: null,
+  rankingBaseline: {
+    // Note: This is a placeholder Gaussian distribution until the external AI report is provided.
+    globalMean: 50,
+    globalSD: 15,
+    subjects: {}
+  },
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
   setDailyFillGap: (val) => set({ dailyFillGap: val }),

@@ -20,6 +20,7 @@ const PreparationHebdoPage = lazy(() => import('./PreparationHebdoPage'));
 const RevisionsAvanceesPage = lazy(() => import('./RevisionsAvanceesPage'));
 const ProjetsPage = lazy(() => import('./ProjetsPage'));
 const MesVideosPage = lazy(() => import('./MesVideosPage'));
+const ClassementPage = lazy(() => import('./ClassementPage'));
 import useStore from './store';
 
 // Mini-fallback pour le chargement paresseux des pages
@@ -255,6 +256,21 @@ function AppInner() {
               </Suspense>
             </motion.div>
           )}
+
+          {activeTab === 'classement' && (
+            <motion.div
+              key="classement"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                <ClassementPage />
+              </Suspense>
+            </motion.div>
+          )}
+
 
           {activeTab === 'bulletin' && (
             <motion.div

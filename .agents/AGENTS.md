@@ -120,3 +120,11 @@ pm run build dans le rÃ©pertoire appropriÃ© comme interface/web).
 <RULE[lmd_pils_exclusion]>
 - **Exclusion des matières Bonus (PILS, etc.)** : Les notes ou matières dites "Bonus" (comme le programme PILS) ne doivent JAMAIS être incluses dans la base de données (`espoir_cours.json`) ni dans les calculs de moyenne de l'application, car elles faussent la moyenne académique souhaitée par l'utilisateur. Toute mention de "PILS" lors de l'intégration d'un bulletin doit être ignorée ou supprimée.
 </RULE[lmd_pils_exclusion]>
+
+<RULE[composite_virtual_ranking]>
+- **Scoring des Classements Virtuels (Gamification)** : Lors de la conception de tout système de classement, de "leaderboard" ou de comparaison avec des étudiants virtuels, le système NE DOIT PAS se baser uniquement sur la moyenne académique. Il doit impérativement utiliser un **Score Composite** incluant : 
+  1) Les notes académiques (via `espoir_cours.json`).
+  2) La constance/rétention de la mémoire (via `fsrsEngine`).
+  3) L'effort et la charge de travail accomplis (via `useWorkloadEngine`). 
+Cela permet de récompenser la rigueur quotidienne et pas seulement la performance aux examens finaux.
+</RULE[composite_virtual_ranking]>

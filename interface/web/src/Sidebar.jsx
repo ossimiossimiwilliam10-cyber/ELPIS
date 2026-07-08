@@ -41,6 +41,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
       title: "Système",
       tabs: [
         { id: 'statistiques', label: 'Statistiques', icon: '📈' },
+        { id: 'classement', label: 'Classement', icon: '🏆' },
         { id: 'config', label: 'Configuration', icon: '⚙️' },
         { id: 'musique', label: 'Musique', icon: '🎵' },
       ]
