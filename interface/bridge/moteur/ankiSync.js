@@ -39,10 +39,13 @@ function invokeAnkiConnect(action, params = {}) {
  * Récupère le taux de rétention réel d'Anki pour aujourd'hui (ou globalement)
  * En interrogeant les cartes révisées aujourd'hui.
  */
-async function syncAnkiRetention() {
+async function syncAnkiRetention(subjects = []) {
   try {
-    // Toutes les cartes révisées aujourd'hui
-    const allCardsToday = await invokeAnkiConnect('findCards', { query: 'rated:1' });
+    const todayCardsQuery = 'rated:1';
+    const failedCardsQuery = 'rated:1:1';
+    
+    // 1. Fetch Global Stats
+    const allCardsToday = await invokeAnkiConnect('findCards', { query: todayCardsQuery });
     
     if (!allCardsToday || allCardsToday.length === 0) {
       return { success: true, retentionRate: null, totalCards: 0, message: "Aucune carte révisée aujourd'hui." };
@@ -61,11 +64,34 @@ async function syncAnkiRetention() {
     const successfulReviews = totalCards - totalFailed;
     const retentionRate = totalCards > 0 ? (successfulReviews / totalCards) * 100 : 0;
 
+    // 2. Fetch Per-Subject Stats (if requested)
+    const retentionBySubject = {};
+    for (const subject of subjects) {
+        try {
+            const subjQuery = `rated:1 deck:"*${subject}*"`;
+            const subjFailedQuery = `rated:1:1 deck:"*${subject}*"`;
+            
+            const subjAll = await invokeAnkiConnect('findCards', { query: subjQuery });
+            const subjFailed = await invokeAnkiConnect('findCards', { query: subjFailedQuery });
+            
+            const sTotal = subjAll && subjAll.length ? subjAll.length : 0;
+            const sFailed = subjFailed && subjFailed.length ? subjFailed.length : 0;
+            
+            if (sTotal > 0) {
+                const sSuccess = sTotal - sFailed;
+                retentionBySubject[subject] = (sSuccess / sTotal) * 100;
+            }
+        } catch (e) {
+            console.error(`AnkiConnect Error for subject ${subject}:`, e.message);
+        }
+    }
+
     return {
       success: true,
       retentionRate: retentionRate,
       totalCards: totalCards,
-      totalFailed: totalFailed
+      totalFailed: totalFailed,
+      retentionBySubject: retentionBySubject
     };
 
   } catch (error) {

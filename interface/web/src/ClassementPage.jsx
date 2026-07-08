@@ -62,12 +62,19 @@ export default function ClassementPage() {
                  // Clip Z-score to realistic bounds [-3, 3] to avoid extreme percentiles
                  zScore = Math.max(-3, Math.min(3, zScore));
                  const percentile = jStatNormalCdf(zScore, 0, 1) * 100;
+                 
+                 let fsrsDisplay = null;
+                 if (intelligence?.fsrs_retention_by_subject?.[m.nom] !== undefined) {
+                     fsrsDisplay = intelligence.fsrs_retention_by_subject[m.nom];
+                 }
+
                  subjectRanks.push({
                    nom: m.nom,
                    note: avg,
                    mean: baseline.mean,
                    sd: baseline.sd,
                    isEstimated,
+                   fsrs: fsrsDisplay,
                    rank: Math.max(100 - percentile, 0.1) // Top X %
                  });
                }
@@ -91,7 +98,21 @@ export default function ClassementPage() {
 
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const recentSessions = historique.filter(h => new Date(h.timestamp || h.date).getTime() > thirtyDaysAgo).length;
-    const workloadScore = Math.min((recentSessions / 60) * 100, 100);
+    
+    // Calcul de la fenêtre dynamique pour l'effort (Cold-Start Prevention)
+    const historyTimes = historique.map(h => new Date(h.timestamp || h.date).getTime()).filter(t => !isNaN(t));
+    const firstSessionTime = historyTimes.length > 0 ? Math.min(...historyTimes) : Date.now();
+    const userStartDate = config?.userStartDate ? new Date(config.userStartDate).getTime() : firstSessionTime;
+    
+    let windowDays = 30; // Par défaut
+    if (userStartDate > 0) {
+      const daysSinceStart = Math.ceil((Date.now() - userStartDate) / (1000 * 60 * 60 * 24));
+      windowDays = Math.max(1, Math.min(daysSinceStart, 30));
+    }
+    
+    // L'objectif est d'avoir au moins 1 à 2 sessions par jour sur la fenêtre active
+    const expectedSessions = Math.min(windowDays * 2, 60); // 60 sessions pour 30 jours (2 sessions/jour)
+    const workloadScore = Math.min((recentSessions / expectedSessions) * 100, 100);
 
     const compositeScore = (academicScore * 0.4) + (fsrsScore * 0.4) + (workloadScore * 0.2);
 
@@ -177,6 +198,11 @@ export default function ClassementPage() {
               <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 Ta note: {sub.note.toFixed(2)}/20 | Moyenne promotion: {sub.mean.toFixed(1)} (±{sub.sd.toFixed(1)})
               </div>
+              {sub.fsrs !== null && (
+                 <div style={{ fontSize: '0.85rem', color: 'var(--accent-secondary)', marginTop: '0.2rem' }}>
+                    Rétention FSRS (Anki): {sub.fsrs.toFixed(1)}%
+                 </div>
+              )}
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: sub.rank < 50 ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>

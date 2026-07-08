@@ -570,10 +570,28 @@ app.get('/api/orchestrateur', async (req, res) => {
 
     // AnkiConnect Global Synchronization (Background)
     if (rapport && rapport.intelligence) {
-      const { syncAnkiRetention } = require('./moteur/ankiSync');
-      const ankiStats = await syncAnkiRetention();
-      if (ankiStats.success && ankiStats.retentionRate !== null) {
-        rapport.intelligence.fsrs_real_retention = ankiStats.retentionRate;
+      try {
+        const { syncAnkiRetention } = require('./moteur/ankiSync');
+        // Extract subjects to fetch per-subject stats
+        const coursData = require(COURS_PATH);
+        const subjects = [];
+        if (coursData && coursData.semestres) {
+           coursData.semestres.forEach(s => {
+             s.ues.forEach(u => {
+               u.matieres.forEach(m => {
+                 if (m.nom) subjects.push(m.nom);
+               });
+             });
+           });
+        }
+        
+        const ankiStats = await syncAnkiRetention(subjects);
+        if (ankiStats.success && ankiStats.retentionRate !== null) {
+          rapport.intelligence.fsrs_real_retention = ankiStats.retentionRate;
+          rapport.intelligence.fsrs_retention_by_subject = ankiStats.retentionBySubject;
+        }
+      } catch (err) {
+        console.error("Erreur lors de la synchronisation AnkiConnect en arrière-plan :", err.message);
       }
     }
 
