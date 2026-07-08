@@ -532,7 +532,7 @@ const orchestratorCache = new Map();
 const CACHE_TTL_MS = 60_000;
 
 // GET orchestrator report
-app.get('/api/orchestrateur', (req, res) => {
+app.get('/api/orchestrateur', async (req, res) => {
   try {
     const { CONFIG_PATH } = require('./moteur/config');
     const { COURS_PATH } = require('./moteur/cours');
@@ -565,6 +565,15 @@ app.get('/api/orchestrateur', (req, res) => {
     for (const [key, entry] of orchestratorCache.entries()) {
       if (now - entry.timestamp > CACHE_TTL_MS) {
         orchestratorCache.delete(key);
+      }
+    }
+
+    // AnkiConnect Global Synchronization (Background)
+    if (rapport && rapport.intelligence) {
+      const { syncAnkiRetention } = require('./moteur/ankiSync');
+      const ankiStats = await syncAnkiRetention();
+      if (ankiStats.success && ankiStats.retentionRate !== null) {
+        rapport.intelligence.fsrs_real_retention = ankiStats.retentionRate;
       }
     }
 

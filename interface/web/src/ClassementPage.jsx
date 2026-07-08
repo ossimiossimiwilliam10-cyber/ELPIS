@@ -82,7 +82,12 @@ export default function ClassementPage() {
 
     const reviews = historique.filter(h => h.type === 'revision' || h.type === 'ANKI');
     const successfulReviews = reviews.filter(h => h.action === 'Terminé' || (h.difficulty && h.difficulty > 1)).length;
-    const fsrsScore = reviews.length > 0 ? (successfulReviews / reviews.length) * 100 : 0;
+    let fsrsScore = reviews.length > 0 ? (successfulReviews / reviews.length) * 100 : 0;
+    
+    // AnkiConnect Global Synchronization Integration
+    if (intelligence && intelligence.fsrs_real_retention !== undefined) {
+       fsrsScore = (fsrsScore / 100) * intelligence.fsrs_real_retention;
+    }
 
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const recentSessions = historique.filter(h => new Date(h.timestamp || h.date).getTime() > thirtyDaysAgo).length;
