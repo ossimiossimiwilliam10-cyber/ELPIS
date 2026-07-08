@@ -116,8 +116,7 @@ pm run build dans le r√É¬©pertoire appropri√É¬© comme interface/web).
 <RULE[algorithmic_anti_starvation]>
 - **√âquit√© Algorithmique (Anti-Starvation)** : Lors de la conception ou de la modification de syst√®mes d'ordonnancement (Schedulers/Orchestrateurs) qui extraient des t√¢ches depuis une liste ordonn√©e statique (ex: un fichier JSON) avec un quota ou une limite globale (ex: max t√¢ches par jour), ne **JAMAIS** appliquer le quota pendant la boucle d'extraction (ce qui provoque une "famine" syst√©matique pour les √©l√©ments en fin de liste). Il faut **TOUJOURS** extraire tous les candidats valides dans un pool global, les trier ou les m√©langer, puis appliquer la limite uniquement lors de la phase de s√©lection/assignation finale.
 </RULE[algorithmic_anti_starvation]>
- 
- < R U L E [ l m d _ b o n u s _ c o e f f i c i e n t s ] >  
- -   * * G e s t i o n   d e s   p o i n t s   b o n u s   u n i v e r s i t a i r e s   ( P I L S ,   e t c . ) * *   :   L o r s   d e   l ' i n t √ © g r a t i o n   o u   d u   t r a i t e m e n t   d e s   n o t e s   d a n s   l e   s y s t √ ® m e   L M D ,   l e s   m a t i √ ® r e s   o u   √ © p r e u v e s   d √ © f i n i e s   c o m m e   " b o n u s "   ( e x :   P I L S )   d o i v e n t   T O U J O U R S   a v o i r   u n   ` c o e f f i c i e n t :   0 `   d a n s   l a   b a s e   d e   d o n n √ © e s   ( ` e s p o i r _ c o u r s . j s o n ` ) .   L e s   m o t e u r s   d e   c a l c u l   d e   m o y e n n e   ( e x :   ` B u l l e t i n P a g e . j s x ` )   d o i v e n t   a j o u t e r   l a   m o y e n n e   d e   c e s   m a t i √ ® r e s   d i r e c t e m e n t   a u   t o t a l   d e   l ' U E   f i n a l e   a p r √ ® s   d i v i s i o n ,   s a n s   i n c r √ © m e n t e r   l e   p o i d s   t o t a l .  
- < / R U L E [ l m d _ b o n u s _ c o e f f i c i e n t s ] >  
- 
+
+<RULE[lmd_pils_exclusion]>
+- **Exclusion des mati√®res Bonus (PILS, etc.)** : Les notes ou mati√®res dites "Bonus" (comme le programme PILS) ne doivent JAMAIS √™tre incluses dans la base de donn√©es (`espoir_cours.json`) ni dans les calculs de moyenne de l'application, car elles faussent la moyenne acad√©mique souhait√©e par l'utilisateur. Toute mention de "PILS" lors de l'int√©gration d'un bulletin doit √™tre ignor√©e ou supprim√©e.
+</RULE[lmd_pils_exclusion]>
