@@ -39,10 +39,10 @@ function invokeAnkiConnect(action, params = {}) {
  * Récupère le taux de rétention réel d'Anki pour aujourd'hui (ou globalement)
  * En interrogeant les cartes révisées aujourd'hui.
  */
-async function syncAnkiRetention(subjects = []) {
+async function syncAnkiRetention(subjects = [], days = 365) {
   try {
-    const todayCardsQuery = 'rated:1';
-    const failedCardsQuery = 'rated:1:1';
+    const todayCardsQuery = `rated:${days}`;
+    const failedCardsQuery = `rated:${days}:1`;
     
     // 1. Fetch Global Stats
     const allCardsToday = await invokeAnkiConnect('findCards', { query: todayCardsQuery });
@@ -54,7 +54,7 @@ async function syncAnkiRetention(subjects = []) {
     const totalCards = allCardsToday.length;
     let failedCards = [];
     try {
-        failedCards = await invokeAnkiConnect('findCards', { query: 'rated:1:1' });
+        failedCards = await invokeAnkiConnect('findCards', { query: failedCardsQuery });
     } catch (e) {
         console.error("AnkiConnect rated:1:1 error: ", e.message);
         return { success: false, error: e.message, message: "AnkiConnect a refusé la requête rated:1:1." };
@@ -69,8 +69,8 @@ async function syncAnkiRetention(subjects = []) {
     const cardsBySubject = {};
     for (const subject of subjects) {
         try {
-            const subjQuery = `rated:1 deck:"*${subject}*"`;
-            const subjFailedQuery = `rated:1:1 deck:"*${subject}*"`;
+            const subjQuery = `rated:${days} deck:"*${subject}*"`;
+            const subjFailedQuery = `rated:${days}:1 deck:"*${subject}*"`;
             
             const subjAll = await invokeAnkiConnect('findCards', { query: subjQuery });
             const subjFailed = await invokeAnkiConnect('findCards', { query: subjFailedQuery });

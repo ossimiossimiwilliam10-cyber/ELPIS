@@ -547,7 +547,7 @@ app.get('/api/anki/today-stats', async (req, res) => {
          });
        });
     }
-    const ankiStats = await syncAnkiRetention(subjects);
+    const ankiStats = await syncAnkiRetention(subjects, 1);
     res.json(ankiStats);
   } catch (err) {
     console.error("Erreur api/anki/today-stats:", err.message);
@@ -583,7 +583,7 @@ app.get('/api/orchestrateur', async (req, res) => {
              });
            });
         }
-        ankiStats = await syncAnkiRetention(subjects);
+        ankiStats = await syncAnkiRetention(subjects, 365);
     } catch (err) {
         console.error("Erreur lors de la synchronisation AnkiConnect :", err.message);
     }

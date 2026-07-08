@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-08T23:59:19.393526",
+  "timestamp": "2026-07-09T00:04:12.765519",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 10.01,
+    "elapsed_seconds": 11.57,
     "files_scanned": 172,
-    "files_per_second": 17.2,
-    "lines_per_second": 154911.0
+    "files_per_second": 14.9,
+    "lines_per_second": 134006.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 7,
@@ -36,32 +36,32 @@
     "total_rules": 57,
     "active_rules": 7,
     "inactive_rules": [
-      "NO_BARREL_IMPORT_CYCLES",
-      "NO_HTTP_IN_PRODUCTION_URLS",
-      "TEST_WITH_ONLY",
-      "USE_OPTIONAL_CHAINING",
-      "NO_EMPTY_CATCH",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "FETCH_WITHOUT_ABORT",
-      "MISSING_REACT_MEMO",
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "EXCESSIVE_FILE_SIZE",
-      "MISSING_ALT_ATTRIBUTE",
       "NO_BARE_EXCEPT",
-      "NO_WILDCARD_CORS",
-      "NO_POSITIVE_TABINDEX",
-      "FIX_CONFIDENCE_DECIMAL",
+      "MISSING_ALT_ATTRIBUTE",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "TOAST_DIRECT_CALL",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "NO_VAR_KEYWORD",
+      "MISSING_KEY_IN_MAP",
+      "FETCH_WITHOUT_ABORT",
+      "NO_BARREL_IMPORT_CYCLES",
       "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "NO_POSITIVE_TABINDEX",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "NO_HARDCODED_SECRETS",
+      "MISSING_USEEFFECT_DEPS",
       "PROP_SPREADING_WARNING",
-      "NO_SQL_INJECTION_PATTERNS",
-      "EXCESSIVE_NESTING_DEPTH",
-      "NO_UNSAFE_INNERHTML"
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "MISSING_REACT_MEMO"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 135.7
+    "size_kb": 139.9
   },
   "overall_status": "HEALTHY",
   "warnings": [],
