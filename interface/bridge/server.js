@@ -531,6 +531,30 @@ app.post('/api/shutdown', (req, res) => {
 const orchestratorCache = new Map();
 const CACHE_TTL_MS = 60_000;
 
+// GET Anki Stats for Today
+app.get('/api/anki/today-stats', async (req, res) => {
+  try {
+    const { COURS_PATH } = require('./moteur/cours');
+    const { syncAnkiRetention } = require('./moteur/ankiSync');
+    const coursData = require(COURS_PATH);
+    const subjects = [];
+    if (coursData && coursData.semestres) {
+       coursData.semestres.forEach(s => {
+         s.ues.forEach(u => {
+           u.matieres.forEach(m => {
+             if (m.nom) subjects.push(m.nom);
+           });
+         });
+       });
+    }
+    const ankiStats = await syncAnkiRetention(subjects);
+    res.json(ankiStats);
+  } catch (err) {
+    console.error("Erreur api/anki/today-stats:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET orchestrator report
 app.get('/api/orchestrateur', async (req, res) => {
   try {
@@ -544,35 +568,10 @@ app.get('/api/orchestrateur', async (req, res) => {
     const histMtime = fs.existsSync(HISTORIQUE_FILE) ? fs.statSync(HISTORIQUE_FILE).mtimeMs : 0;
     const now = Date.now();
 
-    // Clé de cache robuste basée sur l'ensemble des paramètres (Audit Improvement)
-    const cacheKey = `${configMtime}_${coursMtime}_${histMtime}_${extraTime}_${fillGap}`;
-
-    let cacheEntry = orchestratorCache.get(cacheKey);
-    let cacheValid = cacheEntry && (now - cacheEntry.timestamp) < CACHE_TTL_MS;
-
-    const rapport = cacheValid
-      ? cacheEntry.rapport
-      : genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime, fillGap);
-
-    if (!cacheValid) {
-      orchestratorCache.set(cacheKey, {
-        rapport,
-        timestamp: now
-      });
-    }
-
-    // Nettoyage périodique des vieilles entrées (tous les appels, pas seulement sur miss)
-    for (const [key, entry] of orchestratorCache.entries()) {
-      if (now - entry.timestamp > CACHE_TTL_MS) {
-        orchestratorCache.delete(key);
-      }
-    }
-
-    // AnkiConnect Global Synchronization (Background)
-    if (rapport && rapport.intelligence) {
-      try {
+    // AnkiConnect Synchronization First
+    let ankiStats = null;
+    try {
         const { syncAnkiRetention } = require('./moteur/ankiSync');
-        // Extract subjects to fetch per-subject stats
         const coursData = require(COURS_PATH);
         const subjects = [];
         if (coursData && coursData.semestres) {
@@ -584,15 +583,40 @@ app.get('/api/orchestrateur', async (req, res) => {
              });
            });
         }
-        
-        const ankiStats = await syncAnkiRetention(subjects);
-        if (ankiStats.success && ankiStats.retentionRate !== null) {
-          rapport.intelligence.fsrs_real_retention = ankiStats.retentionRate;
-          rapport.intelligence.fsrs_retention_by_subject = ankiStats.retentionBySubject;
-        }
-      } catch (err) {
-        console.error("Erreur lors de la synchronisation AnkiConnect en arrière-plan :", err.message);
+        ankiStats = await syncAnkiRetention(subjects);
+    } catch (err) {
+        console.error("Erreur lors de la synchronisation AnkiConnect :", err.message);
+    }
+
+    // Clé de cache robuste basée sur l'ensemble des paramètres (incluant le FSRS)
+    const ankiKey = ankiStats && ankiStats.success ? JSON.stringify(ankiStats.retentionBySubject || {}) : 'none';
+    const cacheKey = `${configMtime}_${coursMtime}_${histMtime}_${extraTime}_${fillGap}_${ankiKey}`;
+
+    let cacheEntry = orchestratorCache.get(cacheKey);
+    let cacheValid = cacheEntry && (now - cacheEntry.timestamp) < CACHE_TTL_MS;
+
+    const rapport = cacheValid
+      ? cacheEntry.rapport
+      : genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime, fillGap, ankiStats);
+
+    if (!cacheValid) {
+      orchestratorCache.set(cacheKey, {
+        rapport,
+        timestamp: now
+      });
+    }
+
+    // Nettoyage périodique des vieilles entrées
+    for (const [key, entry] of orchestratorCache.entries()) {
+      if (now - entry.timestamp > CACHE_TTL_MS) {
+        orchestratorCache.delete(key);
       }
+    }
+    
+    // Assigner les métadonnées globales au rapport final
+    if (rapport && rapport.intelligence && ankiStats && ankiStats.success && ankiStats.retentionRate !== null) {
+        rapport.intelligence.fsrs_real_retention = ankiStats.retentionRate;
+        rapport.intelligence.fsrs_retention_by_subject = ankiStats.retentionBySubject;
     }
 
     res.json(rapport);

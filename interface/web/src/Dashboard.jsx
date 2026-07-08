@@ -170,7 +170,7 @@ function Dashboard() {
     setOrderedTaches(items);
   };
 
-  const handleTaskComplete = (tache, difficulte = "") => {
+  const handleTaskComplete = async (tache, difficulte = "") => {
     if (!coursConfig) return;
 
     // For CM tasks, open the mini-modal to capture real time and retention score
@@ -190,11 +190,44 @@ function Dashboard() {
 
     let taskFound = false;
 
-    if (tache.isCustom) {
-      taskFound = true; // Bypass strict syllabus search
-    } else if (tache.type === 'ANKI') {
+    if (tache.type === 'ANKI') {
       setConfig({ ...config, dernierePratiqueAnki: today });
-      taskFound = true;
+      try {
+        const res = await fetch('/api/anki/today-stats');
+        if (res.ok) {
+          const ankiStats = await res.json();
+          if (ankiStats && ankiStats.success && ankiStats.cardsBySubject && Object.keys(ankiStats.cardsBySubject).length > 0) {
+            const totalCards = Object.values(ankiStats.cardsBySubject).reduce((a, b) => a + b, 0);
+            if (totalCards > 0) {
+              setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
+              confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#818CF8', '#34D399', '#FBBF24'] });
+              
+              const totalDuration = tache.dureeMinutes || 30;
+              Object.keys(ankiStats.cardsBySubject).forEach(subj => {
+                const count = ankiStats.cardsBySubject[subj];
+                if (count > 0) {
+                  const subjDuration = Math.round((count / totalCards) * totalDuration);
+                  if (subjDuration > 0) {
+                    addHistoriqueEntry({
+                      type: 'ANKI',
+                      titre: `Anki - ${subj}`,
+                      matiere: subj,
+                      action: 'Terminé',
+                      dureeMinutes: subjDuration
+                    });
+                  }
+                }
+              });
+              return; // End early, proportional split is complete
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Erreur lors de la ventilation proportionnelle Anki :", e);
+      }
+      taskFound = true; // Fallback to generic if API failed or 0 cards
+    } else if (tache.isCustom) {
+      taskFound = true; // Bypass strict syllabus search
     } else {
       const configLocal = coursConfig;
       const newConfig = produce(configLocal, draft => {

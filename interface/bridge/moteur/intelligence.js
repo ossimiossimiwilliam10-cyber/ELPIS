@@ -414,8 +414,8 @@ function detectBurnoutRisk(cfg, historique) {
 // AXE 11 : Projected Score Map (compatibilité ascendante — retourne un nombre)
 // ---------------------------------------------------------------------------
 
-function buildProjectedScoreMap(crs, velocityMap) {
-  const detail = buildProjectedScoreDetailMap(crs, velocityMap);
+function buildProjectedScoreMap(crs, velocityMap, ankiStats = null) {
+  const detail = buildProjectedScoreDetailMap(crs, velocityMap, ankiStats);
   const map = {};
   for (const [key, val] of Object.entries(detail)) {
     map[key] = val.projected;
@@ -427,7 +427,7 @@ function buildProjectedScoreMap(crs, velocityMap) {
  * AXE 11b : Carte de projection détaillée avec intervalles de confiance,
  * tendance, et détection d'anomalies.
  */
-function buildProjectedScoreDetailMap(crs, velocityMap) {
+function buildProjectedScoreDetailMap(crs, velocityMap, ankiStats = null) {
   const map = {};
   if (!crs || !crs.licences) return map;
 
@@ -544,6 +544,13 @@ function buildProjectedScoreDetailMap(crs, velocityMap) {
 
           // Bonus de pratique
           projected += Math.min(2, practiceCount * 0.10); // Ajusté à la baisse pour éviter débordement
+
+          // Intégration de la rétention FSRS d'Anki (Bonus de 40%)
+          if (ankiStats && ankiStats.retentionBySubject && ankiStats.retentionBySubject[m.nom] !== undefined) {
+              const fsrsRatio = ankiStats.retentionBySubject[m.nom] / 100;
+              // Le FSRS remplace 40% de la projection car c'est la véritable trace mémorielle
+              projected = (projected * 0.6) + (fsrsRatio * 20) * 0.4;
+          }
 
           // Projection de tendance (sur 30 jours max)
 

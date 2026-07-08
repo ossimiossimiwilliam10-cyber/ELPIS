@@ -294,7 +294,11 @@ function buildTaskPools({
   return { poolCM, poolTD, poolTP, poolAnnales };
 }
 
-function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false) {
+/**
+ * Fonction principale (sans persistance).
+ * Retourne le rapport d'orchestration
+ */
+function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false, ankiStats = null) {
   const cfg = loadConfig(configPath);
   const crs = loadCours(coursPath);
   const rapport = {};
@@ -325,8 +329,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const velocityMap = buildVelocityMap(crs, historique, cfg);
   const cognitiveLoadMap = buildCognitiveLoadMap(crs);
   const burnoutRisk = detectBurnoutRisk(cfg, historique);
-  const projectedScoreMap = buildProjectedScoreMap(crs, velocityMap);
-  const projectedScoreDetail = buildProjectedScoreDetailMap(crs, velocityMap);
+  const projectedScoreMap = buildProjectedScoreMap(crs, velocityMap, ankiStats);
+  const projectedScoreDetail = buildProjectedScoreDetailMap(crs, velocityMap, ankiStats);
   const timeOptimizationMap = buildTimeOptimizationMap(historique, cfg);
   const synergyMap = buildSynergyMap(crs);
   const workloadForecast = buildWorkloadForecast(historique, cfg);

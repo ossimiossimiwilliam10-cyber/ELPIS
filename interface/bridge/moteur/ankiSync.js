@@ -66,6 +66,7 @@ async function syncAnkiRetention(subjects = []) {
 
     // 2. Fetch Per-Subject Stats (if requested)
     const retentionBySubject = {};
+    const cardsBySubject = {};
     for (const subject of subjects) {
         try {
             const subjQuery = `rated:1 deck:"*${subject}*"`;
@@ -80,6 +81,7 @@ async function syncAnkiRetention(subjects = []) {
             if (sTotal > 0) {
                 const sSuccess = sTotal - sFailed;
                 retentionBySubject[subject] = (sSuccess / sTotal) * 100;
+                cardsBySubject[subject] = sTotal;
             }
         } catch (e) {
             console.error(`AnkiConnect Error for subject ${subject}:`, e.message);
@@ -91,7 +93,8 @@ async function syncAnkiRetention(subjects = []) {
       retentionRate: retentionRate,
       totalCards: totalCards,
       totalFailed: totalFailed,
-      retentionBySubject: retentionBySubject
+      retentionBySubject: retentionBySubject,
+      cardsBySubject: cardsBySubject
     };
 
   } catch (error) {
