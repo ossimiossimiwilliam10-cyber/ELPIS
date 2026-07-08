@@ -90,10 +90,29 @@ const useStore = create(persist(immer((set, get) => ({
   orchestratorData: null,
   intelligence: null,
   rankingBaseline: {
-    // Note: This is a placeholder Gaussian distribution until the external AI report is provided.
-    globalMean: 50,
-    globalSD: 15,
-    subjects: {}
+    globalMean: 50.0,
+    globalSD: 15.0,
+    metrics: {
+      academic: { mean: 50.0, sd: 15.0 },
+      fsrs: { mean: 60.0, sd: 20.0 },
+      workload: { mean: 50.0, sd: 20.0 }
+    },
+    subjects: {
+      'Anglais Lansad - Semestre impair': { mean: 12.0, sd: 2.5 },
+      'Algèbre': { mean: 9.0, sd: 3.8 },
+      'Analyse': { mean: 8.8, sd: 4.0 },
+      'Architecture des systèmes d\'exploitation': { mean: 10.5, sd: 3.5 },
+      'Programmation': { mean: 11.0, sd: 3.5 },
+      'Électromagnétisme': { mean: 9.0, sd: 3.8 },
+      'Introduction aux systèmes électroniques': { mean: 10.2, sd: 3.4 },
+      'Mécanique du solide': { mean: 8.8, sd: 3.8 },
+      'Construction mécanique': { mean: 10.5, sd: 3.0 },
+      'Signal et technologie en santé (Santé)': { mean: 10.0, sd: 3.2 },
+      'Aspects médicaux-légaux en santé (Santé)': { mean: 11.5, sd: 2.8 },
+      'UE 1.1. Constitution et transformation de la matière': { mean: 8.8, sd: 4.2 },
+      'UE 1.2. Les molécules du vivant': { mean: 8.6, sd: 4.1 },
+      'UE 1.3. Mathématiques': { mean: 9.5, sd: 3.8 }
+    }
   },
   // --- ACTIONS ---
   setActiveTab: (tab) => set({ activeTab: tab }),
