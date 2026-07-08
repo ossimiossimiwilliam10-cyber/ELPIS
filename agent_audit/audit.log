@@ -2303,3 +2303,24 @@
 [2026-07-08 10:02:15] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
 [2026-07-08 10:02:15] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260707_171602\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\refactor.py']' returned non-zero exit status 128.
 [2026-07-08 10:02:16] [INFO] Audit termine en 17.6s. Health Score projet: 100/100
+[2026-07-08 13:52:46] [INFO] ============================================================
+[2026-07-08 13:52:46] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-08 13:52:46] [INFO] ============================================================
+[2026-07-08 13:52:46] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-08 13:52:46] [INFO] Etablissement de la baseline de tests...
+[2026-07-08 13:52:46] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-08 13:52:47] [INFO] Phase 1 terminee: 165 fichiers, 1547005 lignes
+[2026-07-08 13:52:47] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-08 13:52:47] [INFO]   -> 52 anomalies globales detectees
+[2026-07-08 13:52:47] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-08 13:52:52] [INFO]   Passe 1: 0 defauts trouves, 0 corrections appliquees
+[2026-07-08 13:52:52] [INFO]   Health Score: 99/100
+[2026-07-08 13:52:52] [INFO]   Anomalies Critiques: 0
+[2026-07-08 13:52:52] [INFO]   Avertissements (Warning): 0
+[2026-07-08 13:52:52] [INFO]   Suggestions & Code Smells (Info): 52
+[2026-07-08 13:52:52] [INFO]   Total defauts detectes: 52
+[2026-07-08 13:52:52] [INFO]   Corrections appliquees: 0
+[2026-07-08 13:52:52] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-08 13:52:52] [INFO] Agent Health: HEALTHY
+[2026-07-08 13:52:52] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-08 13:52:52] [INFO] Audit termine en 6.2s. Health Score projet: 99/100
