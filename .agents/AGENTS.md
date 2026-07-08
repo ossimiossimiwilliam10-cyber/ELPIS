@@ -136,3 +136,8 @@ Cela permet de récompenser la rigueur quotidienne et pas seulement la performan
   2. Fournir une valeur par défaut de 20 au dénominateur : `(ev.sur || 20)`
   Cela empêchera la génération et la propagation de valeurs `NaN` ou `Infinity` dans l'interface.
 </RULE[grade_parsing_nan_prevention]>
+
+<RULE[fallback_note_estimee]>
+- **Utilisation des Notes Estimées (Fallback IA)** : Lors du calcul de moyennes globales, de classements virtuels ou de statistiques avancées (ex: `ClassementPage.jsx`), si une matière ne possède aucune note officielle valide (évaluations absentes ou à `null`), le système **DOIT TOUJOURS** tenter d'utiliser en solution de repli (fallback) la note projetée par l'IA présente dans le store : `intelligence.projectedScoreMap[matiere.nom]`. 
+  Cela permet à l'étudiant de suivre ses progrès et son rang potentiel même en début de semestre. L'interface devra idéalement préciser visuellement que la note utilisée est "Estimée par IA".
+</RULE[fallback_note_estimee]>

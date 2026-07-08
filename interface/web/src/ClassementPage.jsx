@@ -80,12 +80,12 @@ export default function ClassementPage() {
     const globalAcademicAvg = globalSumECTS > 0 ? (globalSumNotes / globalSumECTS) : 0;
     const academicScore = Math.min((globalAcademicAvg / 20) * 100, 100);
 
-    const reviews = historique.filter(h => h.type === 'revision');
-    const successfulReviews = reviews.filter(h => h.difficulty && h.difficulty > 1).length;
+    const reviews = historique.filter(h => h.type === 'revision' || h.type === 'ANKI');
+    const successfulReviews = reviews.filter(h => h.action === 'Terminé' || (h.difficulty && h.difficulty > 1)).length;
     const fsrsScore = reviews.length > 0 ? (successfulReviews / reviews.length) * 100 : 0;
 
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    const recentSessions = historique.filter(h => new Date(h.date).getTime() > thirtyDaysAgo).length;
+    const recentSessions = historique.filter(h => new Date(h.timestamp || h.date).getTime() > thirtyDaysAgo).length;
     const workloadScore = Math.min((recentSessions / 60) * 100, 100);
 
     const compositeScore = (academicScore * 0.4) + (fsrsScore * 0.4) + (workloadScore * 0.2);
