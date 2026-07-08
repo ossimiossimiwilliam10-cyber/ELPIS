@@ -107,3 +107,8 @@ pm run build dans le rÃ©pertoire appropriÃ© comme interface/web).
 <RULE[ux_full_crud]>
 - **Complétude CRUD obligatoire** : Lors de la création d'une fonctionnalité permettant de gérer une liste d'éléments (vidéos, liens, tâches, etc.), il est OBLIGATOIRE d'implémenter l'intégralité du cycle CRUD (Create, Read, Update, Delete). Ne jamais omettre la fonctionnalité de modification (Update), même si elle n'est pas explicitement demandée par l'utilisateur, afin d'éviter qu'il ne doive supprimer et recréer un élément pour corriger une faute de frappe. Privilégier une édition "en ligne" (inline) directement sur la carte de l'élément pour une meilleure UX.
 </RULE[ux_full_crud]>
+
+<RULE[algo_test_completeness]>
+- **Couverture de Test des Algorithmes (Anti-Regression)** : Toute création ou modification d'un fichier lié au cœur algorithmique de l'application (ex: `store.js`, `useWorkloadEngine.js`, `fsrsEngine.js`, `sm2.js`, `GlobalChrono.jsx`) DOIT obligatoirement s'accompagner de la rédaction ou de la mise à jour des tests unitaires correspondants (`*.test.js(x)`) pour atteindre ou maintenir une couverture >90% sur ces fichiers spécifiques. Ne jamais laisser de branches (ex: `if (archived)`) non testées.
+- **Mocking de Fetch dans Vitest** : Ne jamais laisser des appels réseau (`fetch`) natifs s'exécuter avec des URL relatives dans les tests (ce qui cause l'erreur `TypeError: Failed to parse URL from /api/...`). Assurez-vous toujours que `global.fetch` est mocké dans `setupTests.js` ou dans le fichier de test via `vi.fn()`.
+</RULE[algo_test_completeness]>
