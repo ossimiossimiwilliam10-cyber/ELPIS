@@ -21,7 +21,7 @@ function erf(x) {
 }
 
 export default function ClassementPage() {
-  const { coursConfig, historique, rankingBaseline, intelligence } = useStore();
+  const { config, coursConfig, historique, rankingBaseline, intelligence } = useStore();
 
   const data = useMemo(() => {
     let globalSumNotes = 0;
@@ -135,7 +135,7 @@ export default function ClassementPage() {
       rankPercentage: rankPercentage.toFixed(1),
       subjectRanks
     };
-  }, [coursConfig, historique, rankingBaseline, intelligence]);
+  }, [config, coursConfig, historique, rankingBaseline, intelligence]);
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', color: 'var(--text-primary)' }}>
