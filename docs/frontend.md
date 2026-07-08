@@ -87,3 +87,15 @@ L'application utilise `vite-plugin-pwa` avec **Workbox**.
 1. **Prévenir la Double Soumission** : Lors de la validation d'une tâche (ex: clic sur "Terminer"), utilisez toujours un verrou (`useRef` ou désactivation temporaire) pour empêcher un utilisateur impatient de créer des doublons dans `espoir_historique.json`.
 2. **Feedback Visuel** : Toute action importante (ajout d'une matière, validation d'une tâche) doit utiliser le système de `Toast` intégré (`toast.success()`) pour rassurer l'utilisateur.
 3. **Tests** : Chaque nouveau composant critique doit être accompagné de ses tests unitaires/intégration (`*.test.jsx`) avec Vitest.
+
+---
+
+## 6. Ajouter une Nouvelle Fonctionnalité (Nouvel Onglet)
+
+Lors de la création d'un nouvel onglet ou d'une nouvelle page dans ELPIS, respectez l'architecture suivante :
+
+1. **Lazy Loading** : Utilisez toujours `lazy(() => import('./...'))` et `<Suspense>` dans `App.jsx` pour préserver les performances de chargement.
+2. **Routing Simple** : Enregistrez le composant avec la condition `activeTab === 'nom_onglet'` dans la `<AnimatePresence>` de `App.jsx`. Ne pas utiliser React Router pour éviter d'alourdir le bundle de base.
+3. **État Global (PWA)** : L'état global (ex: vos données persistantes) DOIT être stocké dans `store.js` (via `config` ou une nouvelle racine synchronisée). Cela garantit le bon fonctionnement hors-ligne.
+4. **Navigation** : Ajoutez le nouvel onglet dans `Sidebar.jsx` sous le groupe approprié.
+5. **UI/UX** : Pas de bibliothèques UI externes (sauf si indispensables). Utilisez le glassmorphism standard (`className="card glass-panel"`) et les variables CSS du `index.css`.

@@ -7,7 +7,7 @@ import { useToast } from '../ToastProvider';
 export default function GlobalChrono() {
   const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useChronoStore();
   const { isRunning, elapsedSeconds, titre, matiereNom, exoId, type } = globalChrono;
-  const toast = useToast();
+  const { toast } = useToast();
 
   const [isVisible, setIsVisible] = useState(true);
   const [pipWindow, setPipWindow] = useState(null);

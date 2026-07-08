@@ -288,8 +288,24 @@ const useStore = create(persist(immer((set, get) => ({
         diffDays = Math.round((todayDate - lastDate) / (1000 * 60 * 60 * 24));
       }
 
+      let hasBrokenStreak = false;
+      if (diffDays > 1) {
+        const restDays = config.restDays || [];
+        for (let i = 1; i < diffDays; i++) {
+          const missingDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          missingDate.setDate(missingDate.getDate() - i);
+          const missingDateStr = missingDate.getFullYear() + '-' +
+            String(missingDate.getMonth() + 1).padStart(2, '0') + '-' +
+            String(missingDate.getDate()).padStart(2, '0');
+          if (!restDays.includes(missingDateStr)) {
+            hasBrokenStreak = true;
+            break;
+          }
+        }
+      }
+
       if (isActivity) {
-        if (diffDays === 1) {
+        if (!hasBrokenStreak || diffDays === 1) {
           streak += 1;
         } else {
           streak = 1;
@@ -297,7 +313,7 @@ const useStore = create(persist(immer((set, get) => ({
         newLastActive = today;
         updated = true;
       } else {
-        if (diffDays > 1 && streak > 0) {
+        if (hasBrokenStreak && streak > 0) {
           streak = 0;
           updated = true;
         }

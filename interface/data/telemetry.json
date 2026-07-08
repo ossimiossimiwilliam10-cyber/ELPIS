@@ -1,4 +1,75 @@
 {
-  "sessions": [],
+  "sessions": [
+    {
+      "timestamp": "2026-07-07T15:40:30.372Z",
+      "type": "session_completed",
+      "matiere": "Programmation",
+      "duree": 22,
+      "ai_context": {
+        "before": {
+          "projectedScore": 12.7
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-07T15:50:40.454Z",
+      "type": "session_completed",
+      "matiere": "Programmation",
+      "duree": 22,
+      "ai_context": {
+        "before": {
+          "projectedScore": 10.9
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-07T16:24:09.163Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 28,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-08T09:29:54.287Z",
+      "type": "session_completed",
+      "matiere": "Programmation",
+      "duree": 35,
+      "ai_context": {
+        "before": {
+          "projectedScore": 10.9
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-08T11:11:54.305Z",
+      "type": "session_completed",
+      "matiere": "Routine",
+      "duree": 98,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    }
+  ],
   "actions": []
 }
