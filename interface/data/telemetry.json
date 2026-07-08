@@ -69,6 +69,34 @@
           "note": "calculé au prochain cycle"
         }
       }
+    },
+    {
+      "timestamp": "2026-07-08T14:14:00.000Z",
+      "type": "session_completed",
+      "matiere": "Mécanique du solide",
+      "duree": 178,
+      "ai_context": {
+        "before": {
+          "projectedScore": 8.3
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-08T15:54:06.549Z",
+      "type": "session_completed",
+      "matiere": "Architecture des systèmes d'exploitation",
+      "duree": 97,
+      "ai_context": {
+        "before": {
+          "projectedScore": 8.4
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
     }
   ],
   "actions": []

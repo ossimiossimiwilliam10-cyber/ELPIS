@@ -36,8 +36,8 @@ export function useWorkloadEngine() {
             const baseEffortHours = coeff * 15;
 
             // B. Multipliers
-            const targetGrade = config.targetGrade || 14;
-            const targetRank = config.targetRank || 50;
+            const targetGrade = m.targetGrade ?? u.targetGrade ?? s.targetGrade ?? l.targetGrade ?? config.targetGrade ?? 14;
+            const targetRank = m.targetRank ?? u.targetRank ?? s.targetRank ?? l.targetRank ?? config.targetRank ?? 50;
 
             // Grade multiplier: 10/20 -> 1x, 20/20 -> 2x
             const gradeMultiplier = 1 + (targetGrade - 10) * 0.1;
