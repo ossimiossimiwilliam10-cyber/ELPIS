@@ -118,11 +118,26 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
           <span style={{background:'var(--bg-tertiary)', padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.8rem'}}>
             {exo.matiereNom} ({exo.type})
           </span>
-          {exo.raisons && exo.raisons.map((r, i) => (
-            <span key={i} style={{background: r.includes('Anti-Décrochage') ? 'rgba(239,68,68,0.1)' : r.includes('Examen') ? 'rgba(245,158,11,0.1)' : r.includes('Précoce') ? 'rgba(168,85,247,0.1)' : 'var(--bg-tertiary)', color: r.includes('Anti-Décrochage') ? '#ef4444' : r.includes('Examen') ? '#f59e0b' : r.includes('Précoce') ? '#a855f7' : 'var(--text-secondary)', padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.75rem', fontWeight:'500'}}>
-              {r}
-            </span>
-          ))}
+          {exo.raisons && exo.raisons.map((r, i) => {
+            const reasonDict = {
+              "REPRISE_EN_MAIN": { text: "🛡️ Reprise en main", color: "var(--text-secondary)", bg: "var(--bg-tertiary)" },
+              "URGENCE_NOTE": { text: "🚨 Urgence (Note < 5)", color: "#ef4444", bg: "rgba(239,68,68,0.1)" },
+              "EXAMEN_PROCHE": { text: "⏳ Examen Proche", color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
+              "COEF_ELEVE": { text: "🔥 Coefficient Élevé", color: "var(--text-secondary)", bg: "var(--bg-tertiary)" },
+              "EXAMEN_IMMINENT": { text: "🚨 Examen Imminent", color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
+              "DEFI_PRECOCE": { text: "🚀 Défi Précoce", color: "#a855f7", bg: "rgba(168,85,247,0.1)" },
+              "MAITRISE_ATTEINTE": { text: "🏆 Maîtrise Atteinte", color: "var(--text-secondary)", bg: "var(--bg-tertiary)" },
+              "PREPA_TD": { text: "🔗 Pour préparer le TD", color: "var(--text-secondary)", bg: "var(--bg-tertiary)" },
+              "ESPACEE_GLOBALE": { text: "🧠 Répétition Espacée Globale", color: "var(--text-secondary)", bg: "var(--bg-tertiary)" },
+              "ESPACEE_GLOBALE_BONUS": { text: "🧠 Répétition Espacée Globale (Bonus)", color: "var(--text-secondary)", bg: "var(--bg-tertiary)" }
+            };
+            const mapped = reasonDict[r] || { text: r, color: "var(--text-secondary)", bg: "var(--bg-tertiary)" };
+            return (
+              <span key={i} style={{background: mapped.bg, color: mapped.color, padding:'0.2rem 0.6rem', borderRadius:'20px', fontSize:'0.75rem', fontWeight:'500'}}>
+                {mapped.text}
+              </span>
+            );
+          })}
           {exo.notebookLMLink && (
             <button
               onClick={() => {

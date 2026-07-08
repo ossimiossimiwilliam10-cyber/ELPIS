@@ -121,11 +121,11 @@ describe('Orchestrateur - Extreme Coverage', () => {
     const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
     const annaleTask = r.tachesDuJour.find(t => t.type === 'ANNALE');
     expect(annaleTask).toBeDefined();
-    expect(annaleTask.raisons).toContain('🚨 Examen Imminent');
+    expect(annaleTask.raisons).toContain('EXAMEN_IMMINENT');
 
     const cmTask = r.tachesDuJour.find(t => t.type === 'CM' && t.titre === 'CM_PREP');
     expect(cmTask).toBeDefined();
-    expect(cmTask.raisons).toContain('🔗 Pour préparer le TD');
+    expect(cmTask.raisons).toContain('PREPA_TD');
   });
 
   test('Branch: FillGap mode', () => {

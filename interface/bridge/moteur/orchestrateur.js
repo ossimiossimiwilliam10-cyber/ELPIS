@@ -103,11 +103,11 @@ function buildTaskPools({
 
           const examBoost = examBoostOriginal * inactivityBoost * crisisBoost;
           const baseRaisons = [];
-          if (inactivityBoost > 1.0) baseRaisons.push("🛡️ Reprise en main");
-          if (crisisBoost > 1.0) baseRaisons.push("🚨 Urgence (Note < 5)");
+          if (inactivityBoost > 1.0) baseRaisons.push("REPRISE_EN_MAIN");
+          if (crisisBoost > 1.0) baseRaisons.push("URGENCE_NOTE");
 
-          if (daysToExam < 60) baseRaisons.push("⏳ Examen Proche");
-          else if (examBoostOriginal > 1.0) baseRaisons.push("🔥 Coefficient Élevé");
+          if (daysToExam < 60) baseRaisons.push("EXAMEN_PROCHE");
+          else if (examBoostOriginal > 1.0) baseRaisons.push("COEF_ELEVE");
 
           // --- CM ---
           let newCMCountPerMatiere = 0;
@@ -262,9 +262,9 @@ function buildTaskPools({
           const hasStartedAnnales = (m.listeAnnales || []).some(a => (a.nombrePratiques || 0) > 0 || a.dernierePratique);
 
           const annalesRaisons = [...baseRaisons];
-          if (isUrgent) annalesRaisons.push("🚨 Examen Imminent");
-          else if (isEarlyReady && !isMastered) annalesRaisons.push("🚀 Défi Précoce");
-          else if (isMastered) annalesRaisons.push("🏆 Maîtrise Atteinte");
+          if (isUrgent) annalesRaisons.push("EXAMEN_IMMINENT");
+          else if (isEarlyReady && !isMastered) annalesRaisons.push("DEFI_PRECOCE");
+          else if (isMastered) annalesRaisons.push("MAITRISE_ATTEINTE");
 
           if (isMastered || isUrgent || hasStartedAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
@@ -454,8 +454,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   for (const td of poolTD) {
     for (const cm of poolCM.filter(c => c.matiere === td.matiere)) {
       cm.prio *= MAGIC_CONSTANTS.BOOST_PREP_TD;
-      if (!cm.raisons.includes("🔗 Pour préparer le TD")) {
-        cm.raisons.unshift("🔗 Pour préparer le TD");
+      if (!cm.raisons.includes("PREPA_TD")) {
+        cm.raisons.unshift("PREPA_TD");
       }
     }
   }
@@ -658,7 +658,7 @@ function genererTacheSpecifique(configPath, coursPath, options) {
         titre: "Révision Flashcards",
         dureeMinutes: cfg.defaultDurationAnki || 30,
         prio: type === 'ANKI' ? 9999 : MAGIC_CONSTANTS.PRIO_MAX_ANKI,
-        raisons: ["🧠 Répétition Espacée Globale" + (alreadyDone ? " (Bonus)" : "")]
+        raisons: [alreadyDone ? "ESPACEE_GLOBALE_BONUS" : "ESPACEE_GLOBALE"]
       });
     }
   }

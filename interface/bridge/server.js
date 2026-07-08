@@ -18,6 +18,7 @@ const { initMongo, syncFromMongoToLocal, syncToMongo, getDb } = require('./mongo
 const { callDeepSeek } = require('./aiAdapter');
 const { GridFSBucket } = require('mongodb');
 const telemetry = require('./moteur/telemetry');
+const { configSchema, coursSchema, historiqueSchema } = require('./moteur/schemas');
 
 const app = express();
 
@@ -188,11 +189,12 @@ app.get('/api/config', (req, res) => {
 // POST update config
 app.post('/api/config', (req, res) => {
   try {
-    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
-      return res.status(400).json({ error: "Données de configuration invalides. Objet attendu." });
-    }
-    if (req.body.targetGrade !== undefined && typeof req.body.targetGrade !== 'number') {
-      return res.status(400).json({ error: "targetGrade doit être un nombre." });
+    const parseResult = configSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ 
+        error: "Données de configuration invalides.",
+        details: parseResult.error.errors 
+      });
     }
     const success = saveConfig(req.body);
     if (!success) {
@@ -220,11 +222,12 @@ app.get('/api/cours', (req, res) => {
 // POST update courses
 app.post('/api/cours', (req, res) => {
   try {
-    if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
-      return res.status(400).json({ error: "Données de cours invalides. Objet attendu." });
-    }
-    if (!Array.isArray(req.body.licences)) {
-      return res.status(400).json({ error: "Structure de cours invalide ('licences' doit être un tableau)." });
+    const parseResult = coursSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ 
+        error: "Structure de cours invalide.",
+        details: parseResult.error.errors 
+      });
     }
     const success = saveCours(req.body);
     if (!success) {
@@ -321,8 +324,12 @@ app.get('/api/historique', (req, res) => {
 // POST update history
 app.post('/api/historique', (req, res) => {
   try {
-    if (!Array.isArray(req.body)) {
-      return res.status(400).json({ error: "L'historique doit être un tableau." });
+    const parseResult = historiqueSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ 
+        error: "L'historique est invalide.",
+        details: parseResult.error.errors 
+      });
     }
     // Limit history to 10 000 entries to prevent unbounded growth
     const trimmed = req.body.length > 10000 ? req.body.slice(req.body.length - 10000) : req.body;
