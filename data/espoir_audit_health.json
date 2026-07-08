@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-08T19:18:29.600599",
+  "timestamp": "2026-07-08T21:02:43.224168",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,16 +8,16 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 7.68,
-    "files_scanned": 165,
-    "files_per_second": 21.5,
-    "lines_per_second": 201388.0
+    "elapsed_seconds": 9.36,
+    "files_scanned": 166,
+    "files_per_second": 17.7,
+    "lines_per_second": 165249.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 52
+      "MISSING_TEST_FILE": 53
     }
   },
   "escalation_health": {
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "MAGIC_NUMBERS",
-      "MISSING_JSDOC_ON_EXPORT",
+      "TEST_WITH_SKIP",
+      "MISSING_KEY_IN_MAP",
+      "NO_PRINT_IN_PRODUCTION",
+      "NO_HARDCODED_LOCALHOST",
+      "NO_HARDCODED_SECRETS",
+      "NO_TRAILING_WHITESPACE",
+      "NO_CONSOLE_LOG_IN_PROD",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+      "FIX_CONFIDENCE_DECIMAL",
       "ZUSTAND_FULL_STORE_DESTRUCTURE",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
+      "JSON_DEEP_CLONE",
+      "NO_POSITIVE_TABINDEX",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "NO_SQL_INJECTION_PATTERNS",
       "SCORING_NEW_PARAM_SIGNATURE",
       "NO_WINDOW_PROMPT",
-      "FETCH_WITHOUT_ABORT",
-      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
-      "NO_SQL_INJECTION_PATTERNS",
-      "MISSING_TYPE_HINTS",
-      "NO_PRINT_IN_PRODUCTION",
-      "USE_OPTIONAL_CHAINING",
-      "MISSING_ALT_ATTRIBUTE",
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "EMPTY_PROMISE_CATCH",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_VAR_KEYWORD",
-      "PROP_SPREADING_WARNING",
-      "TEST_WITH_ONLY",
-      "NO_CONSOLE_LOG_IN_PROD"
+      "NO_EMPTY_CATCH"
     ],
     "inactive_count": 56
   },

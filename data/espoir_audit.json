@@ -1,26 +1,26 @@
 {
-  "last_scan": "2026-07-08T19:18:29.600566",
+  "last_scan": "2026-07-08T21:02:43.224131",
   "mode": "SCAN + CORRECTION",
-  "files_scanned": 165,
-  "total_lines_of_code": 1545934,
-  "total_anomalies": 52,
+  "files_scanned": 166,
+  "total_lines_of_code": 1546249,
+  "total_anomalies": 53,
   "total_corrections": 0,
   "files_corrected": 0,
   "total_escalations": 0,
   "anomalies_by_severity": {
     "critical": 0,
     "warning": 0,
-    "info": 52
+    "info": 53
   },
   "anomalies_by_category": {
-    "TESTING": 52
+    "TESTING": 53
   },
   "rule_stats": {
     "MISSING_TEST_FILE": {
-      "count": 52,
+      "count": 53,
       "severity": "info",
       "category": "TESTING",
-      "files_affected": 52,
+      "files_affected": 53,
       "top_files": [
         "agent_audit/_analyze.py",
         "agent_audit/_test_rules.py",
@@ -34,7 +34,7 @@
     }
   },
   "signal_count": 0,
-  "noise_count": 52,
+  "noise_count": 53,
   "escalation_stats": {
     "total": 0,
     "by_type": {},
@@ -332,6 +332,20 @@
       "file": "interface/web/src/StatistiquesPage.jsx",
       "line": 1,
       "code_snippet": "Aucun fichier de test pour StatistiquesPage.jsx",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Pas de fichier de test correspondant. Creez un fichier .test.js(x).",
+      "_suppression_comment": "AUDIT_SUPPRESS:MISSING_TEST"
+    },
+    {
+      "rule_id": "MISSING_TEST_FILE",
+      "severity": "info",
+      "description": "Fichier source sans fichier de test correspondant.",
+      "category": "TESTING",
+      "file": "interface/web/src/ClassementPage.jsx",
+      "line": 1,
+      "code_snippet": "Aucun fichier de test pour ClassementPage.jsx",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
