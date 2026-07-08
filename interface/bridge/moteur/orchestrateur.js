@@ -116,11 +116,10 @@ function buildTaskPools({
             let joursEnRetard = 0;
             if (!cm.derniereRevision) {
               if (matieresSatureesToday.has(m.nom)) continue;
-              if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject || newCMCountPerSemester >= maxNewCMPerSemester)) continue;
+              if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject)) continue;
               doitReviser = true;
               joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
               newCMCountPerMatiere++;
-              newCMCountPerSemester++;
             } else {
               const targetDateStr = normalizeDateStr(cm.prochaineRevisionDate);
               if (targetDateStr) {
@@ -164,6 +163,7 @@ function buildTaskPools({
                 dureeMinutes: Math.round(dureeEstimee),
                 fichePdfPath: cm.fichePdfPath || "",
                 prio: prioCM,
+                isNew: !cm.derniereRevision,
                 raisons: [...baseRaisons]
               });
             }
@@ -507,8 +507,11 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     }
   }
 
+  const maxNewCMPerSemester = cfg.maxNewCMPerSemesterPerDay !== undefined ? cfg.maxNewCMPerSemesterPerDay : 3;
+  let newCMAdded = 0;
   const appendFromPool = (pool, subjectCountMap, limitPerSubject) => {
     for (const item of pool) {
+      if (item.isNew && !fillGap && newCMAdded >= maxNewCMPerSemester) continue;
       if (tempsRequisMin + item.dureeMinutes <= tempsLibreMin) {
         if (!fillGap && !canAddMatiere(item.matiere)) continue;
         const count = subjectCountMap ? (subjectCountMap[item.matiere] || 0) : 0;
@@ -517,6 +520,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           tempsRequisMin += item.dureeMinutes;
           if (subjectCountMap) subjectCountMap[item.matiere] = count + 1;
           selectedMatieres.add(item.matiere);
+          if (item.isNew) newCMAdded++;
         }
       }
     }

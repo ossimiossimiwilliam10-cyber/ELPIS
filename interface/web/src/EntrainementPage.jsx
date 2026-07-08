@@ -271,7 +271,8 @@ function EntrainementPage() {
 
     const currentAvg = cm.tempsMoyen || 0;
     const currentCount = cm.nombreRevisionsTemps || 0;
-    cm.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+    const weight = Math.min(currentCount, 4);
+    cm.tempsMoyen = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
     cm.nombreRevisionsTemps = currentCount + 1;
 
     // Capturer les valeurs avant la fermeture du scope produce
@@ -393,12 +394,14 @@ function EntrainementPage() {
 
         const currentAvg = currentExo.tempsMoyenEtapes[stepIndex] || 0;
         const currentCount = currentExo.nombreRevisionsEtapes[stepIndex] || 0;
-        currentExo.tempsMoyenEtapes[stepIndex] = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+        const weight = Math.min(currentCount, 4);
+        currentExo.tempsMoyenEtapes[stepIndex] = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
         currentExo.nombreRevisionsEtapes[stepIndex] = currentCount + 1;
       } else {
         const currentAvg = currentExo.tempsMoyen || 0;
         const currentCount = currentExo.nombreRevisionsTemps || 0;
-        currentExo.tempsMoyen = ((currentAvg * currentCount) + effectiveMinutes) / (currentCount + 1);
+        const weight = Math.min(currentCount, 4);
+        currentExo.tempsMoyen = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
         currentExo.nombreRevisionsTemps = currentCount + 1;
       }
 

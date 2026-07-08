@@ -37,11 +37,15 @@ function getDifficultyMultiplier(difficulte) {
  * @param {Object} [projectedScoreDetail] - Map détaillée de buildProjectedScoreDetailMap (v3)
  */
 function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensationMap, velocityMap = null, projectedScoreDetail = null) {
-  let base = 1.0 / Math.sqrt((ex.nombrePratiques || 0) + 1.0);
-  if (ex.difficulte === 'difficile') base *= 1.5;
-  else if (ex.difficulte === 'assez_difficile') base *= 1.2;
-  else if (ex.difficulte === 'facile') base *= 0.8;
-  else if (ex.difficulte === 'tres_facile') base *= 0.6;
+  const practiceCount = Math.max(0, ex?.nombrePratiques || 0);
+  let base = 1.0 / Math.sqrt(practiceCount + 1.0);
+
+  const difficultyMultiplier = getDifficultyMultiplier(ex?.difficulte);
+  if (ex?.difficulte === 'tres_facile') {
+    base *= 0.6;
+  } else {
+    base *= difficultyMultiplier;
+  }
 
   let matiereNom = matiere;
   if (matiere && typeof matiere === 'object' && matiere.nom) {
@@ -65,7 +69,7 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
     if (boostData) base *= boostData.multiplier;
   }
 
-  // Grade deficit boost (enhanced with compensation awareness)
+  // Grade deficit boost (kept modest and deterministic)
   if (matiere && typeof matiere === 'object') {
     const result = getMatiereAverage(matiere);
     if (result) {
@@ -119,32 +123,19 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
   synergyBoost = Math.max(0.5, Math.min(5.0, synergyBoost));
   base *= synergyBoost;
 
-  // --- AXE 11b : Confidence-Aware Exploration (v3) ---
-  // Si l'intervalle de confiance est large (incertitude élevée), on explore davantage
+  // Keep advanced projection signals as a small, non-random adjustment.
   if (projectedScoreDetail && matiereNom) {
     const psDetail = projectedScoreDetail[matiereNom];
-    if (psDetail && psDetail.confidenceInterval > 3.0) {
-      // Forte incertitude : boost modéré pour obtenir plus de données
-      const uncertaintyBoost = 1.0 + (psDetail.confidenceInterval - 3.0) * 0.15;
-      base *= Math.min(2.0, uncertaintyBoost);
+    if (psDetail && psDetail.confidenceInterval > 4.5) {
+      const uncertaintyBoost = 1.0 + (psDetail.confidenceInterval - 4.5) * 0.05;
+      base *= Math.min(1.2, uncertaintyBoost);
     }
-    // Si une anomalie a été détectée, boost pour investiguer
     if (psDetail && psDetail.anomalyFlags && psDetail.anomalyFlags.length > 0) {
-      base *= 1.3;
+      base *= 1.05;
     }
-    // Si la tendance est significativement négative, urgence accrue
     if (psDetail && psDetail.trendSignificant && psDetail.trend < -0.05) {
-      base *= 1.0 + Math.min(1.0, Math.abs(psDetail.trend) * 10);
+      base *= 1.0 + Math.min(0.2, Math.abs(psDetail.trend) * 2);
     }
-  }
-
-  // --- AXE 14 : Epsilon-Greedy Bandits (Exploration vs Exploitation) ---
-  const pseudoRandom = (( (ex.nom ? ex.nom.length : 1) * new Date().getDate()) % 100) / 100;
-  const epsilon = 0.15; // 15% d'exploration
-
-  if (pseudoRandom < epsilon) {
-    const explorationBoost = 2.0 + (pseudoRandom * 20);
-    base *= explorationBoost;
   }
 
   return base;
