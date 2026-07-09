@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-09T20:44:22.812452",
+  "timestamp": "2026-07-09T22:18:22.683667",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -7,11 +7,11 @@
     "issues": []
   },
   "scan_performance": {
-    "status": "WARNING",
-    "elapsed_seconds": 17.34,
+    "status": "HEALTHY",
+    "elapsed_seconds": 7.17,
     "files_scanned": 166,
-    "files_per_second": 9.6,
-    "lines_per_second": 89176.0
+    "files_per_second": 23.2,
+    "lines_per_second": 215818.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "EXCESSIVE_FILE_SIZE",
-      "NO_CONSOLE_LOG_IN_PROD",
-      "FETCH_WITHOUT_ABORT",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "EXCESSIVE_NESTING_DEPTH",
-      "MISSING_USEEFFECT_DEPS",
-      "MAGIC_NUMBERS",
-      "PROP_SPREADING_WARNING",
+      "NO_HARDCODED_SECRETS",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_DOUBLE_SEMICOLONS",
+      "NO_WILDCARD_CORS",
       "NO_IMPORTANT_IN_CSS",
-      "NO_HARDCODED_LOCALHOST",
-      "UNGUARDED_JSON_PARSE",
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "NO_EMPTY_CATCH",
-      "NO_HTTP_IN_PRODUCTION_URLS",
-      "NO_UNSAFE_INNERHTML",
-      "NO_TRAILING_WHITESPACE",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "TOAST_DIRECT_CALL",
+      "MISSING_TYPE_HINTS",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
       "TEST_WITH_ONLY",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "NO_BARREL_IMPORT_CYCLES",
-      "MISSING_KEY_IN_MAP"
+      "MISSING_JSDOC_ON_EXPORT",
+      "NO_BARE_EXCEPT",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "MISSING_KEY_IN_MAP",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
+      "NO_POSITIVE_TABINDEX",
+      "NO_INDEX_AS_KEY",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT"
     ],
     "inactive_count": 56
   },
@@ -57,10 +57,8 @@
     "status": "HEALTHY",
     "size_kb": 30.0
   },
-  "overall_status": "WARNING",
-  "warnings": [
-    "Performance degradee: 9.6 fichiers/s"
-  ],
+  "overall_status": "HEALTHY",
+  "warnings": [],
   "recommendations": [
     "56 regles inactives. Verifier si elles sont encore pertinentes."
   ]
