@@ -174,9 +174,73 @@ const upload = multer({
 // Servir les documents stockés en interne
 app.use('/documents', express.static(DOCUMENTS_DIR));
 
+// --- AnkiConnect Helper ---
+function ankiRequest(action, params = {}) {
+  return new Promise((resolve, reject) => {
+    const http = require('http');
+    const data = JSON.stringify({ action, version: 6, params });
+    const req = http.request({
+      hostname: '127.0.0.1', port: 8765, method: 'POST',
+      agent: false,
+      timeout: 5000,
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
+    }, res => {
+      let body = '';
+      res.on('data', c => body += c);
+      res.on('end', () => {
+        try {
+          const p = JSON.parse(body);
+          if (p.error) reject(new Error(p.error));
+          else resolve(p.result);
+        } catch (e) { reject(e); }
+      });
+    });
+    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
+    req.on('error', reject);
+    req.write(data);
+    req.end();
+  });
+}
+
 // ===================== ROUTES =====================
 
-// GET current config
+// GET Anki decks
+app.get('/api/anki/decks', async (req, res) => {
+  try {
+    const deckNames = await ankiRequest('deckNames');
+    res.json({ success: true, decks: deckNames });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur connexion Anki: " + err.message });
+  }
+});
+
+// POST Anki sync
+app.post('/api/anki/sync', async (req, res) => {
+  try {
+    const { syncAnkiRetention, extractSubjectNames } = require('./moteur/ankiSync');
+    const coursData = loadCours();
+    
+    // Extraction des matières et leurs mappings depuis le JSON
+    const subjects = extractSubjectNames(coursData);
+    
+    // Lancement de la synchronisation avancée
+    const ankiStats = await syncAnkiRetention(subjects, 365);
+    
+    if (ankiStats.success) {
+       // Sauvegarde globale de la rétention pour le moteur
+       coursData._globalAnkiStats = ankiStats;
+       
+       saveCours(coursData);
+       syncToMongo('cours', coursData).catch(console.error);
+
+       res.json({ success: true, message: `Synchronisation réussie (${Object.keys(ankiStats.retentionBySubject || {}).length} matières mises à jour)` });
+    } else {
+       res.status(500).json({ error: ankiStats.message || ankiStats.error });
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Erreur synchronisation Anki: " + err.message });
+  }
+});// GET current config
 app.get('/api/config', (req, res) => {
   try {
     const config = loadConfig();
@@ -535,30 +599,25 @@ const CACHE_TTL_MS = 60_000;
 app.get('/api/anki/today-stats', async (req, res) => {
   try {
     const { COURS_PATH } = require('./moteur/cours');
-    const { syncAnkiRetention } = require('./moteur/ankiSync');
+    const { syncAnkiRetention, extractSubjectNames } = require('./moteur/ankiSync');
     const coursData = require(COURS_PATH);
-    const subjects = [];
-    if (coursData && coursData.licences) {
-       coursData.licences.forEach(l => {
-         if (l.semestres) {
-           l.semestres.forEach(s => {
-             if (s.ues) {
-               s.ues.forEach(u => {
-                 if (u.matieres) {
-                   u.matieres.forEach(m => {
-                     if (m.nom) subjects.push(m.nom);
-                   });
-                 }
-               });
-             }
-           });
-         }
-       });
-    }
+    const subjects = extractSubjectNames(coursData);
     const ankiStats = await syncAnkiRetention(subjects, 1);
     res.json(ankiStats);
   } catch (err) {
     console.error("Erreur api/anki/today-stats:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET Anki decks disponibles (pour le mapping explicite)
+app.get('/api/anki/decks', async (req, res) => {
+  try {
+    const { fetchDeckNames } = require('./moteur/ankiSync');
+    const decks = await fetchDeckNames();
+    res.json({ success: true, decks });
+  } catch (err) {
+    console.error("Erreur api/anki/decks:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -576,32 +635,15 @@ app.get('/api/orchestrateur', async (req, res) => {
     const histMtime = fs.existsSync(HISTORIQUE_FILE) ? fs.statSync(HISTORIQUE_FILE).mtimeMs : 0;
     const now = Date.now();
 
-    // AnkiConnect Synchronization First
+    // Récupération des stats Anki depuis la configuration sauvegardée (Synchronisation Manuelle)
     let ankiStats = null;
     try {
-        const { syncAnkiRetention } = require('./moteur/ankiSync');
         const coursData = require(COURS_PATH);
-        const subjects = [];
-        if (coursData && coursData.licences) {
-           coursData.licences.forEach(l => {
-             if (l.semestres) {
-               l.semestres.forEach(s => {
-                 if (s.ues) {
-                   s.ues.forEach(u => {
-                     if (u.matieres) {
-                       u.matieres.forEach(m => {
-                         if (m.nom) subjects.push(m.nom);
-                       });
-                     }
-                   });
-                 }
-               });
-             }
-           });
+        if (coursData._globalAnkiStats) {
+           ankiStats = coursData._globalAnkiStats;
         }
-        ankiStats = await syncAnkiRetention(subjects, 365);
     } catch (err) {
-        console.error("Erreur lors de la synchronisation AnkiConnect :", err.message);
+        console.error("Erreur lecture _globalAnkiStats :", err.message);
     }
 
     // Clé de cache robuste basée sur l'ensemble des paramètres (incluant le FSRS)
@@ -633,6 +675,8 @@ app.get('/api/orchestrateur', async (req, res) => {
     if (rapport && rapport.intelligence && ankiStats && ankiStats.success && ankiStats.retentionRate !== null) {
         rapport.intelligence.fsrs_real_retention = ankiStats.retentionRate;
         rapport.intelligence.fsrs_retention_by_subject = ankiStats.retentionBySubject;
+        rapport.intelligence.fsrs_unmatched_subjects = ankiStats.unmatchedSubjects || [];
+        rapport.intelligence.fsrs_deck_mappings = ankiStats.deckMappings || [];
     }
 
     res.json(rapport);

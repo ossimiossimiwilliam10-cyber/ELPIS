@@ -116,6 +116,7 @@ function EntrainementPage() {
        });
     }
 
+    const matchedTasks = new Set();
     configLocal.licences?.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
         s.ues?.forEach((u, uIndex) => {
@@ -123,10 +124,11 @@ function EntrainementPage() {
             const extractAndFilter = (listeExos, type) => {
                if (!listeExos) return;
                listeExos.forEach((ex, exIndex) => {
-                 const isInOrchestrator = tachesOrchestrateur.some(t =>
-                   t.matiere === m.nom && t.type === type && t.titre === ex.titre
+                 const orchTaskIndex = tachesOrchestrateur.findIndex((t, idx) => 
+                   !matchedTasks.has(idx) && t.matiere === m.nom && t.type === type && t.titre === ex.titre
                  );
-                 if (isInOrchestrator) {
+                 if (orchTaskIndex !== -1) {
+                   matchedTasks.add(orchTaskIndex);
                    exosToReview.push({
                      ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
                    });

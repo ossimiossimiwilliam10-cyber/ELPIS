@@ -111,6 +111,48 @@
           "note": "calculé au prochain cycle"
         }
       }
+    },
+    {
+      "timestamp": "2026-07-09T09:56:46.995Z",
+      "type": "session_completed",
+      "matiere": "Routine",
+      "duree": 81,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-09T12:33:11.812Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 93,
+      "ai_context": {
+        "before": {
+          "projectedScore": 15
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-09T13:03:43.776Z",
+      "type": "session_completed",
+      "matiere": "Électromagnétisme",
+      "duree": 120,
+      "ai_context": {
+        "before": {
+          "projectedScore": 13.8
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
     }
   ],
   "actions": []

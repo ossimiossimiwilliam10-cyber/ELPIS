@@ -11,6 +11,7 @@ import json
 import hashlib
 import datetime
 from collections import defaultdict
+import math
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -350,7 +351,6 @@ def calculate_health_score(report, rules=None):
             # NASA-grade: log2 pour rendements decroissants
             # 1 hit = 1.0, 10 hits = 3.5, 100 hits = 6.6, 1000 hits = 10.0
             # Le score reste sensible aux ameliorations meme sur les high-volume rules
-            import math
             log_count = math.log2(1 + count)
             weighted_count = log_count * weight
 
@@ -392,7 +392,6 @@ def calculate_health_score(report, rules=None):
     # - 0 penalty = 100
     # - 200 penalty = 37
     # - 400 penalty = 14
-    import math
     score = 100 * math.exp(-max(0, total_penalty) / 200)
 
     return max(0, min(100, int(score)))

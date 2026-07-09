@@ -428,7 +428,7 @@ def scan_custom_python(lines, rel_path, filename, rules, project_root):
             continue
 
         file_pat = rule.get('file_pattern', '.*')
-        if not re.search(file_pat, filename):
+        if not re.search(file_pat, rel_path):
             continue
 
         exclude_pat = rule.get('exclude_pattern')
@@ -664,6 +664,8 @@ def _scan_fetch_without_abort(lines, rel_path, rule):
 # ---------------------------------------------------------------------------
 
 
+from engine import should_auto_fix
+
 def run_all_scanners(filepath, rel_path, lines, rules, all_files_data, source_files, project_root):
     """
     Point d'entree unifie : execute tous les scanners applicables et retourne
@@ -689,7 +691,6 @@ def run_all_scanners(filepath, rel_path, lines, rules, all_files_data, source_fi
         rule_id = anomaly['rule_id']
         rule = _find_rule(rules, rule_id)
         if rule:
-            from engine import should_auto_fix
             anomaly['_fixable'] = should_auto_fix(rule)
             anomaly['_escalation_message'] = rule.get('escalation_message', '')
             anomaly['category'] = rule.get('category', 'UNKNOWN')

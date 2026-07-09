@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import useStore from './store';
 
 function StatistiquesPage() {
-  const { historique, coursConfig, intelligence } = useStore();
+  const { historique, coursConfig, intelligence, loadCours } = useStore();
   const [period, setPeriod] = useState(30); // 7, 30, 365 (pour tout voir)
 
   const filteredHist = useMemo(() => {
@@ -233,6 +233,21 @@ function StatistiquesPage() {
     return `${m} min`;
   };
 
+  const handleAnkiSync = async () => {
+    try {
+      const res = await fetch('/api/anki/sync', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        if (loadCours) await loadCours();
+      } else {
+        alert("Erreur: " + data.error);
+      }
+    } catch (err) {
+      alert("Erreur réseau: " + err.message);
+    }
+  };
+
   return (
     <div className="statistiques-page">
       <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'2rem', flexWrap:'wrap', gap:'1rem'}}>
@@ -266,6 +281,15 @@ function StatistiquesPage() {
             style={{padding: '0.4rem 0.8rem', fontSize: '0.85rem'}}
           >
             Exporter CSV
+          </button>
+
+          <button
+            className="btn-primary"
+            onClick={handleAnkiSync}
+            title="Synchroniser les statistiques depuis Anki"
+            style={{padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer'}}
+          >
+            🔄 Synchroniser Anki
           </button>
         </div>
       </div>

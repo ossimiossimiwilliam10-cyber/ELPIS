@@ -88,12 +88,16 @@ function buildTaskPools({
           (m.listeTP || []).forEach(x => checkDate(x.dernierePratique));
           (m.listeAnnales || []).forEach(x => checkDate(x.dernierePratique));
 
+          let discoveryBoost = 1.0;
           let inactivityBoost = 1.0;
           if (lastPratiqueMs > 0) {
             const daysInactive = (now.getTime() - lastPratiqueMs) / (1000 * 60 * 60 * 24);
             if (daysInactive > 7) {
               inactivityBoost = Math.min(MAGIC_CONSTANTS.BOOST_INACTIVITE_MAX, 1.0 + (daysInactive - 7) / 7);
             }
+          } else {
+            // BOOST DE DÉCOUVERTE : la matière n'a jamais été pratiquée.
+            discoveryBoost = 2.0;
           }
 
           let crisisBoost = 1.0;
@@ -103,6 +107,7 @@ function buildTaskPools({
 
           const examBoost = examBoostOriginal * inactivityBoost * crisisBoost;
           const baseRaisons = [];
+          if (discoveryBoost > 1.0) baseRaisons.push("DECOUVERTE");
           if (inactivityBoost > 1.0) baseRaisons.push("REPRISE_EN_MAIN");
           if (crisisBoost > 1.0) baseRaisons.push("URGENCE_NOTE");
 
@@ -152,7 +157,9 @@ function buildTaskPools({
 
             if (doitReviser) {
               const retardPondere = Math.min(joursEnRetard, 10) * 0.5;
-              const prioCM = (1 + retardPondere) * examBoost;
+              const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+              const rotateBonus = ((dayOfYear + matiereIndexDansSemestre) % 11) * 0.001;
+              const prioCM = (1 + retardPondere) * examBoost * discoveryBoost + rotateBonus;
               const dureeBase = (cm.jActuel === 0) ? (cfg.defaultDurationNewCM || 120) : (cfg.defaultDurationRevCM || 30);
               const dureeEstimee = (cm.tempsMoyen != null && cm.tempsMoyen > 0) ? cm.tempsMoyen : dureeBase;
 
@@ -189,7 +196,7 @@ function buildTaskPools({
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail) * inactivityBoost,
+              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail) * inactivityBoost * discoveryBoost,
               raisons: [...baseRaisons]
             });
           }
@@ -240,7 +247,7 @@ function buildTaskPools({
               pdfPath: ex.pdfPath || "",
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: tpPrio * inactivityBoost,
+              prio: tpPrio * inactivityBoost * discoveryBoost,
               etape: currentStep + 1,
               raisons: [...baseRaisons]
             });
@@ -650,6 +657,11 @@ function genererTacheSpecifique(configPath, coursPath, options) {
   const examUrgencyMap = buildExamUrgencyMap(crs);
   const projectedScoreDetail = buildProjectedScoreDetailMap(crs, velocityMap);
 
+  const projectedScoreMap = {};
+  for (const [key, val] of Object.entries(projectedScoreDetail)) {
+    projectedScoreMap[key] = val.projected;
+  }
+
   const candidates = [];
 
   if (type === 'all' || type === 'ANKI') {
@@ -669,7 +681,7 @@ function genererTacheSpecifique(configPath, coursPath, options) {
 
   const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
     crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
-    compensationMap, velocityMap, projectedScoreMap: {}, projectedScoreDetail, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: 0
+    compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: 0
   });
 
   const allPools = [...poolCM, ...poolTD, ...poolTP, ...poolAnnales];

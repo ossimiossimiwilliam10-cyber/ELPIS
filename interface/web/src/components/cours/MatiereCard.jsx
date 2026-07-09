@@ -7,6 +7,7 @@ import InfoTooltip from '../InfoTooltip';
 export default function MatiereCard({
   matiere,
   allMatiereNames,
+  ankiDecks = [],
   lIndex, sIndex, uIndex, mIndex,
   actions
 }) {
@@ -130,6 +131,19 @@ export default function MatiereCard({
             onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'notebookLMLink'], e.target.value)}
             style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
           />
+        </div>
+        <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
+          <span style={{fontSize:'1rem'}} title="Deck Anki Lié">🃏</span>
+          <select
+            value={matiere.ankiDeckName || ''}
+            onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'ankiDeckName'], e.target.value)}
+            style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
+          >
+            <option value="">-- Aucun deck Anki lié --</option>
+            {ankiDecks.map(d => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
         </div>
         <div style={{display:'flex', gap:'0.5rem', alignItems: 'flex-start'}}>
           <span style={{fontSize:'1rem', marginTop: '4px'}} title="Synergies inter-matières">🔗</span>

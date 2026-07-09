@@ -15,8 +15,25 @@
                                     "listeCM": [
                                         {
                                             "titre": "Chapitre 1 : Rédiger un protocole d'essai technique (Experimental / Testing Procedures)",
-                                            "jActuel": 3,
-                                            "derniereRevision": "2026-06-16"
+                                            "jActuel": 50,
+                                            "derniereRevision": "2026-07-06",
+                                            "fsrsCard": {
+                                                "due": "2026-08-25T07:36:04.563Z",
+                                                "stability": 50.33960516,
+                                                "difficulty": 3.31446137,
+                                                "elapsed_days": 20,
+                                                "scheduled_days": 50,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-06T07:36:04.563Z"
+                                            },
+                                            "easeFactor": 2.9713846575,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-08-25",
+                                            "tempsMoyen": 85,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 2 : Analyser des courbes et comparer des performances (Data Analysis & Comparisons).",
@@ -27,47 +44,47 @@
                                         },
                                         {
                                             "titre": "Chapitre 3 : Les pièges du \"Frenglish\"",
-                                            "jActuel": 1,
-                                            "derniereRevision": "2026-06-24",
-                                            "easeFactor": 3.2704740075,
-                                            "repetitions": 1,
+                                            "jActuel": 29,
+                                            "derniereRevision": "2026-07-06",
+                                            "easeFactor": 3.27219644,
+                                            "repetitions": 2,
                                             "fsrsCard": {
-                                                "due": "2026-06-24T10:18:20.693Z",
-                                                "stability": 2.3065,
-                                                "difficulty": 2.11810397,
-                                                "elapsed_days": 0,
-                                                "scheduled_days": 0,
-                                                "reps": 1,
+                                                "due": "2026-08-04T07:51:10.599Z",
+                                                "stability": 29.31182504,
+                                                "difficulty": 2.11121424,
+                                                "elapsed_days": 12,
+                                                "scheduled_days": 29,
+                                                "reps": 2,
                                                 "lapses": 0,
-                                                "learning_steps": 1,
-                                                "state": 1,
-                                                "last_review": "2026-06-24T10:08:20.693Z"
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-06T07:51:10.599Z"
                                             },
-                                            "prochaineRevisionDate": "2026-06-24",
-                                            "tempsMoyen": 16,
-                                            "nombreRevisionsTemps": 1
+                                            "prochaineRevisionDate": "2026-08-04",
+                                            "tempsMoyen": 15,
+                                            "nombreRevisionsTemps": 2
                                         },
                                         {
                                             "titre": "Chapitre 4 : Étude de cas : La Nanocar Race",
                                             "jActuel": 1,
-                                            "derniereRevision": "2026-06-24",
-                                            "easeFactor": 3.2704740075,
-                                            "repetitions": 1,
+                                            "derniereRevision": "2026-07-06",
+                                            "easeFactor": 2.6117853775,
+                                            "repetitions": 2,
                                             "fsrsCard": {
-                                                "due": "2026-06-24T10:42:06.882Z",
-                                                "stability": 2.3065,
-                                                "difficulty": 2.11810397,
-                                                "elapsed_days": 0,
+                                                "due": "2026-07-06T11:40:45.471Z",
+                                                "stability": 18.73137666,
+                                                "difficulty": 4.75285849,
+                                                "elapsed_days": 12,
                                                 "scheduled_days": 0,
-                                                "reps": 1,
+                                                "reps": 2,
                                                 "lapses": 0,
                                                 "learning_steps": 1,
                                                 "state": 1,
-                                                "last_review": "2026-06-24T10:32:06.882Z"
+                                                "last_review": "2026-07-06T11:34:45.471Z"
                                             },
-                                            "prochaineRevisionDate": "2026-06-24",
-                                            "tempsMoyen": 18,
-                                            "nombreRevisionsTemps": 1
+                                            "prochaineRevisionDate": "2026-07-06",
+                                            "tempsMoyen": 20,
+                                            "nombreRevisionsTemps": 2
                                         }
                                     ],
                                     "listeTD": [
@@ -540,12 +557,25 @@
                                     "listeCM": [
                                         {
                                             "titre": "Chapitre 1 : Principe et fonctionnement d'un ordinateur",
-                                            "jActuel": 4,
-                                            "derniereRevision": "2026-06-17",
-                                            "easeFactor": 2.2,
-                                            "repetitions": 2,
-                                            "tempsMoyen": 29,
-                                            "nombreRevisionsTemps": 1
+                                            "jActuel": 20,
+                                            "derniereRevision": "2026-07-08",
+                                            "easeFactor": 2.13350116,
+                                            "repetitions": 3,
+                                            "tempsMoyen": 63,
+                                            "nombreRevisionsTemps": 2,
+                                            "fsrsCard": {
+                                                "due": "2026-07-28T11:54:06.537Z",
+                                                "stability": 19.98699299,
+                                                "difficulty": 6.66599536,
+                                                "elapsed_days": 21,
+                                                "scheduled_days": 20,
+                                                "reps": 3,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-08T11:54:06.537Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-07-28"
                                         },
                                         {
                                             "titre": "Chapitre 2 : Codage de l'information et représentation des nombres",
@@ -708,15 +738,49 @@
                                         },
                                         {
                                             "titre": "Chapitre 4 - Les boucles",
-                                            "jActuel": 7,
-                                            "derniereRevision": "2026-06-15",
-                                            "pdfPath": "/documents/doc-1781724856463-181902148.pdf"
+                                            "jActuel": 26,
+                                            "derniereRevision": "2026-07-06",
+                                            "pdfPath": "/documents/doc-1781724856463-181902148.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-08-01T09:49:45.183Z",
+                                                "stability": 26.4595236,
+                                                "difficulty": 6.66599536,
+                                                "elapsed_days": 21,
+                                                "scheduled_days": 26,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-06T09:49:45.183Z"
+                                            },
+                                            "easeFactor": 2.13350116,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-08-01",
+                                            "tempsMoyen": 62,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 5 - Les listes",
-                                            "jActuel": 7,
-                                            "derniereRevision": "2026-06-15",
-                                            "pdfPath": "/documents/doc-1781724861143-579234487.pdf"
+                                            "jActuel": 71,
+                                            "derniereRevision": "2026-07-08",
+                                            "pdfPath": "/documents/doc-1781724861143-579234487.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-09-17T05:29:53.920Z",
+                                                "stability": 70.53231344,
+                                                "difficulty": 3.31446137,
+                                                "elapsed_days": 23,
+                                                "scheduled_days": 71,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-08T05:29:53.920Z"
+                                            },
+                                            "easeFactor": 2.9713846575,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-09-17",
+                                            "tempsMoyen": 35,
+                                            "nombreRevisionsTemps": 1
                                         }
                                     ],
                                     "listeTD": [
@@ -821,16 +885,16 @@
                                     "listeAnnales": [
                                         {
                                             "titre": "Programmation - 2024-25 - Épreuve écrite n°1",
-                                            "dernierePratique": "2026-06-24",
-                                            "nombrePratiques": 1,
+                                            "dernierePratique": "2026-07-06",
+                                            "nombrePratiques": 2,
                                             "notes": "",
                                             "pdfPath": "/documents/doc-1781725016341-573263425.pdf",
                                             "difficulteInitiale": 2,
                                             "page": 1,
-                                            "derniereNote": 9,
-                                            "difficulte": "assez_difficile",
-                                            "tempsMoyen": 83,
-                                            "nombreRevisionsTemps": 1
+                                            "derniereNote": 13,
+                                            "difficulte": "moyen",
+                                            "tempsMoyen": 78,
+                                            "nombreRevisionsTemps": 2
                                         }
                                     ],
                                     "coefficient": 3,
@@ -1047,11 +1111,26 @@
                                     "listeCM": [
                                         {
                                             "titre": "Chapitre 1 : Outils et théorèmes fondamentaux de l'électrocinétique",
-                                            "jActuel": 0,
-                                            "derniereRevision": "",
-                                            "easeFactor": 2.5,
-                                            "repetitions": 0,
-                                            "pdfPath": "/documents/doc-1781853358939-971488381.pdf"
+                                            "jActuel": 1,
+                                            "derniereRevision": "2026-07-04",
+                                            "easeFactor": 2.5219573225,
+                                            "repetitions": 1,
+                                            "pdfPath": "/documents/doc-1781853358939-971488381.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-07-04T10:12:04.848Z",
+                                                "stability": 1.2931,
+                                                "difficulty": 5.11217071,
+                                                "elapsed_days": 0,
+                                                "scheduled_days": 0,
+                                                "reps": 1,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 1,
+                                                "last_review": "2026-07-04T10:06:04.848Z"
+                                            },
+                                            "prochaineRevisionDate": "2026-07-04",
+                                            "tempsMoyen": 115,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 2 : Les amplificateurs linéaires : concepts généraux et modélisation",
@@ -1218,9 +1297,26 @@
                                     "listeCM": [
                                         {
                                             "titre": "Chapitre 1 : Outils mathématiques : Vecteurs et Torseurs",
-                                            "jActuel": 7,
-                                            "derniereRevision": "2026-06-15",
-                                            "pdfPath": "/documents/doc-1781853397516-740145245.pdf"
+                                            "jActuel": 41,
+                                            "derniereRevision": "2026-07-08",
+                                            "pdfPath": "/documents/doc-1781853397516-740145245.pdf",
+                                            "fsrsCard": {
+                                                "due": "2026-08-18T10:13:59.642Z",
+                                                "stability": 40.92189302,
+                                                "difficulty": 4.99022837,
+                                                "elapsed_days": 23,
+                                                "scheduled_days": 41,
+                                                "reps": 2,
+                                                "lapses": 0,
+                                                "learning_steps": 0,
+                                                "state": 2,
+                                                "last_review": "2026-07-08T10:13:59.642Z"
+                                            },
+                                            "easeFactor": 2.5524429075,
+                                            "repetitions": 2,
+                                            "prochaineRevisionDate": "2026-08-18",
+                                            "tempsMoyen": 178,
+                                            "nombreRevisionsTemps": 1
                                         },
                                         {
                                             "titre": "Chapitre 2 : Cinématique du solide indéformable",
@@ -2395,9 +2491,12 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "dateFin": "2027-01-17"
                 }
-            ]
+            ],
+            "targetGrade": 10,
+            "targetRank": 50
         },
         {
             "nom": "Licence 1 Physique - Sciences pour l'ingénieur PORTAIL",
@@ -2411,7 +2510,7 @@
                             "matieres": [
                                 {
                                     "nom": "Mécanique 1",
-                                    "coefficient": 1,
+                                    "coefficient": 2,
                                     "evaluations": [
                                         {
                                             "nom": "Session 1",
@@ -2484,25 +2583,6 @@
                                     "listeTD": [],
                                     "listeTP": [],
                                     "listeAnnales": []
-                                },
-                                {
-                                    "nom": "PILS Physique",
-                                    "coefficient": 1,
-                                    "evaluations": [
-                                        {
-                                            "nom": "Session 1",
-                                            "coefficient": 1,
-                                            "note": 0.5,
-                                            "type": "SC"
-                                        }
-                                    ],
-                                    "cm_h": 0,
-                                    "td_h": 0,
-                                    "tp_h": 0,
-                                    "listeCM": [],
-                                    "listeTD": [],
-                                    "listeTP": [],
-                                    "listeAnnales": []
                                 }
                             ]
                         },
@@ -2553,25 +2633,6 @@
                                     "listeTD": [],
                                     "listeTP": [],
                                     "listeAnnales": []
-                                },
-                                {
-                                    "nom": "PILS - Mathématiques pour les sciences",
-                                    "coefficient": 1,
-                                    "evaluations": [
-                                        {
-                                            "nom": "Session 1",
-                                            "coefficient": 1,
-                                            "note": 0.389,
-                                            "type": "SC"
-                                        }
-                                    ],
-                                    "cm_h": 0,
-                                    "td_h": 0,
-                                    "tp_h": 0,
-                                    "listeCM": [],
-                                    "listeTD": [],
-                                    "listeTP": [],
-                                    "listeAnnales": []
                                 }
                             ]
                         },
@@ -2606,25 +2667,6 @@
                                             "nom": "Session 1",
                                             "coefficient": 1,
                                             "note": 7.6,
-                                            "type": "SC"
-                                        }
-                                    ],
-                                    "cm_h": 0,
-                                    "td_h": 0,
-                                    "tp_h": 0,
-                                    "listeCM": [],
-                                    "listeTD": [],
-                                    "listeTP": [],
-                                    "listeAnnales": []
-                                },
-                                {
-                                    "nom": "PILS Chimie",
-                                    "coefficient": 1,
-                                    "evaluations": [
-                                        {
-                                            "nom": "Session 1",
-                                            "coefficient": 1,
-                                            "note": 0,
                                             "type": "SC"
                                         }
                                     ],
@@ -2717,7 +2759,7 @@
                             "matieres": [
                                 {
                                     "nom": "Mécanique 2-A",
-                                    "coefficient": 1,
+                                    "coefficient": 2,
                                     "evaluations": [
                                         {
                                             "nom": "Session 1",
@@ -2799,7 +2841,7 @@
                             "matieres": [
                                 {
                                     "nom": "Mathématiques pour les sciences 2",
-                                    "coefficient": 1,
+                                    "coefficient": 2,
                                     "evaluations": [
                                         {
                                             "nom": "Session 1",

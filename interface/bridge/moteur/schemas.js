@@ -73,6 +73,7 @@ const matiereSchema = z.object({
   coef: z.number().optional(),
   ects: z.number().optional(),
   dateExamen: z.string().optional(),
+  ankiDeckName: z.string().optional(),
   listeCM: z.array(cmSchema).optional(),
   listeTD: z.array(exSchema).optional(),
   listeTP: z.array(exSchema).optional(),

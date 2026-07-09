@@ -14,6 +14,18 @@ function CoursPage() {
   const [activeSemestreIndex, setActiveSemestreIndex] = useState(0);
   const [activeUEIndex, setActiveUEIndex] = useState(0);
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', initialValue: '', onSave: null });
+  const [ankiDecks, setAnkiDecks] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/anki/decks')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.decks) {
+          setAnkiDecks(data.decks);
+        }
+      })
+      .catch(err => console.error("Erreur chargement decks Anki:", err));
+  }, []);
 
   // Helper : applique une mutation Immer, sauvegarde dans le store, et retourne le nouvel état
   const mutateAndSave = (recipe) => {
@@ -405,6 +417,7 @@ function CoursPage() {
                                   key={`m-${sIndex}-${uIndex}-${mIndex}`}
                                   matiere={matiere}
                                   allMatiereNames={allMatiereNames}
+                                  ankiDecks={ankiDecks}
                                   lIndex={lIndex} sIndex={sIndex} uIndex={uIndex} mIndex={mIndex}
                                   actions={{
                                     deleteMatiere, updateField, addCM, deleteCM,

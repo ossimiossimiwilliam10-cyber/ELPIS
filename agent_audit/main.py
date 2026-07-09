@@ -26,7 +26,8 @@ from logging.handlers import RotatingFileHandler
 # ---------------------------------------------------------------------------
 # Imports internes
 # ---------------------------------------------------------------------------
-from engine import (load_rules, should_auto_fix, calculate_health_score)
+from engine import (load_rules, should_auto_fix, calculate_health_score,
+                     _is_text_file)
 from scanners import (run_all_scanners, run_global_scanners, extract_imports)
 from fixers import (apply_fixes, set_backup_dir, set_rule_cache,
                     cleanup_old_backups, rollback_file)
@@ -428,42 +429,10 @@ def run_health_only():
     log.info(f"Rapport de sante sauvegarde: {HEALTH_FILE}")
 
 # ---------------------------------------------------------------------------
-# HELPERS
+# HELPERS (BINARY_EXTENSIONS, TEXT_EXTENSIONS, _is_text_file importes de engine.py)
 # ---------------------------------------------------------------------------
 
-BINARY_EXTENSIONS = {
-    '.png', '.jpg', '.jpeg', '.gif', '.ico', '.svg', '.webp',
-    '.mp3', '.wav', '.ogg', '.flac', '.aac', '.webm', '.m4a',
-    '.mp4', '.avi', '.mov', '.mkv',
-    '.pdf', '.doc', '.docx', '.xls', '.xlsx',
-    '.woff', '.woff2', '.ttf', '.eot', '.otf',
-    '.zip', '.tar', '.gz', '.7z', '.rar',
-    '.exe', '.dll', '.so', '.dylib',
-    '.lock', '.map'
-}
-
-TEXT_EXTENSIONS = {
-    '.js', '.jsx', '.ts', '.tsx', '.css', '.scss',
-    '.json', '.md', '.py', '.html', '.htm',
-    '.bat', '.vbs', '.sh', '.yaml', '.yml',
-    '.txt', '.env', '.gitignore', '.cfg'
-}
-
-def _is_text_file(filepath):
-    _, ext = os.path.splitext(filepath)
-    ext = ext.lower()
-    if ext in BINARY_EXTENSIONS:
-        return False
-    if ext in TEXT_EXTENSIONS:
-        return True
-    if not ext:
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                f.read(512)
-            return True
-        except (UnicodeDecodeError, PermissionError):
-            return False
-    return False
+# (Definitions supprimees - utilisees depuis engine.py)
 
 def _build_report(anomalies, corrections, escalations,
                   files_scanned, total_lines, files_corrected, dry_run):

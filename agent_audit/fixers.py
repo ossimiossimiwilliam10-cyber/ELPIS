@@ -224,9 +224,8 @@ def cleanup_old_backups(max_keep=10):
 
 def _find_rule_for_anomaly(anomaly):
     """Recherche la regle correspondant a une anomalie. Utilise le cache de rules."""
-    # Cette fonction doit avoir acces aux regles. Dans l'implementation reelle,
-    # les regles sont passees en parametre ou stockees dans un module global.
-    # Ici on utilise un acces indirect via le module rules_loader.
+    if not _rule_cache:
+        return None
     return _rule_cache.get(anomaly['rule_id'])
 
 _rule_cache = {}

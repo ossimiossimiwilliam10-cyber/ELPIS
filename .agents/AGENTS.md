@@ -145,3 +145,8 @@ Cela permet de rÃ©compenser la rigueur quotidienne et pas seulement la performan
 <RULE[cours_json_structure]>
 - **Structure JSON des Cours** : Le fichier "espoir_cours.json" (ou équivalent) possède toujours un nœud racine "licences", qui contient les "semestres". Ne jamais tenter d'itérer directement sur "coursData.semestres" ou "coursData.ues" sans passer par la hiérarchie complète : "licences -> semestres -> ues -> matieres".
 </RULE[cours_json_structure]>
+
+- **Boost de Découverte (Discovery Boost)** : Ne laissez jamais les nouvelles matières s'enterrer sous le poids des matières en retard. Si une matière n'a jamais été pratiquée, elle doit recevoir un multiplicateur de priorité (ex: x2.0) pour garantir son apparition dans les plannings et forcer l'utilisateur à l'initier.
+
+- **Unicité des Tâches (Frontend)** : Lors de la correspondance entre le résultat de l'Orchestrateur et la liste d'exercices affichée, le front-end ne doit jamais se fier uniquement au titre pour autoriser des doublons. Une tâche de l'orchestrateur ne doit correspondre qu'à une seule carte dans la Session d'Étude, même si les titres sont génériques.
+- **Isolation du Boost de Découverte** : Le bonus accordé aux nouvelles matières (discoveryBoost) doit être strictement mathématique pour le score de priorité final, et ne doit pas polluer les modificateurs d'urgence (comme examBoost). Cela évite que les nouvelles matières ne contournent le filtre de parité.
