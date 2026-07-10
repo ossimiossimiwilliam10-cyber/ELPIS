@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-10T14:12:12.575276",
+  "timestamp": "2026-07-10T16:52:36.697120",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 10.5,
+    "elapsed_seconds": 7.27,
     "files_scanned": 166,
-    "files_per_second": 15.8,
-    "lines_per_second": 147232.0
+    "files_per_second": 22.8,
+    "lines_per_second": 212634.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "IMPORT_BOUNDARY_VIOLATION",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "NO_DOUBLE_SEMICOLONS",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "NO_WILDCARD_CORS",
-      "MAGIC_NUMBERS",
-      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
-      "NO_CIRCULAR_IMPORTS",
-      "TOAST_DIRECT_CALL",
-      "USE_OPTIONAL_CHAINING",
       "NO_INDEX_AS_KEY",
-      "MISSING_JSDOC_ON_EXPORT",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
       "INTELLIGENCE_EXPORT_COVERAGE",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "NO_HARDCODED_SECRETS",
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "NO_WINDOW_PROMPT",
-      "EMPTY_PROMISE_CATCH",
-      "FIX_CONFIDENCE_DECIMAL"
+      "NO_UNSAFE_INNERHTML",
+      "NO_IMPORTANT_IN_CSS",
+      "UNGUARDED_JSON_PARSE",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_WILDCARD_CORS",
+      "MISSING_KEY_IN_MAP",
+      "USE_OPTIONAL_CHAINING",
+      "NO_CONSOLE_LOG_IN_PROD",
+      "NO_DOUBLE_SEMICOLONS",
+      "MISSING_REACT_MEMO",
+      "TEST_WITH_SKIP",
+      "ZUSTAND_FULL_STORE_DESTRUCTURE",
+      "PROP_SPREADING_WARNING",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "NO_POSITIVE_TABINDEX",
+      "EXCESSIVE_NESTING_DEPTH",
+      "NO_TRAILING_WHITESPACE"
     ],
     "inactive_count": 56
   },
