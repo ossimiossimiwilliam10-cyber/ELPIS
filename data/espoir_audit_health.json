@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-10T21:57:33.581971",
+  "timestamp": "2026-07-10T22:59:56.846613",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 11.81,
+    "elapsed_seconds": 7.2,
     "files_scanned": 166,
-    "files_per_second": 14.1,
-    "lines_per_second": 130979.0
+    "files_per_second": 23.1,
+    "lines_per_second": 214796.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "IMPORT_BOUNDARY_VIOLATION",
-      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
-      "NO_HARDCODED_SECRETS",
-      "JSON_DEEP_CLONE",
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_UNSAFE_INNERHTML",
-      "TEST_WITH_ONLY",
-      "NO_POSITIVE_TABINDEX",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "MISSING_JSDOC_ON_EXPORT",
       "EXCESSIVE_NESTING_DEPTH",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
-      "NO_SQL_INJECTION_PATTERNS",
+      "NO_UNSAFE_INNERHTML",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "NO_VAR_KEYWORD",
+      "NO_POSITIVE_TABINDEX",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "NO_BARREL_IMPORT_CYCLES",
+      "PROP_SPREADING_WARNING",
       "NO_EMPTY_CATCH",
-      "USE_OPTIONAL_CHAINING",
-      "TEST_WITH_SKIP",
-      "NO_VAR_KEYWORD"
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "EMPTY_PROMISE_CATCH",
+      "ZUSTAND_FULL_STORE_DESTRUCTURE",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "MISSING_ALT_ATTRIBUTE",
+      "FETCH_WITHOUT_ABORT",
+      "NO_IMPORTANT_IN_CSS",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "NO_SQL_INJECTION_PATTERNS",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER"
     ],
     "inactive_count": 56
   },
