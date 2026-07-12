@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-12T22:42:25.185361",
+  "timestamp": "2026-07-12T23:49:07.758648",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 7.62,
+    "elapsed_seconds": 10.77,
     "files_scanned": 166,
-    "files_per_second": 21.8,
-    "lines_per_second": 202863.0
+    "files_per_second": 15.4,
+    "lines_per_second": 143641.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "NO_INDEX_AS_KEY",
-      "NO_HARDCODED_LOCALHOST",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "TEST_WITH_ONLY",
-      "NO_HTTP_IN_PRODUCTION_URLS",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "TOAST_DIRECT_CALL",
-      "NO_TRAILING_WHITESPACE",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "MISSING_USEEFFECT_DEPS",
+      "EMPTY_PROMISE_CATCH",
+      "PWA_STATIC_ROUTE_EXCLUSION",
+      "MISSING_ALT_ATTRIBUTE",
+      "NO_WILDCARD_CORS",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+      "MISSING_TYPE_HINTS",
       "FETCH_WITHOUT_ABORT",
       "MISSING_KEY_IN_MAP",
-      "ZUSTAND_FULL_STORE_DESTRUCTURE",
-      "IMPORT_BOUNDARY_VIOLATION",
-      "PROP_SPREADING_WARNING",
-      "JSON_DEEP_CLONE",
-      "NO_PRINT_IN_PRODUCTION",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "NO_IMPORTANT_IN_CSS",
+      "NO_WINDOW_PROMPT",
+      "FIX_CONFIDENCE_DECIMAL",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_TRAILING_WHITESPACE",
+      "NO_INDEX_AS_KEY",
+      "NO_POSITIVE_TABINDEX",
+      "NO_TODO_WITHOUT_TICKET",
       "NO_CONSOLE_LOG_IN_PROD",
-      "RAPPORT_INTELLIGENCE_V3_KEYS"
+      "NO_CIRCULAR_IMPORTS"
     ],
     "inactive_count": 56
   },
