@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-12T11:55:59.415689",
+  "timestamp": "2026-07-12T13:13:42.547643",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 11.45,
+    "elapsed_seconds": 11.46,
     "files_scanned": 166,
     "files_per_second": 14.5,
-    "lines_per_second": 135020.0
+    "lines_per_second": 134988.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "FIX_CONFIDENCE_DECIMAL",
-      "MISSING_REACT_MEMO",
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "NO_CONSOLE_LOG_IN_PROD",
-      "USE_OPTIONAL_CHAINING",
-      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
-      "MISSING_KEY_IN_MAP",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
-      "NO_PRINT_IN_PRODUCTION",
-      "NO_UNSAFE_INNERHTML",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_WILDCARD_CORS",
-      "TEST_WITH_ONLY",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
       "NO_SQL_INJECTION_PATTERNS",
-      "EXCESSIVE_FUNCTION_LENGTH",
+      "EMPTY_PROMISE_CATCH",
+      "FIX_CONFIDENCE_DECIMAL",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "USE_OPTIONAL_CHAINING",
+      "NO_UNSAFE_INNERHTML",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "LARGE_IMPORT_SIDE_EFFECT",
+      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "NO_POSITIVE_TABINDEX",
+      "NO_INDEX_AS_KEY",
+      "TEST_WITH_ONLY",
+      "NO_HARDCODED_LOCALHOST",
+      "MISSING_REACT_MEMO",
+      "NO_DOUBLE_SEMICOLONS",
+      "FETCH_WITHOUT_ABORT",
       "EXCESSIVE_FILE_SIZE",
-      "NO_VAR_KEYWORD",
-      "MAGIC_NUMBERS",
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER"
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_BARE_EXCEPT",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL"
     ],
     "inactive_count": 56
   },
