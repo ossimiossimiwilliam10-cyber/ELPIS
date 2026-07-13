@@ -286,6 +286,7 @@ function buildTaskPools({
           if (isMastered || isUrgent || hasStartedAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
               if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
+              if ((ex.nombrePratiques || 0) >= 3 && !isUrgent) continue;
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail);

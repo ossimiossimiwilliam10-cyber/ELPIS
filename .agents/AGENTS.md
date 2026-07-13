@@ -162,3 +162,7 @@ Cela permet de rÃ©compenser la rigueur quotidienne et pas seulement la performan
 <RULE[guaranteed_discovery]>
 - **Garantie de Découverte (Anti-Starvation)** : Le simple multiplicateur de "Découverte" (x2.0) est souvent écrasé par l'urgence des examens (Annales). Pour garantir qu'aucune matière ne soit laissée de côté indéfiniment, le système de sélection des matières (Top N subjects) DOIT systématiquement forcer l'inclusion d'au moins 1 matière "Nouvelle" (jamais pratiquée) si elle est disponible dans le pool d'exercices, et ce, peu importe son score de priorité par rapport aux autres.
 </RULE[guaranteed_discovery]>
+
+<RULE[annales_practice_limit]>
+- **Plafond de Maîtrise des Annales** : Les Annales sont des exercices cruciaux, mais leur répétition ne doit pas être infinie. Si une Annale a été pratiquée 3 fois ou plus (`nombrePratiques >= 3`), elle DOIT être considérée comme "totalement acquise" et retirée définitivement du pool des propositions, sauf si une urgence absolue l'exige. Cela permet de forcer la rotation vers d'autres exercices ou de nouvelles matières.
+</RULE[annales_practice_limit]>
