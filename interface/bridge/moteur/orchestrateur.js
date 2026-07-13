@@ -287,6 +287,15 @@ function buildTaskPools({
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
               if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
               if ((ex.nombrePratiques || 0) >= 3 && !isUrgent) continue;
+
+              // Cooldown de 7 jours (Espacement)
+              if (ex.dernierePratique && !isUrgent) {
+                const lastDate = parseDateLocal(normalizeDateStr(ex.dernierePratique));
+                if (!isNaN(lastDate.getTime())) {
+                  const daysSince = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+                  if (daysSince < 7) continue;
+                }
+              }
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail);

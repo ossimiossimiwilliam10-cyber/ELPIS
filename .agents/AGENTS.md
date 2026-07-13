@@ -166,3 +166,7 @@ Cela permet de rÃ©compenser la rigueur quotidienne et pas seulement la performan
 <RULE[annales_practice_limit]>
 - **Plafond de Maîtrise des Annales** : Les Annales sont des exercices cruciaux, mais leur répétition ne doit pas être infinie. Si une Annale a été pratiquée 3 fois ou plus (`nombrePratiques >= 3`), elle DOIT être considérée comme "totalement acquise" et retirée définitivement du pool des propositions, sauf si une urgence absolue l'exige. Cela permet de forcer la rotation vers d'autres exercices ou de nouvelles matières.
 </RULE[annales_practice_limit]>
+
+<RULE[annales_weekly_cooldown]>
+- **Espacement des Annales (Cooldown de 7 jours)** : Une fois qu'une Annale a été pratiquée, elle entre dans une période de "repos" stricte de 7 jours glissants. Durant cette fenêtre, elle ne doit **pas** être reproposée (sauf urgence d'examen, ex: examen dans moins de 21 jours). Cela permet d'étaler la charge de travail et d'éviter qu'une même annale sature le planning de la semaine.
+</RULE[annales_weekly_cooldown]>
