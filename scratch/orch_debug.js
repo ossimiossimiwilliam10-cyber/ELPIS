@@ -308,7 +308,7 @@ function buildTaskPools({
       }
     }
   }
-  return { poolCM, poolTD, poolTP, poolAnnales };
+  return { poolCM, poolTD, poolTP, poolAnnales, nouvellesMatieres };
 }
 
 /**
@@ -367,7 +367,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   // Anti-Burnout
   if (burnoutRisk.shouldForceRest) {
-    rapport.statut = "REPOS";
+    rapport.debug = { sortedSubjects, newSubjects: sortedSubjects.filter(s => nouvellesMatieres.has(s)), nouvellesMatieres: Array.from(nouvellesMatieres), matieresDejaTravaillees: Array.from(matieresDejaTravaillees) }; rapport.statut = "REPOS";
     rapport.tachesDuJour = [];
     rapport.tempsRequisMin = 0;
     rapport.tempsDispoMin = 0;
@@ -519,10 +519,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   
   // Guaranteed Discovery
   const newSubjects = sortedSubjects.filter(s => nouvellesMatieres.has(s));
-  let guaranteedSubject = null;
   if (newSubjects.length > 0) {
-    guaranteedSubject = newSubjects[0];
-    topSubjectsList.push(guaranteedSubject);
+    topSubjectsList.push(newSubjects[0]);
   }
 
   for (const s of sortedSubjects) {
@@ -551,7 +549,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   let newCMAdded = 0;
   const appendFromPool = (pool, subjectCountMap, limitPerSubject) => {
     for (const item of pool) {
-      if (item.isNew && !fillGap && newCMAdded >= maxNewCMPerSemester && item.matiere !== guaranteedSubject) continue;
+      if (item.isNew && !fillGap && newCMAdded >= maxNewCMPerSemester) continue;
       if (tempsRequisMin + item.dureeMinutes <= tempsLibreMin) {
         if (!fillGap && !canAddMatiere(item.matiere)) continue;
         const count = subjectCountMap ? (subjectCountMap[item.matiere] || 0) : 0;

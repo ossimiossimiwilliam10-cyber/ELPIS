@@ -154,3 +154,11 @@ Cela permet de rÃ©compenser la rigueur quotidienne et pas seulement la performan
 <RULE[prerequisite_theory_first]>
 - **Théorie avant Pratique (Prérequis CM)** : Ne jamais planifier d'exercices pratiques (TD, TP, Annales) si les fondations théoriques (CM) de la matière n'ont pas été vues au moins une fois dans leur intégralité. Le moteur d'ordonnancement doit bloquer l'assignation pratique (skip global) si le nombre de CM révisés est inférieur au nombre total de CM définis pour la matière. Si la matière ne possède aucun CM (0), la pratique est autorisée.
 </RULE[prerequisite_theory_first]>
+
+<RULE[intra_day_deprioritization]>
+- **Diversité Intra-Journalière** : Si une matière a déjà été pratiquée le jour même (présente dans l'historique du jour), sa priorité pour le reste de la journée DOIT être drastiquement réduite (ex: multipliée par 0.1). Elle ne doit pas être bloquée à 100% afin de permettre du rattrapage si l'utilisateur a beaucoup de temps libre, mais elle doit laisser sa place aux autres matières dans le Top 4 quotidien.
+</RULE[intra_day_deprioritization]>
+
+<RULE[guaranteed_discovery]>
+- **Garantie de Découverte (Anti-Starvation)** : Le simple multiplicateur de "Découverte" (x2.0) est souvent écrasé par l'urgence des examens (Annales). Pour garantir qu'aucune matière ne soit laissée de côté indéfiniment, le système de sélection des matières (Top N subjects) DOIT systématiquement forcer l'inclusion d'au moins 1 matière "Nouvelle" (jamais pratiquée) si elle est disponible dans le pool d'exercices, et ce, peu importe son score de priorité par rapport aux autres.
+</RULE[guaranteed_discovery]>

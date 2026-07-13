@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-13T09:04:56.705409",
+  "timestamp": "2026-07-13T12:49:13.054573",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -7,17 +7,17 @@
     "issues": []
   },
   "scan_performance": {
-    "status": "HEALTHY",
-    "elapsed_seconds": 15.19,
-    "files_scanned": 175,
-    "files_per_second": 11.5,
-    "lines_per_second": 102055.0
+    "status": "WARNING",
+    "elapsed_seconds": 36.12,
+    "files_scanned": 172,
+    "files_per_second": 4.8,
+    "lines_per_second": 42939.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 14,
+    "total_rules_with_hits": 13,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 58,
+      "MISSING_TEST_FILE": 55,
       "no-unused-vars": 22,
       "no-undef": 9,
       "react-hooks/set-state-in-effect": 5,
@@ -37,37 +37,39 @@
   },
   "rule_activity": {
     "total_rules": 57,
-    "active_rules": 14,
+    "active_rules": 13,
     "inactive_rules": [
-      "EMPTY_PROMISE_CATCH",
-      "NO_DOUBLE_SEMICOLONS",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "FIX_CONFIDENCE_DECIMAL",
-      "UNGUARDED_JSON_PARSE",
-      "MISSING_JSDOC_ON_EXPORT",
-      "TOAST_DIRECT_CALL",
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "NO_POSITIVE_TABINDEX",
-      "NO_EMPTY_CATCH",
-      "MISSING_ALT_ATTRIBUTE",
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "EXCESSIVE_FUNCTION_LENGTH",
       "IMPORT_BOUNDARY_VIOLATION",
       "TEST_WITH_ONLY",
-      "FETCH_WITHOUT_ABORT",
-      "NO_TRAILING_WHITESPACE",
-      "NO_BARREL_IMPORT_CYCLES",
-      "EXCESSIVE_FILE_SIZE",
-      "MISSING_REACT_MEMO",
+      "NO_CIRCULAR_IMPORTS",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "FIX_CONFIDENCE_DECIMAL",
+      "PROP_SPREADING_WARNING",
+      "NO_INDEX_AS_KEY",
+      "NO_HARDCODED_SECRETS",
+      "NO_BARE_EXCEPT",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
       "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_HTTP_IN_PRODUCTION_URLS"
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
+      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "NO_BARREL_IMPORT_CYCLES",
+      "NO_TRAILING_WHITESPACE",
+      "MISSING_KEY_IN_MAP",
+      "NO_PRINT_IN_PRODUCTION",
+      "NO_HARDCODED_LOCALHOST"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 36.9
+    "size_kb": 73.1
   },
-  "overall_status": "HEALTHY",
-  "warnings": [],
+  "overall_status": "WARNING",
+  "warnings": [
+    "Performance degradee: 4.8 fichiers/s"
+  ],
   "recommendations": [
     "56 regles inactives. Verifier si elles sont encore pertinentes."
   ]

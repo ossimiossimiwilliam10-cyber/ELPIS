@@ -308,7 +308,7 @@ function buildTaskPools({
       }
     }
   }
-  return { poolCM, poolTD, poolTP, poolAnnales };
+  return { poolCM, poolTD, poolTP, poolAnnales, nouvellesMatieres };
 }
 
 /**
