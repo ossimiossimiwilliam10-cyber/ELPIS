@@ -223,6 +223,48 @@
           "note": "calculé au prochain cycle"
         }
       }
+    },
+    {
+      "timestamp": "2026-07-13T11:17:06.832Z",
+      "type": "session_completed",
+      "matiere": "Construction mécanique",
+      "duree": 90,
+      "ai_context": {
+        "before": {
+          "projectedScore": 7.8
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-13T13:52:57.007Z",
+      "type": "session_completed",
+      "matiere": "Signal et technologie en santé (Santé)",
+      "duree": 127,
+      "ai_context": {
+        "before": {
+          "projectedScore": 7.8
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-13T15:12:34.980Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 78,
+      "ai_context": {
+        "before": {
+          "projectedScore": 16.5
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
     }
   ],
   "actions": []

@@ -170,3 +170,7 @@ Cela permet de récompenser la rigueur quotidienne et pas seulement la performan
 <RULE[annales_weekly_cooldown]>
 - **Espacement des Annales (Cooldown de 7 jours)** : Une fois qu'une Annale a �t� pratiqu�e, elle entre dans une p�riode de "repos" stricte de 7 jours glissants. Durant cette fen�tre, elle ne doit **pas** �tre repropos�e (sauf urgence d'examen, ex: examen dans moins de 21 jours). Cela permet d'�taler la charge de travail et d'�viter qu'une m�me annale sature le planning de la semaine.
 </RULE[annales_weekly_cooldown]>
+
+<RULE[documentation_systematique_v2]>
+- **Documentation Systématique (Projet ELPIS V2)** : Pour éviter l'écueil du projet ELPIS V1 (80k lignes non documentées), une rigueur absolue est exigée pour la documentation d'ELPIS V2. L'agent DOIT maintenir un dossier documentation à la racine du projet ELPIS_V2. À la fin de chaque session de travail ou de chaque implémentation de fonctionnalité importante, l'agent DOIT rédiger ou mettre à jour un fichier de documentation. La documentation doit être hyper-précise et vulgarisée de manière à ce qu'un développeur novice puisse comprendre l'architecture, les choix techniques et reproduire le fonctionnement sans être perdu. Chaque modification doit être tracée, expliquée et documentée.
+</RULE[documentation_systematique_v2]>
