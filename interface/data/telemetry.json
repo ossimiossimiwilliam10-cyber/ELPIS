@@ -153,6 +153,76 @@
           "note": "calculé au prochain cycle"
         }
       }
+    },
+    {
+      "timestamp": "2026-07-10T09:15:17.686Z",
+      "type": "session_completed",
+      "matiere": "Routine",
+      "duree": 129,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-11T19:27:02.034Z",
+      "type": "session_completed",
+      "matiere": "Routine",
+      "duree": 30,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-12T20:12:04.717Z",
+      "type": "session_completed",
+      "matiere": "Routine",
+      "duree": 22,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-13T08:23:40.994Z",
+      "type": "session_completed",
+      "matiere": "Routine",
+      "duree": 78,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-13T10:37:04.879Z",
+      "type": "session_completed",
+      "matiere": "Électromagnétisme",
+      "duree": 85,
+      "ai_context": {
+        "before": {
+          "projectedScore": 12.7
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
     }
   ],
   "actions": []

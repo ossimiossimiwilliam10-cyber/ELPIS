@@ -309,7 +309,7 @@ def run_full_audit(dry_run=False, emergency_only=False):
                 backup_path = None
 
             if ext in (".js", ".jsx", ".ts", ".tsx"):
-                subprocess.run(["npx", "eslint", rel_path, "--fix"], cwd=PROJECT_ROOT, capture_output=True)
+                subprocess.run(["npx", "eslint", rel_path, "--fix"], cwd=PROJECT_ROOT, capture_output=True, shell=(os.name == 'nt'))
             elif ext == ".py":
                 subprocess.run(["python", "-m", "ruff", "check", rel_path, "--fix"], cwd=PROJECT_ROOT, capture_output=True)
 

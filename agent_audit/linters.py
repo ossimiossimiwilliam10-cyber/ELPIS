@@ -18,7 +18,9 @@ def run_eslint(project_root, fix=False):
             cmd,
             cwd=web_dir,
             capture_output=True,
-            text=True
+            text=True,
+            shell=(os.name == 'nt'),
+            encoding='utf-8'
         )
 
         # ESLint returns exit code 1 if errors exist, which is normal
@@ -51,7 +53,7 @@ def run_eslint(project_root, fix=False):
 def run_ruff(project_root, fix=False):
     """Run ruff and return anomalies."""
     # Ensure ruff is called via python -m to avoid path issues on windows if installed locally
-    cmd = ['python', '-m', 'ruff', 'check', '.', '--output-format', 'json']
+    cmd = ['python', '-m', 'ruff', 'check', '.', '--exclude', 'agent_audit/backups', '--output-format', 'json']
     if fix:
         cmd.append('--fix')
 
@@ -60,7 +62,8 @@ def run_ruff(project_root, fix=False):
             cmd,
             cwd=project_root,
             capture_output=True,
-            text=True
+            text=True,
+            encoding='utf-8'
         )
 
         try:

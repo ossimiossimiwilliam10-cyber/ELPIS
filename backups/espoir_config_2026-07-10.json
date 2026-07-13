@@ -1,0 +1,87 @@
+{
+    "studyStartDate": "07-09-2026",
+    "bedtime": "22:00",
+    "wakeUpTime": "05:30",
+    "maxStudyHoursPerDay": 6.2,
+    "targetGrade": 16,
+    "targetRank": 10,
+    "summerStudyHoursCompleted": 0,
+    "maxSubjectsPerDay": 3,
+    "studyBlockDurationMinutes": 50,
+    "activeRecallMinutesPerDay": 30,
+    "subjects": [],
+    "fixedCommitments": [],
+    "theme": "dark",
+    "pomoWork": 25,
+    "pomoBreak": 5,
+    "lastActiveDate": "2026-07-09",
+    "currentStreak": 4,
+    "bestStreak": 11,
+    "defaultDurationNewCM": 120,
+    "defaultDurationRevCM": 30,
+    "defaultDurationTD": 20,
+    "defaultDurationTP": 30,
+    "defaultDurationAnnales": 90,
+    "defaultDurationAnki": 30,
+    "defaultDurationTP_Etape1": 45,
+    "defaultDurationTP_Etape2": 180,
+    "defaultDurationTP_Etape3": 90,
+    "defaultDurationTP_Etape4": 30,
+    "maxNewCMPerSubjectPerDay": 1,
+    "maxNewCMPerSemesterPerDay": 999,
+    "antiEnnuiMultiplier": 1,
+    "restDays": [
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-23",
+        "2026-06-25",
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28",
+        "2026-07-02",
+        "2026-07-04",
+        "2026-07-07"
+    ],
+    "dernierePratiqueAnki": "2026-07-09",
+    "defaultSemesterEndDate": "2027-01-18",
+    "mesVideos": [
+        {
+            "id": "1783512773259",
+            "url": "https://youtu.be/rQv8Q1FB2bE?si=V92lvsix0tZZ2QdJ",
+            "title": "Chapitre 1 : Outils mathématiques : Vecteurs et Torseurs (1/3)",
+            "matiereNom": "Mécanique du solide",
+            "addedAt": "2026-07-08T12:12:53.259Z"
+        },
+        {
+            "id": "1783515470961",
+            "url": "https://youtu.be/gEIF7BDOn3c?si=zG3M1w1c1mIzGItu",
+            "title": "Chapitre 1 : Outils mathématiques : Vecteurs et Torseurs (2/3)",
+            "matiereNom": "Mécanique du solide",
+            "addedAt": "2026-07-08T12:57:50.961Z"
+        },
+        {
+            "id": "1783518922731",
+            "url": "https://youtu.be/ejT8Ttg60go?si=zVZqOSQd8gSC4LgQ",
+            "title": "Chapitre 1 : Outils mathématiques : Vecteurs et Torseurs (3/3)",
+            "matiereNom": "Mécanique du solide",
+            "addedAt": "2026-07-08T13:55:22.731Z"
+        },
+        {
+            "id": "1783521947033",
+            "url": "https://youtu.be/85XUJXHbjBo?si=ujZ35qIDG0mVt61z",
+            "title": "Chapitre 1 : Principe et fonctionnement d'un ordinateur (1/2)",
+            "matiereNom": "Architecture des systèmes d'exploitation",
+            "addedAt": "2026-07-08T14:45:47.033Z"
+        },
+        {
+            "id": "1783522568459",
+            "url": "https://youtu.be/YScMI8lsy9s?si=WJXNWJGj7Rdl0UUu",
+            "title": "Chapitre 1 : Principe et fonctionnement d'un ordinateur (2/2)",
+            "matiereNom": "Architecture des systèmes d'exploitation",
+            "addedAt": "2026-07-08T14:56:08.459Z"
+        }
+    ]
+}

@@ -1,20 +1,22 @@
 {
-  "last_scan": "2026-07-09T14:53:49.887388",
+  "last_scan": "2026-07-13T09:04:56.705369",
   "mode": "SCAN + CORRECTION",
   "files_scanned": 175,
-  "total_lines_of_code": 1551512,
-  "total_anomalies": 116,
-  "total_corrections": 50,
-  "files_corrected": 10,
+  "total_lines_of_code": 1550722,
+  "total_anomalies": 113,
+  "total_corrections": 0,
+  "files_corrected": 0,
   "total_escalations": 0,
   "anomalies_by_severity": {
-    "critical": 0,
-    "warning": 58,
+    "critical": 44,
+    "warning": 11,
     "info": 58
   },
   "anomalies_by_category": {
     "TESTING": 58,
-    "PYTHON_SPECIFIC": 58
+    "CODE_QUALITY": 33,
+    "REACT_BEST_PRACTICES": 14,
+    "PYTHON_SPECIFIC": 8
   },
   "rule_stats": {
     "MISSING_TEST_FILE": {
@@ -31,38 +33,53 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 50.0
+      "pct_of_total": 51.3
     },
-    "F401": {
-      "count": 33,
-      "severity": "warning",
-      "category": "PYTHON_SPECIFIC",
-      "files_affected": 10,
+    "no-unused-vars": {
+      "count": 22,
+      "severity": "critical",
+      "category": "CODE_QUALITY",
+      "files_affected": 17,
       "top_files": [
-        "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-        "agent_audit\\backups\\20260709_145333\\agent_audit\\backups\\20260709_124631\\agent_audit\\backups\\20260709_122143\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103522\\agent_audit\\backups\\20260709_001128\\agent_audit\\backups\\20260709_001000\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235911\\agent_audit\\backups\\20260708_235031\\agent_audit\\backups\\20260708_234928\\agent_audit\\backups\\20260708_233416\\agent_audit\\backups\\20260708_232442\\agent_audit\\backups\\20260708_211958\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171553\\agent_audit\\backups\\20260707_171537\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102114\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\engine.py",
-        "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-        "agent_audit\\backups\\20260709_145338\\agent_audit\\backups\\20260709_124634\\agent_audit\\backups\\20260709_122145\\agent_audit\\backups\\20260709_115703\\agent_audit\\backups\\20260709_103524\\agent_audit\\backups\\20260709_001132\\agent_audit\\backups\\20260709_001004\\agent_audit\\backups\\20260709_000405\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235033\\agent_audit\\backups\\20260708_234930\\agent_audit\\backups\\20260708_233419\\agent_audit\\backups\\20260708_232445\\agent_audit\\backups\\20260708_212000\\agent_audit\\backups\\20260708_161432\\agent_audit\\backups\\20260708_100209\\agent_audit\\backups\\20260707_171557\\agent_audit\\backups\\20260707_171539\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102117\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\engine.py",
-        "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py"
+        "interface\\web\\public\\sw.js",
+        "interface\\web\\src\\App.jsx",
+        "interface\\web\\src\\ClassementPage.jsx",
+        "interface\\web\\src\\Dashboard.jsx",
+        "interface\\web\\src\\MesVideosPage.jsx"
       ],
-      "fixable_count": 33,
-      "auto_fixed_count": 33,
-      "pct_of_total": 28.4
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 19.5
     },
-    "F541": {
-      "count": 16,
-      "severity": "warning",
-      "category": "PYTHON_SPECIFIC",
+    "no-undef": {
+      "count": 9,
+      "severity": "critical",
+      "category": "CODE_QUALITY",
       "files_affected": 4,
       "top_files": [
-        "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-        "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-        "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-        "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py"
+        "interface\\web\\public\\sw.js",
+        "interface\\web\\src\\__tests__\\App.test.jsx",
+        "interface\\web\\src\\components\\AICoachSidebar.test.jsx",
+        "interface\\web\\src\\setupTests.js"
       ],
-      "fixable_count": 16,
-      "auto_fixed_count": 16,
-      "pct_of_total": 13.8
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 8.0
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 5,
+      "severity": "critical",
+      "category": "REACT_BEST_PRACTICES",
+      "files_affected": 4,
+      "top_files": [
+        "interface\\web\\src\\EntrainementPage.jsx",
+        "interface\\web\\src\\components\\AICoachSidebar.jsx",
+        "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+        "interface\\web\\src\\components\\MusicSettingsModal.jsx"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 4.4
     },
     "E402": {
       "count": 4,
@@ -76,7 +93,33 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 3.4
+      "pct_of_total": 3.5
+    },
+    "react-hooks/purity": {
+      "count": 3,
+      "severity": "critical",
+      "category": "REACT_BEST_PRACTICES",
+      "files_affected": 1,
+      "top_files": [
+        "interface\\web\\src\\ClassementPage.jsx"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 2.7
+    },
+    "react-hooks/exhaustive-deps": {
+      "count": 3,
+      "severity": "warning",
+      "category": "REACT_BEST_PRACTICES",
+      "files_affected": 3,
+      "top_files": [
+        "interface\\web\\src\\MesVideosPage.jsx",
+        "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+        "interface\\web\\src\\components\\MusicSettingsModal.jsx"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 2.7
     },
     "E741": {
       "count": 3,
@@ -90,18 +133,66 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 2.6
+      "pct_of_total": 2.7
     },
-    "F811": {
+    "no-useless-assignment": {
       "count": 1,
-      "severity": "warning",
-      "category": "PYTHON_SPECIFIC",
+      "severity": "critical",
+      "category": "CODE_QUALITY",
       "files_affected": 1,
       "top_files": [
-        "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py"
+        "interface\\web\\src\\App.jsx"
       ],
-      "fixable_count": 1,
-      "auto_fixed_count": 1,
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 0.9
+    },
+    "no-empty": {
+      "count": 1,
+      "severity": "critical",
+      "category": "CODE_QUALITY",
+      "files_affected": 1,
+      "top_files": [
+        "interface\\web\\src\\App.jsx"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 0.9
+    },
+    "react-hooks/rules-of-hooks": {
+      "count": 1,
+      "severity": "critical",
+      "category": "REACT_BEST_PRACTICES",
+      "files_affected": 1,
+      "top_files": [
+        "interface\\web\\src\\ProjetsPage.jsx"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 0.9
+    },
+    "react-hooks/immutability": {
+      "count": 1,
+      "severity": "critical",
+      "category": "REACT_BEST_PRACTICES",
+      "files_affected": 1,
+      "top_files": [
+        "interface\\web\\src\\components\\AuditDashboard.jsx"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 0.9
+    },
+    "react-hooks/refs": {
+      "count": 1,
+      "severity": "critical",
+      "category": "REACT_BEST_PRACTICES",
+      "files_affected": 1,
+      "top_files": [
+        "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
       "pct_of_total": 0.9
     },
     "E902": {
@@ -117,7 +208,7 @@
       "pct_of_total": 0.9
     }
   },
-  "signal_count": 58,
+  "signal_count": 55,
   "noise_count": 58,
   "escalation_stats": {
     "total": 0,
@@ -941,6 +1032,523 @@
       "_suppression_comment": "AUDIT_SUPPRESS:MISSING_TEST"
     },
     {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'CACHE_NAME' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\public\\sw.js",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'CACHE_NAME' is assigned a value but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'event' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\public\\sw.js",
+      "line": 3,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'event' is defined but never used."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'clients' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\public\\sw.js",
+      "line": 8,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'clients' is not defined."
+    },
+    {
+      "rule_id": "no-useless-assignment",
+      "severity": "critical",
+      "description": "The value assigned to 'themeClass' is not used in subsequent statements.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\App.jsx",
+      "line": 64,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "The value assigned to 'themeClass' is not used in subsequent statements."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'e' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\App.jsx",
+      "line": 110,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'e' is defined but never used."
+    },
+    {
+      "rule_id": "no-empty",
+      "severity": "critical",
+      "description": "Empty block statement.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\App.jsx",
+      "line": 110,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Empty block statement."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'React' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\ClassementPage.jsx",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'React' is defined but never used."
+    },
+    {
+      "rule_id": "react-hooks/purity",
+      "severity": "critical",
+      "description": "Error: Cannot call impure function during render\n\n`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).\n\n   97 |     }\n   98 |\n>  99 |     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;\n      |                           ^^^^^^^^^^ Cannot call impure function\n  100 |     const recentSessions = historique.filter(h => new Date(h.timestamp || h.date).getTime() > thirtyDaysAgo).length;\n  101 |     \n  102 |     // Calcul de la fenêtre dynamique pour l'effort (Cold-Start Prevention)",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\ClassementPage.jsx",
+      "line": 99,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Cannot call impure function during render\n\n`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).\n\n   97 |     }\n   98 |\n>  99 |     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;\n      |                           ^^^^^^^^^^ Cannot call impure function\n  100 |     const recentSessions = historique.filter(h => new Date(h.timestamp || h.date).getTime() > thirtyDaysAgo).length;\n  101 |     \n  102 |     // Calcul de la fenêtre dynamique pour l'effort (Cold-Start Prevention)"
+    },
+    {
+      "rule_id": "react-hooks/purity",
+      "severity": "critical",
+      "description": "Error: Cannot call impure function during render\n\n`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).\n\n  102 |     // Calcul de la fenêtre dynamique pour l'effort (Cold-Start Prevention)\n  103 |     const historyTimes = historique.map(h => new Date(h.timestamp || h.date).getTime()).filter(t => !isNaN(t));\n> 104 |     const firstSessionTime = historyTimes.length > 0 ? Math.min(...historyTimes) : Date.now();\n      |                                                                                    ^^^^^^^^^^ Cannot call impure function\n  105 |     const userStartDate = config?.userStartDate ? new Date(config.userStartDate).getTime() : firstSessionTime;\n  106 |     \n  107 |     let windowDays = 30; // Par défaut",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\ClassementPage.jsx",
+      "line": 104,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Cannot call impure function during render\n\n`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).\n\n  102 |     // Calcul de la fenêtre dynamique pour l'effort (Cold-Start Prevention)\n  103 |     const historyTimes = historique.map(h => new Date(h.timestamp || h.date).getTime()).filter(t => !isNaN(t));\n> 104 |     const firstSessionTime = historyTimes.length > 0 ? Math.min(...historyTimes) : Date.now();\n      |                                                                                    ^^^^^^^^^^ Cannot call impure function\n  105 |     const userStartDate = config?.userStartDate ? new Date(config.userStartDate).getTime() : firstSessionTime;\n  106 |     \n  107 |     let windowDays = 30; // Par défaut"
+    },
+    {
+      "rule_id": "react-hooks/purity",
+      "severity": "critical",
+      "description": "Error: Cannot call impure function during render\n\n`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).\n\n  107 |     let windowDays = 30; // Par défaut\n  108 |     if (userStartDate > 0) {\n> 109 |       const daysSinceStart = Math.ceil((Date.now() - userStartDate) / (1000 * 60 * 60 * 24));\n      |                                         ^^^^^^^^^^ Cannot call impure function\n  110 |       windowDays = Math.max(1, Math.min(daysSinceStart, 30));\n  111 |     }\n  112 |     ",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\ClassementPage.jsx",
+      "line": 109,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Cannot call impure function during render\n\n`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).\n\n  107 |     let windowDays = 30; // Par défaut\n  108 |     if (userStartDate > 0) {\n> 109 |       const daysSinceStart = Math.ceil((Date.now() - userStartDate) / (1000 * 60 * 60 * 24));\n      |                                         ^^^^^^^^^^ Cannot call impure function\n  110 |       windowDays = Math.max(1, Math.min(daysSinceStart, 30));\n  111 |     }\n  112 |     "
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'storeLoading' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\Dashboard.jsx",
+      "line": 59,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'storeLoading' is assigned a value but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'historique' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\Dashboard.jsx",
+      "line": 60,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'historique' is assigned a value but never used."
+    },
+    {
+      "rule_id": "react-hooks/set-state-in-effect",
+      "severity": "critical",
+      "description": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  71 |     const store = useStore.getState();\n  72 |     if (store.forcedTask) {\n> 73 |       setTachesOrchestrateur([store.forcedTask]);\n     |       ^^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  74 |       store.setForcedTask(null);\n  75 |     } else {\n  76 |       fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 });",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\EntrainementPage.jsx",
+      "line": 73,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  71 |     const store = useStore.getState();\n  72 |     if (store.forcedTask) {\n> 73 |       setTachesOrchestrateur([store.forcedTask]);\n     |       ^^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  74 |       store.setForcedTask(null);\n  75 |     } else {\n  76 |       fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 });"
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'React' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\MesVideosPage.jsx",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'React' is defined but never used."
+    },
+    {
+      "rule_id": "react-hooks/exhaustive-deps",
+      "severity": "warning",
+      "description": "The 'videos' logical expression could make the dependencies of useMemo Hook (at line 111) change on every render. To fix this, wrap the initialization of 'videos' in its own useMemo() Hook.",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\MesVideosPage.jsx",
+      "line": 16,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "The 'videos' logical expression could make the dependencies of useMemo Hook (at line 111) change on every render. To fix this, wrap the initialization of 'videos' in its own useMemo() Hook."
+    },
+    {
+      "rule_id": "react-hooks/rules-of-hooks",
+      "severity": "critical",
+      "description": "React Hook \"useMemo\" is called conditionally. React Hooks must be called in the exact same order in every component render.",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\ProjetsPage.jsx",
+      "line": 146,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "React Hook \"useMemo\" is called conditionally. React Hooks must be called in the exact same order in every component render."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'projets' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\ProjetsPage.test.jsx",
+      "line": 92,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'projets' is assigned a value but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'err' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\RevisionsAvanceesPage.jsx",
+      "line": 49,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'err' is defined but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'waitFor' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\RevisionsAvanceesPage.test.jsx",
+      "line": 2,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'waitFor' is defined but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'React' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\Sidebar.jsx",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'React' is defined but never used."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'beforeEach' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\__tests__\\App.test.jsx",
+      "line": 58,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'beforeEach' is not defined."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'afterEach' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\__tests__\\App.test.jsx",
+      "line": 62,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'afterEach' is not defined."
+    },
+    {
+      "rule_id": "react-hooks/set-state-in-effect",
+      "severity": "critical",
+      "description": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  22 |\n  23 |   useEffect(() => {\n> 24 |     fetchHistory();\n     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  25 |   }, []);\n  26 |\n  27 |   useEffect(() => {",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\AICoachSidebar.jsx",
+      "line": 24,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  22 |\n  23 |   useEffect(() => {\n> 24 |     fetchHistory();\n     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  25 |   }, []);\n  26 |\n  27 |   useEffect(() => {"
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'err' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\AICoachSidebar.jsx",
+      "line": 68,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'err' is defined but never used."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'global' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\AICoachSidebar.test.jsx",
+      "line": 7,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'global' is not defined."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'global' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\AICoachSidebar.test.jsx",
+      "line": 20,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'global' is not defined."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'global' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\AICoachSidebar.test.jsx",
+      "line": 49,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'global' is not defined."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'global' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\AICoachSidebar.test.jsx",
+      "line": 66,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'global' is not defined."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'global' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\AICoachSidebar.test.jsx",
+      "line": 86,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'global' is not defined."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'React' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\AuditDashboard.jsx",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'React' is defined but never used."
+    },
+    {
+      "rule_id": "react-hooks/immutability",
+      "severity": "critical",
+      "description": "Error: Cannot access variable before it is declared\n\n`fetchAudit` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.\n\n   9 |   useEffect(() => {\n  10 |     if (isOpen) {\n> 11 |       fetchAudit();\n     |       ^^^^^^^^^^ `fetchAudit` accessed before it is declared\n  12 |     }\n  13 |   }, [isOpen]);\n  14 |\n\n  13 |   }, [isOpen]);\n  14 |\n> 15 |   const fetchAudit = async () => {\n     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 16 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 17 |     try {\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 25 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 26 |   };\n     | ^^^^^ `fetchAudit` is declared here\n  27 |\n  28 |   if (!isOpen) return null;\n  29 |",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\AuditDashboard.jsx",
+      "line": 11,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Cannot access variable before it is declared\n\n`fetchAudit` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.\n\n   9 |   useEffect(() => {\n  10 |     if (isOpen) {\n> 11 |       fetchAudit();\n     |       ^^^^^^^^^^ `fetchAudit` accessed before it is declared\n  12 |     }\n  13 |   }, [isOpen]);\n  14 |\n\n  13 |   }, [isOpen]);\n  14 |\n> 15 |   const fetchAudit = async () => {\n     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 16 |     setLoading(true);\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 17 |     try {\n     …\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 25 |     }\n     | ^^^^^^^^^^^^^^^^^^^^^\n> 26 |   };\n     | ^^^^^ `fetchAudit` is declared here\n  27 |\n  28 |   if (!isOpen) return null;\n  29 |"
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'React' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'React' is defined but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'error' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+      "line": 10,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'error' is assigned a value but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'pendingTasksCount' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+      "line": 13,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'pendingTasksCount' is assigned a value but never used."
+    },
+    {
+      "rule_id": "react-hooks/set-state-in-effect",
+      "severity": "critical",
+      "description": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  73 |\n  74 |   useEffect(() => {\n> 75 |     fetchNextTrack();\n     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  76 |     // eslint-disable-next-line react-hooks/exhaustive-deps\n  77 |   }, []);\n  78 |",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+      "line": 75,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  73 |\n  74 |   useEffect(() => {\n> 75 |     fetchNextTrack();\n     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  76 |     // eslint-disable-next-line react-hooks/exhaustive-deps\n  77 |   }, []);\n  78 |"
+    },
+    {
+      "rule_id": "react-hooks/set-state-in-effect",
+      "severity": "critical",
+      "description": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  86 |       if (currentRequested && musicData && musicData.category !== currentRequested) {\n  87 |         autoplayNextRef.current = isPlaying;\n> 88 |         fetchNextTrack(currentRequested);\n     |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  89 |       }\n  90 |     }\n  91 |   }, [globalChrono.isRunning, globalChrono.type, musicData]);",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+      "line": 88,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  86 |       if (currentRequested && musicData && musicData.category !== currentRequested) {\n  87 |         autoplayNextRef.current = isPlaying;\n> 88 |         fetchNextTrack(currentRequested);\n     |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  89 |       }\n  90 |     }\n  91 |   }, [globalChrono.isRunning, globalChrono.type, musicData]);"
+    },
+    {
+      "rule_id": "react-hooks/exhaustive-deps",
+      "severity": "warning",
+      "description": "React Hook useEffect has missing dependencies: 'fetchNextTrack', 'getRequestedCategory', and 'isPlaying'. Either include them or remove the dependency array.",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+      "line": 91,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "React Hook useEffect has missing dependencies: 'fetchNextTrack', 'getRequestedCategory', and 'isPlaying'. Either include them or remove the dependency array."
+    },
+    {
+      "rule_id": "react-hooks/refs",
+      "severity": "critical",
+      "description": "Error: Cannot access refs during render\n\nReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).\n\n  106 |   const interactionDone = useRef(false);\n  107 |   const isPlayingRef = useRef(isPlaying);\n> 108 |   isPlayingRef.current = isPlaying;\n      |   ^^^^^^^^^^^^^^^^^^^^ Cannot update ref during render\n  109 |\n  110 |   useEffect(() => {\n  111 |     if (interactionDone.current) return;",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\BackgroundMusicPlayer.jsx",
+      "line": 108,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Cannot access refs during render\n\nReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).\n\n  106 |   const interactionDone = useRef(false);\n  107 |   const isPlayingRef = useRef(isPlaying);\n> 108 |   isPlayingRef.current = isPlaying;\n      |   ^^^^^^^^^^^^^^^^^^^^ Cannot update ref during render\n  109 |\n  110 |   useEffect(() => {\n  111 |     if (interactionDone.current) return;"
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'React' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\GlobalChrono.test.jsx",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'React' is defined but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'React' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\MusicSettingsModal.jsx",
+      "line": 1,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'React' is defined but never used."
+    },
+    {
+      "rule_id": "react-hooks/set-state-in-effect",
+      "severity": "critical",
+      "description": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  23 |\n  24 |   useEffect(() => {\n> 25 |     fetchMusics();\n     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  26 |   }, []);\n  27 |\n  28 |   const handleFileUpload = async (e, category) => {",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\MusicSettingsModal.jsx",
+      "line": 25,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Error: Calling setState synchronously within an effect can trigger cascading renders\n\nEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:\n* Update external systems with the latest state from React.\n* Subscribe for updates from some external system, calling setState in a callback function when external state changes.\n\nCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).\n\n  23 |\n  24 |   useEffect(() => {\n> 25 |     fetchMusics();\n     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect\n  26 |   }, []);\n  27 |\n  28 |   const handleFileUpload = async (e, category) => {"
+    },
+    {
+      "rule_id": "react-hooks/exhaustive-deps",
+      "severity": "warning",
+      "description": "React Hook useEffect has a missing dependency: 'fetchMusics'. Either include it or remove the dependency array.",
+      "category": "REACT_BEST_PRACTICES",
+      "file": "interface\\web\\src\\components\\MusicSettingsModal.jsx",
+      "line": 26,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "React Hook useEffect has a missing dependency: 'fetchMusics'. Either include it or remove the dependency array."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'useStore' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\components\\cours\\ExerciceCard.jsx",
+      "line": 3,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'useStore' is defined but never used."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'global' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\setupTests.js",
+      "line": 4,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'global' is not defined."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'debouncedSaveProjets' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\store.js",
+      "line": 63,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'debouncedSaveProjets' is assigned a value but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'e' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\store.js",
+      "line": 463,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'e' is defined but never used."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'html' is assigned a value but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\tests\\elpis.spec.js",
+      "line": 89,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'html' is assigned a value but never used."
+    },
+    {
       "rule_id": "E402",
       "severity": "warning",
       "description": "Module level import not at top of file",
@@ -972,556 +1580,6 @@
       "code_snippet": "",
       "_fixable": false,
       "_escalation_message": "Module level import not at top of file"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.prioritize_anomalies` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 28,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.prioritize_anomalies` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.load_last_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.load_last_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.save_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.save_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.file_hash` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.file_hash` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`validators.get_baseline_result` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 34,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`validators.get_baseline_result` imported but unused"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 449,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 450,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 451,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145332\\agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 457,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`re` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145333\\agent_audit\\backups\\20260709_124631\\agent_audit\\backups\\20260709_122143\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103522\\agent_audit\\backups\\20260709_001128\\agent_audit\\backups\\20260709_001000\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235911\\agent_audit\\backups\\20260708_235031\\agent_audit\\backups\\20260708_234928\\agent_audit\\backups\\20260708_233416\\agent_audit\\backups\\20260708_232442\\agent_audit\\backups\\20260708_211958\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171553\\agent_audit\\backups\\20260707_171537\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102114\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\engine.py",
-      "line": 10,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`re` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`time` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145333\\agent_audit\\backups\\20260709_124631\\agent_audit\\backups\\20260709_122143\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103522\\agent_audit\\backups\\20260709_001128\\agent_audit\\backups\\20260709_001000\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235911\\agent_audit\\backups\\20260708_235031\\agent_audit\\backups\\20260708_234928\\agent_audit\\backups\\20260708_233416\\agent_audit\\backups\\20260708_232442\\agent_audit\\backups\\20260708_211958\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171553\\agent_audit\\backups\\20260707_171537\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102114\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\engine.py",
-      "line": 12,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`time` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.prioritize_anomalies` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 28,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.prioritize_anomalies` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.load_last_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.load_last_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.save_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.save_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.file_hash` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.file_hash` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`validators.get_baseline_result` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 34,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`validators.get_baseline_result` imported but unused"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 449,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 450,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 451,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145336\\agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 457,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`re` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145338\\agent_audit\\backups\\20260709_124634\\agent_audit\\backups\\20260709_122145\\agent_audit\\backups\\20260709_115703\\agent_audit\\backups\\20260709_103524\\agent_audit\\backups\\20260709_001132\\agent_audit\\backups\\20260709_001004\\agent_audit\\backups\\20260709_000405\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235033\\agent_audit\\backups\\20260708_234930\\agent_audit\\backups\\20260708_233419\\agent_audit\\backups\\20260708_232445\\agent_audit\\backups\\20260708_212000\\agent_audit\\backups\\20260708_161432\\agent_audit\\backups\\20260708_100209\\agent_audit\\backups\\20260707_171557\\agent_audit\\backups\\20260707_171539\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102117\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\engine.py",
-      "line": 10,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`re` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`time` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145338\\agent_audit\\backups\\20260709_124634\\agent_audit\\backups\\20260709_122145\\agent_audit\\backups\\20260709_115703\\agent_audit\\backups\\20260709_103524\\agent_audit\\backups\\20260709_001132\\agent_audit\\backups\\20260709_001004\\agent_audit\\backups\\20260709_000405\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235033\\agent_audit\\backups\\20260708_234930\\agent_audit\\backups\\20260708_233419\\agent_audit\\backups\\20260708_232445\\agent_audit\\backups\\20260708_212000\\agent_audit\\backups\\20260708_161432\\agent_audit\\backups\\20260708_100209\\agent_audit\\backups\\20260707_171557\\agent_audit\\backups\\20260707_171539\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102117\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\engine.py",
-      "line": 12,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`time` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.prioritize_anomalies` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 28,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.prioritize_anomalies` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.load_last_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.load_last_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.save_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.save_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.file_hash` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 29,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.file_hash` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`validators.get_baseline_result` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 34,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`validators.get_baseline_result` imported but unused"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 449,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 450,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 451,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145339\\agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 457,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`re` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145341\\agent_audit\\backups\\20260709_124636\\agent_audit\\backups\\20260709_122147\\agent_audit\\backups\\20260709_115706\\agent_audit\\backups\\20260709_103526\\agent_audit\\backups\\20260709_001134\\agent_audit\\backups\\20260709_001007\\agent_audit\\backups\\20260709_000407\\agent_audit\\backups\\20260708_235914\\agent_audit\\backups\\20260708_235035\\agent_audit\\backups\\20260708_234932\\agent_audit\\backups\\20260708_233421\\agent_audit\\backups\\20260708_232448\\agent_audit\\backups\\20260708_212002\\agent_audit\\backups\\20260708_161434\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171600\\agent_audit\\backups\\20260707_171541\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102120\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\engine.py",
-      "line": 10,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`re` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`time` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145341\\agent_audit\\backups\\20260709_124636\\agent_audit\\backups\\20260709_122147\\agent_audit\\backups\\20260709_115706\\agent_audit\\backups\\20260709_103526\\agent_audit\\backups\\20260709_001134\\agent_audit\\backups\\20260709_001007\\agent_audit\\backups\\20260709_000407\\agent_audit\\backups\\20260708_235914\\agent_audit\\backups\\20260708_235035\\agent_audit\\backups\\20260708_234932\\agent_audit\\backups\\20260708_233421\\agent_audit\\backups\\20260708_232448\\agent_audit\\backups\\20260708_212002\\agent_audit\\backups\\20260708_161434\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171600\\agent_audit\\backups\\20260707_171541\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102120\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\engine.py",
-      "line": 12,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`time` imported but unused"
-    },
-    {
-      "rule_id": "F811",
-      "severity": "warning",
-      "description": "Redefinition of unused `datetime` from line 18: `datetime` redefined here",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 22,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "Redefinition of unused `datetime` from line 18: `datetime` redefined here"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.is_emergency` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 30,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.is_emergency` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.prioritize_anomalies` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 31,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.prioritize_anomalies` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.load_last_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 32,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.load_last_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.save_hashes` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 32,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.save_hashes` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`engine.file_hash` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 32,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`engine.file_hash` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`validators.mark_last_fixed` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 36,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`validators.mark_last_fixed` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`validators.get_baseline_result` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 37,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`validators.get_baseline_result` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`escalation.trigger_emergency` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 38,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`escalation.trigger_emergency` imported but unused"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 408,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 409,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 410,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F541",
-      "severity": "warning",
-      "description": "f-string without any placeholders",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 416,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "f-string without any placeholders"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`sys` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145344\\agent_audit\\backups\\20260709_124638\\agent_audit\\backups\\20260709_122149\\agent_audit\\backups\\20260709_115708\\agent_audit\\backups\\20260709_103528\\agent_audit\\backups\\20260709_001138\\agent_audit\\backups\\20260709_001010\\agent_audit\\backups\\20260709_000409\\agent_audit\\backups\\20260708_235916\\agent_audit\\backups\\20260708_235037\\agent_audit\\backups\\20260708_234934\\agent_audit\\backups\\20260708_233423\\agent_audit\\backups\\20260708_232451\\agent_audit\\backups\\20260708_212004\\agent_audit\\backups\\20260708_161436\\agent_audit\\backups\\20260708_100212\\agent_audit\\backups\\20260707_171602\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\refactor.py",
-      "line": 1,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`sys` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`os` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145344\\agent_audit\\backups\\20260709_124638\\agent_audit\\backups\\20260709_122149\\agent_audit\\backups\\20260709_115708\\agent_audit\\backups\\20260709_103528\\agent_audit\\backups\\20260709_001138\\agent_audit\\backups\\20260709_001010\\agent_audit\\backups\\20260709_000409\\agent_audit\\backups\\20260708_235916\\agent_audit\\backups\\20260708_235037\\agent_audit\\backups\\20260708_234934\\agent_audit\\backups\\20260708_233423\\agent_audit\\backups\\20260708_232451\\agent_audit\\backups\\20260708_212004\\agent_audit\\backups\\20260708_161436\\agent_audit\\backups\\20260708_100212\\agent_audit\\backups\\20260707_171602\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\refactor.py",
-      "line": 2,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`os` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`json` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145346\\agent_audit\\backups\\20260709_124639\\agent_audit\\backups\\20260709_122150\\agent_audit\\backups\\20260709_115710\\agent_audit\\backups\\20260709_103529\\agent_audit\\backups\\20260709_001140\\agent_audit\\backups\\20260709_001011\\agent_audit\\backups\\20260709_000410\\agent_audit\\backups\\20260708_235917\\agent_audit\\backups\\20260708_235038\\agent_audit\\backups\\20260708_234935\\agent_audit\\backups\\20260708_233424\\agent_audit\\backups\\20260708_232453\\agent_audit\\backups\\20260708_212005\\agent_audit\\backups\\20260708_161437\\agent_audit\\backups\\20260708_100213\\agent_audit\\backups\\20260707_171603\\agent_audit\\backups\\20260707_171543\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102122\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\validators.py",
-      "line": 14,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`json` imported but unused"
-    },
-    {
-      "rule_id": "F401",
-      "severity": "warning",
-      "description": "`re` imported but unused",
-      "category": "PYTHON_SPECIFIC",
-      "file": "agent_audit\\backups\\20260709_145347\\agent_audit\\backups\\20260709_124640\\agent_audit\\backups\\20260709_122151\\agent_audit\\backups\\20260709_115711\\agent_audit\\backups\\20260709_103530\\agent_audit\\backups\\20260709_001143\\agent_audit\\backups\\20260709_001012\\agent_audit\\backups\\20260709_000411\\agent_audit\\backups\\20260708_235918\\agent_audit\\backups\\20260708_235039\\agent_audit\\backups\\20260708_234935\\agent_audit\\backups\\20260708_233425\\agent_audit\\backups\\20260708_232454\\agent_audit\\backups\\20260708_212006\\agent_audit\\backups\\20260708_161437\\agent_audit\\backups\\20260708_100214\\agent_audit\\backups\\20260707_171604\\agent_audit\\backups\\20260707_171544\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102123\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\scratch\\_fix_main.py",
-      "line": 1,
-      "code_snippet": "",
-      "_fixable": true,
-      "_escalation_message": "`re` imported but unused"
     },
     {
       "rule_id": "E741",
@@ -1579,359 +1637,8 @@
       "_escalation_message": "Ambiguous variable name: `l`"
     }
   ],
-  "corrections_applied": [
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 28,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 34,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 449,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 450,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 451,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124630\\agent_audit\\backups\\20260709_122141\\agent_audit\\backups\\20260709_115700\\agent_audit\\backups\\20260709_103521\\agent_audit\\backups\\20260709_001127\\agent_audit\\backups\\20260709_000959\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235910\\agent_audit\\backups\\20260708_235030\\agent_audit\\backups\\20260708_234927\\agent_audit\\backups\\20260708_233415\\agent_audit\\backups\\20260708_232441\\agent_audit\\backups\\20260708_211957\\agent_audit\\backups\\20260708_161430\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171551\\agent_audit\\backups\\20260707_171536\\agent_audit\\backups\\20260707_142819\\agent_audit\\backups\\20260707_132814\\agent_audit\\backups\\20260707_122809\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102112\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092751\\agent_audit\\backups\\20260707_092112\\agent_audit\\main.py",
-      "line": 457,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124631\\agent_audit\\backups\\20260709_122143\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103522\\agent_audit\\backups\\20260709_001128\\agent_audit\\backups\\20260709_001000\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235911\\agent_audit\\backups\\20260708_235031\\agent_audit\\backups\\20260708_234928\\agent_audit\\backups\\20260708_233416\\agent_audit\\backups\\20260708_232442\\agent_audit\\backups\\20260708_211958\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171553\\agent_audit\\backups\\20260707_171537\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102114\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\engine.py",
-      "line": 10,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124631\\agent_audit\\backups\\20260709_122143\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103522\\agent_audit\\backups\\20260709_001128\\agent_audit\\backups\\20260709_001000\\agent_audit\\backups\\20260709_000402\\agent_audit\\backups\\20260708_235911\\agent_audit\\backups\\20260708_235031\\agent_audit\\backups\\20260708_234928\\agent_audit\\backups\\20260708_233416\\agent_audit\\backups\\20260708_232442\\agent_audit\\backups\\20260708_211958\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100207\\agent_audit\\backups\\20260707_171553\\agent_audit\\backups\\20260707_171537\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102759\\agent_audit\\backups\\20260707_102114\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\engine.py",
-      "line": 12,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 28,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 34,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 449,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 450,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 451,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124633\\agent_audit\\backups\\20260709_122144\\agent_audit\\backups\\20260709_115701\\agent_audit\\backups\\20260709_103523\\agent_audit\\backups\\20260709_001130\\agent_audit\\backups\\20260709_001002\\agent_audit\\backups\\20260709_000403\\agent_audit\\backups\\20260708_235912\\agent_audit\\backups\\20260708_235032\\agent_audit\\backups\\20260708_234929\\agent_audit\\backups\\20260708_233417\\agent_audit\\backups\\20260708_232444\\agent_audit\\backups\\20260708_211959\\agent_audit\\backups\\20260708_161431\\agent_audit\\backups\\20260708_100208\\agent_audit\\backups\\20260707_171555\\agent_audit\\backups\\20260707_171538\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112805\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102116\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094849\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092123\\agent_audit\\main.py",
-      "line": 457,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124634\\agent_audit\\backups\\20260709_122145\\agent_audit\\backups\\20260709_115703\\agent_audit\\backups\\20260709_103524\\agent_audit\\backups\\20260709_001132\\agent_audit\\backups\\20260709_001004\\agent_audit\\backups\\20260709_000405\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235033\\agent_audit\\backups\\20260708_234930\\agent_audit\\backups\\20260708_233419\\agent_audit\\backups\\20260708_232445\\agent_audit\\backups\\20260708_212000\\agent_audit\\backups\\20260708_161432\\agent_audit\\backups\\20260708_100209\\agent_audit\\backups\\20260707_171557\\agent_audit\\backups\\20260707_171539\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102117\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\engine.py",
-      "line": 10,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124634\\agent_audit\\backups\\20260709_122145\\agent_audit\\backups\\20260709_115703\\agent_audit\\backups\\20260709_103524\\agent_audit\\backups\\20260709_001132\\agent_audit\\backups\\20260709_001004\\agent_audit\\backups\\20260709_000405\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235033\\agent_audit\\backups\\20260708_234930\\agent_audit\\backups\\20260708_233419\\agent_audit\\backups\\20260708_232445\\agent_audit\\backups\\20260708_212000\\agent_audit\\backups\\20260708_161432\\agent_audit\\backups\\20260708_100209\\agent_audit\\backups\\20260707_171557\\agent_audit\\backups\\20260707_171539\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102117\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\engine.py",
-      "line": 12,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 28,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 29,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 34,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 449,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 450,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 451,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124635\\agent_audit\\backups\\20260709_122146\\agent_audit\\backups\\20260709_115704\\agent_audit\\backups\\20260709_103525\\agent_audit\\backups\\20260709_001133\\agent_audit\\backups\\20260709_001005\\agent_audit\\backups\\20260709_000406\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235034\\agent_audit\\backups\\20260708_234931\\agent_audit\\backups\\20260708_233420\\agent_audit\\backups\\20260708_232446\\agent_audit\\backups\\20260708_212001\\agent_audit\\backups\\20260708_161433\\agent_audit\\backups\\20260708_100210\\agent_audit\\backups\\20260707_171558\\agent_audit\\backups\\20260707_171540\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102118\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\main.py",
-      "line": 457,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124636\\agent_audit\\backups\\20260709_122147\\agent_audit\\backups\\20260709_115706\\agent_audit\\backups\\20260709_103526\\agent_audit\\backups\\20260709_001134\\agent_audit\\backups\\20260709_001007\\agent_audit\\backups\\20260709_000407\\agent_audit\\backups\\20260708_235914\\agent_audit\\backups\\20260708_235035\\agent_audit\\backups\\20260708_234932\\agent_audit\\backups\\20260708_233421\\agent_audit\\backups\\20260708_232448\\agent_audit\\backups\\20260708_212002\\agent_audit\\backups\\20260708_161434\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171600\\agent_audit\\backups\\20260707_171541\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102120\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\engine.py",
-      "line": 10,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124636\\agent_audit\\backups\\20260709_122147\\agent_audit\\backups\\20260709_115706\\agent_audit\\backups\\20260709_103526\\agent_audit\\backups\\20260709_001134\\agent_audit\\backups\\20260709_001007\\agent_audit\\backups\\20260709_000407\\agent_audit\\backups\\20260708_235914\\agent_audit\\backups\\20260708_235035\\agent_audit\\backups\\20260708_234932\\agent_audit\\backups\\20260708_233421\\agent_audit\\backups\\20260708_232448\\agent_audit\\backups\\20260708_212002\\agent_audit\\backups\\20260708_161434\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171600\\agent_audit\\backups\\20260707_171541\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102120\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\engine.py",
-      "line": 12,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F811",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 22,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 30,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 31,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 32,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 32,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 32,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 36,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 37,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 38,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 408,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 409,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 410,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F541",
-      "file": "agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py",
-      "line": 416,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124638\\agent_audit\\backups\\20260709_122149\\agent_audit\\backups\\20260709_115708\\agent_audit\\backups\\20260709_103528\\agent_audit\\backups\\20260709_001138\\agent_audit\\backups\\20260709_001010\\agent_audit\\backups\\20260709_000409\\agent_audit\\backups\\20260708_235916\\agent_audit\\backups\\20260708_235037\\agent_audit\\backups\\20260708_234934\\agent_audit\\backups\\20260708_233423\\agent_audit\\backups\\20260708_232451\\agent_audit\\backups\\20260708_212004\\agent_audit\\backups\\20260708_161436\\agent_audit\\backups\\20260708_100212\\agent_audit\\backups\\20260707_171602\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\refactor.py",
-      "line": 1,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124638\\agent_audit\\backups\\20260709_122149\\agent_audit\\backups\\20260709_115708\\agent_audit\\backups\\20260709_103528\\agent_audit\\backups\\20260709_001138\\agent_audit\\backups\\20260709_001010\\agent_audit\\backups\\20260709_000409\\agent_audit\\backups\\20260708_235916\\agent_audit\\backups\\20260708_235037\\agent_audit\\backups\\20260708_234934\\agent_audit\\backups\\20260708_233423\\agent_audit\\backups\\20260708_232451\\agent_audit\\backups\\20260708_212004\\agent_audit\\backups\\20260708_161436\\agent_audit\\backups\\20260708_100212\\agent_audit\\backups\\20260707_171602\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\refactor.py",
-      "line": 2,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124639\\agent_audit\\backups\\20260709_122150\\agent_audit\\backups\\20260709_115710\\agent_audit\\backups\\20260709_103529\\agent_audit\\backups\\20260709_001140\\agent_audit\\backups\\20260709_001011\\agent_audit\\backups\\20260709_000410\\agent_audit\\backups\\20260708_235917\\agent_audit\\backups\\20260708_235038\\agent_audit\\backups\\20260708_234935\\agent_audit\\backups\\20260708_233424\\agent_audit\\backups\\20260708_232453\\agent_audit\\backups\\20260708_212005\\agent_audit\\backups\\20260708_161437\\agent_audit\\backups\\20260708_100213\\agent_audit\\backups\\20260707_171603\\agent_audit\\backups\\20260707_171543\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102122\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\validators.py",
-      "line": 14,
-      "before": "",
-      "after": "Fixed by linter"
-    },
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\backups\\20260709_124640\\agent_audit\\backups\\20260709_122151\\agent_audit\\backups\\20260709_115711\\agent_audit\\backups\\20260709_103530\\agent_audit\\backups\\20260709_001143\\agent_audit\\backups\\20260709_001012\\agent_audit\\backups\\20260709_000411\\agent_audit\\backups\\20260708_235918\\agent_audit\\backups\\20260708_235039\\agent_audit\\backups\\20260708_234935\\agent_audit\\backups\\20260708_233425\\agent_audit\\backups\\20260708_232454\\agent_audit\\backups\\20260708_212006\\agent_audit\\backups\\20260708_161437\\agent_audit\\backups\\20260708_100214\\agent_audit\\backups\\20260707_171604\\agent_audit\\backups\\20260707_171544\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102123\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\scratch\\_fix_main.py",
-      "line": 1,
-      "before": "",
-      "after": "Fixed by linter"
-    }
-  ],
+  "corrections_applied": [],
   "_anomalies_truncated": false,
   "_escalations_truncated": false,
-  "health_score": 100
+  "health_score": 70
 }

@@ -2711,3 +2711,259 @@
 [2026-07-09 14:53:49] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
 [2026-07-09 14:53:50] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py']' returned non-zero exit status 128.
 [2026-07-09 14:53:51] [INFO] Audit termine en 20.0s. Health Score projet: 100/100
+[2026-07-09 17:07:59] [INFO] ============================================================
+[2026-07-09 17:07:59] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-09 17:07:59] [INFO] ============================================================
+[2026-07-09 17:07:59] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-09 17:07:59] [INFO] Etablissement de la baseline de tests...
+[2026-07-09 17:07:59] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-09 17:08:12] [INFO] Phase 1 terminee: 175 fichiers, 1551602 lignes
+[2026-07-09 17:08:12] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-09 17:08:12] [INFO]   -> 58 anomalies globales detectees
+[2026-07-09 17:08:12] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-09 17:08:27] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-09 17:08:27] [INFO]   Health Score: 100/100
+[2026-07-09 17:08:27] [INFO]   Anomalies Critiques: 0
+[2026-07-09 17:08:27] [INFO]   Avertissements (Warning): 58
+[2026-07-09 17:08:27] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-09 17:08:27] [INFO]   Total defauts detectes: 116
+[2026-07-09 17:08:27] [INFO]   Corrections appliquees: 50
+[2026-07-09 17:08:27] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-09 17:08:27] [INFO] Agent Health: WARNING
+[2026-07-09 17:08:27] [WARNING]   [!] Performance degradee: 6.3 fichiers/s
+[2026-07-09 17:08:27] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-09 17:08:27] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-09 17:08:27] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260709_145338\\agent_audit\\backups\\20260709_124634\\agent_audit\\backups\\20260709_122145\\agent_audit\\backups\\20260709_115703\\agent_audit\\backups\\20260709_103524\\agent_audit\\backups\\20260709_001132\\agent_audit\\backups\\20260709_001004\\agent_audit\\backups\\20260709_000405\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235033\\agent_audit\\backups\\20260708_234930\\agent_audit\\backups\\20260708_233419\\agent_audit\\backups\\20260708_232445\\agent_audit\\backups\\20260708_212000\\agent_audit\\backups\\20260708_161432\\agent_audit\\backups\\20260708_100209\\agent_audit\\backups\\20260707_171557\\agent_audit\\backups\\20260707_171539\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102117\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\engine.py']' returned non-zero exit status 128.
+[2026-07-09 17:08:28] [INFO] Audit termine en 29.0s. Health Score projet: 100/100
+[2026-07-10 09:06:15] [INFO] ============================================================
+[2026-07-10 09:06:15] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-10 09:06:15] [INFO] ============================================================
+[2026-07-10 09:06:15] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-10 09:06:15] [INFO] Etablissement de la baseline de tests...
+[2026-07-10 09:06:15] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-10 09:06:22] [INFO] Phase 1 terminee: 175 fichiers, 1551602 lignes
+[2026-07-10 09:06:22] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-10 09:06:22] [INFO]   -> 58 anomalies globales detectees
+[2026-07-10 09:06:22] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-10 09:06:38] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-10 09:06:38] [INFO]   Health Score: 100/100
+[2026-07-10 09:06:38] [INFO]   Anomalies Critiques: 0
+[2026-07-10 09:06:38] [INFO]   Avertissements (Warning): 58
+[2026-07-10 09:06:38] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-10 09:06:38] [INFO]   Total defauts detectes: 116
+[2026-07-10 09:06:38] [INFO]   Corrections appliquees: 50
+[2026-07-10 09:06:38] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-10 09:06:38] [INFO] Agent Health: WARNING
+[2026-07-10 09:06:38] [WARNING]   [!] Performance degradee: 7.6 fichiers/s
+[2026-07-10 09:06:38] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-10 09:06:38] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-10 09:06:38] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260709_170824\\agent_audit\\backups\\20260709_145346\\agent_audit\\backups\\20260709_124639\\agent_audit\\backups\\20260709_122150\\agent_audit\\backups\\20260709_115710\\agent_audit\\backups\\20260709_103529\\agent_audit\\backups\\20260709_001140\\agent_audit\\backups\\20260709_001011\\agent_audit\\backups\\20260709_000410\\agent_audit\\backups\\20260708_235917\\agent_audit\\backups\\20260708_235038\\agent_audit\\backups\\20260708_234935\\agent_audit\\backups\\20260708_233424\\agent_audit\\backups\\20260708_232453\\agent_audit\\backups\\20260708_212005\\agent_audit\\backups\\20260708_161437\\agent_audit\\backups\\20260708_100213\\agent_audit\\backups\\20260707_171603\\agent_audit\\backups\\20260707_171543\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102122\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\validators.py']' returned non-zero exit status 128.
+[2026-07-10 09:06:39] [INFO] Audit termine en 23.6s. Health Score projet: 100/100
+[2026-07-10 13:31:59] [INFO] ============================================================
+[2026-07-10 13:31:59] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-10 13:31:59] [INFO] ============================================================
+[2026-07-10 13:31:59] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-10 13:31:59] [INFO] Etablissement de la baseline de tests...
+[2026-07-10 13:31:59] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-10 13:32:12] [INFO] Phase 1 terminee: 175 fichiers, 1551624 lignes
+[2026-07-10 13:32:12] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-10 13:32:12] [INFO]   -> 58 anomalies globales detectees
+[2026-07-10 13:32:12] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-10 13:32:23] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-10 13:32:23] [INFO]   Health Score: 100/100
+[2026-07-10 13:32:23] [INFO]   Anomalies Critiques: 0
+[2026-07-10 13:32:23] [INFO]   Avertissements (Warning): 58
+[2026-07-10 13:32:23] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-10 13:32:23] [INFO]   Total defauts detectes: 116
+[2026-07-10 13:32:23] [INFO]   Corrections appliquees: 50
+[2026-07-10 13:32:23] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-10 13:32:23] [INFO] Agent Health: WARNING
+[2026-07-10 13:32:23] [WARNING]   [!] Performance degradee: 7.0 fichiers/s
+[2026-07-10 13:32:23] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-10 13:32:23] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-10 13:32:24] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260710_090635\\agent_audit\\backups\\20260709_170824\\agent_audit\\backups\\20260709_145346\\agent_audit\\backups\\20260709_124639\\agent_audit\\backups\\20260709_122150\\agent_audit\\backups\\20260709_115710\\agent_audit\\backups\\20260709_103529\\agent_audit\\backups\\20260709_001140\\agent_audit\\backups\\20260709_001011\\agent_audit\\backups\\20260709_000410\\agent_audit\\backups\\20260708_235917\\agent_audit\\backups\\20260708_235038\\agent_audit\\backups\\20260708_234935\\agent_audit\\backups\\20260708_233424\\agent_audit\\backups\\20260708_232453\\agent_audit\\backups\\20260708_212005\\agent_audit\\backups\\20260708_161437\\agent_audit\\backups\\20260708_100213\\agent_audit\\backups\\20260707_171603\\agent_audit\\backups\\20260707_171543\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102122\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\validators.py']' returned non-zero exit status 128.
+[2026-07-10 13:32:24] [INFO] Audit termine en 25.5s. Health Score projet: 100/100
+[2026-07-10 13:33:21] [INFO] ============================================================
+[2026-07-10 13:33:21] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-10 13:33:21] [INFO] ============================================================
+[2026-07-10 13:33:21] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-10 13:33:21] [INFO] Etablissement de la baseline de tests...
+[2026-07-10 13:33:21] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-10 13:33:21] [INFO] Phase 1 terminee: 175 fichiers, 1551624 lignes
+[2026-07-10 13:33:21] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-10 13:33:21] [INFO]   -> 58 anomalies globales detectees
+[2026-07-10 13:33:21] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-10 13:33:32] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-10 13:33:32] [INFO]   Health Score: 100/100
+[2026-07-10 13:33:32] [INFO]   Anomalies Critiques: 0
+[2026-07-10 13:33:32] [INFO]   Avertissements (Warning): 58
+[2026-07-10 13:33:32] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-10 13:33:32] [INFO]   Total defauts detectes: 116
+[2026-07-10 13:33:32] [INFO]   Corrections appliquees: 50
+[2026-07-10 13:33:32] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-10 13:33:32] [INFO] Agent Health: HEALTHY
+[2026-07-10 13:33:32] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-10 13:33:32] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-10 13:33:32] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260710_133219\\agent_audit\\backups\\20260710_090632\\agent_audit\\backups\\20260709_170821\\agent_audit\\backups\\20260709_145341\\agent_audit\\backups\\20260709_124636\\agent_audit\\backups\\20260709_122147\\agent_audit\\backups\\20260709_115706\\agent_audit\\backups\\20260709_103526\\agent_audit\\backups\\20260709_001134\\agent_audit\\backups\\20260709_001007\\agent_audit\\backups\\20260709_000407\\agent_audit\\backups\\20260708_235914\\agent_audit\\backups\\20260708_235035\\agent_audit\\backups\\20260708_234932\\agent_audit\\backups\\20260708_233421\\agent_audit\\backups\\20260708_232448\\agent_audit\\backups\\20260708_212002\\agent_audit\\backups\\20260708_161434\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171600\\agent_audit\\backups\\20260707_171541\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102120\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\engine.py']' returned non-zero exit status 128.
+[2026-07-10 13:33:32] [INFO] Audit termine en 11.5s. Health Score projet: 100/100
+[2026-07-11 21:26:28] [INFO] ============================================================
+[2026-07-11 21:26:28] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-11 21:26:28] [INFO] ============================================================
+[2026-07-11 21:26:28] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-11 21:26:28] [INFO] Etablissement de la baseline de tests...
+[2026-07-11 21:26:28] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-11 21:26:39] [INFO] Phase 1 terminee: 175 fichiers, 1551622 lignes
+[2026-07-11 21:26:39] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-11 21:26:39] [INFO]   -> 58 anomalies globales detectees
+[2026-07-11 21:26:39] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-11 21:26:51] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-11 21:26:51] [INFO]   Health Score: 100/100
+[2026-07-11 21:26:51] [INFO]   Anomalies Critiques: 0
+[2026-07-11 21:26:51] [INFO]   Avertissements (Warning): 58
+[2026-07-11 21:26:51] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-11 21:26:51] [INFO]   Total defauts detectes: 116
+[2026-07-11 21:26:51] [INFO]   Corrections appliquees: 50
+[2026-07-11 21:26:51] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-11 21:26:51] [INFO] Agent Health: WARNING
+[2026-07-11 21:26:51] [WARNING]   [!] Performance degradee: 7.4 fichiers/s
+[2026-07-11 21:26:51] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-11 21:26:51] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-11 21:26:52] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260710_133325\\agent_audit\\backups\\20260710_133217\\agent_audit\\backups\\20260710_090627\\agent_audit\\backups\\20260709_170819\\agent_audit\\backups\\20260709_145338\\agent_audit\\backups\\20260709_124634\\agent_audit\\backups\\20260709_122145\\agent_audit\\backups\\20260709_115703\\agent_audit\\backups\\20260709_103524\\agent_audit\\backups\\20260709_001132\\agent_audit\\backups\\20260709_001004\\agent_audit\\backups\\20260709_000405\\agent_audit\\backups\\20260708_235913\\agent_audit\\backups\\20260708_235033\\agent_audit\\backups\\20260708_234930\\agent_audit\\backups\\20260708_233419\\agent_audit\\backups\\20260708_232445\\agent_audit\\backups\\20260708_212000\\agent_audit\\backups\\20260708_161432\\agent_audit\\backups\\20260708_100209\\agent_audit\\backups\\20260707_171557\\agent_audit\\backups\\20260707_171539\\agent_audit\\backups\\20260707_142820\\agent_audit\\backups\\20260707_132815\\agent_audit\\backups\\20260707_122810\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102800\\agent_audit\\backups\\20260707_102117\\agent_audit\\backups\\20260707_094941\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092752\\agent_audit\\backups\\20260707_092134\\agent_audit\\engine.py']' returned non-zero exit status 128.
+[2026-07-11 21:26:52] [INFO] Audit termine en 24.5s. Health Score projet: 100/100
+[2026-07-12 06:20:57] [INFO] ============================================================
+[2026-07-12 06:20:57] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-12 06:20:57] [INFO] ============================================================
+[2026-07-12 06:20:57] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-12 06:20:57] [INFO] Etablissement de la baseline de tests...
+[2026-07-12 06:20:57] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-12 06:20:58] [INFO] Phase 1 terminee: 175 fichiers, 1551646 lignes
+[2026-07-12 06:20:58] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-12 06:20:58] [INFO]   -> 58 anomalies globales detectees
+[2026-07-12 06:20:58] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-12 06:21:16] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-12 06:21:16] [INFO]   Health Score: 100/100
+[2026-07-12 06:21:16] [INFO]   Anomalies Critiques: 0
+[2026-07-12 06:21:16] [INFO]   Avertissements (Warning): 58
+[2026-07-12 06:21:16] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-12 06:21:16] [INFO]   Total defauts detectes: 116
+[2026-07-12 06:21:16] [INFO]   Corrections appliquees: 50
+[2026-07-12 06:21:16] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-12 06:21:16] [INFO] Agent Health: WARNING
+[2026-07-12 06:21:16] [WARNING]   [!] Performance degradee: 8.9 fichiers/s
+[2026-07-12 06:21:16] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-12 06:21:16] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-12 06:21:17] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260711_212648\\agent_audit\\backups\\20260710_133328\\agent_audit\\backups\\20260710_133221\\agent_audit\\backups\\20260710_090634\\agent_audit\\backups\\20260709_170823\\agent_audit\\backups\\20260709_145344\\agent_audit\\backups\\20260709_124638\\agent_audit\\backups\\20260709_122149\\agent_audit\\backups\\20260709_115708\\agent_audit\\backups\\20260709_103528\\agent_audit\\backups\\20260709_001138\\agent_audit\\backups\\20260709_001010\\agent_audit\\backups\\20260709_000409\\agent_audit\\backups\\20260708_235916\\agent_audit\\backups\\20260708_235037\\agent_audit\\backups\\20260708_234934\\agent_audit\\backups\\20260708_233423\\agent_audit\\backups\\20260708_232451\\agent_audit\\backups\\20260708_212004\\agent_audit\\backups\\20260708_161436\\agent_audit\\backups\\20260708_100212\\agent_audit\\backups\\20260707_171602\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\agent_audit\\refactor.py']' returned non-zero exit status 128.
+[2026-07-12 06:21:18] [INFO] Audit termine en 21.0s. Health Score projet: 100/100
+[2026-07-12 22:10:39] [INFO] ============================================================
+[2026-07-12 22:10:39] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-12 22:10:39] [INFO] ============================================================
+[2026-07-12 22:10:39] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-12 22:10:39] [INFO] Etablissement de la baseline de tests...
+[2026-07-12 22:10:39] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-12 22:10:41] [INFO] Phase 1 terminee: 175 fichiers, 1551646 lignes
+[2026-07-12 22:10:41] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-12 22:10:41] [INFO]   -> 58 anomalies globales detectees
+[2026-07-12 22:10:41] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-12 22:11:15] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-12 22:11:15] [INFO]   Health Score: 100/100
+[2026-07-12 22:11:15] [INFO]   Anomalies Critiques: 0
+[2026-07-12 22:11:15] [INFO]   Avertissements (Warning): 58
+[2026-07-12 22:11:15] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-12 22:11:15] [INFO]   Total defauts detectes: 116
+[2026-07-12 22:11:15] [INFO]   Corrections appliquees: 50
+[2026-07-12 22:11:15] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-12 22:11:15] [INFO] Agent Health: WARNING
+[2026-07-12 22:11:15] [WARNING]   [!] Performance degradee: 4.9 fichiers/s
+[2026-07-12 22:11:15] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-12 22:11:15] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-12 22:11:16] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260712_062110\\agent_audit\\backups\\20260711_212646\\agent_audit\\backups\\20260710_133327\\agent_audit\\backups\\20260710_133219\\agent_audit\\backups\\20260710_090632\\agent_audit\\backups\\20260709_170821\\agent_audit\\backups\\20260709_145341\\agent_audit\\backups\\20260709_124636\\agent_audit\\backups\\20260709_122147\\agent_audit\\backups\\20260709_115706\\agent_audit\\backups\\20260709_103526\\agent_audit\\backups\\20260709_001134\\agent_audit\\backups\\20260709_001007\\agent_audit\\backups\\20260709_000407\\agent_audit\\backups\\20260708_235914\\agent_audit\\backups\\20260708_235035\\agent_audit\\backups\\20260708_234932\\agent_audit\\backups\\20260708_233421\\agent_audit\\backups\\20260708_232448\\agent_audit\\backups\\20260708_212002\\agent_audit\\backups\\20260708_161434\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171600\\agent_audit\\backups\\20260707_171541\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112806\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102120\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\engine.py']' returned non-zero exit status 128.
+[2026-07-12 22:11:17] [INFO] Audit termine en 37.9s. Health Score projet: 100/100
+[2026-07-13 08:55:42] [INFO] ============================================================
+[2026-07-13 08:55:42] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-13 08:55:42] [INFO] ============================================================
+[2026-07-13 08:55:42] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-13 08:55:42] [INFO] Etablissement de la baseline de tests...
+[2026-07-13 08:55:42] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-13 08:55:55] [INFO] Phase 1 terminee: 175 fichiers, 1551668 lignes
+[2026-07-13 08:55:55] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-13 08:55:55] [INFO]   -> 58 anomalies globales detectees
+[2026-07-13 08:55:55] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-13 08:56:07] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-13 08:56:07] [INFO]   Health Score: 100/100
+[2026-07-13 08:56:07] [INFO]   Anomalies Critiques: 0
+[2026-07-13 08:56:07] [INFO]   Avertissements (Warning): 58
+[2026-07-13 08:56:07] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-13 08:56:07] [INFO]   Total defauts detectes: 116
+[2026-07-13 08:56:07] [INFO]   Corrections appliquees: 50
+[2026-07-13 08:56:07] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-13 08:56:07] [INFO] Agent Health: WARNING
+[2026-07-13 08:56:07] [WARNING]   [!] Performance degradee: 7.3 fichiers/s
+[2026-07-13 08:56:07] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-13 08:56:07] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-13 08:56:07] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260712_221104\\agent_audit\\backups\\20260712_062110\\agent_audit\\backups\\20260711_212647\\agent_audit\\backups\\20260710_133327\\agent_audit\\backups\\20260710_133220\\agent_audit\\backups\\20260710_090633\\agent_audit\\backups\\20260709_170822\\agent_audit\\backups\\20260709_145343\\agent_audit\\backups\\20260709_124637\\agent_audit\\backups\\20260709_122148\\agent_audit\\backups\\20260709_115707\\agent_audit\\backups\\20260709_103527\\agent_audit\\backups\\20260709_001135\\agent_audit\\backups\\20260709_001008\\agent_audit\\backups\\20260709_000408\\agent_audit\\backups\\20260708_235915\\agent_audit\\backups\\20260708_235036\\agent_audit\\backups\\20260708_234933\\agent_audit\\backups\\20260708_233422\\agent_audit\\backups\\20260708_232450\\agent_audit\\backups\\20260708_212003\\agent_audit\\backups\\20260708_161435\\agent_audit\\backups\\20260708_100211\\agent_audit\\backups\\20260707_171601\\agent_audit\\backups\\20260707_171542\\agent_audit\\backups\\20260707_142821\\agent_audit\\backups\\20260707_132816\\agent_audit\\backups\\20260707_122811\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102801\\agent_audit\\backups\\20260707_102121\\agent_audit\\backups\\20260707_094942\\agent_audit\\backups\\20260707_094850\\agent_audit\\backups\\20260707_092753\\agent_audit\\main.py']' returned non-zero exit status 128.
+[2026-07-13 08:56:07] [INFO] Audit termine en 25.0s. Health Score projet: 100/100
+[2026-07-13 08:58:32] [INFO] ============================================================
+[2026-07-13 08:58:32] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-13 08:58:32] [INFO] ============================================================
+[2026-07-13 08:58:32] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-13 08:58:32] [INFO] Etablissement de la baseline de tests...
+[2026-07-13 08:58:32] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-13 08:58:32] [INFO] Phase 1 terminee: 175 fichiers, 1551668 lignes
+[2026-07-13 08:58:32] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-13 08:58:32] [INFO]   -> 58 anomalies globales detectees
+[2026-07-13 08:58:32] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-13 08:58:38] [INFO]   Passe 1: 58 defauts trouves, 50 corrections appliquees
+[2026-07-13 08:58:38] [INFO]   Health Score: 100/100
+[2026-07-13 08:58:38] [INFO]   Anomalies Critiques: 0
+[2026-07-13 08:58:38] [INFO]   Avertissements (Warning): 58
+[2026-07-13 08:58:38] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-13 08:58:38] [INFO]   Total defauts detectes: 116
+[2026-07-13 08:58:38] [INFO]   Corrections appliquees: 50
+[2026-07-13 08:58:38] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-13 08:58:38] [INFO] Agent Health: HEALTHY
+[2026-07-13 08:58:38] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-13 08:58:38] [INFO] Auto-commit de 10 fichier(s) corrige(s)...
+[2026-07-13 08:58:38] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'agent_audit\\backups\\20260713_085605\\agent_audit\\backups\\20260712_221110\\agent_audit\\backups\\20260712_062114\\agent_audit\\backups\\20260711_212650\\agent_audit\\backups\\20260710_133330\\agent_audit\\backups\\20260710_133222\\agent_audit\\backups\\20260710_090636\\agent_audit\\backups\\20260709_170825\\agent_audit\\backups\\20260709_145347\\agent_audit\\backups\\20260709_124640\\agent_audit\\backups\\20260709_122151\\agent_audit\\backups\\20260709_115711\\agent_audit\\backups\\20260709_103530\\agent_audit\\backups\\20260709_001143\\agent_audit\\backups\\20260709_001012\\agent_audit\\backups\\20260709_000411\\agent_audit\\backups\\20260708_235918\\agent_audit\\backups\\20260708_235039\\agent_audit\\backups\\20260708_234935\\agent_audit\\backups\\20260708_233425\\agent_audit\\backups\\20260708_232454\\agent_audit\\backups\\20260708_212006\\agent_audit\\backups\\20260708_161437\\agent_audit\\backups\\20260708_100214\\agent_audit\\backups\\20260707_171604\\agent_audit\\backups\\20260707_171544\\agent_audit\\backups\\20260707_142822\\agent_audit\\backups\\20260707_132817\\agent_audit\\backups\\20260707_122812\\agent_audit\\backups\\20260707_112807\\agent_audit\\backups\\20260707_102802\\agent_audit\\backups\\20260707_102123\\agent_audit\\backups\\20260707_094943\\agent_audit\\backups\\20260707_094851\\agent_audit\\backups\\20260707_092754\\scratch\\_fix_main.py']' returned non-zero exit status 128.
+[2026-07-13 08:58:39] [INFO] Audit termine en 6.9s. Health Score projet: 100/100
+[2026-07-13 09:04:08] [INFO] ============================================================
+[2026-07-13 09:04:08] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-13 09:04:08] [INFO] ============================================================
+[2026-07-13 09:04:08] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-13 09:04:08] [INFO] Etablissement de la baseline de tests...
+[2026-07-13 09:04:08] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-13 09:04:08] [INFO] Phase 1 terminee: 175 fichiers, 1551667 lignes
+[2026-07-13 09:04:08] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-13 09:04:08] [INFO]   -> 58 anomalies globales detectees
+[2026-07-13 09:04:08] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-13 09:04:25] [INFO]   Passe 1: 8 defauts trouves, 0 corrections appliquees
+[2026-07-13 09:04:25] [INFO]   Health Score: 96/100
+[2026-07-13 09:04:25] [INFO]   Anomalies Critiques: 0
+[2026-07-13 09:04:25] [INFO]   Avertissements (Warning): 8
+[2026-07-13 09:04:25] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-13 09:04:25] [INFO]   Total defauts detectes: 66
+[2026-07-13 09:04:25] [INFO]   Corrections appliquees: 0
+[2026-07-13 09:04:25] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-13 09:04:25] [INFO] Agent Health: HEALTHY
+[2026-07-13 09:04:25] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-13 09:04:25] [INFO] Audit termine en 17.5s. Health Score projet: 96/100
+[2026-07-13 09:04:41] [INFO] ============================================================
+[2026-07-13 09:04:41] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-13 09:04:41] [INFO] ============================================================
+[2026-07-13 09:04:41] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-13 09:04:41] [INFO] Etablissement de la baseline de tests...
+[2026-07-13 09:04:41] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-13 09:04:41] [INFO] Phase 1 terminee: 175 fichiers, 1550722 lignes
+[2026-07-13 09:04:41] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-13 09:04:41] [INFO]   -> 58 anomalies globales detectees
+[2026-07-13 09:04:41] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-13 09:04:56] [INFO]   Passe 1: 55 defauts trouves, 0 corrections appliquees
+[2026-07-13 09:04:56] [INFO]   Health Score: 70/100
+[2026-07-13 09:04:56] [INFO]   Anomalies Critiques: 44
+[2026-07-13 09:04:56] [INFO]   Avertissements (Warning): 11
+[2026-07-13 09:04:56] [INFO]   Suggestions & Code Smells (Info): 58
+[2026-07-13 09:04:56] [INFO]   Total defauts detectes: 113
+[2026-07-13 09:04:56] [INFO]   Corrections appliquees: 0
+[2026-07-13 09:04:56] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-13 09:04:56] [INFO] Agent Health: HEALTHY
+[2026-07-13 09:04:56] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-13 09:04:56] [INFO] Audit termine en 15.2s. Health Score projet: 70/100

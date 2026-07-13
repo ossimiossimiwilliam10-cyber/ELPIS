@@ -183,6 +183,14 @@ function buildTaskPools({
 
           if (!activePourExercices) continue;
 
+          // --- Vérification Prérequis (Théorie avant Pratique) ---
+          const totalCM = m.listeCM?.length || 0;
+          const cmRevises = (m.listeCM || []).filter(cm => cm.derniereRevision).length;
+          if (totalCM > 0 && cmRevises < totalCM) {
+            // Règle: pas de pratique tant que tous les CM ne sont pas vus
+            continue;
+          }
+
           // --- TD ---
           for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
             if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
@@ -254,8 +262,6 @@ function buildTaskPools({
           }
 
           // --- Annales ---
-          const totalCM = m.listeCM?.length || 0;
-          const cmRevises = (m.listeCM || []).filter(cm => cm.derniereRevision).length;
           const cmCompletion = totalCM > 0 ? (cmRevises / totalCM) : 1;
 
           const totalTD = m.listeTD?.length || 0;

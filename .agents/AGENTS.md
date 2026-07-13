@@ -150,3 +150,7 @@ Cela permet de rÃ©compenser la rigueur quotidienne et pas seulement la performan
 
 - **Unicité des Tâches (Frontend)** : Lors de la correspondance entre le résultat de l'Orchestrateur et la liste d'exercices affichée, le front-end ne doit jamais se fier uniquement au titre pour autoriser des doublons. Une tâche de l'orchestrateur ne doit correspondre qu'à une seule carte dans la Session d'Étude, même si les titres sont génériques.
 - **Isolation du Boost de Découverte** : Le bonus accordé aux nouvelles matières (discoveryBoost) doit être strictement mathématique pour le score de priorité final, et ne doit pas polluer les modificateurs d'urgence (comme examBoost). Cela évite que les nouvelles matières ne contournent le filtre de parité.
+
+<RULE[prerequisite_theory_first]>
+- **Théorie avant Pratique (Prérequis CM)** : Ne jamais planifier d'exercices pratiques (TD, TP, Annales) si les fondations théoriques (CM) de la matière n'ont pas été vues au moins une fois dans leur intégralité. Le moteur d'ordonnancement doit bloquer l'assignation pratique (skip global) si le nombre de CM révisés est inférieur au nombre total de CM définis pour la matière. Si la matière ne possède aucun CM (0), la pratique est autorisée.
+</RULE[prerequisite_theory_first]>
