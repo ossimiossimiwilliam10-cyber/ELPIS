@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-13T12:49:13.054573",
+  "timestamp": "2026-07-13T12:58:40.797283",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 36.12,
+    "elapsed_seconds": 23.5,
     "files_scanned": 172,
-    "files_per_second": 4.8,
-    "lines_per_second": 42939.0
+    "files_per_second": 7.3,
+    "lines_per_second": 65989.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 13,
@@ -39,36 +39,36 @@
     "total_rules": 57,
     "active_rules": 13,
     "inactive_rules": [
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "EXCESSIVE_FUNCTION_LENGTH",
-      "IMPORT_BOUNDARY_VIOLATION",
-      "TEST_WITH_ONLY",
-      "NO_CIRCULAR_IMPORTS",
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "FIX_CONFIDENCE_DECIMAL",
+      "MISSING_ALT_ATTRIBUTE",
+      "TOAST_DIRECT_CALL",
       "PROP_SPREADING_WARNING",
-      "NO_INDEX_AS_KEY",
-      "NO_HARDCODED_SECRETS",
-      "NO_BARE_EXCEPT",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "NO_BARREL_IMPORT_CYCLES",
       "NO_TRAILING_WHITESPACE",
-      "MISSING_KEY_IN_MAP",
-      "NO_PRINT_IN_PRODUCTION",
-      "NO_HARDCODED_LOCALHOST"
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "NO_BARREL_IMPORT_CYCLES",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_IMPORTANT_IN_CSS",
+      "MISSING_TYPE_HINTS",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "NO_VAR_KEYWORD",
+      "NO_WILDCARD_CORS",
+      "NO_HARDCODED_LOCALHOST",
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "INTELLIGENCE_EXPORT_COVERAGE"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 73.1
+    "size_kb": 73.4
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 4.8 fichiers/s"
+    "Performance degradee: 7.3 fichiers/s"
   ],
   "recommendations": [
     "56 regles inactives. Verifier si elles sont encore pertinentes."

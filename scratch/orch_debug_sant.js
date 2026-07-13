@@ -102,7 +102,7 @@ function buildTaskPools({
             if (nouvellesMatieres) nouvellesMatieres.add(m.nom);
           }
 
-          let intraDayPenalty = matieresDejaTravaillees.has(m.nom) ? 0.01 : 1.0;
+          let intraDayPenalty = matieresDejaTravaillees.has(m.nom) ? 0.1 : 1.0;
 
           let crisisBoost = 1.0;
           if (projectedScoreMap && projectedScoreMap[m.nom] !== undefined && projectedScoreMap[m.nom] < 5.0) {
@@ -308,7 +308,7 @@ function buildTaskPools({
       }
     }
   }
-  return { poolCM, poolTD, poolTP, poolAnnales };
+  return { poolCM, poolTD, poolTP, poolAnnales, nouvellesMatieres };
 }
 
 /**
