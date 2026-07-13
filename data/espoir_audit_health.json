@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-13T18:40:55.315901",
+  "timestamp": "2026-07-13T20:10:25.886812",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 7.58,
+    "elapsed_seconds": 6.95,
     "files_scanned": 167,
-    "files_per_second": 22.0,
-    "lines_per_second": 204152.0
+    "files_per_second": 24.0,
+    "lines_per_second": 222438.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "NO_DOUBLE_SEMICOLONS",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "NO_HTTP_IN_PRODUCTION_URLS",
-      "NO_SQL_INJECTION_PATTERNS",
-      "USE_OPTIONAL_CHAINING",
-      "NO_EMPTY_CATCH",
-      "TEST_WITH_SKIP",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "JSON_DEEP_CLONE",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "EXCESSIVE_FUNCTION_LENGTH",
-      "NO_UNSAFE_INNERHTML",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "NO_TRAILING_WHITESPACE",
       "FIX_CONFIDENCE_DECIMAL",
-      "NO_HARDCODED_LOCALHOST",
-      "NO_BARE_EXCEPT",
-      "NO_WILDCARD_CORS",
-      "EMPTY_PROMISE_CATCH"
+      "NO_UNSAFE_INNERHTML",
+      "TEST_WITH_SKIP",
+      "JSON_DEEP_CLONE",
+      "PWA_STATIC_ROUTE_EXCLUSION",
+      "NO_EMPTY_CATCH",
+      "NO_TODO_WITHOUT_TICKET",
+      "NO_IMPORTANT_IN_CSS",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "USE_OPTIONAL_CHAINING",
+      "NO_CIRCULAR_IMPORTS",
+      "NO_HARDCODED_SECRETS",
+      "FETCH_WITHOUT_ABORT",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "NO_BARREL_IMPORT_CYCLES",
+      "EXCESSIVE_FILE_SIZE",
+      "EMPTY_PROMISE_CATCH",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "NO_VAR_KEYWORD"
     ],
     "inactive_count": 56
   },
