@@ -84,7 +84,7 @@ describe('Scoring Engine - getPrioScore', () => {
   test('AXE 5: Remaining Weight Factor boosts priority if remainingRatio >= 0.4', () => {
     const ex = { nombrePratiques: 0, difficulte: 'moyen' };
     const matiere = { nom: 'Maths', coefficient: 1, evaluations: [] };
-    const rwMap = { 'Maths': { remainingRatio: 0.8 } }; // Boost: 1 + (0.8 - 0.4)*1 = 1.4
+    const rwMap = { 'maths': { remainingRatio: 0.8 } }; // Boost: 1 + (0.8 - 0.4)*1 = 1.4
 
     const prioWithRW = getPrioScore(ex, null, matiere, rwMap, null);
     const prioWithoutRW = getPrioScore(ex, null, matiere, {}, null);
@@ -95,7 +95,7 @@ describe('Scoring Engine - getPrioScore', () => {
   test('AXE 8: Compensation reduces pressure if UE is compensable and deficit < 2', () => {
     const ex = { nombrePratiques: 0, difficulte: 'moyen' };
     const matiere = { nom: 'Maths', coefficient: 1, evaluations: [] };
-    const compMap = { 'Maths': { compensable: true, deficit: 1 } }; 
+    const compMap = { 'maths': { compensable: true, deficit: 1 } }; 
 
     const prioWithComp = getPrioScore(ex, null, matiere, null, compMap);
     const prioWithoutComp = getPrioScore(ex, null, matiere, null, {});
@@ -105,8 +105,8 @@ describe('Scoring Engine - getPrioScore', () => {
 
   test('AXE 13: Synergies Inter-Matières boosts priority if related subject ratio < 0.3', () => {
     const ex = { nombrePratiques: 0, difficulte: 'moyen' };
-    const matiere = { nom: 'Maths', _ueMatieres: ['Maths', 'Physique'] };
-    const velocityMap = { 'Physique': { totalCMs: 10, masteredCMs: 1 } }; // ratio 0.1 < 0.3 => boost +0.2
+    const matiere = { nom: 'Maths', _ueMatieres: ['maths', 'physique'] };
+    const velocityMap = { 'physique': { totalCMs: 10, masteredCMs: 1 } }; // ratio 0.1 < 0.3 => boost +0.2
 
     const prioWithSynergy = getPrioScore(ex, null, matiere, null, null, velocityMap);
     const prioWithoutSynergy = getPrioScore(ex, null, matiere, null, null, {});
@@ -116,8 +116,8 @@ describe('Scoring Engine - getPrioScore', () => {
 
   test('AXE 13: Synergies Inter-Matières reduces priority if related subject ratio > 0.8', () => {
     const ex = { nombrePratiques: 0, difficulte: 'moyen' };
-    const matiere = { nom: 'Maths', _ueMatieres: ['Maths', 'Physique'] };
-    const velocityMap = { 'Physique': { totalCMs: 10, masteredCMs: 9 } }; // ratio 0.9 > 0.8 => boost -0.1
+    const matiere = { nom: 'Maths', _ueMatieres: ['maths', 'physique'] };
+    const velocityMap = { 'physique': { totalCMs: 10, masteredCMs: 9 } }; // ratio 0.9 > 0.8 => boost -0.1
 
     const prioWithSynergy = getPrioScore(ex, null, matiere, null, null, velocityMap);
     const prioWithoutSynergy = getPrioScore(ex, null, matiere, null, null, {});

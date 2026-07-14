@@ -135,9 +135,9 @@ describe('Intelligence Engine - buildCompensationMap (Axe 8)', () => {
       }]
     };
     const map = buildCompensationMap(crs);
-    expect(map['Maths'].compensable).toBe(true);
-    expect(map['Maths'].deficit).toBe(2); // 10 - 8 = 2
-    expect(map['Physique'].compensable).toBe(false);
+    expect(map['maths'].compensable).toBe(true);
+    expect(map['maths'].deficit).toBe(2); // 10 - 8 = 2
+    expect(map['physique'].compensable).toBe(false);
   });
 });
 
@@ -159,9 +159,9 @@ describe('Intelligence Engine - buildProjectedScoreMap (Axe 11)', () => {
         }]
       }]
     };
-    const velocityMap = { 'Maths': { totalCMs: 2, masteredCMs: 2, totalStudyMinutes: 120 } };
+    const velocityMap = { 'maths': { totalCMs: 2, masteredCMs: 2, totalStudyMinutes: 120 } };
     const map = buildProjectedScoreMap(crs, velocityMap);
-    expect(map['Maths']).toBeGreaterThanOrEqual(12);
+    expect(map['maths']).toBeGreaterThanOrEqual(12);
   });
 });
 
@@ -187,8 +187,8 @@ describe('Intelligence Engine - buildCognitiveLoadMap', () => {
       }]
     };
     const map = buildCognitiveLoadMap(crs);
-    expect(map['Maths'].cognitiveLoad).toBe('heavy');
-    expect(map['Bio'].cognitiveLoad).toBe('light');
+    expect(map['maths'].cognitiveLoad).toBe('heavy');
+    expect(map['bio'].cognitiveLoad).toBe('light');
   });
 });
 

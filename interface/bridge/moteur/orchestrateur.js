@@ -47,7 +47,8 @@ const { normalizeDateStr, parseDateLocal } = require('./utils');
 function buildTaskPools({
   crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
   compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday, fillGap, now, parityJour,
-  matieresDejaTravaillees = new Set(), nouvellesMatieres = new Set()
+  matieresDejaTravaillees = new Set(), nouvellesMatieres = new Set(),
+  bypassInterleaving = false
 }) {
   const poolCM = [];
   const poolTD = [];
@@ -57,18 +58,19 @@ function buildTaskPools({
   const maxNewCMPerSubject = cfg.maxNewCMPerSubjectPerDay !== undefined ? cfg.maxNewCMPerSubjectPerDay : 1;
   const maxNewCMPerSemester = cfg.maxNewCMPerSemesterPerDay !== undefined ? cfg.maxNewCMPerSemesterPerDay : 3;
 
+  let licenceIdx = 0;
   for (const l of (crs.licences || [])) {
-    if (l.archived) continue;
+    if (l.archived) { licenceIdx++; continue; }
+    let semestreIdx = 0;
     for (const s of (l.semestres || [])) {
-      if (s.archived) continue;
+      if (s.archived) { semestreIdx++; continue; }
       if (s.dateFin) {
         const df = parseDateLocal(normalizeDateStr(s.dateFin));
         if (df && df < now) continue;
       }
       let matiereIndexDansSemestre = 0;
-      let newCMCountPerSemester = 0;
       for (const ue of (s.ues || [])) {
-        const ueMatiereNames = (ue.matieres || []).map(m => m.nom).filter(Boolean);
+        const ueMatiereNames = (ue.matieres || []).map(m => (m.nom || '').toLowerCase().trim()).filter(Boolean);
         for (const m of (ue.matieres || [])) {
           m._ueMatieres = ueMatiereNames;
           const examData = getSubjectExamBoost(m, examUrgencyMap);
@@ -102,10 +104,10 @@ function buildTaskPools({
             if (nouvellesMatieres) nouvellesMatieres.add(m.nom);
           }
 
-          let intraDayPenalty = matieresDejaTravaillees.has(m.nom) ? 0.01 : 1.0;
+          let intraDayPenalty = matieresDejaTravaillees.has(m.nom) ? 0.5 : 1.0;
 
           let crisisBoost = 1.0;
-          if (projectedScoreMap && projectedScoreMap[m.nom] !== undefined && projectedScoreMap[m.nom] < 5.0) {
+          if (projectedScoreMap && projectedScoreMap[m.nom.toLowerCase().trim()] !== undefined && projectedScoreMap[m.nom.toLowerCase().trim()] < 5.0) {
             crisisBoost = MAGIC_CONSTANTS.BOOST_CRISE_NOTE;
           }
 
@@ -168,11 +170,14 @@ function buildTaskPools({
               const dureeEstimee = (cm.tempsMoyen != null && cm.tempsMoyen > 0) ? cm.tempsMoyen : dureeBase;
 
               poolCM.push({
+                _semestreId: `L${licenceIdx}-S${semestreIdx}`,
                 matiere: m.nom,
                 type: "CM",
                 titre: cm.titre,
                 dureeMinutes: Math.round(dureeEstimee),
                 fichePdfPath: cm.fichePdfPath || "",
+                pdfPath: cm.pdfPath || "",
+                pdfPaths: cm.pdfPaths || [],
                 prio: prioCM,
                 isNew: !cm.derniereRevision,
                 raisons: [...baseRaisons]
@@ -181,7 +186,7 @@ function buildTaskPools({
           }
 
           // Interleaving Intelligent (Parité dynamique)
-          let activePourExercices = ((matiereIndexDansSemestre % 2) === parityJour);
+          let activePourExercices = bypassInterleaving || ((matiereIndexDansSemestre % 2) === parityJour);
           if (examBoost >= 2.0) activePourExercices = true;
           matiereIndexDansSemestre++;
 
@@ -201,11 +206,13 @@ function buildTaskPools({
             const dureeBase = cfg.defaultDurationTD || 20;
             const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
             poolTD.push({
+              _semestreId: `L${licenceIdx}-S${semestreIdx}`,
               matiere: m.nom,
               type: "TD",
               titre: ex.titre,
               dureeMinutes: Math.round(dureeEstimee),
               pdfPath: ex.pdfPath || "",
+              pdfPaths: ex.pdfPaths || [],
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
               prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail) * inactivityBoost * discoveryBoost * intraDayPenalty,
@@ -251,12 +258,14 @@ function buildTaskPools({
             else if (isWeekend) tpPrio += MAGIC_CONSTANTS.PRIO_WEEKEND_TP;
 
             poolTP.push({
+              _semestreId: `L${licenceIdx}-S${semestreIdx}`,
               matiere: m.nom,
               type: "TP",
               titre: ex.titre,
               dureeMinutes: Math.round(dureeEstimee),
               tempsMoyen: avgForStep,
               pdfPath: ex.pdfPath || "",
+              pdfPaths: ex.pdfPaths || [],
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
               prio: tpPrio * inactivityBoost * discoveryBoost * intraDayPenalty,
@@ -302,11 +311,13 @@ function buildTaskPools({
               const annaleBoost = isUrgent ? MAGIC_CONSTANTS.BOOST_ANNALE_URGENT : MAGIC_CONSTANTS.BOOST_ANNALE_NORMAL;
 
               poolAnnales.push({
+                _semestreId: `L${licenceIdx}-S${semestreIdx}`,
                 matiere: m.nom,
                 type: "ANNALE",
                 titre: ex.titre,
                 dureeMinutes: Math.round(dureeEstimee),
                 pdfPath: ex.pdfPath || "",
+                pdfPaths: ex.pdfPaths || [],
                 page: ex.page || 1,
                 difficulte: ex.difficulte || "",
                 prio: basePrio * annaleBoost * intraDayPenalty,
@@ -316,7 +327,9 @@ function buildTaskPools({
           }
         }
       }
+      semestreIdx++;
     }
+    licenceIdx++;
   }
   return { poolCM, poolTD, poolTP, poolAnnales };
 }
@@ -558,10 +571,13 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   }
 
   const maxNewCMPerSemester = cfg.maxNewCMPerSemesterPerDay !== undefined ? cfg.maxNewCMPerSemesterPerDay : 3;
-  let newCMAdded = 0;
+  const newCMPerSemestre = {};
   const appendFromPool = (pool, subjectCountMap, limitPerSubject) => {
     for (const item of pool) {
-      if (item.isNew && !fillGap && newCMAdded >= maxNewCMPerSemester && item.matiere !== guaranteedSubject) continue;
+      if (item.isNew && !fillGap) {
+        const semKey = item._semestreId || '__global';
+        if ((newCMPerSemestre[semKey] || 0) >= maxNewCMPerSemester && item.matiere !== guaranteedSubject) continue;
+      }
       if (tempsRequisMin + item.dureeMinutes <= tempsLibreMin) {
         if (!fillGap && !canAddMatiere(item.matiere)) continue;
         const count = subjectCountMap ? (subjectCountMap[item.matiere] || 0) : 0;
@@ -570,7 +586,10 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
           tempsRequisMin += item.dureeMinutes;
           if (subjectCountMap) subjectCountMap[item.matiere] = count + 1;
           selectedMatieres.add(item.matiere);
-          if (item.isNew) newCMAdded++;
+          if (item.isNew) {
+            const semKey = item._semestreId || '__global';
+            newCMPerSemestre[semKey] = (newCMPerSemestre[semKey] || 0) + 1;
+          }
         }
       }
     }
@@ -596,7 +615,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
       heavyTasks.unshift(t);
       continue;
     }
-    const cogData = cognitiveLoadMap[t.matiere];
+    const cogData = cognitiveLoadMap[t.matiere.toLowerCase().trim()];
     if (cogData && cogData.cognitiveLoad === 'heavy') heavyTasks.push(t);
     else if (cogData && cogData.cognitiveLoad === 'light') lightTasks.push(t);
     else mediumTasks.push(t);
@@ -644,8 +663,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     }
 
     // Tagguer les synergies détectées
-    if (synergyMap[t.matiere] && synergyMap[t.matiere].length > 0) {
-      t.synergies = synergyMap[t.matiere].slice(0, 3);
+    if (synergyMap[t.matiere.toLowerCase().trim()] && synergyMap[t.matiere.toLowerCase().trim()].length > 0) {
+      t.synergies = synergyMap[t.matiere.toLowerCase().trim()].slice(0, 3);
     }
   }
 
@@ -720,7 +739,7 @@ function genererTacheSpecifique(configPath, coursPath, options) {
 
   const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
     crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
-    compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: 0
+    compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: new Date().getDay() % 2, bypassInterleaving: true
   });
 
   const allPools = [...poolCM, ...poolTD, ...poolTP, ...poolAnnales];

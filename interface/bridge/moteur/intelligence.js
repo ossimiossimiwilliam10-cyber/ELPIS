@@ -144,7 +144,7 @@ function buildCompensationMap(crs) {
       ueData.forEach(ud => {
         for (const m of (ud.ue.matieres || [])) {
           if (ud.ueAvg !== null && semAvg !== null) {
-            map[m.nom] = {
+            map[m.nom.toLowerCase().trim()] = {
               compensable: ud.ueAvg < 10 && semAvg >= 10,
               ueAvg: ud.ueAvg,
               semestreAvg: semAvg,
@@ -183,7 +183,7 @@ function buildRemainingWeightMap(crs) {
             }
           });
           const remainingRatio = totalCoef > 0 ? (totalCoef - evaluatedCoef) / totalCoef : 1;
-          map[m.nom] = { remainingRatio, totalCoef, evaluatedCoef };
+          map[m.nom.toLowerCase().trim()] = { remainingRatio, totalCoef, evaluatedCoef };
         }
       }
     }
@@ -311,7 +311,7 @@ function buildVelocityMap(crs, historique, cfg = {}) {
             ? masteredCMs / Math.max(1, cmSessions.length)
             : null;
 
-          map[m.nom] = {
+          map[m.nom.toLowerCase().trim()] = {
             avgSessionsToMaster,
             avgMinutesPerSession,
             isSlowLearner,
@@ -520,7 +520,7 @@ function buildProjectedScoreDetailMap(crs, velocityMap, ankiStats = null) {
           }
 
           // ---- Modificateurs maîtrise & pratique ----
-          const vData = velocityMap ? velocityMap[m.nom] : null;
+          const vData = velocityMap ? velocityMap[m.nom.toLowerCase().trim()] : null;
           let masteryRatio = 0.5;
           if (vData && vData.totalCMs > 0) {
             masteryRatio = vData.masteredCMs / vData.totalCMs;
@@ -534,7 +534,7 @@ function buildProjectedScoreDetailMap(crs, velocityMap, ankiStats = null) {
           // Prior : baseScore avec précision augmentée
           // Likelihood : masteryRatio * 20 avec précision plus fine
           const priorMean = baseScore;
-          const priorPrecision = 2.5; // Ajusté de 1.0 à 2.5 pour donner plus de poids à l'historique réel
+          const priorPrecision = 1.0 + gradeSeries.length * 0.5; // Adaptatif : plus d'évaluations = plus de précision
           const likelihoodPrecision = 1.5 * masteryRatio + 0.5; // Réduit pour éviter une surestimation de la simple "lecture" des CM
           const posteriorMean = (priorPrecision * priorMean + likelihoodPrecision * (masteryRatio * 20))
             / (priorPrecision + likelihoodPrecision);
@@ -562,7 +562,7 @@ function buildProjectedScoreDetailMap(crs, velocityMap, ankiStats = null) {
 
           projected = Math.max(0, Math.min(20, projected));
 
-          map[m.nom] = {
+          map[m.nom.toLowerCase().trim()] = {
             projected: parseFloat(projected.toFixed(1)),
             ci_lower: parseFloat(Math.max(0, projected - confidenceInterval).toFixed(1)),
             ci_upper: parseFloat(Math.min(20, projected + confidenceInterval).toFixed(1)),
@@ -651,14 +651,14 @@ function buildCognitiveLoadMap(crs) {
       if (minD === dH) cognitiveLoad = 'heavy';
       else if (minD === dL) cognitiveLoad = 'light';
 
-      map[m.nom] = { cognitiveLoad, avgEaseFactor: m.avgEF };
+      map[m.nom.toLowerCase().trim()] = { cognitiveLoad, avgEaseFactor: m.avgEF };
     });
   } else {
     matieresRef.forEach(m => {
       let cognitiveLoad = 'medium';
       if (m.avgEF < 2.0) cognitiveLoad = 'heavy';
       else if (m.avgEF > 3.0) cognitiveLoad = 'light';
-      map[m.nom] = { cognitiveLoad, avgEaseFactor: m.avgEF };
+      map[m.nom.toLowerCase().trim()] = { cognitiveLoad, avgEaseFactor: m.avgEF };
     });
   }
 
@@ -884,8 +884,8 @@ function buildSynergyMap(crs) {
               .filter(w => w.length >= 3 && !STOP_WORDS.has(w));
             tokens.forEach(t => keywords.add(t));
           });
-          matiereKeywords[m.nom] = keywords;
-          matiereCMTitles[m.nom] = titles;
+          matiereKeywords[m.nom.toLowerCase().trim()] = keywords;
+          matiereCMTitles[m.nom.toLowerCase().trim()] = titles;
         }
       }
     }
@@ -943,7 +943,7 @@ function buildSynergyMap(crs) {
 
     if (synergies.length > 0) {
       synergies.sort((a, b) => b.score - a.score);
-      map[nameA] = synergies;
+      map[nameA.toLowerCase().trim()] = synergies;
     }
   }
 
@@ -1006,7 +1006,7 @@ function buildWorkloadForecast(historique, cfg = {}) {
     }
     fitted.push(l);
   }
-  const residuals = values.map((v, i) => v - (fitted[i - 1] || v));
+  const residuals = values.slice(1).map((v, i) => v - fitted[i]);
   const residStd = sampleStdDev(residuals);
 
   // Projection sur 7 jours

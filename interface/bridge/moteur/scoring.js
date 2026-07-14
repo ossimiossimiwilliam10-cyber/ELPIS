@@ -1,8 +1,15 @@
 /**
- * SCORING MODULE v2 — Fonctions de priorité et de scoring pour l'ordonnancement.
+ * SCORING MODULE v3 — Fonctions de priorité et de scoring pour l'ordonnancement.
  * Extraites de l'orchestrateur.
  *
- * v2 ajoute :
+ * v3 corrige :
+ *   - Fuzzy-match déterministe (tri longueur + alphabétique)
+ *   - Bonus coeff≥3 étendu à tous les niveaux d'urgence ≥1.5
+ *   - Normalisation de casse cohérente pour tous les lookups
+ *   - Helper fuzzyLookupExamUrgency partagé (DRY)
+ *   - Avertissement console pour difficulté inconnue
+ *
+ * v2 ajoutait :
  *   - Priorité sensible à l'intervalle de confiance (exploration des zones d'incertitude)
  *   - Poids Bayésiens adaptatifs (getAdaptiveWeight)
  *   - Flag anomalie intégré au scoring
@@ -10,19 +17,57 @@
 
 const { getMatiereAverage } = require('./intelligence');
 
-/**
- * Multiplier de difficulté pour une tâche donnée (utilisé pour l'estimation de durée).
- */
+// ---------------------------------------------------------------------------
+// Helper partagé : fuzzy lookup sensible à la casse dans examUrgencyMap
+// Tri déterministe : longueur décroissante, puis ordre alphabétique.
+// ---------------------------------------------------------------------------
+
+function fuzzyLookupExamUrgency(examUrgencyMap, matiereName) {
+  if (!examUrgencyMap || !matiereName) return undefined;
+  const key = matiereName.toLowerCase().trim();
+  if (!key) return undefined;
+
+  // Correspondance exacte
+  if (examUrgencyMap[key] !== undefined) return examUrgencyMap[key];
+
+  // Fuzzy match : tri déterministe (longueur DESC, puis alpha ASC)
+  const entries = Object.entries(examUrgencyMap)
+    .sort((a, b) => b[0].length - a[0].length || a[0].localeCompare(b[0]));
+
+  for (const [subjKey, data] of entries) {
+    if (key.startsWith(subjKey) || subjKey.startsWith(key)) {
+      return data;
+    }
+  }
+  return undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Multiplier de difficulté
+// ---------------------------------------------------------------------------
+
+const VALID_DIFFICULTIES = new Set([
+  'difficile', 'assez_difficile', 'moyen', 'facile', 'tres_facile'
+]);
+
 function getDifficultyMultiplier(difficulte) {
   switch (difficulte) {
-    case 'difficile': return 1.5;
+    case 'difficile':      return 1.5;
     case 'assez_difficile': return 1.2;
-    case 'moyen': return 1.0;
-    case 'facile': return 0.8;
-    case 'tres_facile': return 0.5;
-    default: return 1.0;
+    case 'moyen':          return 1.0;
+    case 'facile':         return 0.8;
+    case 'tres_facile':    return 0.5;
+    default:
+      if (difficulte !== undefined && difficulte !== null && difficulte !== '') {
+        console.warn(`[SCORING] Difficulté inconnue : "${difficulte}" — traitée comme "moyen" (1.0)`);
+      }
+      return 1.0;
   }
 }
+
+// ---------------------------------------------------------------------------
+// Score de priorité principal
+// ---------------------------------------------------------------------------
 
 /**
  * Priority score for exercises: combines practice count + difficulty + exam urgency
@@ -47,29 +92,22 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
     base *= difficultyMultiplier;
   }
 
-  let matiereNom = matiere;
+  // Extraction normalisée du nom de matière (lowercase pour tous les lookups)
+  let matiereNom = null;
   if (matiere && typeof matiere === 'object' && matiere.nom) {
     matiereNom = matiere.nom;
+  } else if (typeof matiere === 'string') {
+    matiereNom = matiere;
   }
+  const matiereKey = matiereNom ? matiereNom.toLowerCase().trim() : null;
 
-  // Exam urgency boost: match subject by fuzzy name
-  if (examUrgencyMap && matiereNom) {
-    const matiereKey = matiereNom.toLowerCase().trim();
-    let boostData = examUrgencyMap[matiereKey];
-    if (boostData === undefined) {
-      // Prioritize longest match first to avoid "Physique" overriding "Physique Avancée"
-      const entries = Object.entries(examUrgencyMap).sort((a, b) => b[0].length - a[0].length);
-      for (const [subjKey, data] of entries) {
-        if (matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
-          boostData = data;
-          break;
-        }
-      }
-    }
+  // Exam urgency boost via le helper partagé
+  if (matiereKey) {
+    const boostData = fuzzyLookupExamUrgency(examUrgencyMap, matiereKey);
     if (boostData) base *= boostData.multiplier;
   }
 
-  // Grade deficit boost (kept modest and deterministic)
+  // Grade deficit boost (utilise l'objet matière complet)
   if (matiere && typeof matiere === 'object') {
     const result = getMatiereAverage(matiere);
     if (result) {
@@ -84,30 +122,30 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
       base *= gradeBoost;
     }
 
-    // AXE 5: Remaining Weight Factor
-    if (remainingWeightMap && typeof matiere === 'object' && matiere.nom) {
-      const rwData = remainingWeightMap[matiere.nom];
+    // AXE 5: Remaining Weight Factor (lookup normalisé)
+    if (remainingWeightMap && matiereKey) {
+      const rwData = remainingWeightMap[matiereKey];
       if (rwData && rwData.remainingRatio >= 0.4) {
         const rwBoost = 1.0 + (rwData.remainingRatio - 0.4) * 1.0;
         base *= rwBoost;
       }
     }
 
-    // AXE 8: Compensation — reduce pressure if UE is compensable
-    if (compensationMap && typeof matiere === 'object' && matiere.nom) {
-      const compData = compensationMap[matiere.nom];
+    // AXE 8: Compensation (lookup normalisé)
+    if (compensationMap && matiereKey) {
+      const compData = compensationMap[matiereKey];
       if (compData && compData.compensable && compData.deficit < 2) {
         base *= 0.7;
       }
     }
   }
 
-  // AXE 13: Synergies Inter-Matières (détection automatique par UE partagée)
+  // AXE 13: Synergies Inter-Matières (lookup normalisé)
   let synergyBoost = 1.0;
-  if (matiere && typeof matiere === 'object' && matiere.nom && velocityMap) {
+  if (matiere && typeof matiere === 'object' && matiereKey && velocityMap) {
     if (matiere._ueMatieres) {
       for (const synName of matiere._ueMatieres) {
-        if (synName === matiere.nom) continue;
+        if (synName === matiereKey) continue;
         const v = velocityMap[synName];
         if (v && v.totalCMs > 0) {
           const ratio = v.masteredCMs / v.totalCMs;
@@ -123,9 +161,9 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
   synergyBoost = Math.max(0.5, Math.min(5.0, synergyBoost));
   base *= synergyBoost;
 
-  // Keep advanced projection signals as a small, non-random adjustment.
-  if (projectedScoreDetail && matiereNom) {
-    const psDetail = projectedScoreDetail[matiereNom];
+  // Projected score detail (lookup normalisé)
+  if (projectedScoreDetail && matiereKey) {
+    const psDetail = projectedScoreDetail[matiereKey];
     if (psDetail && psDetail.confidenceInterval > 4.5) {
       const uncertaintyBoost = 1.0 + (psDetail.confidenceInterval - 4.5) * 0.05;
       base *= Math.min(1.2, uncertaintyBoost);
@@ -141,6 +179,10 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
   return base;
 }
 
+// ---------------------------------------------------------------------------
+// Boost examen par matière
+// ---------------------------------------------------------------------------
+
 /**
  * Calcule le boost de priorité d'une matière en fonction de la proximité d'examen
  * et du coefficient.
@@ -151,33 +193,23 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
   const coeff = matiere.coefficient || 1.0;
   const matiereKey = matiere.nom.toLowerCase().trim();
 
-  let baseBoost = 1.0;
-  let daysToExam = Infinity;
+  const boostData = fuzzyLookupExamUrgency(examUrgencyMap, matiereKey);
+  let baseBoost = boostData ? boostData.multiplier : 1.0;
+  const daysToExam = boostData ? boostData.daysToExam : Infinity;
 
-  if (examUrgencyMap[matiereKey] !== undefined) {
-    baseBoost = examUrgencyMap[matiereKey].multiplier;
-    daysToExam = examUrgencyMap[matiereKey].daysToExam;
-  } else {
-    const entries = Object.entries(examUrgencyMap).sort((a, b) => b[0].length - a[0].length);
-    for (const [subjKey, data] of entries) {
-      if (matiereKey.startsWith(subjKey) || subjKey.startsWith(matiereKey)) {
-        baseBoost = data.multiplier;
-        daysToExam = data.daysToExam;
-        break;
-      }
-    }
-  }
-
-  if (coeff >= 3 && Math.abs(baseBoost - 1.5) < 0.01) {
-    baseBoost = 2.0;
+  // Bonus pour matières à fort coefficient : étendu à tous les niveaux d'urgence ≥ 1.5
+  if (coeff >= 3 && baseBoost >= 1.5) {
+    baseBoost = Math.max(baseBoost, 2.0);
   }
 
   return { boost: baseBoost * (1.0 + (coeff - 1) * 0.1), daysToExam };
 }
 
+// ---------------------------------------------------------------------------
+// AXE 18 : Poids Bayésiens Adaptatifs
+// ---------------------------------------------------------------------------
+
 /**
- * AXE 18 (NOUVEAU) : Poids Bayésiens Adaptatifs
- *
  * Ajuste les poids des différents facteurs de scoring en fonction
  * des résultats observés (corrélation entre priorité élevée et bonne note).
  *
@@ -198,24 +230,16 @@ function getAdaptiveWeight(currentWeights, recentOutcomes) {
 
   if (!recentOutcomes || recentOutcomes.length < 3) return weights;
 
-  // Calculer la corrélation entre priorité et résultat
-  // Si une priorité élevée mène à une bonne note → le système fonctionne, garder les poids
-  // Si une priorité élevée mène à une mauvaise note → ajuster (trop d'exploration ?)
+  const alpha = 0.2;
 
-  const alpha = 0.2; // taux d'apprentissage
-
-  // Moyenne récente des notes
   const avgNote = recentOutcomes.reduce((a, o) => a + (o.noteObtenue || 10), 0) / recentOutcomes.length;
 
-  // Si les notes récentes sont bonnes (>13), on peut réduire l'exploration
   if (avgNote > 13) {
     weights.exploration = Math.max(0.05, weights.exploration - alpha * 0.02);
   } else if (avgNote < 9) {
-    // Mauvais résultats : augmenter l'exploration pour trouver de meilleures stratégies
     weights.exploration = Math.min(0.30, weights.exploration + alpha * 0.05);
   }
 
-  // Si l'utilisateur réussit bien les matières avec fort coefficient → renforcer gradeDeficit
   const highCoefOutcomes = recentOutcomes.filter(o => o.coefficient >= 2);
   if (highCoefOutcomes.length >= 2) {
     const highCoefAvg = highCoefOutcomes.reduce((a, o) => a + (o.noteObtenue || 10), 0) / highCoefOutcomes.length;
@@ -227,4 +251,10 @@ function getAdaptiveWeight(currentWeights, recentOutcomes) {
   return weights;
 }
 
-module.exports = { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost, getAdaptiveWeight };
+module.exports = {
+  fuzzyLookupExamUrgency,
+  getDifficultyMultiplier,
+  getPrioScore,
+  getSubjectExamBoost,
+  getAdaptiveWeight
+};

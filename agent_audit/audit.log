@@ -3055,3 +3055,25 @@
 [2026-07-13 13:12:59] [WARNING]   [!] Performance degradee: 6.1 fichiers/s
 [2026-07-13 13:12:59] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
 [2026-07-13 13:12:59] [INFO] Audit termine en 28.1s. Health Score projet: 70/100
+[2026-07-14 07:12:25] [INFO] ============================================================
+[2026-07-14 07:12:25] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-14 07:12:25] [INFO] ============================================================
+[2026-07-14 07:12:25] [INFO] Regles chargees: 57 (version 3.2.0)
+[2026-07-14 07:12:25] [INFO] Etablissement de la baseline de tests...
+[2026-07-14 07:12:25] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-14 07:12:38] [INFO] Phase 1 terminee: 179 fichiers, 1551393 lignes
+[2026-07-14 07:12:38] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-14 07:12:38] [INFO]   -> 57 anomalies globales detectees
+[2026-07-14 07:12:38] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-14 07:13:09] [INFO]   Passe 1: 54 defauts trouves, 0 corrections appliquees
+[2026-07-14 07:13:09] [INFO]   Health Score: 70/100
+[2026-07-14 07:13:09] [INFO]   Anomalies Critiques: 44
+[2026-07-14 07:13:09] [INFO]   Avertissements (Warning): 10
+[2026-07-14 07:13:09] [INFO]   Suggestions & Code Smells (Info): 57
+[2026-07-14 07:13:09] [INFO]   Total defauts detectes: 111
+[2026-07-14 07:13:09] [INFO]   Corrections appliquees: 0
+[2026-07-14 07:13:09] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-14 07:13:09] [INFO] Agent Health: WARNING
+[2026-07-14 07:13:09] [WARNING]   [!] Performance degradee: 4.1 fichiers/s
+[2026-07-14 07:13:09] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-14 07:13:09] [INFO] Audit termine en 44.1s. Health Score projet: 70/100

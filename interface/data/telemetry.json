@@ -265,6 +265,62 @@
           "note": "calculé au prochain cycle"
         }
       }
+    },
+    {
+      "timestamp": "2026-07-14T06:20:04.150Z",
+      "type": "session_completed",
+      "matiere": "Routine",
+      "duree": 66,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-14T08:04:05.306Z",
+      "type": "session_completed",
+      "matiere": "UE 1.3. Mathématiques",
+      "duree": 103,
+      "ai_context": {
+        "before": {
+          "projectedScore": 7.8
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-14T10:36:56.487Z",
+      "type": "session_completed",
+      "matiere": "UE 1.1. Constitution et transformation de la matière",
+      "duree": 111,
+      "ai_context": {
+        "before": {
+          "projectedScore": 7.8
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-14T11:54:22.622Z",
+      "type": "session_completed",
+      "matiere": "UE 1.2. Les molécules du vivant",
+      "duree": 75,
+      "ai_context": {
+        "before": {
+          "projectedScore": 7.8
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
     }
   ],
   "actions": []

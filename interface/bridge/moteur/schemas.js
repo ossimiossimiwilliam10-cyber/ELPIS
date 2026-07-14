@@ -53,7 +53,9 @@ const cmSchema = z.object({
   prochaineRevisionDate: z.string().optional(),
   jActuel: z.number().optional(),
   tempsMoyen: z.number().optional(),
-  fichePdfPath: z.string().optional()
+  fichePdfPath: z.string().optional(),
+  pdfPath: z.string().optional(),
+  pdfPaths: z.array(z.string()).optional()
 }).catchall(z.any());
 
 const exSchema = z.object({
@@ -64,6 +66,7 @@ const exSchema = z.object({
   tempsMoyen: z.number().optional(),
   tempsMoyenEtapes: z.array(z.number().nullable()).optional(),
   pdfPath: z.string().optional(),
+  pdfPaths: z.array(z.string()).optional(),
   page: z.number().optional(),
   difficulte: z.string().optional()
 }).catchall(z.any());

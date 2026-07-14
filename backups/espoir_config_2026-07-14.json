@@ -2,9 +2,9 @@
     "studyStartDate": "07-09-2026",
     "bedtime": "22:00",
     "wakeUpTime": "05:30",
-    "maxStudyHoursPerDay": 6.2,
-    "targetGrade": 16,
-    "targetRank": 10,
+    "maxStudyHoursPerDay": 7.5,
+    "targetGrade": 20,
+    "targetRank": 1,
     "summerStudyHoursCompleted": 0,
     "maxSubjectsPerDay": 3,
     "studyBlockDurationMinutes": 50,
@@ -14,8 +14,8 @@
     "theme": "dark",
     "pomoWork": 25,
     "pomoBreak": 5,
-    "lastActiveDate": "2026-07-08",
-    "currentStreak": 3,
+    "lastActiveDate": "2026-07-13",
+    "currentStreak": 8,
     "bestStreak": 11,
     "defaultDurationNewCM": 120,
     "defaultDurationRevCM": 30,
@@ -28,7 +28,7 @@
     "defaultDurationTP_Etape3": 90,
     "defaultDurationTP_Etape4": 30,
     "maxNewCMPerSubjectPerDay": 1,
-    "maxNewCMPerSemesterPerDay": 3,
+    "maxNewCMPerSemesterPerDay": 999,
     "antiEnnuiMultiplier": 1,
     "restDays": [
         "2026-06-17",
@@ -45,7 +45,7 @@
         "2026-07-04",
         "2026-07-07"
     ],
-    "dernierePratiqueAnki": "2026-07-08",
+    "dernierePratiqueAnki": "2026-07-13",
     "defaultSemesterEndDate": "2027-01-18",
     "mesVideos": [
         {
