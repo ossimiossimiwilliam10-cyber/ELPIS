@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-14T07:13:09.114695",
+  "timestamp": "2026-07-14T13:24:08.989651",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -7,26 +7,17 @@
     "issues": []
   },
   "scan_performance": {
-    "status": "WARNING",
-    "elapsed_seconds": 44.11,
+    "status": "HEALTHY",
+    "elapsed_seconds": 11.21,
     "files_scanned": 179,
-    "files_per_second": 4.1,
-    "lines_per_second": 35168.0
+    "files_per_second": 16.0,
+    "lines_per_second": 138207.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 13,
+    "total_rules_with_hits": 1,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 57,
-      "no-unused-vars": 22,
-      "no-undef": 9,
-      "react-hooks/set-state-in-effect": 5,
-      "E402": 4,
-      "react-hooks/purity": 3,
-      "react-hooks/exhaustive-deps": 3,
-      "E741": 3,
-      "no-useless-assignment": 1,
-      "no-empty": 1
+      "MISSING_TEST_FILE": 59
     }
   },
   "escalation_health": {
@@ -37,39 +28,37 @@
   },
   "rule_activity": {
     "total_rules": 57,
-    "active_rules": 13,
+    "active_rules": 1,
     "inactive_rules": [
-      "EXCESSIVE_FILE_SIZE",
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
       "MISSING_TYPE_HINTS",
-      "PROP_SPREADING_WARNING",
-      "NO_UNSAFE_INNERHTML",
-      "UNGUARDED_JSON_PARSE",
-      "EXCESSIVE_FUNCTION_LENGTH",
-      "NO_PRINT_IN_PRODUCTION",
-      "FETCH_WITHOUT_ABORT",
-      "NO_TODO_WITHOUT_TICKET",
-      "NO_DOUBLE_SEMICOLONS",
-      "NO_INDEX_AS_KEY",
-      "NO_VAR_KEYWORD",
-      "NO_SQL_INJECTION_PATTERNS",
+      "NO_BARREL_IMPORT_CYCLES",
+      "NO_HARDCODED_SECRETS",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
       "NO_HARDCODED_LOCALHOST",
-      "IMPORT_BOUNDARY_VIOLATION",
-      "NO_POSITIVE_TABINDEX",
+      "EXCESSIVE_FILE_SIZE",
+      "TEST_WITH_SKIP",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "TEST_WITH_ONLY",
       "EMPTY_PROMISE_CATCH",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "TOAST_DIRECT_CALL"
+      "TOAST_DIRECT_CALL",
+      "FIX_CONFIDENCE_DECIMAL",
+      "NO_TODO_WITHOUT_TICKET",
+      "MISSING_JSDOC_ON_EXPORT",
+      "NO_WILDCARD_CORS",
+      "NO_WINDOW_PROMPT",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "NO_SQL_INJECTION_PATTERNS",
+      "MAGIC_NUMBERS",
+      "FETCH_WITHOUT_ABORT"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 73.4
+    "size_kb": 72.9
   },
-  "overall_status": "WARNING",
-  "warnings": [
-    "Performance degradee: 4.1 fichiers/s"
-  ],
+  "overall_status": "HEALTHY",
+  "warnings": [],
   "recommendations": [
     "56 regles inactives. Verifier si elles sont encore pertinentes."
   ]
