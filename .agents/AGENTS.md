@@ -1,55 +1,55 @@
-# RÃƒÂ¨gles de projet pour ELPIS
+# RÃƒÆ’Ã‚Â¨gles de projet pour ELPIS
 
-- Pour ce projet systÃƒÂ©matiquement, ÃƒÂ  la fin de chaque tÃƒÂ¢che ou de chaque modification importante, il faut **pousser les modifications sur Github** (`git add .`, `git commit -m "..."`, `git push`).
-- Ensuite, il faut systÃƒÂ©matiquement **compiler les modifications** pour l'application en ligne et locale (par exemple en exÃƒÂ©cutant `npm run build` dans le dossier `interface/web`).
-- L'objectif est d'assurer que l'utilisateur dispose toujours de la version la plus rÃƒÂ©cente et fonctionnelle ÃƒÂ  la fois en ligne et en local.
-- **CrÃƒÂ©ation de tests anti-rÃƒÂ©gression** : SystÃƒÂ©matiquement, lorsque tu vas repÃƒÂ©rer et corriger un bug, **ou dÃƒÂ©velopper une nouvelle fonctionnalitÃƒÂ© / un nouveau composant**, il faudra au final crÃƒÂ©er ou mettre ÃƒÂ  jour les tests unitaires (anti-rÃƒÂ©gression) pour garantir une couverture de code continue et prÃƒÂ©venir la rÃƒÂ©apparition de bugs.
-- **Performance React & Zustand** : Ne jamais placer d'ÃƒÂ©tats ÃƒÂ  haute frÃƒÂ©quence de mise ÃƒÂ  jour (ex: chronomÃƒÂ¨tre, compteurs rapides, positionnement souris) dans le store global (`useStore`). Ils doivent impÃƒÂ©rativement ÃƒÂªtre isolÃƒÂ©s dans leur propre store Zustand dÃƒÂ©diÃƒÂ© (ex: `useChronoStore`) pour ÃƒÂ©viter des re-rendus massifs et non dÃƒÂ©sirÃƒÂ©s sur l'ensemble de l'application.
-- **Time-Awareness (Conscience du Temps RÃƒÂ©el)** : Ne jamais utiliser de rÃƒÂ©partitions temporelles statiques ou purement sÃƒÂ©quentielles pour la planification de tÃƒÂ¢ches (ex: "Matin", "AprÃƒÂ¨s-midi", "Soir"). Les algorithmes d'orchestration et les interfaces utilisateur doivent impÃƒÂ©rativement vÃƒÂ©rifier l'heure locale actuelle (`new Date().getHours()`) pour assigner ou filtrer dynamiquement ces ÃƒÂ©tiquettes. Si l'utilisateur se connecte ÃƒÂ  15h, le systÃƒÂ¨me ne doit plus proposer de tÃƒÂ¢ches pour le "Matin".
-- **Moyenne Universitaire ECTS** : Toujours utiliser une moyenne pondÃƒÂ©rÃƒÂ©e par les crÃƒÂ©dits ECTS pour calculer les moyennes globales (semestres, annÃƒÂ©es, ou cycle entier), conformÃƒÂ©ment au standard LMD europÃƒÂ©en. Ne jamais utiliser de moyenne arithmÃƒÂ©tique simple entre les semestres ou les annÃƒÂ©es pour un score global.
-- **Mise ÃƒÂ  jour de la Streak (Gamification)** : La streak (jours consÃƒÂ©cutifs d'ÃƒÂ©tude) ne doit s'incrÃƒÂ©menter QUE lorsqu'une activitÃƒÂ© est rÃƒÂ©ellement effectuÃƒÂ©e et ajoutÃƒÂ©e ÃƒÂ  l'historique de l'utilisateur. L'ouverture de l'application ne doit jamais incrÃƒÂ©menter la streak, mais doit seulement servir ÃƒÂ  vÃƒÂ©rifier si le joueur l'a perdue (plus d'un jour d'absence) afin de la remettre ÃƒÂ  0.
-- **Archivage Granulaire & Automatique** : L'historique d'un ÃƒÂ©tudiant doit pouvoir ÃƒÂªtre archivÃƒÂ© de faÃƒÂ§on granulaire (ex: `s.archived` au niveau du semestre, ou `l.archived` au niveau de la licence) pour ne pas fausser le calcul de la Cible IA ni l'Orchestrateur. De plus, chaque semestre peut possÃƒÂ©der une date de fin (`s.dateFin`) permettant au systÃƒÂ¨me de l'ignorer automatiquement une fois cette date dÃƒÂ©passÃƒÂ©e, sans intervention manuelle de l'utilisateur.
+- Pour ce projet systÃƒÆ’Ã‚Â©matiquement, ÃƒÆ’Ã‚Â  la fin de chaque tÃƒÆ’Ã‚Â¢che ou de chaque modification importante, il faut **pousser les modifications sur Github** (`git add .`, `git commit -m "..."`, `git push`).
+- Ensuite, il faut systÃƒÆ’Ã‚Â©matiquement **compiler les modifications** pour l'application en ligne et locale (par exemple en exÃƒÆ’Ã‚Â©cutant `npm run build` dans le dossier `interface/web`).
+- L'objectif est d'assurer que l'utilisateur dispose toujours de la version la plus rÃƒÆ’Ã‚Â©cente et fonctionnelle ÃƒÆ’Ã‚Â  la fois en ligne et en local.
+- **CrÃƒÆ’Ã‚Â©ation de tests anti-rÃƒÆ’Ã‚Â©gression** : SystÃƒÆ’Ã‚Â©matiquement, lorsque tu vas repÃƒÆ’Ã‚Â©rer et corriger un bug, **ou dÃƒÆ’Ã‚Â©velopper une nouvelle fonctionnalitÃƒÆ’Ã‚Â© / un nouveau composant**, il faudra au final crÃƒÆ’Ã‚Â©er ou mettre ÃƒÆ’Ã‚Â  jour les tests unitaires (anti-rÃƒÆ’Ã‚Â©gression) pour garantir une couverture de code continue et prÃƒÆ’Ã‚Â©venir la rÃƒÆ’Ã‚Â©apparition de bugs.
+- **Performance React & Zustand** : Ne jamais placer d'ÃƒÆ’Ã‚Â©tats ÃƒÆ’Ã‚Â  haute frÃƒÆ’Ã‚Â©quence de mise ÃƒÆ’Ã‚Â  jour (ex: chronomÃƒÆ’Ã‚Â¨tre, compteurs rapides, positionnement souris) dans le store global (`useStore`). Ils doivent impÃƒÆ’Ã‚Â©rativement ÃƒÆ’Ã‚Âªtre isolÃƒÆ’Ã‚Â©s dans leur propre store Zustand dÃƒÆ’Ã‚Â©diÃƒÆ’Ã‚Â© (ex: `useChronoStore`) pour ÃƒÆ’Ã‚Â©viter des re-rendus massifs et non dÃƒÆ’Ã‚Â©sirÃƒÆ’Ã‚Â©s sur l'ensemble de l'application.
+- **Time-Awareness (Conscience du Temps RÃƒÆ’Ã‚Â©el)** : Ne jamais utiliser de rÃƒÆ’Ã‚Â©partitions temporelles statiques ou purement sÃƒÆ’Ã‚Â©quentielles pour la planification de tÃƒÆ’Ã‚Â¢ches (ex: "Matin", "AprÃƒÆ’Ã‚Â¨s-midi", "Soir"). Les algorithmes d'orchestration et les interfaces utilisateur doivent impÃƒÆ’Ã‚Â©rativement vÃƒÆ’Ã‚Â©rifier l'heure locale actuelle (`new Date().getHours()`) pour assigner ou filtrer dynamiquement ces ÃƒÆ’Ã‚Â©tiquettes. Si l'utilisateur se connecte ÃƒÆ’Ã‚Â  15h, le systÃƒÆ’Ã‚Â¨me ne doit plus proposer de tÃƒÆ’Ã‚Â¢ches pour le "Matin".
+- **Moyenne Universitaire ECTS** : Toujours utiliser une moyenne pondÃƒÆ’Ã‚Â©rÃƒÆ’Ã‚Â©e par les crÃƒÆ’Ã‚Â©dits ECTS pour calculer les moyennes globales (semestres, annÃƒÆ’Ã‚Â©es, ou cycle entier), conformÃƒÆ’Ã‚Â©ment au standard LMD europÃƒÆ’Ã‚Â©en. Ne jamais utiliser de moyenne arithmÃƒÆ’Ã‚Â©tique simple entre les semestres ou les annÃƒÆ’Ã‚Â©es pour un score global.
+- **Mise ÃƒÆ’Ã‚Â  jour de la Streak (Gamification)** : La streak (jours consÃƒÆ’Ã‚Â©cutifs d'ÃƒÆ’Ã‚Â©tude) ne doit s'incrÃƒÆ’Ã‚Â©menter QUE lorsqu'une activitÃƒÆ’Ã‚Â© est rÃƒÆ’Ã‚Â©ellement effectuÃƒÆ’Ã‚Â©e et ajoutÃƒÆ’Ã‚Â©e ÃƒÆ’Ã‚Â  l'historique de l'utilisateur. L'ouverture de l'application ne doit jamais incrÃƒÆ’Ã‚Â©menter la streak, mais doit seulement servir ÃƒÆ’Ã‚Â  vÃƒÆ’Ã‚Â©rifier si le joueur l'a perdue (plus d'un jour d'absence) afin de la remettre ÃƒÆ’Ã‚Â  0.
+- **Archivage Granulaire & Automatique** : L'historique d'un ÃƒÆ’Ã‚Â©tudiant doit pouvoir ÃƒÆ’Ã‚Âªtre archivÃƒÆ’Ã‚Â© de faÃƒÆ’Ã‚Â§on granulaire (ex: `s.archived` au niveau du semestre, ou `l.archived` au niveau de la licence) pour ne pas fausser le calcul de la Cible IA ni l'Orchestrateur. De plus, chaque semestre peut possÃƒÆ’Ã‚Â©der une date de fin (`s.dateFin`) permettant au systÃƒÆ’Ã‚Â¨me de l'ignorer automatiquement une fois cette date dÃƒÆ’Ã‚Â©passÃƒÆ’Ã‚Â©e, sans intervention manuelle de l'utilisateur.
 
-- **SystÃ¨me de Toast (Notifications)** : Le hook `useToast()` retourne un objet, pas une fonction. Ne **jamais** appeler `toast("message", "type")` directement. Il faut impÃ©rativement utiliser ses mÃ©thodes spÃ©cifiques : `toast.success("...")`, `toast.error("...")`, `toast.info("...")`, ou `toast.warning("...")`.
+- **SystÃƒÂ¨me de Toast (Notifications)** : Le hook `useToast()` retourne un objet, pas une fonction. Ne **jamais** appeler `toast("message", "type")` directement. Il faut impÃƒÂ©rativement utiliser ses mÃƒÂ©thodes spÃƒÂ©cifiques : `toast.success("...")`, `toast.error("...")`, `toast.info("...")`, ou `toast.warning("...")`.
 
-- **Validation des chemins de fichiers (Anti-Path-Traversal)** : Ne jamais utiliser directement un chemin de fichier fourni par l'utilisateur (req.body, req.query, etc.) pour des opÃ©rations fs ou child_process. Toujours utiliser path.resolve() pour obtenir le chemin absolu et vÃ©rifier strictement qu'il commence par le rÃ©pertoire de base autorisÃ© en utilisant resolvedPath.startsWith(allowedDir). Si le chemin sort du pÃ©rimÃ¨tre, renvoyer immÃ©diatement une erreur HTTP 403.
+- **Validation des chemins de fichiers (Anti-Path-Traversal)** : Ne jamais utiliser directement un chemin de fichier fourni par l'utilisateur (req.body, req.query, etc.) pour des opÃƒÂ©rations fs ou child_process. Toujours utiliser path.resolve() pour obtenir le chemin absolu et vÃƒÂ©rifier strictement qu'il commence par le rÃƒÂ©pertoire de base autorisÃƒÂ© en utilisant resolvedPath.startsWith(allowedDir). Si le chemin sort du pÃƒÂ©rimÃƒÂ¨tre, renvoyer immÃƒÂ©diatement une erreur HTTP 403.
 
-- **Rejet des doublons Ã  l'upload** : Ne jamais configurer de systÃ¨me d'upload de fichiers (ex: via multer) qui Ã©crase silencieusement un fichier existant de mÃªme nom. Avant d'Ã©crire le fichier sur le disque, vÃ©rifier systÃ©matiquement avec fs.existsSync() si le fichier de destination existe dÃ©jÃ . Si le fichier existe, stopper l'opÃ©ration et renvoyer une erreur explicite au client.
+- **Rejet des doublons ÃƒÂ  l'upload** : Ne jamais configurer de systÃƒÂ¨me d'upload de fichiers (ex: via multer) qui ÃƒÂ©crase silencieusement un fichier existant de mÃƒÂªme nom. Avant d'ÃƒÂ©crire le fichier sur le disque, vÃƒÂ©rifier systÃƒÂ©matiquement avec fs.existsSync() si le fichier de destination existe dÃƒÂ©jÃƒÂ . Si le fichier existe, stopper l'opÃƒÂ©ration et renvoyer une erreur explicite au client.
 
-- **Validation dans Multer** : Ne jamais utiliser cb(new Error(...)) Ã  l'intÃ©rieur des fonctions destination ou filename de multer.diskStorage pour des rÃ¨gles mÃ©tier (comme "le fichier existe dÃ©jÃ "). Laisser multer uploader tous les fichiers dans un dossier temporaire et effectuer les vÃ©rifications mÃ©tier dans le contrÃ´leur de la route.
+- **Validation dans Multer** : Ne jamais utiliser cb(new Error(...)) ÃƒÂ  l'intÃƒÂ©rieur des fonctions destination ou filename de multer.diskStorage pour des rÃƒÂ¨gles mÃƒÂ©tier (comme "le fichier existe dÃƒÂ©jÃƒÂ "). Laisser multer uploader tous les fichiers dans un dossier temporaire et effectuer les vÃƒÂ©rifications mÃƒÂ©tier dans le contrÃƒÂ´leur de la route.
 
-- **Transparence des erreurs** : Le Global Error Handler du backend doit toujours exposer le message d'erreur rÃ©el (err.message) au frontend dans le champ principal 'error' renvoyÃ© en JSON. Ne jamais masquer une erreur mÃ©tier interceptÃ©e derriÃ¨re un message gÃ©nÃ©rique statique.
+- **Transparence des erreurs** : Le Global Error Handler du backend doit toujours exposer le message d'erreur rÃƒÂ©el (err.message) au frontend dans le champ principal 'error' renvoyÃƒÂ© en JSON. Ne jamais masquer une erreur mÃƒÂ©tier interceptÃƒÂ©e derriÃƒÂ¨re un message gÃƒÂ©nÃƒÂ©rique statique.
 
-- **Service Worker SPA Caching (Blank Screen Prevention)** : Ne jamais utiliser une stratÃƒÂ©gie "Cache-First" (qui retourne toujours la rÃƒÂ©ponse du cache en prioritÃƒÂ©) pour l'"index.html" d'une Single Page Application (SPA, par exemple React + Vite). Lors du dÃƒÂ©ploiement d'une nouvelle version, l'ancien HTML cherchera des bundles JS supprimÃƒÂ©s, causant un crash silencieux (ÃƒÂ©cran blanc/noir). Utiliser TOUJOURS une stratÃƒÂ©gie "Network-First" (avec fallback vers le cache) pour "index.html" afin que l'application reÃƒÂ§oive toujours la derniÃƒÂ¨re version du build.
+- **Service Worker SPA Caching (Blank Screen Prevention)** : Ne jamais utiliser une stratÃƒÆ’Ã‚Â©gie "Cache-First" (qui retourne toujours la rÃƒÆ’Ã‚Â©ponse du cache en prioritÃƒÆ’Ã‚Â©) pour l'"index.html" d'une Single Page Application (SPA, par exemple React + Vite). Lors du dÃƒÆ’Ã‚Â©ploiement d'une nouvelle version, l'ancien HTML cherchera des bundles JS supprimÃƒÆ’Ã‚Â©s, causant un crash silencieux (ÃƒÆ’Ã‚Â©cran blanc/noir). Utiliser TOUJOURS une stratÃƒÆ’Ã‚Â©gie "Network-First" (avec fallback vers le cache) pour "index.html" afin que l'application reÃƒÆ’Ã‚Â§oive toujours la derniÃƒÆ’Ã‚Â¨re version du build.
 
 
-- **DÃƒÂ©ploiement systÃƒÂ©matique (Build & Push)** : AprÃƒÂ¨s avoir terminÃƒÂ© un bloc logique de modifications sur le projet (surtout pour l'interface web), exÃƒÂ©cuter TOUJOURS "npm run build" dans le rÃƒÂ©pertoire appropriÃƒÂ©, puis crÃƒÂ©er un commit ("git commit") clair et le pousser ("git push"). Ne jamais considÃƒÂ©rer une tÃƒÂ¢che comme achevÃƒÂ©e tant que le code n'est pas compilÃƒÂ© et sauvegardÃƒÂ© sur le dÃƒÂ©pÃƒÂ´t distant.
+- **DÃƒÆ’Ã‚Â©ploiement systÃƒÆ’Ã‚Â©matique (Build & Push)** : AprÃƒÆ’Ã‚Â¨s avoir terminÃƒÆ’Ã‚Â© un bloc logique de modifications sur le projet (surtout pour l'interface web), exÃƒÆ’Ã‚Â©cuter TOUJOURS "npm run build" dans le rÃƒÆ’Ã‚Â©pertoire appropriÃƒÆ’Ã‚Â©, puis crÃƒÆ’Ã‚Â©er un commit ("git commit") clair et le pousser ("git push"). Ne jamais considÃƒÆ’Ã‚Â©rer une tÃƒÆ’Ã‚Â¢che comme achevÃƒÆ’Ã‚Â©e tant que le code n'est pas compilÃƒÆ’Ã‚Â© et sauvegardÃƒÆ’Ã‚Â© sur le dÃƒÆ’Ã‚Â©pÃƒÆ’Ã‚Â´t distant.
 
 
 <RULE[project_deployment]>
-- **DÃƒÂ©ploiement SystÃƒÂ©matique (Build & Push)** : AprÃƒÂ¨s avoir terminÃƒÂ© un bloc logique de modifications sur le code source du projet (correction de bug, nouvelle fonctionnalitÃƒÂ©, redesign), je dois TOUJOURS :
+- **DÃƒÆ’Ã‚Â©ploiement SystÃƒÆ’Ã‚Â©matique (Build & Push)** : AprÃƒÆ’Ã‚Â¨s avoir terminÃƒÆ’Ã‚Â© un bloc logique de modifications sur le code source du projet (correction de bug, nouvelle fonctionnalitÃƒÆ’Ã‚Â©, redesign), je dois TOUJOURS :
   1. Compiler le frontend avec
-pm run build dans le rÃƒÂ©pertoire appropriÃƒÂ© (interface/web).
-  2. CrÃƒÂ©er un commit git descriptif avec git commit.
-  3. Pousser les modifications sur le dÃƒÂ©pÃƒÂ´t avec git push.
-  Ne jamais considÃƒÂ©rer une tÃƒÂ¢che de code comme terminÃƒÂ©e sans avoir exÃƒÂ©cutÃƒÂ© cette sÃƒÂ©quence.
+pm run build dans le rÃƒÆ’Ã‚Â©pertoire appropriÃƒÆ’Ã‚Â© (interface/web).
+  2. CrÃƒÆ’Ã‚Â©er un commit git descriptif avec git commit.
+  3. Pousser les modifications sur le dÃƒÆ’Ã‚Â©pÃƒÆ’Ã‚Â´t avec git push.
+  Ne jamais considÃƒÆ’Ã‚Â©rer une tÃƒÆ’Ã‚Â¢che de code comme terminÃƒÆ’Ã‚Â©e sans avoir exÃƒÆ’Ã‚Â©cutÃƒÆ’Ã‚Â© cette sÃƒÆ’Ã‚Â©quence.
 </RULE[project_deployment]>
 
 <RULE[project_testing]>
-- **Mise ÃƒÂ  jour SystÃƒÂ©matique des Tests** : Pour chaque nouvelle fonctionnalitÃƒÂ© ajoutÃƒÂ©e ou chaque bug corrigÃƒÂ©, je dois OBLIGATOIREMENT :
-  1. VÃƒÂ©rifier si un fichier de test correspondant existe (ex: NomDuComposant.test.jsx).
-  2. Ajouter les tests unitaires ou d'intÃƒÂ©gration nÃƒÂ©cessaires pour couvrir la nouvelle logique ou garantir la non-rÃƒÂ©gression du bug corrigÃƒÂ©.
-  3. M'assurer que les tests passent (en exÃƒÂ©cutant
-pm test ou ÃƒÂ©quivalent) AVANT de dÃƒÂ©clencher la procÃƒÂ©dure de Build & Push.
-  Ne jamais considÃƒÂ©rer une tÃƒÂ¢che comme terminÃƒÂ©e si le code de production a ÃƒÂ©tÃƒÂ© modifiÃƒÂ© sans les tests correspondants.
+- **Mise ÃƒÆ’Ã‚Â  jour SystÃƒÆ’Ã‚Â©matique des Tests** : Pour chaque nouvelle fonctionnalitÃƒÆ’Ã‚Â© ajoutÃƒÆ’Ã‚Â©e ou chaque bug corrigÃƒÆ’Ã‚Â©, je dois OBLIGATOIREMENT :
+  1. VÃƒÆ’Ã‚Â©rifier si un fichier de test correspondant existe (ex: NomDuComposant.test.jsx).
+  2. Ajouter les tests unitaires ou d'intÃƒÆ’Ã‚Â©gration nÃƒÆ’Ã‚Â©cessaires pour couvrir la nouvelle logique ou garantir la non-rÃƒÆ’Ã‚Â©gression du bug corrigÃƒÆ’Ã‚Â©.
+  3. M'assurer que les tests passent (en exÃƒÆ’Ã‚Â©cutant
+pm test ou ÃƒÆ’Ã‚Â©quivalent) AVANT de dÃƒÆ’Ã‚Â©clencher la procÃƒÆ’Ã‚Â©dure de Build & Push.
+  Ne jamais considÃƒÆ’Ã‚Â©rer une tÃƒÆ’Ã‚Â¢che comme terminÃƒÆ’Ã‚Â©e si le code de production a ÃƒÆ’Ã‚Â©tÃƒÆ’Ã‚Â© modifiÃƒÆ’Ã‚Â© sans les tests correspondants.
 </RULE[project_testing]>
 
 <RULE[project_h24_tasks]>
-- **TÃƒÂ¢ches d'arriÃƒÂ¨re-plan H24 (Uptime)** : Si une fonctionnalitÃƒÂ© ou un agent nÃƒÂ©cessite de fonctionner 24h/24 et 7j/7 indÃƒÂ©pendamment de l'ÃƒÂ©tat du PC local (ex: agent d'audit), cette tÃƒÂ¢che DOIT ÃƒÂªtre implÃƒÂ©mentÃƒÂ©e via un workflow CI/CD dans le Cloud (ex: **GitHub Actions** avec dÃƒÂ©clencheur cron), et non comme un processus local (Node.js ou script systÃƒÂ¨me).
+- **TÃƒÆ’Ã‚Â¢ches d'arriÃƒÆ’Ã‚Â¨re-plan H24 (Uptime)** : Si une fonctionnalitÃƒÆ’Ã‚Â© ou un agent nÃƒÆ’Ã‚Â©cessite de fonctionner 24h/24 et 7j/7 indÃƒÆ’Ã‚Â©pendamment de l'ÃƒÆ’Ã‚Â©tat du PC local (ex: agent d'audit), cette tÃƒÆ’Ã‚Â¢che DOIT ÃƒÆ’Ã‚Âªtre implÃƒÆ’Ã‚Â©mentÃƒÆ’Ã‚Â©e via un workflow CI/CD dans le Cloud (ex: **GitHub Actions** avec dÃƒÆ’Ã‚Â©clencheur cron), et non comme un processus local (Node.js ou script systÃƒÆ’Ã‚Â¨me).
 </RULE[project_h24_tasks]>
 
 <RULE[algorithmic_rigor]>
-- **Rigueur Algorithmique et Machine Learning** : Lors de la conception ou de la modification de systÃ¨mes de scoring, de prÃ©diction ou de classification, privilÃ©gier SYSTÃ‰MATIQUEMENT des modÃ¨les mathÃ©matiques, statistiques ou cognitifs formels (ex: InfÃ©rence BayÃ©sienne, K-Means, RÃ©gression LinÃ©aire, Z-Score, Bandits Manchots, Courbe d'Ebbinghaus) plutÃ´t que des heuristiques naÃ¯ves ("if/else" ou seuils arbitraires). Les coefficients empiriques doivent Ãªtre explicites et isolÃ©s pour pouvoir Ãªtre ajustÃ©s ultÃ©rieurement par des donnÃ©es rÃ©elles.
+- **Rigueur Algorithmique et Machine Learning** : Lors de la conception ou de la modification de systÃƒÂ¨mes de scoring, de prÃƒÂ©diction ou de classification, privilÃƒÂ©gier SYSTÃƒâ€°MATIQUEMENT des modÃƒÂ¨les mathÃƒÂ©matiques, statistiques ou cognitifs formels (ex: InfÃƒÂ©rence BayÃƒÂ©sienne, K-Means, RÃƒÂ©gression LinÃƒÂ©aire, Z-Score, Bandits Manchots, Courbe d'Ebbinghaus) plutÃƒÂ´t que des heuristiques naÃƒÂ¯ves ("if/else" ou seuils arbitraires). Les coefficients empiriques doivent ÃƒÂªtre explicites et isolÃƒÂ©s pour pouvoir ÃƒÂªtre ajustÃƒÂ©s ultÃƒÂ©rieurement par des donnÃƒÂ©es rÃƒÂ©elles.
 </RULE[algorithmic_rigor]>
 
 <RULE[agent_architecture_immune_system]>
@@ -57,120 +57,129 @@ pm test ou ÃƒÂ©quivalent) AVANT de dÃƒÂ©clencher la procÃƒÂ©dure de 
   1. Separer l'extraction (Scanners), la logique metier (Engine), les corrections (Fixers) et les validations (Validators).
   2. Implementer un systeme de **Rollback** (annuler la correction si la verification post-fix echoue via les tests ou la syntaxe).
   3. Utiliser un systeme d'**Escalade** formelle pour les anomalies detectees qu'il ne peut pas corriger en toute securite, plutot que de laisser des anomalies orphelines dans les rapports standards.
-  4. **Anticipation post-correction (Continuous Learning)** : DÃ¨s qu'un bug complexe est rÃ©solu manuellement, le systÃ¨me immunitaire DOIT Ãªtre mis Ã  jour immÃ©diatement avec de nouvelles rÃ¨gles (dans rules.json ou scanners.py) pour dÃ©tecter automatiquement la rÃ©gression de ce cas prÃ©cis, et pour gÃ©nÃ©raliser la dÃ©tection Ã  des cas similaires.
-  5. **ParamÃ¨tres de Confiance** : Les `fix_confidence` dans `rules.json` doivent TOUJOURS Ãªtre des entiers sur 100 (ex: `95` et non `0.95`).
-  6. **Validation par les Tests** : Le systÃ¨me de validation (ex: `validators.py`) doit impÃ©rativement exÃ©cuter les tests dans le dossier exact contenant le `package.json` correspondant au fichier modifiÃ©. Ne jamais supposer que le `package.json` se trouve Ã  la racine.
-  7. **CompatibilitÃ© des Test Runners** : PrÃ©fÃ©rer les arguments positionnels (`npm test -- nomFichier`) plutÃ´t que des drapeaux spÃ©cifiques (`--testPathPattern`) pour garantir la compatibilitÃ© entre Jest et Vitest.
-  8. **Bypass pour les donnÃ©es** : Les fichiers ne possÃ©dant pas de tests associÃ©s (ex: fichiers JSON ou de configuration brute) doivent automatiquement rÃ©ussir l'Ã©tape de validation des tests pour Ã©viter des rollbacks inutiles.
+  4. **Anticipation post-correction (Continuous Learning)** : DÃƒÂ¨s qu'un bug complexe est rÃƒÂ©solu manuellement, le systÃƒÂ¨me immunitaire DOIT ÃƒÂªtre mis ÃƒÂ  jour immÃƒÂ©diatement avec de nouvelles rÃƒÂ¨gles (dans rules.json ou scanners.py) pour dÃƒÂ©tecter automatiquement la rÃƒÂ©gression de ce cas prÃƒÂ©cis, et pour gÃƒÂ©nÃƒÂ©raliser la dÃƒÂ©tection ÃƒÂ  des cas similaires.
+  5. **ParamÃƒÂ¨tres de Confiance** : Les `fix_confidence` dans `rules.json` doivent TOUJOURS ÃƒÂªtre des entiers sur 100 (ex: `95` et non `0.95`).
+  6. **Validation par les Tests** : Le systÃƒÂ¨me de validation (ex: `validators.py`) doit impÃƒÂ©rativement exÃƒÂ©cuter les tests dans le dossier exact contenant le `package.json` correspondant au fichier modifiÃƒÂ©. Ne jamais supposer que le `package.json` se trouve ÃƒÂ  la racine.
+  7. **CompatibilitÃƒÂ© des Test Runners** : PrÃƒÂ©fÃƒÂ©rer les arguments positionnels (`npm test -- nomFichier`) plutÃƒÂ´t que des drapeaux spÃƒÂ©cifiques (`--testPathPattern`) pour garantir la compatibilitÃƒÂ© entre Jest et Vitest.
+  8. **Bypass pour les donnÃƒÂ©es** : Les fichiers ne possÃƒÂ©dant pas de tests associÃƒÂ©s (ex: fichiers JSON ou de configuration brute) doivent automatiquement rÃƒÂ©ussir l'ÃƒÂ©tape de validation des tests pour ÃƒÂ©viter des rollbacks inutiles.
 </RULE[agent_architecture_immune_system]>
 
 <RULE[daemon_lifecycle_management]>
-- **Gestion du Cycle de Vie des Processus (DÃ©mons)** : Lors de la modification du code source d'un processus s'exÃ©cutant en arriÃ¨re-plan (serveur Node.js, agent Python, etc.), il faut SYSTEMATIQUEMENT identifier l'instance en cours d'exÃ©cution (via `manage_task` ou les outils systÃ¨me) et la redÃ©marrer ou la tuer. Cela Ã©vite les crashs fatals dus Ã  une dÃ©synchronisation entre le code en mÃ©moire vive et les nouveaux fichiers de configuration sur le disque.
+- **Gestion du Cycle de Vie des Processus (DÃƒÂ©mons)** : Lors de la modification du code source d'un processus s'exÃƒÂ©cutant en arriÃƒÂ¨re-plan (serveur Node.js, agent Python, etc.), il faut SYSTEMATIQUEMENT identifier l'instance en cours d'exÃƒÂ©cution (via `manage_task` ou les outils systÃƒÂ¨me) et la redÃƒÂ©marrer ou la tuer. Cela ÃƒÂ©vite les crashs fatals dus ÃƒÂ  une dÃƒÂ©synchronisation entre le code en mÃƒÂ©moire vive et les nouveaux fichiers de configuration sur le disque.
 </RULE[daemon_lifecycle_management]>
 
 <RULE[documentation_double_audience]>
-- **Documentation Multi-Niveaux** : Lors de la mise à jour ou de la simplification des fichiers de documentation principaux (comme README.md), il faut TOUJOURS préserver les sections d'architecture technique (diagrammes, API, déploiement). Si du contenu pour débutants ("Guide Rapide") est ajouté, il doit être placé au sommet du document sans pour autant écraser les explications de bas niveau destinées aux développeurs.
+- **Documentation Multi-Niveaux** : Lors de la mise Ã  jour ou de la simplification des fichiers de documentation principaux (comme README.md), il faut TOUJOURS prÃ©server les sections d'architecture technique (diagrammes, API, dÃ©ploiement). Si du contenu pour dÃ©butants ("Guide Rapide") est ajoutÃ©, il doit Ãªtre placÃ© au sommet du document sans pour autant Ã©craser les explications de bas niveau destinÃ©es aux dÃ©veloppeurs.
 </RULE[documentation_double_audience]>
 
 <RULE[agent_architecture_linters]>
-- **Délégation aux Linters Standards** : Lors de la conception de systèmes d'auto-correction ou d'audit de code, ne jamais utiliser de scripts regex personnalisés. Déléguer l'analyse et la correction sûre aux standards de l'industrie (ESLint pour JS, Ruff/Black pour Python). L'agent personnalisé doit servir d'orchestrateur (lancement, parsing de rapport JSON, rollbacks) et non de moteur d'analyse de code.
+- **DÃ©lÃ©gation aux Linters Standards** : Lors de la conception de systÃ¨mes d'auto-correction ou d'audit de code, ne jamais utiliser de scripts regex personnalisÃ©s. DÃ©lÃ©guer l'analyse et la correction sÃ»re aux standards de l'industrie (ESLint pour JS, Ruff/Black pour Python). L'agent personnalisÃ© doit servir d'orchestrateur (lancement, parsing de rapport JSON, rollbacks) et non de moteur d'analyse de code.
 </RULE[agent_architecture_linters]>
 
 
 <RULE[project_ci_cd_sync]>
-- **Compilation et Push SystÃ©matique (Sync Local/Remote)** : Ã€ la fin de chaque tÃ¢che de modification de code, je dois **TOUJOURS** :
+- **Compilation et Push SystÃƒÂ©matique (Sync Local/Remote)** : Ãƒâ‚¬ la fin de chaque tÃƒÂ¢che de modification de code, je dois **TOUJOURS** :
   1. Compiler le code pour m'assurer qu'il ne casse rien (ex: 
-pm run build dans le rÃ©pertoire appropriÃ© comme interface/web).
-  2. Ajouter, commiter et pusher les modifications sur Git (git add ., git commit, git push) pour garder le dÃ©pÃ´t distant synchronisÃ© avec le local.
+pm run build dans le rÃƒÂ©pertoire appropriÃƒÂ© comme interface/web).
+  2. Ajouter, commiter et pusher les modifications sur Git (git add ., git commit, git push) pour garder le dÃƒÂ©pÃƒÂ´t distant synchronisÃƒÂ© avec le local.
   3. Utiliser le format **Conventional Commits** pour les messages (ex: eat: ..., ix: ..., docs: ...).
 </RULE[project_ci_cd_sync]>
 
 <RULE[project_systematic_docs]>
-- **Documentation SystÃ©matique** : Pour chaque section modifiÃ©e, ajoutÃ©e ou supprimÃ©e, je dois **SYSTÃ‰MATIQUEMENT** mettre Ã  jour la documentation du projet.
-  1. La prioritÃ© est de mettre Ã  jour les fichiers globaux existants dans le dossier docs/ (ex: rontend.md, ackend.md, devops.md).
-  2. Je ne crÃ©erai de nouveaux fichiers Markdown dans docs/ que pour des trÃ¨s gros modules justifiant une sÃ©paration.
+- **Documentation SystÃƒÂ©matique** : Pour chaque section modifiÃƒÂ©e, ajoutÃƒÂ©e ou supprimÃƒÂ©e, je dois **SYSTÃƒâ€°MATIQUEMENT** mettre ÃƒÂ  jour la documentation du projet.
+  1. La prioritÃƒÂ© est de mettre ÃƒÂ  jour les fichiers globaux existants dans le dossier docs/ (ex: rontend.md, ackend.md, devops.md).
+  2. Je ne crÃƒÂ©erai de nouveaux fichiers Markdown dans docs/ que pour des trÃƒÂ¨s gros modules justifiant une sÃƒÂ©paration.
 </RULE[project_systematic_docs]>
 
 <RULE[agent_audit_backups_ignore]>
-- **Exclusion des Backups (Anti Recursive-Loop)** : Tout systÃ¨me d'auto-correction (comme le SystÃ¨me Immunitaire) gÃ©nÃ©rant des sauvegardes locales (ex: gent_audit/backups/) DOIT impÃ©rativement avoir ce dossier inscrit dans le .gitignore. Cela Ã©vite que les linters (ESLint, Ruff) ne scannent rÃ©cursivement les anciens fichiers et que l'agent ne commit des milliers de lignes de backups par erreur.
+- **Exclusion des Backups (Anti Recursive-Loop)** : Tout systÃƒÂ¨me d'auto-correction (comme le SystÃƒÂ¨me Immunitaire) gÃƒÂ©nÃƒÂ©rant des sauvegardes locales (ex: gent_audit/backups/) DOIT impÃƒÂ©rativement avoir ce dossier inscrit dans le .gitignore. Cela ÃƒÂ©vite que les linters (ESLint, Ruff) ne scannent rÃƒÂ©cursivement les anciens fichiers et que l'agent ne commit des milliers de lignes de backups par erreur.
 </RULE[agent_audit_backups_ignore]>
 
 <RULE[elpis_new_features]>
-- **Ajout de Nouvelles Fonctionnalités (ELPIS)** : Lors de la création d'un nouvel onglet ou page :
+- **Ajout de Nouvelles FonctionnalitÃ©s (ELPIS)** : Lors de la crÃ©ation d'un nouvel onglet ou page :
   1. Utilisez toujours `lazy` et `Suspense` dans `App.jsx` pour le Code Splitting.
-  2. Enregistrez le composant dans l'arborescence existante (ne pas créer de routing complexe avec React Router, utilisez le système `activeTab` existant).
-  3. L'état global DOIT être stocké dans `store.js` (via `config` ou `coursConfig`) pour assurer la synchronisation PWA hors-ligne.
-  4. Ajoutez le lien correspondant dans `Sidebar.jsx` (dans le groupe approprié).
-  5. Évitez les bibliothèques UI externes ; utilisez le design system de `index.css` (Glassmorphism, animations Framer Motion).
+  2. Enregistrez le composant dans l'arborescence existante (ne pas crÃ©er de routing complexe avec React Router, utilisez le systÃ¨me `activeTab` existant).
+  3. L'Ã©tat global DOIT Ãªtre stockÃ© dans `store.js` (via `config` ou `coursConfig`) pour assurer la synchronisation PWA hors-ligne.
+  4. Ajoutez le lien correspondant dans `Sidebar.jsx` (dans le groupe appropriÃ©).
+  5. Ã‰vitez les bibliothÃ¨ques UI externes ; utilisez le design system de `index.css` (Glassmorphism, animations Framer Motion).
 </RULE[elpis_new_features]>
 
 <RULE[ux_full_crud]>
-- **Complétude CRUD obligatoire** : Lors de la création d'une fonctionnalité permettant de gérer une liste d'éléments (vidéos, liens, tâches, etc.), il est OBLIGATOIRE d'implémenter l'intégralité du cycle CRUD (Create, Read, Update, Delete). Ne jamais omettre la fonctionnalité de modification (Update), même si elle n'est pas explicitement demandée par l'utilisateur, afin d'éviter qu'il ne doive supprimer et recréer un élément pour corriger une faute de frappe. Privilégier une édition "en ligne" (inline) directement sur la carte de l'élément pour une meilleure UX.
+- **ComplÃ©tude CRUD obligatoire** : Lors de la crÃ©ation d'une fonctionnalitÃ© permettant de gÃ©rer une liste d'Ã©lÃ©ments (vidÃ©os, liens, tÃ¢ches, etc.), il est OBLIGATOIRE d'implÃ©menter l'intÃ©gralitÃ© du cycle CRUD (Create, Read, Update, Delete). Ne jamais omettre la fonctionnalitÃ© de modification (Update), mÃªme si elle n'est pas explicitement demandÃ©e par l'utilisateur, afin d'Ã©viter qu'il ne doive supprimer et recrÃ©er un Ã©lÃ©ment pour corriger une faute de frappe. PrivilÃ©gier une Ã©dition "en ligne" (inline) directement sur la carte de l'Ã©lÃ©ment pour une meilleure UX.
 </RULE[ux_full_crud]>
 
 <RULE[algo_test_completeness]>
-- **Couverture de Test des Algorithmes (Anti-Regression)** : Toute création ou modification d'un fichier lié au cœur algorithmique de l'application (ex: `store.js`, `useWorkloadEngine.js`, `fsrsEngine.js`, `sm2.js`, `GlobalChrono.jsx`) DOIT obligatoirement s'accompagner de la rédaction ou de la mise à jour des tests unitaires correspondants (`*.test.js(x)`) pour atteindre ou maintenir une couverture >90% sur ces fichiers spécifiques. Ne jamais laisser de branches (ex: `if (archived)`) non testées.
-- **Mocking de Fetch dans Vitest** : Ne jamais laisser des appels réseau (`fetch`) natifs s'exécuter avec des URL relatives dans les tests (ce qui cause l'erreur `TypeError: Failed to parse URL from /api/...`). Assurez-vous toujours que `global.fetch` est mocké dans `setupTests.js` ou dans le fichier de test via `vi.fn()`.
+- **Couverture de Test des Algorithmes (Anti-Regression)** : Toute crÃ©ation ou modification d'un fichier liÃ© au cÅ“ur algorithmique de l'application (ex: `store.js`, `useWorkloadEngine.js`, `fsrsEngine.js`, `sm2.js`, `GlobalChrono.jsx`) DOIT obligatoirement s'accompagner de la rÃ©daction ou de la mise Ã  jour des tests unitaires correspondants (`*.test.js(x)`) pour atteindre ou maintenir une couverture >90% sur ces fichiers spÃ©cifiques. Ne jamais laisser de branches (ex: `if (archived)`) non testÃ©es.
+- **Mocking de Fetch dans Vitest** : Ne jamais laisser des appels rÃ©seau (`fetch`) natifs s'exÃ©cuter avec des URL relatives dans les tests (ce qui cause l'erreur `TypeError: Failed to parse URL from /api/...`). Assurez-vous toujours que `global.fetch` est mockÃ© dans `setupTests.js` ou dans le fichier de test via `vi.fn()`.
 </RULE[algo_test_completeness]>
 
 <RULE[algorithmic_anti_starvation]>
-- **Équité Algorithmique (Anti-Starvation)** : Lors de la conception ou de la modification de systèmes d'ordonnancement (Schedulers/Orchestrateurs) qui extraient des tâches depuis une liste ordonnée statique (ex: un fichier JSON) avec un quota ou une limite globale (ex: max tâches par jour), ne **JAMAIS** appliquer le quota pendant la boucle d'extraction (ce qui provoque une "famine" systématique pour les éléments en fin de liste). Il faut **TOUJOURS** extraire tous les candidats valides dans un pool global, les trier ou les mélanger, puis appliquer la limite uniquement lors de la phase de sélection/assignation finale.
+- **Ã‰quitÃ© Algorithmique (Anti-Starvation)** : Lors de la conception ou de la modification de systÃ¨mes d'ordonnancement (Schedulers/Orchestrateurs) qui extraient des tÃ¢ches depuis une liste ordonnÃ©e statique (ex: un fichier JSON) avec un quota ou une limite globale (ex: max tÃ¢ches par jour), ne **JAMAIS** appliquer le quota pendant la boucle d'extraction (ce qui provoque une "famine" systÃ©matique pour les Ã©lÃ©ments en fin de liste). Il faut **TOUJOURS** extraire tous les candidats valides dans un pool global, les trier ou les mÃ©langer, puis appliquer la limite uniquement lors de la phase de sÃ©lection/assignation finale.
 </RULE[algorithmic_anti_starvation]>
 
 <RULE[lmd_pils_exclusion]>
-- **Exclusion des matières Bonus (PILS, etc.)** : Les notes ou matières dites "Bonus" (comme le programme PILS) ne doivent JAMAIS être incluses dans la base de données (`espoir_cours.json`) ni dans les calculs de moyenne de l'application, car elles faussent la moyenne académique souhaitée par l'utilisateur. Toute mention de "PILS" lors de l'intégration d'un bulletin doit être ignorée ou supprimée.
+- **Exclusion des matiÃ¨res Bonus (PILS, etc.)** : Les notes ou matiÃ¨res dites "Bonus" (comme le programme PILS) ne doivent JAMAIS Ãªtre incluses dans la base de donnÃ©es (`espoir_cours.json`) ni dans les calculs de moyenne de l'application, car elles faussent la moyenne acadÃ©mique souhaitÃ©e par l'utilisateur. Toute mention de "PILS" lors de l'intÃ©gration d'un bulletin doit Ãªtre ignorÃ©e ou supprimÃ©e.
 </RULE[lmd_pils_exclusion]>
 
 <RULE[composite_virtual_ranking]>
-- **Scoring des Classements Virtuels (Gamification)** : Lors de la conception de tout système de classement, de "leaderboard" ou de comparaison avec des étudiants virtuels, le système NE DOIT PAS se baser uniquement sur la moyenne académique. Il doit impérativement utiliser un **Score Composite** incluant : 
-  1) Les notes académiques (via `espoir_cours.json`).
-  2) La constance/rétention de la mémoire (via `fsrsEngine`).
+- **Scoring des Classements Virtuels (Gamification)** : Lors de la conception de tout systÃ¨me de classement, de "leaderboard" ou de comparaison avec des Ã©tudiants virtuels, le systÃ¨me NE DOIT PAS se baser uniquement sur la moyenne acadÃ©mique. Il doit impÃ©rativement utiliser un **Score Composite** incluant : 
+  1) Les notes acadÃ©miques (via `espoir_cours.json`).
+  2) La constance/rÃ©tention de la mÃ©moire (via `fsrsEngine`).
   3) L'effort et la charge de travail accomplis (via `useWorkloadEngine`). 
-Cela permet de récompenser la rigueur quotidienne et pas seulement la performance aux examens finaux.
+Cela permet de rÃ©compenser la rigueur quotidienne et pas seulement la performance aux examens finaux.
 </RULE[composite_virtual_ranking]>
 
 <RULE[grade_parsing_nan_prevention]>
-- **Prévention des crashs mathématiques (NaN)** : Lors du calcul de moyennes ou de scores basés sur la liste des `evaluations` dans les fichiers JSON, le système ne doit JAMAIS supposer que les champs `note` et `sur` sont valides. Les évaluations non passées ont une `note` à `null`, et le champ `sur` est souvent absent.
-  Il faut **SYSTÉMATIQUEMENT** :
-  1. Filtrer les évaluations valides : `evals.filter(ev => typeof ev.note === 'number')`
-  2. Fournir une valeur par défaut de 20 au dénominateur : `(ev.sur || 20)`
-  Cela empêchera la génération et la propagation de valeurs `NaN` ou `Infinity` dans l'interface.
+- **PrÃ©vention des crashs mathÃ©matiques (NaN)** : Lors du calcul de moyennes ou de scores basÃ©s sur la liste des `evaluations` dans les fichiers JSON, le systÃ¨me ne doit JAMAIS supposer que les champs `note` et `sur` sont valides. Les Ã©valuations non passÃ©es ont une `note` Ã  `null`, et le champ `sur` est souvent absent.
+  Il faut **SYSTÃ‰MATIQUEMENT** :
+  1. Filtrer les Ã©valuations valides : `evals.filter(ev => typeof ev.note === 'number')`
+  2. Fournir une valeur par dÃ©faut de 20 au dÃ©nominateur : `(ev.sur || 20)`
+  Cela empÃªchera la gÃ©nÃ©ration et la propagation de valeurs `NaN` ou `Infinity` dans l'interface.
 </RULE[grade_parsing_nan_prevention]>
 
 <RULE[fallback_note_estimee]>
-- **Utilisation des Notes Estimées (Fallback IA)** : Lors du calcul de moyennes globales, de classements virtuels ou de statistiques avancées (ex: `ClassementPage.jsx`), si une matière ne possède aucune note officielle valide (évaluations absentes ou à `null`), le système **DOIT TOUJOURS** tenter d'utiliser en solution de repli (fallback) la note projetée par l'IA présente dans le store : `intelligence.projectedScoreMap[matiere.nom]`. 
-  Cela permet à l'étudiant de suivre ses progrès et son rang potentiel même en début de semestre. L'interface devra idéalement préciser visuellement que la note utilisée est "Estimée par IA".
+- **Utilisation des Notes EstimÃ©es (Fallback IA)** : Lors du calcul de moyennes globales, de classements virtuels ou de statistiques avancÃ©es (ex: `ClassementPage.jsx`), si une matiÃ¨re ne possÃ¨de aucune note officielle valide (Ã©valuations absentes ou Ã  `null`), le systÃ¨me **DOIT TOUJOURS** tenter d'utiliser en solution de repli (fallback) la note projetÃ©e par l'IA prÃ©sente dans le store : `intelligence.projectedScoreMap[matiere.nom]`. 
+  Cela permet Ã  l'Ã©tudiant de suivre ses progrÃ¨s et son rang potentiel mÃªme en dÃ©but de semestre. L'interface devra idÃ©alement prÃ©ciser visuellement que la note utilisÃ©e est "EstimÃ©e par IA".
 </RULE[fallback_note_estimee]>
 
 <RULE[cours_json_structure]>
-- **Structure JSON des Cours** : Le fichier "espoir_cours.json" (ou �quivalent) poss�de toujours un n�ud racine "licences", qui contient les "semestres". Ne jamais tenter d'it�rer directement sur "coursData.semestres" ou "coursData.ues" sans passer par la hi�rarchie compl�te : "licences -> semestres -> ues -> matieres".
+- **Structure JSON des Cours** : Le fichier "espoir_cours.json" (ou équivalent) possède toujours un nœud racine "licences", qui contient les "semestres". Ne jamais tenter d'itérer directement sur "coursData.semestres" ou "coursData.ues" sans passer par la hiérarchie complète : "licences -> semestres -> ues -> matieres".
 </RULE[cours_json_structure]>
 
-- **Boost de D�couverte (Discovery Boost)** : Ne laissez jamais les nouvelles mati�res s'enterrer sous le poids des mati�res en retard. Si une mati�re n'a jamais �t� pratiqu�e, elle doit recevoir un multiplicateur de priorit� (ex: x2.0) pour garantir son apparition dans les plannings et forcer l'utilisateur � l'initier.
+- **Boost de Découverte (Discovery Boost)** : Ne laissez jamais les nouvelles matières s'enterrer sous le poids des matières en retard. Si une matière n'a jamais été pratiquée, elle doit recevoir un multiplicateur de priorité (ex: x2.0) pour garantir son apparition dans les plannings et forcer l'utilisateur à l'initier.
 
-- **Unicit� des T�ches (Frontend)** : Lors de la correspondance entre le r�sultat de l'Orchestrateur et la liste d'exercices affich�e, le front-end ne doit jamais se fier uniquement au titre pour autoriser des doublons. Une t�che de l'orchestrateur ne doit correspondre qu'� une seule carte dans la Session d'�tude, m�me si les titres sont g�n�riques.
-- **Isolation du Boost de D�couverte** : Le bonus accord� aux nouvelles mati�res (discoveryBoost) doit �tre strictement math�matique pour le score de priorit� final, et ne doit pas polluer les modificateurs d'urgence (comme examBoost). Cela �vite que les nouvelles mati�res ne contournent le filtre de parit�.
+- **Unicité des Tâches (Frontend)** : Lors de la correspondance entre le résultat de l'Orchestrateur et la liste d'exercices affichée, le front-end ne doit jamais se fier uniquement au titre pour autoriser des doublons. Une tâche de l'orchestrateur ne doit correspondre qu'à une seule carte dans la Session d'Étude, même si les titres sont génériques.
+- **Isolation du Boost de Découverte** : Le bonus accordé aux nouvelles matières (discoveryBoost) doit être strictement mathématique pour le score de priorité final, et ne doit pas polluer les modificateurs d'urgence (comme examBoost). Cela évite que les nouvelles matières ne contournent le filtre de parité.
 
 <RULE[prerequisite_theory_first]>
-- **Th�orie avant Pratique (Pr�requis CM)** : Ne jamais planifier d'exercices pratiques (TD, TP, Annales) si les fondations th�oriques (CM) de la mati�re n'ont pas �t� vues au moins une fois dans leur int�gralit�. Le moteur d'ordonnancement doit bloquer l'assignation pratique (skip global) si le nombre de CM r�vis�s est inf�rieur au nombre total de CM d�finis pour la mati�re. Si la mati�re ne poss�de aucun CM (0), la pratique est autoris�e.
+- **Théorie avant Pratique (Prérequis CM)** : Ne jamais planifier d'exercices pratiques (TD, TP, Annales) si les fondations théoriques (CM) de la matière n'ont pas été vues au moins une fois dans leur intégralité. Le moteur d'ordonnancement doit bloquer l'assignation pratique (skip global) si le nombre de CM révisés est inférieur au nombre total de CM définis pour la matière. Si la matière ne possède aucun CM (0), la pratique est autorisée.
 </RULE[prerequisite_theory_first]>
 
 <RULE[intra_day_deprioritization]>
-- **Diversit� Intra-Journali�re** : Si une mati�re a d�j� �t� pratiqu�e le jour m�me (pr�sente dans l'historique du jour), sa priorit� pour le reste de la journ�e DOIT �tre drastiquement r�duite (ex: multipli�e par 0.1). Elle ne doit pas �tre bloqu�e � 100% afin de permettre du rattrapage si l'utilisateur a beaucoup de temps libre, mais elle doit laisser sa place aux autres mati�res dans le Top 4 quotidien.
+- **Diversité Intra-Journalière** : Si une matière a déjà été pratiquée le jour même (présente dans l'historique du jour), sa priorité pour le reste de la journée DOIT être drastiquement réduite (ex: multipliée par 0.1). Elle ne doit pas être bloquée à 100% afin de permettre du rattrapage si l'utilisateur a beaucoup de temps libre, mais elle doit laisser sa place aux autres matières dans le Top 4 quotidien.
 </RULE[intra_day_deprioritization]>
 
 <RULE[guaranteed_discovery]>
-- **Garantie de D�couverte (Anti-Starvation)** : Le simple multiplicateur de "D�couverte" (x2.0) est souvent �cras� par l'urgence des examens (Annales). Pour garantir qu'aucune mati�re ne soit laiss�e de c�t� ind�finiment, le syst�me de s�lection des mati�res (Top N subjects) DOIT syst�matiquement forcer l'inclusion d'au moins 1 mati�re "Nouvelle" (jamais pratiqu�e) si elle est disponible dans le pool d'exercices, et ce, peu importe son score de priorit� par rapport aux autres.
+- **Garantie de Découverte (Anti-Starvation)** : Le simple multiplicateur de "Découverte" (x2.0) est souvent écrasé par l'urgence des examens (Annales). Pour garantir qu'aucune matière ne soit laissée de côté indéfiniment, le système de sélection des matières (Top N subjects) DOIT systématiquement forcer l'inclusion d'au moins 1 matière "Nouvelle" (jamais pratiquée) si elle est disponible dans le pool d'exercices, et ce, peu importe son score de priorité par rapport aux autres.
 </RULE[guaranteed_discovery]>
 
 <RULE[annales_practice_limit]>
-- **Plafond de Ma�trise des Annales** : Les Annales sont des exercices cruciaux, mais leur r�p�tition ne doit pas �tre infinie. Si une Annale a �t� pratiqu�e 3 fois ou plus (`nombrePratiques >= 3`), elle DOIT �tre consid�r�e comme "totalement acquise" et retir�e d�finitivement du pool des propositions, sauf si une urgence absolue l'exige. Cela permet de forcer la rotation vers d'autres exercices ou de nouvelles mati�res.
+- **Plafond de Maîtrise des Annales** : Les Annales sont des exercices cruciaux, mais leur répétition ne doit pas être infinie. Si une Annale a été pratiquée 3 fois ou plus (`nombrePratiques >= 3`), elle DOIT être considérée comme "totalement acquise" et retirée définitivement du pool des propositions, sauf si une urgence absolue l'exige. Cela permet de forcer la rotation vers d'autres exercices ou de nouvelles matières.
 </RULE[annales_practice_limit]>
 
 <RULE[annales_weekly_cooldown]>
-- **Espacement des Annales (Cooldown de 7 jours)** : Une fois qu'une Annale a �t� pratiqu�e, elle entre dans une p�riode de "repos" stricte de 7 jours glissants. Durant cette fen�tre, elle ne doit **pas** �tre repropos�e (sauf urgence d'examen, ex: examen dans moins de 21 jours). Cela permet d'�taler la charge de travail et d'�viter qu'une m�me annale sature le planning de la semaine.
+- **Espacement des Annales (Cooldown de 7 jours)** : Une fois qu'une Annale a été pratiquée, elle entre dans une période de "repos" stricte de 7 jours glissants. Durant cette fenêtre, elle ne doit **pas** être reproposée (sauf urgence d'examen, ex: examen dans moins de 21 jours). Cela permet d'étaler la charge de travail et d'éviter qu'une même annale sature le planning de la semaine.
+</RULE[annales_weekly_cooldown]>
 </RULE[annales_weekly_cooldown]>
 
 <RULE[documentation_systematique_v2]>
-- **Documentation Systématique (Projet ELPIS V2)** : Pour éviter l'écueil du projet ELPIS V1 (80k lignes non documentées), une rigueur absolue est exigée pour la documentation d'ELPIS V2. L'agent DOIT maintenir un dossier documentation à la racine du projet ELPIS_V2. À la fin de chaque session de travail ou de chaque implémentation de fonctionnalité importante, l'agent DOIT rédiger ou mettre à jour un fichier de documentation. La documentation doit être hyper-précise et vulgarisée de manière à ce qu'un développeur novice puisse comprendre l'architecture, les choix techniques et reproduire le fonctionnement sans être perdu. Chaque modification doit être tracée, expliquée et documentée.
+- **Documentation SystÃ©matique (Projet ELPIS V2)** : Pour Ã©viter l'Ã©cueil du projet ELPIS V1 (80k lignes non documentÃ©es), une rigueur absolue est exigÃ©e pour la documentation d'ELPIS V2. L'agent DOIT maintenir un dossier documentation Ã  la racine du projet ELPIS_V2. Ã€ la fin de chaque session de travail ou de chaque implÃ©mentation de fonctionnalitÃ© importante, l'agent DOIT rÃ©diger ou mettre Ã  jour un fichier de documentation. La documentation doit Ãªtre hyper-prÃ©cise et vulgarisÃ©e de maniÃ¨re Ã  ce qu'un dÃ©veloppeur novice puisse comprendre l'architecture, les choix techniques et reproduire le fonctionnement sans Ãªtre perdu. Chaque modification doit Ãªtre tracÃ©e, expliquÃ©e et documentÃ©e.
 </RULE[documentation_systematique_v2]>
+
+<RULE[compilation_check_frontend]>
+- **VÃ©rification de la Compilation (Frontend)** : Lors de la modification de code frontend (particuliÃ¨rement dans un environnement React / Vite), ne considÃ©rez jamais une tÃ¢che comme achevÃ©e uniquement parce que les tests unitaires passent. Vous DEVEZ impÃ©rativement lancer la commande de compilation pour la production (ex: npm run build) afin de vÃ©rifier qu'aucune erreur de bundling ou d'import dynamique n'a Ã©tÃ© introduite.
+</RULE[compilation_check_frontend]>
+
+<RULE[long_task_intermediate_states]>
+- **Tâches Longues et États Intermédiaires** : Lors de l'ajout ou modification de fonctionnalités liées aux tâches dans ELPIS, prévoir systématiquement un état "suspendu/en cours" pour les tâches qui peuvent dépasser 30 minutes. Toujours enregistrer le temps de travail partiel dans l'historique, même en cas de suspension. Utiliser `prochaineRevisionDate` pour forcer la replanification d'une tâche suspendue au lendemain. Ne jamais modifier l'état FSRS d'un CM qui n'a pas été entièrement révisé.
+</RULE[long_task_intermediate_states]>

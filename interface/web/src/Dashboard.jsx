@@ -378,6 +378,61 @@ function Dashboard() {
     cmModalLockRef.current = false;
   }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence]);
 
+  // --- SUSPEND CM: Clôturer une séance partielle depuis le Dashboard ---
+  const handleSuspendCM = useCallback((tache) => {
+    if (!coursConfig) return;
+
+    // Calcul de "demain" avec la logique Night Owl (-4h)
+    const now = new Date();
+    now.setHours(now.getHours() - 4);
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.getFullYear() + '-' + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrow.getDate()).padStart(2, '0');
+
+    const defaultDuration = config?.defaultDurationRevCM || 30;
+
+    const newConfig = produce(coursConfig, draft => {
+      draft.licences.forEach(licence =>
+        licence.semestres.forEach(semestre =>
+          semestre.ues.forEach(ue =>
+            ue.matieres.forEach(matiere => {
+              if (matiere.nom !== tache.matiere) return;
+              matiere.listeCM?.forEach(cm => {
+                if (cm.titre !== tache.titre) return;
+
+                // Forcer la prochaine révision à demain — SANS toucher à l'état FSRS
+                cm.prochaineRevisionDate = tomorrowStr;
+                // NE PAS modifier : derniereRevision, jActuel, easeFactor, fsrsCard, repetitions
+
+                // Enregistrer le temps passé dans tempsMoyen
+                const currentAvg = cm.tempsMoyen || 0;
+                const currentCount = cm.nombreRevisionsTemps || 0;
+                const weight = Math.min(currentCount, 4);
+                cm.tempsMoyen = ((currentAvg * weight) + defaultDuration) / (weight + 1);
+                cm.nombreRevisionsTemps = currentCount + 1;
+              });
+            })
+          )
+        )
+      );
+    });
+
+    setCoursConfig(newConfig);
+
+    // Retirer la tâche de la liste immédiatement
+    setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
+
+    addHistoriqueEntry({
+      type: 'CM',
+      titre: tache.titre,
+      matiere: tache.matiere,
+      action: 'Suspendu (séance partielle)',
+      dureeMinutes: defaultDuration
+    });
+
+    toast.success(`⏸️ Séance suspendue — "${tache.titre}" reviendra demain.`);
+  }, [coursConfig, config, setCoursConfig, addHistoriqueEntry, toast]);
+
   // Dynamic greeting (must be before early returns)
   const hour = new Date().getHours();
   let greeting = 'Bonsoir';
@@ -794,6 +849,29 @@ function Dashboard() {
                                     {dl.label}
                                   </button>
                                 ))}
+                                {t.type === 'CM' && (
+                                  <button
+                                    onClick={() => handleSuspendCM(t)}
+                                    style={{
+                                      background: 'rgba(245, 158, 11, 0.15)',
+                                      color: '#f59e0b',
+                                      border: '1px solid rgba(245, 158, 11, 0.3)',
+                                      padding: '0.4rem 0.8rem',
+                                      borderRadius: '6px',
+                                      cursor: 'pointer',
+                                      fontWeight: 'bold',
+                                      transition: 'all 0.2s',
+                                      whiteSpace: 'nowrap',
+                                      flexShrink: 0,
+                                      fontSize: '0.8rem'
+                                    }}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(245, 158, 11, 0.3)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(245, 158, 11, 0.15)'}
+                                    title="Clôturer la séance sans terminer le CM — il reviendra demain"
+                                  >
+                                    ⏸️ Suspendre
+                                  </button>
+                                )}
                               </div>
                             </motion.div>
                           )}

@@ -6,8 +6,9 @@ import InfoTooltip from '../InfoTooltip';
 import { DIFFICULTY_LEVELS } from '../../constants';
 import { parseTimeInput } from '../../utils/timeParser';
 
-function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
+function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
+  // resetGlobalChrono is also needed for suspend action
   const { toast } = useToast();
   const [note, setNote] = useState('');
   const [manualTime, setManualTime] = useState(null);
@@ -94,12 +95,8 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
     setManualTime(null);
   };
 
-  const handleOpenPdf = async () => {
-    if (!exo.pdfPath) return;
-
-    // Si l'URL est relative (commence par /documents/), on utilise le chemin relatif.
-    let url = exo.pdfPath;
-
+  const handleOpenUrl = (url) => {
+    if (!url) return;
     window.open(url, '_blank');
   };
 
@@ -229,15 +226,41 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
       </div>
 
       <div style={{display:'flex', gap:'0.5rem', flexDirection: 'column'}}>
-        {exo.pdfPath && (
-          <button
-            onClick={handleOpenPdf}
-            className="btn-secondary"
-            style={{background:'var(--bg-tertiary)', color:'var(--text-primary)', border:'1px solid rgba(255,255,255,0.1)', padding:'0.6rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', marginBottom:'0.5rem'}}
-          >
-            📄 Ouvrir le document
-          </button>
-        )}
+        {(() => {
+          const allPdfs = [...(exo.pdfPaths || [])];
+          if (exo.pdfPath && !allPdfs.includes(exo.pdfPath)) {
+            allPdfs.unshift(exo.pdfPath);
+          }
+          
+          if (allPdfs.length === 0) return null;
+
+          if (allPdfs.length === 1) {
+            return (
+              <button
+                onClick={() => handleOpenUrl(allPdfs[0])}
+                className="btn-secondary"
+                style={{background:'var(--bg-tertiary)', color:'var(--text-primary)', border:'1px solid rgba(255,255,255,0.1)', padding:'0.6rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', marginBottom:'0.5rem'}}
+              >
+                📄 Ouvrir le document
+              </button>
+            );
+          }
+
+          return (
+            <div style={{display:'flex', gap:'0.5rem', flexWrap:'wrap', marginBottom:'0.5rem'}}>
+              {allPdfs.map((url, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleOpenUrl(url)}
+                  className="btn-secondary"
+                  style={{flex: '1 1 calc(50% - 0.5rem)', background:'var(--bg-tertiary)', color:'var(--text-primary)', border:'1px solid rgba(255,255,255,0.1)', padding:'0.4rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', fontSize:'0.85rem'}}
+                >
+                  📄 Doc {idx + 1}
+                </button>
+              ))}
+            </div>
+          );
+        })()}
         <div style={{display:'flex', gap:'0.5rem'}}>
           {exo.type === 'CM' ? (
              <>
@@ -245,6 +268,41 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone }) {
                <button onClick={() => handleValidation(onEvaluateCM, 2)} style={{flex:1, background:'#f97316', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Difficile">Difficile (2)</button>
                <button onClick={() => handleValidation(onEvaluateCM, 3)} style={{flex:1, background:'#3b82f6', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Bien">Bien (3)</button>
                <button onClick={() => handleValidation(onEvaluateCM, 4)} style={{flex:1, background:'#22c55e', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Parfait">Parfait (4)</button>
+               {onSuspendCM && (
+                 <button
+                   onClick={() => {
+                     let finalMinutes = manualTime !== null
+                       ? manualTime
+                       : (elapsedSeconds > 0 ? Math.max(1, Math.ceil(elapsedSeconds / 60)) : 0);
+                     if (isThisExoActive) {
+                       resetGlobalChrono();
+                     }
+                     onSuspendCM(exo, finalMinutes);
+                     setManualTime(null);
+                   }}
+                   style={{
+                     flex: 4,
+                     background: 'rgba(245, 158, 11, 0.15)',
+                     color: '#f59e0b',
+                     border: '1px solid rgba(245, 158, 11, 0.4)',
+                     borderRadius: '6px',
+                     padding: '0.6rem',
+                     cursor: 'pointer',
+                     fontWeight: 'bold',
+                     transition: 'all 0.2s',
+                     marginTop: '0.3rem',
+                     display: 'flex',
+                     alignItems: 'center',
+                     justifyContent: 'center',
+                     gap: '0.4rem'
+                   }}
+                   title="Clôturer la séance sans terminer le CM — il reviendra demain"
+                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245, 158, 11, 0.3)'; }}
+                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245, 158, 11, 0.15)'; }}
+                 >
+                   ⏸️ Suspendre la séance (à continuer demain)
+                 </button>
+               )}
              </>
           ) : exo.type === 'ANNALE' ? (
              <div style={{display:'flex', width:'100%', gap:'0.5rem', alignItems: 'center'}}>

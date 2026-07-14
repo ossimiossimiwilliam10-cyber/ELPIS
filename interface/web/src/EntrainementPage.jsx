@@ -449,6 +449,49 @@ function EntrainementPage() {
     setTempsDejaTravaille(prev => prev + (elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration));
   };
 
+  // --- SUSPEND CM: Clôturer une séance partielle sans terminer le CM ---
+  const suspendCM = (exo, elapsedMinutes = 0) => {
+    const todayStr = getTodayStr();
+
+    // Calcul de "demain" avec la logique Night Owl (-4h)
+    const now = new Date();
+    now.setHours(now.getHours() - 4);
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.getFullYear() + '-' + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrow.getDate()).padStart(2, '0');
+
+    let effectiveMinutes = elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30);
+
+    const newConfig = produce(configLocal, draft => {
+      const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
+
+      // Forcer la prochaine révision à demain — SANS toucher à l'état FSRS
+      cm.prochaineRevisionDate = tomorrowStr;
+      // NE PAS modifier : derniereRevision, jActuel, easeFactor, fsrsCard, repetitions
+
+      // Enregistrer le temps passé dans tempsMoyen (même calcul que evaluateCM)
+      const currentAvg = cm.tempsMoyen || 0;
+      const currentCount = cm.nombreRevisionsTemps || 0;
+      const weight = Math.min(currentCount, 4);
+      cm.tempsMoyen = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
+      cm.nombreRevisionsTemps = currentCount + 1;
+    });
+
+    setConfigLocal(newConfig);
+    setCoursConfig(newConfig);
+
+    addHistoriqueEntry({
+      type: 'CM',
+      titre: exo.titre,
+      matiere: exo.matiereNom,
+      action: 'Suspendu (séance partielle)',
+      dureeMinutes: effectiveMinutes
+    });
+
+    resetGlobalChrono();
+    setTempsDejaTravaille(prev => prev + effectiveMinutes);
+    toast.success(`⏸️ Séance suspendue — "${exo.titre}" reviendra demain.`);
+  };
   // Progression : cible du jour - restants = déjà faits
   const progressPercent = totalExercisesToday > 0
     ? Math.round(((totalExercisesToday - remainingExercises.length) / totalExercisesToday) * 100)
@@ -643,6 +686,7 @@ function EntrainementPage() {
                     notebookLMLink={exo.notebookLMLink}
                     onMarkAsDone={(passedExo, difficulte, elapsedMinutes) => markAsDone(passedExo, difficulte, elapsedMinutes)}
                     onEvaluateCM={(passedExo, score, elapsedMinutes) => evaluateCM(passedExo, score, elapsedMinutes)}
+                    onSuspendCM={(passedExo, elapsedMinutes) => suspendCM(passedExo, elapsedMinutes)}
                   />
                 </motion.div>
               ))}
