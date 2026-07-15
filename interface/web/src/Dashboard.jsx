@@ -302,7 +302,7 @@ function Dashboard() {
     // AXE 9: Personalized Decay Multiplier (cohérent avec EntrainementPage)
     let personalizedDecayMultiplier = 1.0;
     if (intelligence?.velocityMap && tache.matiere) {
-      const vData = intelligence.velocityMap[tache.matiere];
+      const vData = intelligence.velocityMap[(tache.matiere || '').toLowerCase().trim()];
       if (vData && vData.isSlowLearner) {
         personalizedDecayMultiplier = 0.8;
       } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {

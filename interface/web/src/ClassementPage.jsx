@@ -42,9 +42,9 @@ export default function ClassementPage() {
              if (validEvals.length > 0) {
                const sum = validEvals.reduce((acc, ev) => acc + (ev.note / (ev.sur || 20)) * 20, 0);
                avg = sum / validEvals.length;
-             } else if (intelligence?.projectedScoreMap?.[m.nom]) {
+             } else if (intelligence?.projectedScoreMap?.[(m.nom || '').toLowerCase().trim()]) {
                // Fallback: use AI estimated note if available
-               avg = intelligence.projectedScoreMap[m.nom];
+               avg = intelligence.projectedScoreMap[(m.nom || '').toLowerCase().trim()];
                isEstimated = true;
              }
              

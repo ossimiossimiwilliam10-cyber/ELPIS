@@ -346,7 +346,7 @@ export default function BulletinPage() {
                 {ue.matieres?.map((matiere, matIndex) => {
                   const avg = getSubjectAverage(matiere.evaluations);
                   const coef = matiere.coefficient !== undefined ? Number(matiere.coefficient) : 1;
-                  const projected = intelligence?.projectedScoreMap?.[matiere.nom];
+                  const projected = intelligence?.projectedScoreMap?.[(matiere.nom || '').toLowerCase().trim()];
                   return (
                     <div key={matIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

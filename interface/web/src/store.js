@@ -265,7 +265,7 @@ const useStore = create(persist(immer((set, get) => ({
   // Update history state and trigger auto-save
   addHistoriqueEntry: (entry) => {
     const stateBefore = get().intelligence;
-    const priorScore = stateBefore?.projectedScoreMap?.[entry.matiere] || null;
+    const priorScore = stateBefore?.projectedScoreMap?.[(entry.matiere || '').toLowerCase().trim()] || null;
 
     const newHist = [...get().historique, { ...entry, timestamp: new Date().toISOString() }];
     set({ historique: newHist });

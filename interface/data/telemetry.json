@@ -321,6 +321,76 @@
           "note": "calculé au prochain cycle"
         }
       }
+    },
+    {
+      "timestamp": "2026-07-14T12:21:44.243Z",
+      "type": "session_completed",
+      "matiere": "Analyse",
+      "duree": 12,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-14T13:31:32.439Z",
+      "type": "session_completed",
+      "matiere": "Programmation",
+      "duree": 68,
+      "ai_context": {
+        "before": {
+          "projectedScore": null
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-14T18:01:27.651Z",
+      "type": "session_completed",
+      "matiere": "Signal et technologie en santé (Santé)",
+      "duree": 33,
+      "ai_context": {
+        "before": {
+          "projectedScore": 7.3
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-14T18:08:03.646Z",
+      "type": "session_completed",
+      "matiere": "UE 1.2. Les molécules du vivant",
+      "duree": 6,
+      "ai_context": {
+        "before": {
+          "projectedScore": 6.7
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-07-14T19:49:29.780Z",
+      "type": "session_completed",
+      "matiere": "Algèbre",
+      "duree": 68,
+      "ai_context": {
+        "before": {
+          "projectedScore": 16
+        },
+        "after": {
+          "note": "calculé au prochain cycle"
+        }
+      }
     }
   ],
   "actions": []

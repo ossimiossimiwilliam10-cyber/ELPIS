@@ -222,7 +222,7 @@ function EntrainementPage() {
     // AXE 9: Personalized Decay Multiplier
     let personalizedDecayMultiplier = 1.0;
     if (intelligence?.velocityMap && exo.matiereNom) {
-       const vData = intelligence.velocityMap[exo.matiereNom];
+       const vData = intelligence.velocityMap[(exo.matiereNom || '').toLowerCase().trim()];
        if (vData && vData.isSlowLearner) {
           personalizedDecayMultiplier = 0.8; // Fragile subject -> retain more often
        } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {

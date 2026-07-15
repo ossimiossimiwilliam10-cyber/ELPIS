@@ -3,6 +3,9 @@ name: ELPIS Immune System
 on:
   schedule:
     - cron: '0 3 * * *' # Tous les jours a 3h du matin
+  push:
+    branches:
+      - main
   workflow_dispatch: # Permet le lancement manuel
 
 jobs:

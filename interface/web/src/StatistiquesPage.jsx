@@ -80,8 +80,8 @@ function StatistiquesPage() {
           let ueSum = 0;
           let ueCount = 0;
           u.matieres?.forEach(m => {
-            if (typeof intelligence.projectedScoreMap[m.nom] === 'number') {
-              ueSum += intelligence.projectedScoreMap[m.nom];
+            if (typeof intelligence.projectedScoreMap[(m.nom || '').toLowerCase().trim()] === 'number') {
+              ueSum += intelligence.projectedScoreMap[(m.nom || '').toLowerCase().trim()];
               ueCount++;
             }
           });

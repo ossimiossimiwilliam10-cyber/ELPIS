@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-15T05:08:06.635879",
+  "timestamp": "2026-07-15T08:01:04.763293",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -7,17 +7,26 @@
     "issues": []
   },
   "scan_performance": {
-    "status": "HEALTHY",
-    "elapsed_seconds": 11.0,
-    "files_scanned": 179,
-    "files_per_second": 16.3,
-    "lines_per_second": 140735.0
+    "status": "WARNING",
+    "elapsed_seconds": 41.74,
+    "files_scanned": 187,
+    "files_per_second": 4.5,
+    "lines_per_second": 37194.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 1,
+    "total_rules_with_hits": 13,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 59
+      "MISSING_TEST_FILE": 59,
+      "no-unused-vars": 24,
+      "no-undef": 9,
+      "react-hooks/set-state-in-effect": 5,
+      "E402": 4,
+      "react-hooks/purity": 3,
+      "react-hooks/exhaustive-deps": 3,
+      "E741": 3,
+      "no-useless-assignment": 1,
+      "no-empty": 1
     }
   },
   "escalation_health": {
@@ -28,37 +37,39 @@
   },
   "rule_activity": {
     "total_rules": 57,
-    "active_rules": 1,
+    "active_rules": 13,
     "inactive_rules": [
-      "MISSING_REACT_MEMO",
-      "TEST_WITH_ONLY",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "EXCESSIVE_FILE_SIZE",
-      "MISSING_TYPE_HINTS",
-      "USE_OPTIONAL_CHAINING",
+      "NO_CONSOLE_LOG_IN_PROD",
       "EXCESSIVE_FUNCTION_LENGTH",
-      "MISSING_USEEFFECT_DEPS",
-      "FETCH_WITHOUT_ABORT",
-      "NO_TRAILING_WHITESPACE",
+      "NO_TODO_WITHOUT_TICKET",
+      "USE_OPTIONAL_CHAINING",
       "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "NO_VAR_KEYWORD",
+      "NO_BARE_EXCEPT",
       "NO_DOUBLE_SEMICOLONS",
+      "TOAST_DIRECT_CALL",
+      "JSON_DEEP_CLONE",
+      "NO_WILDCARD_CORS",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "EXCESSIVE_NESTING_DEPTH",
       "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "NO_POSITIVE_TABINDEX",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_HARDCODED_SECRETS",
-      "NO_CIRCULAR_IMPORTS",
-      "FIX_CONFIDENCE_DECIMAL",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER"
+      "TEST_WITH_SKIP",
+      "NO_HARDCODED_LOCALHOST",
+      "MISSING_USEEFFECT_DEPS",
+      "MISSING_TYPE_HINTS",
+      "NO_BARREL_IMPORT_CYCLES"
     ],
     "inactive_count": 56
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 32.6
+    "size_kb": 76.4
   },
-  "overall_status": "HEALTHY",
-  "warnings": [],
+  "overall_status": "WARNING",
+  "warnings": [
+    "Performance degradee: 4.5 fichiers/s"
+  ],
   "recommendations": [
     "56 regles inactives. Verifier si elles sont encore pertinentes."
   ]
