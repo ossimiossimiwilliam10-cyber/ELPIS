@@ -76,7 +76,7 @@ export const getDb = async () => {
             name: dbName,
             storage: isTestEnv ? getRxStorageMemory() : getRxStorageDexie(),
             multiInstance: !isTestEnv,
-            ignoreDuplicate: isTestEnv || isDev,
+            ignoreDuplicate: false,
             closeDuplicates: isDev
         });
 

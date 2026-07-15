@@ -30,17 +30,17 @@ async function syncFromMongoToLocal(CONFIG_FILE, COURS_FILE, HISTORIQUE_FILE) {
     console.log("📥  Synchronisation des données Cloud vers Local...");
 
     const configDoc = await db.collection('app_data').findOne({ type: 'config' });
-    if (configDoc && configDoc.data) {
+    if (configDoc && configDoc.data && Object.keys(configDoc.data).length > 0) {
       fs.writeFileSync(CONFIG_FILE, JSON.stringify(configDoc.data, null, 4), 'utf8');
     }
 
     const coursDoc = await db.collection('app_data').findOne({ type: 'cours' });
-    if (coursDoc && coursDoc.data) {
+    if (coursDoc && coursDoc.data && coursDoc.data.licences) {
       fs.writeFileSync(COURS_FILE, JSON.stringify(coursDoc.data, null, 4), 'utf8');
     }
 
     const histDoc = await db.collection('app_data').findOne({ type: 'historique' });
-    if (histDoc && histDoc.data) {
+    if (histDoc && histDoc.data && Array.isArray(histDoc.data)) {
       fs.writeFileSync(HISTORIQUE_FILE, JSON.stringify(histDoc.data, null, 4), 'utf8');
     }
 
