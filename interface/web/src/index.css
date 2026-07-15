@@ -69,10 +69,12 @@
 }
 
 :root.theme-night {
-  /* 22h-06h: Midnight / Pitch Black for eye rest */
-  --bg-primary: #020617;
-  --bg-secondary: #0F172A;
-  --bg-tertiary: #1E293B;
+  /* 22h-06h: OLED Pitch Black for true eye rest & battery save */
+  --bg-primary: #000000;
+  --bg-secondary: #0A0A0A;
+  --bg-tertiary: #141414;
+  --text-primary: #E2E8F0;
+  --accent-glow: rgba(59, 130, 246, 0.2);
 }
 
 :root, body, #root, .app-layout, .sidebar, .glass-panel, .task-card {

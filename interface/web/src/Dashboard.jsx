@@ -11,7 +11,7 @@ import CMCompletionModal from './components/CMCompletionModal';
 import InfoTooltip from './components/InfoTooltip';
 import AuditDashboard from './components/AuditDashboard';
 import { DIFFICULTY_LEVELS } from './constants';
-
+import { useSoundEffects } from './hooks/useSoundEffects';
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -74,6 +74,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [extraTime, setExtraTime] = useState(0);
   const { toast } = useToast();
+  const { playTaskComplete } = useSoundEffects();
 
   // CM modal state
   const [cmModalOpen, setCmModalOpen] = useState(false);
@@ -201,6 +202,7 @@ function Dashboard() {
             if (totalCards > 0) {
               setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
               confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#818CF8', '#34D399', '#FBBF24'] });
+              playTaskComplete();
               
               const totalDuration = tache.dureeMinutes || 30;
               Object.keys(ankiStats.cardsBySubject).forEach(subj => {
@@ -279,8 +281,9 @@ function Dashboard() {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#818CF8', '#34D399', '#FBBF24']
+        colors: ['#3B82F6', '#10B981', '#F59E0B']
       });
+      playTaskComplete();
       addHistoriqueEntry({
         type: tache.type,
         titre: tache.titre,

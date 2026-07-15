@@ -21,6 +21,7 @@ const RevisionsAvanceesPage = lazy(() => import('./RevisionsAvanceesPage'));
 const ProjetsPage = lazy(() => import('./ProjetsPage'));
 const MesVideosPage = lazy(() => import('./MesVideosPage'));
 const ClassementPage = lazy(() => import('./ClassementPage'));
+const GraphPage = lazy(() => import('./GraphPage'));
 import useStore from './store';
 
 // Mini-fallback pour le chargement paresseux des pages
@@ -618,6 +619,21 @@ function AppInner() {
             >
               <Suspense fallback={<LoadingFallback />}>
                 <EntrainementPage />
+              </Suspense>
+            </motion.div>
+          )}
+
+          {activeTab === 'graph' && (
+            <motion.div
+              key="graph"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              style={{ height: '100%' }}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                <GraphPage />
               </Suspense>
             </motion.div>
           )}
