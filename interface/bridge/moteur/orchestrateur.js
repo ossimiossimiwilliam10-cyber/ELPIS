@@ -41,6 +41,7 @@ const {
   buildWorkloadForecast
 } = require('./intelligence');
 const { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost } = require('./scoring');
+const { loadRLState } = require('./rlEngine');
 
 const { normalizeDateStr, parseDateLocal } = require('./utils');
 
@@ -48,7 +49,7 @@ function buildTaskPools({
   crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
   compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday, fillGap, now, parityJour,
   matieresDejaTravaillees = new Set(), nouvellesMatieres = new Set(),
-  bypassInterleaving = false
+  bypassInterleaving = false, rlState = null
 }) {
   const poolCM = [];
   const poolTD = [];
@@ -215,7 +216,7 @@ function buildTaskPools({
               pdfPaths: ex.pdfPaths || [],
               page: ex.page || 1,
               difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail) * inactivityBoost * discoveryBoost * intraDayPenalty,
+              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail, rlState) * inactivityBoost * discoveryBoost * intraDayPenalty,
               raisons: [...baseRaisons]
             });
           }
@@ -253,7 +254,7 @@ function buildTaskPools({
             }
             const dureeEstimee = (avgForStep != null && avgForStep > 0) ? avgForStep : (dureeBase * getDifficultyMultiplier(ex.difficulte));
 
-            let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail);
+            let tpPrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail, rlState);
             if (isTomorrow) tpPrio = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
             else if (isWeekend) tpPrio += MAGIC_CONSTANTS.PRIO_WEEKEND_TP;
 
@@ -307,7 +308,7 @@ function buildTaskPools({
               }
               const dureeBase = cfg.defaultDurationAnnales || 60;
               const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
-              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail);
+              let basePrio = getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail, rlState);
               const annaleBoost = isUrgent ? MAGIC_CONSTANTS.BOOST_ANNALE_URGENT : MAGIC_CONSTANTS.BOOST_ANNALE_NORMAL;
 
               poolAnnales.push({
@@ -374,6 +375,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const timeOptimizationMap = buildTimeOptimizationMap(historique, cfg);
   const synergyMap = buildSynergyMap(crs);
   const workloadForecast = buildWorkloadForecast(historique, cfg);
+  const rlState = loadRLState();
 
   rapport.intelligence = {
     compensationMap,
@@ -490,7 +492,7 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
   const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
     crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
     compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday, fillGap, now, parityJour,
-    matieresDejaTravaillees, nouvellesMatieres
+    matieresDejaTravaillees, nouvellesMatieres, bypassInterleaving: false, rlState
   });
 
   // 3. Tri par priorité décroissante
@@ -737,9 +739,10 @@ function genererTacheSpecifique(configPath, coursPath, options) {
     }
   }
 
+  const rlState = loadRLState();
   const { poolCM, poolTD, poolTP, poolAnnales } = buildTaskPools({
     crs, cfg, todayStr, tomorrowStr, isWeekend, examUrgencyMap, remainingWeightMap,
-    compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: new Date().getDay() % 2, bypassInterleaving: true
+    compensationMap, velocityMap, projectedScoreMap, projectedScoreDetail, matieresSatureesToday: new Set(), fillGap: false, now, parityJour: new Date().getDay() % 2, bypassInterleaving: true, rlState
   });
 
   const allPools = [...poolCM, ...poolTD, ...poolTP, ...poolAnnales];

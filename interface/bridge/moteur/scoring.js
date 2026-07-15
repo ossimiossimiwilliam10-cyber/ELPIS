@@ -16,6 +16,7 @@
  */
 
 const { getMatiereAverage } = require('./intelligence');
+const { getRLMultiplier } = require('./rlEngine');
 
 // ---------------------------------------------------------------------------
 // Helper partagé : fuzzy lookup sensible à la casse dans examUrgencyMap
@@ -80,8 +81,9 @@ function getDifficultyMultiplier(difficulte) {
  * @param {Object} compensationMap - Map construite par buildCompensationMap
  * @param {Object} [velocityMap] - Map construite par buildVelocityMap
  * @param {Object} [projectedScoreDetail] - Map détaillée de buildProjectedScoreDetailMap (v3)
+ * @param {Object} [rlState] - État du modèle Reinforcement Learning (UCB)
  */
-function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensationMap, velocityMap = null, projectedScoreDetail = null) {
+function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensationMap, velocityMap = null, projectedScoreDetail = null, rlState = null) {
   const practiceCount = Math.max(0, ex?.nombrePratiques || 0);
   let base = 1.0 / Math.sqrt(practiceCount + 1.0);
 
@@ -174,6 +176,12 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
     if (psDetail && psDetail.trendSignificant && psDetail.trend < -0.05) {
       base *= 1.0 + Math.min(0.2, Math.abs(psDetail.trend) * 2);
     }
+  }
+
+  // AXE 19: Reinforcement Learning (UCB Boost)
+  if (rlState && matiereKey) {
+    const rlBoost = getRLMultiplier(matiereKey, rlState);
+    base *= rlBoost;
   }
 
   return base;
