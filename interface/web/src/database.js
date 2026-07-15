@@ -52,7 +52,7 @@ const projetsSchema = {
 
 // --- INITIALISATION ---
 
-let dbPromise = null;
+let dbPromise = typeof window !== 'undefined' ? window.__elpisDbPromise || null : null;
 
 export const getDb = async () => {
     if (dbPromise) return dbPromise;
@@ -93,6 +93,7 @@ export const getDb = async () => {
         return db;
     })();
 
+    if (typeof window !== 'undefined') window.__elpisDbPromise = dbPromise;
     return dbPromise;
 };
 
