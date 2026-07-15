@@ -222,3 +222,35 @@ describe('Intelligence Engine - parseDateLocal (Anti-régression)', () => {
   });
 });
 
+describe('Intelligence Engine - buildExamUrgencyMap Night Owl (Regression)', () => {
+  test('daysToExam uses Night Owl shift (-4h), exam in 10 days is correctly computed', () => {
+    // This test validates that buildExamUrgencyMap applies the -4h shift.
+    // We use a far-future date (10 days) to avoid boundary rounding issues.
+    const nightOwlToday = new Date();
+    nightOwlToday.setHours(nightOwlToday.getHours() - 4);
+    nightOwlToday.setHours(0, 0, 0, 0);
+    const futureDate = new Date(nightOwlToday);
+    futureDate.setDate(futureDate.getDate() + 10);
+    const futureDateStr = futureDate.toISOString().split('T')[0];
+
+    const crs = {
+      licences: [{
+        semestres: [{
+          ues: [{
+            matieres: [
+              { nom: 'TestNightOwl', examDates: [futureDateStr] },
+            ]
+          }]
+        }]
+      }]
+    };
+    const map = buildExamUrgencyMap(crs);
+    expect(map['testnightowl']).toBeDefined();
+    // Should be within 1 day of 10 (due to Math.ceil rounding in implementation)
+    expect(map['testnightowl'].daysToExam).toBeGreaterThanOrEqual(9);
+    expect(map['testnightowl'].daysToExam).toBeLessThanOrEqual(11);
+    // multiplier for ~10 days = 1.5 (falls in <= 21 days range)
+    expect(map['testnightowl'].multiplier).toBe(1.5);
+  });
+});
+

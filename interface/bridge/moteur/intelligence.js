@@ -674,6 +674,7 @@ function buildExamUrgencyMap(crs) {
   if (!crs || !crs.licences) return map;
 
   const today = new Date();
+  today.setHours(today.getHours() - 4); // Night Owl shift
   today.setHours(0, 0, 0, 0);
 
   for (const l of (crs.licences || [])) {
