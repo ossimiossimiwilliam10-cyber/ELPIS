@@ -339,9 +339,9 @@ function buildTaskPools({
  * Fonction principale (sans persistance).
  * Retourne le rapport d'orchestration
  */
-function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGap = false, ankiStats = null) {
-  const cfg = loadConfig(configPath);
-  const crs = loadCours(coursPath);
+function genererRapportQuotidien(extraTimeMin = 0, fillGap = false, ankiStats = null) {
+  const cfg = loadConfig();
+  const crs = loadCours();
   const rapport = {};
 
   const todayStr = getTodayString();
@@ -356,10 +356,8 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
 
   let historique = [];
   try {
-    const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
-    if (fs.existsSync(histPath)) {
-      historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));
-    }
+    const { loadHistorique } = require('./historique');
+    historique = loadHistorique();
   } catch (e) {
     console.error("Erreur lecture historique:", e);
   }
@@ -390,24 +388,71 @@ function genererRapportQuotidien(configPath, coursPath, extraTimeMin = 0, fillGa
     workloadForecast
   };
 
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.getFullYear() + '-' + String(yesterday.getMonth() + 1).padStart(2, '0') + '-' + String(yesterday.getDate()).padStart(2, '0');
+  
+  // A 'rest' day means very little to no work was done. Let's say < 10 mins is a rest.
+  const workYesterdayMin = historique
+    .filter(h => h.timestamp.startsWith(yesterdayStr))
+    .reduce((sum, h) => sum + (h.dureeMinutes || 0), 0);
+  const restedYesterday = workYesterdayMin < 10;
+
   // Anti-Burnout
   if (burnoutRisk.shouldForceRest) {
-    rapport.statut = "REPOS";
-    rapport.tachesDuJour = [];
-    rapport.tempsRequisMin = 0;
-    rapport.tempsDispoMin = 0;
-    rapport.message = `🛡️ Anti-Burnout activé : ${burnoutRisk.reason}`;
-    return rapport;
+    if (restedYesterday) {
+      if (!cfg.skippedRestDays.includes(todayStr)) {
+        rapport.statut = "REPOS_OPTIONNEL";
+        rapport.tachesDuJour = [];
+        rapport.tempsRequisMin = 0;
+        rapport.tempsDispoMin = 0;
+        rapport.message = `🛡️ Anti-Burnout : C'est votre 2ème jour de repos. Ressentez-vous le besoin de prolonger ?`;
+        return rapport;
+      }
+    } else {
+      rapport.statut = "REPOS";
+      rapport.tachesDuJour = [];
+      rapport.tempsRequisMin = 0;
+      rapport.tempsDispoMin = 0;
+      rapport.message = `🛡️ Anti-Burnout activé : ${burnoutRisk.reason}`;
+      return rapport;
+    }
   }
 
   // Mode repos
-  if (cfg.restDays && cfg.restDays.includes(todayStr)) {
-    rapport.statut = "REPOS";
-    rapport.tachesDuJour = [];
-    rapport.tempsRequisMin = 0;
-    rapport.tempsDispoMin = 0;
-    rapport.message = "Jour de repos imposé. Recharge tes batteries !";
-    return rapport;
+  // Mode repos
+  const todayIsRest = cfg.restDays && cfg.restDays.includes(todayStr);
+  const yesterdayWasRest = cfg.restDays && cfg.restDays.includes(yesterdayStr);
+
+  if (todayIsRest || yesterdayWasRest) {
+    if (yesterdayWasRest && !todayIsRest) {
+      if (!cfg.skippedRestDays.includes(todayStr)) {
+        rapport.statut = "REPOS_OPTIONNEL";
+        rapport.tachesDuJour = [];
+        rapport.tempsRequisMin = 0;
+        rapport.tempsDispoMin = 0;
+        rapport.message = "Hier était un jour de repos. As-tu besoin d'un 2ème jour de récupération aujourd'hui ?";
+        return rapport;
+      }
+    } else if (todayIsRest) {
+      if (yesterdayWasRest || restedYesterday) {
+        if (!cfg.skippedRestDays.includes(todayStr)) {
+          rapport.statut = "REPOS_OPTIONNEL";
+          rapport.tachesDuJour = [];
+          rapport.tempsRequisMin = 0;
+          rapport.tempsDispoMin = 0;
+          rapport.message = "C'est votre 2ème jour de repos. Voulez-vous prolonger la récupération ?";
+          return rapport;
+        }
+      } else {
+        rapport.statut = "REPOS";
+        rapport.tachesDuJour = [];
+        rapport.tempsRequisMin = 0;
+        rapport.tempsDispoMin = 0;
+        rapport.message = "Jour de repos imposé. Recharge tes batteries !";
+        return rapport;
+      }
+    }
   }
 
   const examUrgencyMap = buildExamUrgencyMap(crs);
@@ -703,13 +748,8 @@ function genererTacheSpecifique(configPath, coursPath, options) {
   const dayOfWeek = now.getDay();
   const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
 
-  let historique = [];
-  try {
-    const histPath = path.join(path.dirname(configPath), 'espoir_historique.json');
-    if (fs.existsSync(histPath)) {
-      historique = JSON.parse(fs.readFileSync(histPath, 'utf8'));
-    }
-  } catch (e) {}
+  const { loadHistorique } = require('./historique');
+  const historique = loadHistorique();
 
   const compensationMap = buildCompensationMap(crs);
   const remainingWeightMap = buildRemainingWeightMap(crs);

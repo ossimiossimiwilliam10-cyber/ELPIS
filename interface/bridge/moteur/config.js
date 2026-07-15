@@ -1,8 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-
-const ROOT_DIR = path.join(__dirname, '..', '..', '..');
-const CONFIG_PATH = path.join(ROOT_DIR, 'data', 'espoir_config.json');
+const { db } = require('../db/setup');
 
 const DEFAULT_CONFIG = {
   studyStartDate: "07-09-2026",
@@ -37,19 +33,15 @@ const DEFAULT_CONFIG = {
   maxNewCMPerSemesterPerDay: 3,
   antiEnnuiMultiplier: 2.0,
   restDays: [],
+  skippedRestDays: [],
   dernierePratiqueAnki: ""
 };
 
-/**
- * Validation minimale de la structure du fichier config.
- * La config est un objet plat — on vérifie juste que c'est un objet valide.
- */
 function validateConfigSchema(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     console.error('[VALIDATION] Structure config invalide : données nulles ou non-objet.');
     return false;
   }
-  // Vérifier que les champs numériques critiques sont dans les plages acceptables
   const numChecks = [
     ['maxStudyHoursPerDay', 0, 24],
     ['targetGrade', 0, 20],
@@ -62,7 +54,6 @@ function validateConfigSchema(data) {
       return false;
     }
   }
-  // Vérifier que les tableaux attendus sont bien des tableaux
   if (data.subjects !== undefined && !Array.isArray(data.subjects)) {
     console.error('[VALIDATION] Config : "subjects" doit être un tableau.');
     return false;
@@ -73,6 +64,10 @@ function validateConfigSchema(data) {
   }
   if (data.restDays !== undefined && !Array.isArray(data.restDays)) {
     console.error('[VALIDATION] Config : "restDays" doit être un tableau.');
+    return false;
+  }
+  if (data.skippedRestDays !== undefined && !Array.isArray(data.skippedRestDays)) {
+    console.error('[VALIDATION] Config : "skippedRestDays" doit être un tableau.');
     return false;
   }
   return true;
@@ -106,24 +101,24 @@ function sanitize(c) {
 
   if (c.theme !== "light" && c.theme !== "dark") c.theme = "dark";
 
-  // Ensure arrays
   if (!Array.isArray(c.subjects)) c.subjects = [];
   if (!Array.isArray(c.fixedCommitments)) c.fixedCommitments = [];
   if (!Array.isArray(c.restDays)) c.restDays = [];
+  if (!Array.isArray(c.skippedRestDays)) c.skippedRestDays = [];
 
   return c;
 }
 
-function loadConfig(filePath = CONFIG_PATH) {
+function loadConfig() {
   try {
-    if (!fs.existsSync(filePath)) return { ...DEFAULT_CONFIG };
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const parsed = JSON.parse(raw);
+    const row = db.prepare('SELECT value FROM config WHERE key = ?').get('main');
+    if (!row) return { ...DEFAULT_CONFIG };
+    
+    const parsed = JSON.parse(row.value);
     if (!validateConfigSchema(parsed)) {
-      console.error('[VALIDATION] Fichier config corrompu — chargement des valeurs par défaut.');
+      console.error('[VALIDATION] Base config corrompue — chargement des valeurs par défaut.');
       return { ...DEFAULT_CONFIG };
     }
-    // Merge with defaults to fill missing keys
     const merged = { ...DEFAULT_CONFIG, ...parsed };
     return sanitize(merged);
   } catch (err) {
@@ -132,32 +127,29 @@ function loadConfig(filePath = CONFIG_PATH) {
   }
 }
 
-function saveConfig(config, filePath = CONFIG_PATH) {
-  // Merge with existing config to preserve all fields
-  const existing = loadConfig(filePath);
-  const merged = { ...existing, ...config };
-  const cleaned = sanitize(merged);
-
-  // Refuser d'écrire une structure corrompue
-  if (!validateConfigSchema(cleaned)) {
-    console.error('[VALIDATION] Refus d\'écriture : la structure config est corrompue. Sauvegarde annulée.');
-    return false;
-  }
-
-  const json = JSON.stringify(cleaned, null, 4);
-  const tmpPath = filePath + '.tmp';
-
+function saveConfig(config) {
   try {
-    fs.writeFileSync(tmpPath, json, 'utf8');
-    // Atomic rename on Windows requires removing target first
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    fs.renameSync(tmpPath, filePath);
+    const existing = loadConfig();
+    const merged = { ...existing, ...config };
+    const cleaned = sanitize(merged);
+
+    if (!validateConfigSchema(cleaned)) {
+      console.error("[VALIDATION] Tentative de sauvegarde d'une config invalide annulée.");
+      return false;
+    }
+
+    db.prepare('INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)').run('main', JSON.stringify(cleaned));
     return true;
   } catch (err) {
-    console.error("Erreur sauvegarde config:", err.message);
-    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch {}
+    console.error('Erreur sauvegarde config (SQLite):', err.message);
     return false;
   }
 }
 
-module.exports = { DEFAULT_CONFIG, validateConfigSchema, sanitize, loadConfig, saveConfig, CONFIG_PATH };
+module.exports = {
+  DEFAULT_CONFIG,
+  validateConfigSchema,
+  sanitize,
+  loadConfig,
+  saveConfig
+};

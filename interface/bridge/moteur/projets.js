@@ -1,39 +1,47 @@
-const fs = require('fs');
-const path = require('path');
+const { db } = require('../db/setup');
+const crypto = require('crypto');
 
-const ROOT_DIR = process.env.ELPIS_ROOT || path.join(__dirname, '../../../../');
-const PROJETS_FILE = path.join(ROOT_DIR, 'data', 'espoir_projets.json');
-
-/**
- * Charge les projets personnels depuis le fichier JSON.
- */
-function loadProjets(filePath = PROJETS_FILE) {
+function loadProjets() {
   try {
-    if (!fs.existsSync(filePath)) {
-      return []; // Retourne un tableau vide si le fichier n'existe pas encore
-    }
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    const projets = db.prepare('SELECT * FROM projets').all();
+    return projets.map(p => ({
+      id: p.id,
+      nom: p.nom,
+      matiere: p.matiere,
+      deadline: p.deadline,
+      status: p.status,
+      progress: p.progress,
+      priority: p.priority
+    }));
   } catch (e) {
     console.error("Erreur lors du chargement des projets:", e.message);
     return [];
   }
 }
 
-/**
- * Sauvegarde les projets personnels dans le fichier JSON.
- */
-function saveProjets(projetsData, filePath = PROJETS_FILE) {
+function saveProjets(projetsData) {
   if (!Array.isArray(projetsData)) {
     console.error("saveProjets: Données invalides (pas un tableau)");
     return false;
   }
 
   try {
-    const tmp = filePath + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify(projetsData, null, 2), 'utf8');
-    fs.renameSync(tmp, filePath);
+    const tx = db.transaction((projets) => {
+      db.exec('DELETE FROM projets');
+      const stmt = db.prepare('INSERT INTO projets (id, nom, matiere, deadline, status, progress, priority) VALUES (?, ?, ?, ?, ?, ?, ?)');
+      for (const p of projets) {
+        stmt.run(
+          p.id || crypto.randomUUID(),
+          p.nom,
+          p.matiere || null,
+          p.deadline || null,
+          p.status || null,
+          p.progress || 0,
+          p.priority || null
+        );
+      }
+    });
+    tx(projetsData);
     return true;
   } catch (e) {
     console.error("Erreur lors de la sauvegarde des projets:", e.message);

@@ -1,19 +1,12 @@
 import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import { genererRapportQuotidien } from '../moteur/orchestrateur';
-import * as fs from 'fs';
-import * as path from 'path';
-
-// ── No Mocks! Real Files! ──────────────────────────────────────────────────
-
-const tempDir = path.join(__dirname, 'temp_test_data');
-const tempConfigPath = path.join(tempDir, 'espoir_config.json');
-const tempHistPath = path.join(tempDir, 'espoir_historique.json');
-const tempCrsPath = path.join(tempDir, 'espoir_cours.json');
+const { db } = require('../db/setup');
+import { saveConfig } from '../moteur/config';
+import { saveCours } from '../moteur/cours';
+import { saveHistorique } from '../moteur/historique';
 
 beforeAll(() => {
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
+  db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
 
   // Create a config that will NOT trigger burnout or rest
   const days = [];
@@ -38,7 +31,7 @@ beforeAll(() => {
     defaultDurationAnnales: 60,
     defaultDurationAnki: 30,
   };
-  fs.writeFileSync(tempConfigPath, JSON.stringify(configData));
+  saveConfig(configData);
 
   // Create a recent history to prevent "30 days without rest" fallback
   const mockYesterday = new Date();
@@ -46,17 +39,14 @@ beforeAll(() => {
   const histData = [
     { timestamp: mockYesterday.toISOString(), dureeMinutes: 60 }
   ];
-  fs.writeFileSync(tempHistPath, JSON.stringify(histData));
+  saveHistorique(histData);
 });
 
 afterAll(() => {
-  if (fs.existsSync(tempConfigPath)) fs.unlinkSync(tempConfigPath);
-  if (fs.existsSync(tempHistPath)) fs.unlinkSync(tempHistPath);
-  if (fs.existsSync(tempCrsPath)) fs.unlinkSync(tempCrsPath);
-  if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
+  db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
 });
 
-// ── Scenarios ──────────────────────────────────────────────────────────────
+// â”€â”€ Scenarios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 describe('Orchestrator Deep Integration with FSRS Logic', () => {
   const deepScenarios = [];
   
@@ -84,13 +74,16 @@ describe('Orchestrator Deep Integration with FSRS Logic', () => {
   test.each(deepScenarios)('Integration CM in %s: jActuel=%d, due=%s -> expected scheduled: %s', (matName, jActuel, due, expectedScheduled) => {
     
     // Si c'est pas un nouveau CM (due !== null), on doit fournir une derniereRevision
-    // sinon l'orchestrateur le considère comme un "Nouveau CM"
+    // sinon l'orchestrateur le considÃ¨re comme un "Nouveau CM"
     const derniereRevision = due ? '2026-06-15' : undefined;
 
     const testCrs = {
       licences: [{
+        nom: 'L1',
         semestres: [{
+          nom: 'S1',
           ues: [{
+            nom: 'U1',
             matieres: [
               {
                 nom: matName,
@@ -110,9 +103,9 @@ describe('Orchestrator Deep Integration with FSRS Logic', () => {
       }]
     };
 
-    fs.writeFileSync(tempCrsPath, JSON.stringify(testCrs));
+    saveCours(testCrs);
 
-    const r = genererRapportQuotidien(tempConfigPath, tempCrsPath);
+    const r = genererRapportQuotidien(0);
     const taskTitles = r.tachesDuJour.map(t => t.titre);
     
     // Burnout should NOT be active

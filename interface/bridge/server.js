@@ -2,25 +2,20 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
-const os = require('os');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const multer = require('multer');
-const pdfParse = require('pdf-parse');
-const { spawn } = require('child_process');
 
-const { loadConfig, saveConfig } = require('./moteur/config');
-const { loadCours, saveCours } = require('./moteur/cours');
-const { loadProjets, saveProjets } = require('./moteur/projets');
-const { genererRapportQuotidien } = require('./moteur/orchestrateur');
-const { initMongo, syncFromMongoToLocal, syncToMongo, getDb } = require('./mongoAdapter');
-const { callDeepSeek } = require('./aiAdapter');
-const { GridFSBucket } = require('mongodb');
-const telemetry = require('./moteur/telemetry');
-const { configSchema, coursSchema, historiqueSchema } = require('./moteur/schemas');
+// Initialisations & Adapters
+const { initMongo, syncFromMongoToLocal } = require('./mongoAdapter');
+const { startPythonAuditAgent } = require('./services/auditAgent');
+const globalErrorHandler = require('./middleware/errorHandler');
 
+// Configuration
 const app = express();
+const PORT = process.env.PORT || 3001;
+const ROOT_DIR = path.join(__dirname, '..', '..');
+const BACKUPS_DIR = path.join(ROOT_DIR, 'backups');
+const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
 
 process.on('uncaughtException', (err) => {
   console.error('UNCAUGHT EXCEPTION:', err);
@@ -29,12 +24,10 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('UNHANDLED REJECTION:', reason);
 });
 
-const PORT = process.env.PORT || 3001;
-
-// Nécessaire pour que express-rate-limit fonctionne derrière le proxy de Render
+// Middleware: Proxy (for Render or similar)
 app.set('trust proxy', 1);
 
-// Sécurité : HTTP headers
+// Middleware: Sécurité (Helmet)
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -49,16 +42,17 @@ app.use(helmet({
   }
 }));
 
-// Sécurité : CORS restrictif (Vite dev server + soi-même)
+// Middleware: CORS
 app.use(cors({
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`],
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
+// Middleware: Parsing
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Sécurité : Basic Auth (Point 2)
+// Middleware: Basic Auth (Production Secure Area)
 if (process.env.ADMIN_PASSWORD) {
   const basicAuth = require('express-basic-auth');
   app.use(basicAuth({
@@ -68,7 +62,7 @@ if (process.env.ADMIN_PASSWORD) {
   }));
 }
 
-// Sécurité : Rate Limiting (500 requêtes max par IP toutes les 15 minutes)
+// Middleware: Rate Limiting
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500,
@@ -78,7 +72,7 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
-// Désactiver le cache du navigateur pour toutes les routes API (Safari iOS PWA fix)
+// Middleware: Désactiver le cache API (Safari iOS PWA fix)
 app.use('/api/', (req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.set('Pragma', 'no-cache');
@@ -86,871 +80,54 @@ app.use('/api/', (req, res, next) => {
   res.set('Surrogate-Control', 'no-store');
   next();
 });
-const ROOT_DIR = path.join(__dirname, '..', '..');
-const CONFIG_FILE = path.join(ROOT_DIR, 'data', 'espoir_config.json');
-const COURS_FILE = path.join(ROOT_DIR, 'data', 'espoir_cours.json');
-const HISTORIQUE_FILE = path.join(ROOT_DIR, 'data', 'espoir_historique.json');
-const CHAT_FILE = path.join(ROOT_DIR, 'data', 'espoir_chat.json');
-const BACKUPS_DIR = path.join(ROOT_DIR, 'backups');
-const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
 
-// --- Atomic file write utility ---
-function atomicWriteFileSync(filePath, data) {
-  const tmpPath = filePath + '.tmp';
-  try {
-    fs.writeFileSync(tmpPath, data, 'utf8');
-    try {
-      fs.renameSync(tmpPath, filePath);
-    } catch (renameErr) {
-      // Fallback robuste en cas de lock ou de cross-device
-      fs.copyFileSync(tmpPath, filePath);
-      fs.unlinkSync(tmpPath);
-    }
-    return true;
-  } catch (err) {
-    console.error(`Erreur écriture atomique ${filePath}:`, err.message);
-    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch {}
-    return false;
-  }
-}
-
-// --- Backup automatique au démarrage (5 jours glissants) ---
+// --- Backup automatique au démarrage ---
 function performStartupBackup() {
   try {
-    if (!fs.existsSync(BACKUPS_DIR)) {
-      fs.mkdirSync(BACKUPS_DIR, { recursive: true });
-    }
-    // Night Owl : cohérent avec le reste de l'application (période de grâce de 4h)
+    if (!fs.existsSync(BACKUPS_DIR)) fs.mkdirSync(BACKUPS_DIR, { recursive: true });
+    
     const now = new Date();
     now.setHours(now.getHours() - 4);
     const today = now.toISOString().split('T')[0];
+    const { DB_PATH } = require('./db/setup');
 
-    const filesToBackup = [
-      { src: CONFIG_FILE, name: 'espoir_config' },
-      { src: COURS_FILE, name: 'espoir_cours' },
-      { src: HISTORIQUE_FILE, name: 'espoir_historique' }
-    ];
-
-    for (const { src, name } of filesToBackup) {
-      if (!fs.existsSync(src)) continue;
-      const dest = path.join(BACKUPS_DIR, `${name}_${today}.json`);
+    if (fs.existsSync(DB_PATH)) {
+      const dest = path.join(BACKUPS_DIR, `elpis_sqlite_${today}.db`);
       if (!fs.existsSync(dest)) {
-        fs.copyFileSync(src, dest);
+        fs.copyFileSync(DB_PATH, dest);
         console.log(`Backup créé : ${dest}`);
       }
     }
 
-    // Nettoyage : ne garder que les 5 derniers backups par type
-    for (const { name } of filesToBackup) {
-      const existing = fs.readdirSync(BACKUPS_DIR)
-        .filter(f => f.startsWith(`${name}_`) && f.endsWith('.json'))
-        .sort(); // tri chronologique naturel avec les dates ISO
-      while (existing.length > 5) {
-        const oldest = existing.shift();
-        fs.unlinkSync(path.join(BACKUPS_DIR, oldest));
-        console.log(`Backup ancien supprimé : ${oldest}`);
-      }
+    const files = fs.readdirSync(BACKUPS_DIR).filter(f => f.startsWith('elpis_sqlite_'));
+    files.sort();
+    while (files.length > 5) {
+      const old = files.shift();
+      fs.unlinkSync(path.join(BACKUPS_DIR, old));
     }
   } catch (err) {
-    console.error('Erreur backup automatique:', err.message);
+    console.error("Erreur backup automatique:", err.message);
   }
 }
-// Exécuter le backup au démarrage
 performStartupBackup();
 
-if (!fs.existsSync(DOCUMENTS_DIR)) {
-  fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
-}
-
-const storage = multer.memoryStorage();
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 50 * 1024 * 1024, // 50 MB max
-    files: 1
-  }
-});
-
-// Servir les documents stockés en interne
+if (!fs.existsSync(DOCUMENTS_DIR)) fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
 app.use('/documents', express.static(DOCUMENTS_DIR));
-
-// --- AnkiConnect Helper ---
-function ankiRequest(action, params = {}) {
-  return new Promise((resolve, reject) => {
-    const http = require('http');
-    const data = JSON.stringify({ action, version: 6, params });
-    const req = http.request({
-      hostname: '127.0.0.1', port: 8765, method: 'POST',
-      agent: false,
-      timeout: 5000,
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
-    }, res => {
-      let body = '';
-      res.on('data', c => body += c);
-      res.on('end', () => {
-        try {
-          const p = JSON.parse(body);
-          if (p.error) reject(new Error(p.error));
-          else resolve(p.result);
-        } catch (e) { reject(e); }
-      });
-    });
-    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
-    req.on('error', reject);
-    req.write(data);
-    req.end();
-  });
-}
-
-// ===================== ROUTES =====================
-
-// GET Anki decks
-app.get('/api/anki/decks', async (req, res) => {
-  try {
-    const deckNames = await ankiRequest('deckNames');
-    res.json({ success: true, decks: deckNames });
-  } catch (err) {
-    res.status(500).json({ error: "Erreur connexion Anki: " + err.message });
-  }
-});
-
-// POST Anki sync
-app.post('/api/anki/sync', async (req, res) => {
-  try {
-    const { syncAnkiRetention, extractSubjectNames } = require('./moteur/ankiSync');
-    const coursData = loadCours();
-    
-    // Extraction des matières et leurs mappings depuis le JSON
-    const subjects = extractSubjectNames(coursData);
-    
-    // Lancement de la synchronisation avancée
-    const ankiStats = await syncAnkiRetention(subjects, 365);
-    
-    if (ankiStats.success) {
-       // Sauvegarde globale de la rétention pour le moteur
-       coursData._globalAnkiStats = ankiStats;
-       
-       saveCours(coursData);
-       syncToMongo('cours', coursData).catch(console.error);
-
-       res.json({ success: true, message: `Synchronisation réussie (${Object.keys(ankiStats.retentionBySubject || {}).length} matières mises à jour)` });
-    } else {
-       res.status(500).json({ error: ankiStats.message || ankiStats.error });
-    }
-  } catch (err) {
-    res.status(500).json({ error: "Erreur synchronisation Anki: " + err.message });
-  }
-});// GET current config
-app.get('/api/config', (req, res) => {
-  try {
-    const config = loadConfig();
-    res.json(config);
-  } catch (err) {
-    res.status(500).json({ error: "Erreur lecture configuration: " + err.message });
-  }
-});
-
-// POST update config
-app.post('/api/config', (req, res) => {
-  try {
-    const parseResult = configSchema.safeParse(req.body);
-    if (!parseResult.success) {
-      return res.status(400).json({ 
-        error: "Données de configuration invalides.",
-        details: parseResult.error.errors 
-      });
-    }
-    const success = saveConfig(req.body);
-    if (!success) {
-      return res.status(500).json({ error: "Erreur sauvegarde configuration." });
-    }
-    // MAJ Async sur MongoDB
-    syncToMongo('config', req.body).catch(console.error);
-
-    res.json({ success: true, message: "Configuration mise à jour." });
-  } catch (err) {
-    res.status(500).json({ error: "Erreur serveur: " + err.message });
-  }
-});
-
-// GET current courses
-app.get('/api/cours', (req, res) => {
-  try {
-    const cours = loadCours();
-    res.json(cours);
-  } catch (err) {
-    res.status(500).json({ error: "Erreur lecture des cours: " + err.message });
-  }
-});
-
-// POST update courses
-app.post('/api/cours', (req, res) => {
-  try {
-    const parseResult = coursSchema.safeParse(req.body);
-    if (!parseResult.success) {
-      return res.status(400).json({ 
-        error: "Structure de cours invalide.",
-        details: parseResult.error.errors 
-      });
-    }
-    const success = saveCours(req.body);
-    if (!success) {
-      return res.status(500).json({ error: "Erreur sauvegarde des cours." });
-    }
-    // MAJ Async sur MongoDB
-    syncToMongo('cours', req.body).catch(console.error);
-
-    res.json({ success: true, message: "Cours mis à jour." });
-  } catch (err) {
-    res.status(500).json({ error: "Erreur serveur: " + err.message });
-  }
-});
-
-// GET audit report
-app.get('/api/audit', (req, res) => {
-  try {
-    const AUDIT_FILE = path.join(ROOT_DIR, 'data', 'espoir_audit.json');
-    if (!fs.existsSync(AUDIT_FILE)) {
-      return res.json({ status: "pending", message: "Aucun audit n'a encore été réalisé." });
-    }
-    const data = fs.readFileSync(AUDIT_FILE, 'utf8');
-    res.json(JSON.parse(data));
-  } catch (err) {
-    res.status(500).json({ error: "Erreur lecture de l'audit: " + err.message });
-  }
-});
-
-// POST telemetry session
-app.post('/api/telemetry/session', async (req, res) => {
-  try {
-    const { sessionData, aiStateBefore, aiStateAfter } = req.body;
-    await telemetry.logSession(sessionData, aiStateBefore, aiStateAfter);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// POST telemetry action
-app.post('/api/telemetry/action', async (req, res) => {
-  try {
-    const { actionType, taskContext } = req.body;
-    await telemetry.logRecommendationAction(actionType, taskContext);
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// GET projets
-app.get('/api/projets', (req, res) => {
-  try {
-    const projets = loadProjets();
-    res.json(projets);
-  } catch (err) {
-    res.status(500).json({ error: "Erreur lecture des projets: " + err.message });
-  }
-});
-
-// POST projets
-app.post('/api/projets', (req, res) => {
-  try {
-    if (!Array.isArray(req.body)) {
-      return res.status(400).json({ error: "Les projets doivent être un tableau." });
-    }
-    const success = saveProjets(req.body);
-    if (!success) {
-      return res.status(500).json({ error: "Erreur sauvegarde des projets." });
-    }
-    // MAJ Async sur MongoDB
-    syncToMongo('projets', req.body).catch(console.error);
-
-    res.json({ success: true, message: "Projets mis à jour." });
-  } catch (err) {
-    res.status(500).json({ error: "Erreur serveur: " + err.message });
-  }
-});
-
-// GET history
-app.get('/api/historique', (req, res) => {
-  try {
-    if (fs.existsSync(HISTORIQUE_FILE)) {
-      const data = fs.readFileSync(HISTORIQUE_FILE, 'utf8');
-      res.json(JSON.parse(data));
-    } else {
-      res.json([]);
-    }
-  } catch (_err) {
-    res.status(500).json({ error: "Erreur lecture historique." });
-  }
-});
-
-// POST update history
-app.post('/api/historique', (req, res) => {
-  try {
-    const parseResult = historiqueSchema.safeParse(req.body);
-    if (!parseResult.success) {
-      return res.status(400).json({ 
-        error: "L'historique est invalide.",
-        details: parseResult.error.errors 
-      });
-    }
-    // Limit history to 10 000 entries to prevent unbounded growth
-    const trimmed = req.body.length > 10000 ? req.body.slice(req.body.length - 10000) : req.body;
-    const success = atomicWriteFileSync(HISTORIQUE_FILE, JSON.stringify(trimmed, null, 4));
-    if (!success) {
-      return res.status(500).json({ error: "Erreur sauvegarde historique." });
-    }
-    // MAJ Async sur MongoDB
-    syncToMongo('historique', trimmed).catch(console.error);
-
-    res.json({ success: true, message: "Historique mis à jour." });
-  } catch (_err) {
-    res.status(500).json({ error: "Erreur sauvegarde historique." });
-  }
-});
-
-// POST open anki
-app.post('/api/open/anki', (req, res) => {
-  const { spawn } = require('child_process');
-  const pathModule = require('path');
-
-  // Non-Windows : chercher dans le PATH
-  if (process.platform !== 'win32') {
-    const child = spawn('anki', [], { detached: true, stdio: 'ignore' });
-    child.on('error', (err) => {
-      console.error("Erreur lancement Anki:", err.message);
-    });
-    child.unref();
-    return res.json({ success: true, message: "Anki lancé avec succès." });
-  }
-
-  const ankiPaths = [
-    pathModule.join(process.env.LOCALAPPDATA || '', 'Programs', 'Anki', 'anki.exe'),
-    pathModule.join(process.env.PROGRAMFILES || 'C:\\Program Files', 'Anki', 'anki.exe'),
-    pathModule.join(process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', 'Anki', 'anki.exe')
-  ];
-
-  let validPath = null;
-  for (const p of ankiPaths) {
-    if (fs.existsSync(p)) {
-      validPath = p;
-      break;
-    }
-  }
-
-  if (!validPath) {
-    return res.status(404).json({ error: "Anki n'est pas installé ou introuvable." });
-  }
-
-  const child = spawn(validPath, [], {
-    detached: true,
-    stdio: 'ignore',
-  });
-
-  child.on('error', (err) => {
-    console.error("Erreur lancement Anki:", err.message);
-  });
-
-  child.unref();
-  res.json({ success: true, message: "Anki lancé avec succès." });
-});
-
-// POST open file (PDF or other)
-app.post('/api/open/file', (req, res) => {
-  const { spawn } = require('child_process');
-  const filepath = req.body.filepath;
-
-  if (!filepath) {
-    return res.status(400).json({ error: "Chemin du fichier manquant." });
-  }
-
-  // Sécurité: Si nous sommes en production, l'ouverture locale n'a pas de sens
-  if (process.env.ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "L'ouverture de fichiers locaux est désactivée en mode sécurisé/production." });
-  }
-
-  // Anti-Path-Traversal: vérifier que le chemin résolu reste dans le dossier autorisé (DOCUMENTS_DIR)
-  const resolvedPath = path.resolve(filepath);
-  if (!resolvedPath.startsWith(path.resolve(DOCUMENTS_DIR))) {
-    return res.status(403).json({ error: "Accès refusé. Le fichier est en dehors du répertoire autorisé." });
-  }
-
-  // Use spawn with cmd.exe to prevent command injection vulnerabilities
-  const child = spawn('cmd.exe', ['/c', 'start', '""', filepath], {
-    detached: true,
-    windowsHide: true,
-    stdio: 'ignore'
-  });
-
-  child.on('error', (err) => {
-    console.error("Erreur ouverture fichier:", err.message);
-  });
-
-  child.unref();
-  res.json({ success: true, message: "Fichier ouvert." });
-});
-
-app.post('/api/upload/pdf', (req, res, next) => {
-  upload.single('pdf')(req, res, async (err) => {
-    if (err) {
-      if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(413).json({ error: "Fichier trop volumineux (50 MB maximum)." });
-      }
-      return res.status(500).json({ error: "Erreur lors de l'upload: " + err.message });
-    }
-    if (!req.file) {
-      return res.status(400).json({ error: "Aucun fichier reçu." });
-    }
-
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(req.file.originalname);
-    const filename = 'doc-' + uniqueSuffix + ext;
-
-    // Save to GridFS if MongoDB is connected, else save to local disk
-    const db = getDb();
-    if (db) {
-      const bucket = new GridFSBucket(db, { bucketName: 'documents' });
-      const uploadStream = bucket.openUploadStream(filename, {
-        contentType: req.file.mimetype
-      });
-      uploadStream.end(req.file.buffer);
-    } else {
-      // Fallback local
-      fs.writeFileSync(path.join(DOCUMENTS_DIR, filename), req.file.buffer);
-    }
-
-    const url = `/api/documents/${filename}`;
-
-    // Scan text in PDF
-    let suggestedExercises = [];
-    try {
-      if (req.file.mimetype === 'application/pdf') {
-        const dataBuffer = req.file.buffer;
-        const pdfData = await pdfParse(dataBuffer);
-        const text = pdfData.text;
-        const regex = /(?:exercice|exercise|ex|exo|question|q|prob|problem|problème|partie|sujet|td|tp)\s*(?:n°|n|#)?\s*(\d+(?:\.\d+)?)/gi;
-        const matches = [...text.matchAll(regex)];
-
-        const uniqueTitles = new Set();
-        matches.forEach(m => {
-           let title = m[0].replace(/\s+/g, ' ').trim();
-           // Format like "Exercice 1"
-           title = title.charAt(0).toUpperCase() + title.slice(1).toLowerCase();
-           uniqueTitles.add(title);
-        });
-
-        suggestedExercises = Array.from(uniqueTitles);
-      }
-    } catch (parseErr) {
-      console.error("Erreur scan PDF:", parseErr);
-    }
-
-    res.json({ success: true, url, suggestedExercises });
-  });
-});
-
-// GET file from GridFS or local
-app.get('/api/documents/:filename', async (req, res) => {
-  const filename = req.params.filename;
-  const db = getDb();
-
-  if (db) {
-    const bucket = new GridFSBucket(db, { bucketName: 'documents' });
-    const files = await bucket.find({ filename }).toArray();
-    if (files.length > 0) {
-      res.set('Content-Type', files[0].contentType || 'application/pdf');
-      const downloadStream = bucket.openDownloadStreamByName(filename);
-      return downloadStream.pipe(res);
-    }
-  }
-
-  // Fallback to local
-  const localPath = path.join(DOCUMENTS_DIR, filename);
-  if (fs.existsSync(localPath)) {
-    return res.sendFile(localPath);
-  }
-
-  res.status(404).json({ error: "Fichier non trouvé" });
-});
-
-// POST shutdown — protégé par vérification d'origine
-app.post('/api/shutdown', (req, res) => {
-  if (process.env.ADMIN_PASSWORD) {
-    return res.status(403).json({ error: "L'arrêt de l'application est désactivé en mode sécurisé/production." });
-  }
-  const origin = req.get('origin') || req.get('referer') || '';
-  const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`];
-  const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';
-
-  if (!isLocalhost && !allowedOrigins.some(o => origin.startsWith(o))) {
-    return res.status(403).json({ error: "Arrêt non autorisé depuis cette origine." });
-  }
-
-  res.json({ success: true, message: "Arrêt du serveur." });
-  setTimeout(() => process.exit(0), 1000);
-});
-
-// Cache orchestrateur : évite de recalculer à chaque rafraîchissement (60s TTL)
-const orchestratorCache = new Map();
-const CACHE_TTL_MS = 60_000;
-
-// GET Anki Stats for Today
-app.get('/api/anki/today-stats', async (req, res) => {
-  try {
-    const { COURS_PATH } = require('./moteur/cours');
-    const { syncAnkiRetention, extractSubjectNames } = require('./moteur/ankiSync');
-    const coursData = require(COURS_PATH);
-    const subjects = extractSubjectNames(coursData);
-    const ankiStats = await syncAnkiRetention(subjects, 1);
-    res.json(ankiStats);
-  } catch (err) {
-    console.error("Erreur api/anki/today-stats:", err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// GET Anki decks disponibles (pour le mapping explicite)
-app.get('/api/anki/decks', async (req, res) => {
-  try {
-    const { fetchDeckNames } = require('./moteur/ankiSync');
-    const decks = await fetchDeckNames();
-    res.json({ success: true, decks });
-  } catch (err) {
-    console.error("Erreur api/anki/decks:", err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// GET orchestrator report
-app.get('/api/orchestrateur', async (req, res) => {
-  try {
-    const { CONFIG_PATH } = require('./moteur/config');
-    const { COURS_PATH } = require('./moteur/cours');
-    const extraTime = parseInt(req.query.extraTime) || 0;
-    const fillGap = req.query.fillGap === 'true';
-
-    const configMtime = fs.existsSync(CONFIG_PATH) ? fs.statSync(CONFIG_PATH).mtimeMs : 0;
-    const coursMtime = fs.existsSync(COURS_PATH) ? fs.statSync(COURS_PATH).mtimeMs : 0;
-    const histMtime = fs.existsSync(HISTORIQUE_FILE) ? fs.statSync(HISTORIQUE_FILE).mtimeMs : 0;
-    const now = Date.now();
-
-    // Récupération des stats Anki depuis la configuration sauvegardée (Synchronisation Manuelle)
-    let ankiStats = null;
-    try {
-        const coursData = require(COURS_PATH);
-        if (coursData._globalAnkiStats) {
-           ankiStats = coursData._globalAnkiStats;
-        }
-    } catch (err) {
-        console.error("Erreur lecture _globalAnkiStats :", err.message);
-    }
-
-    // Clé de cache robuste basée sur l'ensemble des paramètres (incluant le FSRS)
-    const ankiKey = ankiStats && ankiStats.success ? JSON.stringify(ankiStats.retentionBySubject || {}) : 'none';
-    const cacheKey = `${configMtime}_${coursMtime}_${histMtime}_${extraTime}_${fillGap}_${ankiKey}`;
-
-    let cacheEntry = orchestratorCache.get(cacheKey);
-    let cacheValid = cacheEntry && (now - cacheEntry.timestamp) < CACHE_TTL_MS;
-
-    const rapport = cacheValid
-      ? cacheEntry.rapport
-      : genererRapportQuotidien(CONFIG_PATH, COURS_PATH, extraTime, fillGap, ankiStats);
-
-    if (!cacheValid) {
-      orchestratorCache.set(cacheKey, {
-        rapport,
-        timestamp: now
-      });
-    }
-
-    // Nettoyage périodique des vieilles entrées
-    for (const [key, entry] of orchestratorCache.entries()) {
-      if (now - entry.timestamp > CACHE_TTL_MS) {
-        orchestratorCache.delete(key);
-      }
-    }
-    
-    // Assigner les métadonnées globales au rapport final
-    if (rapport && rapport.intelligence && ankiStats && ankiStats.success && ankiStats.retentionRate !== null) {
-        rapport.intelligence.fsrs_real_retention = ankiStats.retentionRate;
-        rapport.intelligence.fsrs_retention_by_subject = ankiStats.retentionBySubject;
-        rapport.intelligence.fsrs_unmatched_subjects = ankiStats.unmatchedSubjects || [];
-        rapport.intelligence.fsrs_deck_mappings = ankiStats.deckMappings || [];
-    }
-
-    res.json(rapport);
-  } catch (err) {
-    console.error("Erreur orchestrateur:", err);
-    res.status(500).json({ error: "Erreur génération rapport: " + err.message });
-  }
-});
-
-// POST force-task
-app.post('/api/orchestrator/force-task', (req, res) => {
-  try {
-    const { CONFIG_PATH } = require('./moteur/config');
-    const { COURS_PATH } = require('./moteur/cours');
-    const { genererTacheSpecifique } = require('./moteur/orchestrateur');
-
-    const options = {
-      matiere: req.body.matiere || 'all',
-      type: req.body.type || 'all',
-      dureeMin: parseInt(req.body.dureeMin) || 0
-    };
-
-    const task = genererTacheSpecifique(CONFIG_PATH, COURS_PATH, options);
-    if (!task) {
-      return res.status(404).json({ error: "Aucune tâche trouvée pour ces critères." });
-    }
-
-    res.json({ task });
-  } catch (err) {
-    console.error("Erreur force-task:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// --- ROUTES IA COACH ---
-app.get('/api/chat', (req, res) => {
-  try {
-    if (fs.existsSync(CHAT_FILE)) {
-      const data = fs.readFileSync(CHAT_FILE, 'utf-8');
-      res.json(JSON.parse(data));
-    } else {
-      res.json([]);
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/chat', async (req, res) => {
-  try {
-    const { messages } = req.body;
-    if (!messages || !Array.isArray(messages)) {
-      return res.status(400).json({ error: "messages requis" });
-    }
-
-    // Call DeepSeek
-    const aiResponseContent = await callDeepSeek(messages, ROOT_DIR);
-
-    // Append the AI response to the history
-    const finalMessages = [...messages, { role: 'assistant', content: aiResponseContent }];
-
-    // Save to disk
-    atomicWriteFileSync(CHAT_FILE, JSON.stringify(finalMessages, null, 2));
-
-    res.json({ content: aiResponseContent });
-  } catch (err) {
-    console.error("Erreur DeepSeek:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.delete('/api/chat', (req, res) => {
-  try {
-    atomicWriteFileSync(CHAT_FILE, JSON.stringify([]));
-    res.json({ message: "Historique vidé" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 app.use('/music', express.static(path.join(ROOT_DIR, 'music')));
 
-app.get('/api/music/recommendation', (req, res) => {
-  try {
-    const { genererRapportQuotidien } = require('./moteur/orchestrateur');
+// ===================== ROUTES =====================
+app.use('/api/anki', require('./routes/anki'));
+app.use('/api/config', require('./routes/config'));
+app.use('/api/cours', require('./routes/cours'));
+app.use('/api/projets', require('./routes/projets'));
+app.use('/api/historique', require('./routes/historique'));
+app.use('/api/orchestrateur', require('./routes/orchestrateur'));
+app.use('/api/telemetry', require('./routes/telemetry'));
+app.use('/api/music', require('./routes/music'));
+app.use('/api/chat', require('./routes/chat'));
+app.use('/api', require('./routes/system'));
 
-    const rapport = genererRapportQuotidien(CONFIG_FILE, COURS_FILE, 0, false);
-    const now = new Date();
-    const hour = now.getHours();
-
-    let category = 'calm';
-    if (req.query.category && ['calm', 'motivational'].includes(req.query.category)) {
-      category = req.query.category;
-    } else {
-      if (hour >= 21 || (rapport.tachesDuJour?.length || 0) > 5) {
-        category = 'motivational';
-      } else {
-        category = 'calm';
-      }
-    }
-
-    let musicDir = path.join(ROOT_DIR, 'music', category);
-    const getFiles = (dir) => fs.existsSync(dir) ? fs.readdirSync(dir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg')) : [];
-
-    let files = getFiles(musicDir);
-    if (files.length === 0) {
-      // Fallback vers l'autre catégorie si l'actuelle est vide
-      const fallbackCategory = category === 'calm' ? 'motivational' : 'calm';
-      const fallbackDir = path.join(ROOT_DIR, 'music', fallbackCategory);
-      files = getFiles(fallbackDir);
-      if (files.length > 0) {
-        category = fallbackCategory;
-      }
-    }
-
-    if (files.length === 0) {
-      return res.json({ url: null, category });
-    }
-
-    const randomFile = files[Math.floor(Math.random() * files.length)];
-    res.json({ url: `/music/${category}/${encodeURIComponent(randomFile)}`, category, title: randomFile.replace(/\.[^/.]+$/, "") });
-  } catch (err) {
-    console.error("Music API error:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// -- Music Upload & Management --
-const musicStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const category = req.body.category;
-    if (!['calm', 'motivational'].includes(category)) {
-      return cb(new Error("Catégorie invalide"));
-    }
-    const tmpDir = path.join(os.tmpdir(), 'elpis_music_tmp');
-    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
-    cb(null, tmpDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, 'tmp_' + Date.now() + '_' + Buffer.from(file.originalname, 'latin1').toString('utf8').replace(/[^a-zA-Z0-9.\-_]/g, '_'));
-  }
-});
-const uploadMusic = multer({
-  storage: musicStorage,
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500 MB max pour les grosses OSTs
-  fileFilter: function (req, file, cb) {
-    if (!file.mimetype.startsWith('audio/')) {
-      return cb(new Error("Format de fichier invalide, audio attendu."));
-    }
-    cb(null, true);
-  }
-});
-
-app.get('/api/music/list', (req, res) => {
-  try {
-    const categories = ['calm', 'motivational'];
-    const result = {};
-    categories.forEach(cat => {
-      const dir = path.join(ROOT_DIR, 'music', cat);
-      if (fs.existsSync(dir)) {
-        result[cat] = fs.readdirSync(dir).filter(f => f.endsWith('.mp3') || f.endsWith('.wav') || f.endsWith('.m4a') || f.endsWith('.ogg'));
-      } else {
-        result[cat] = [];
-      }
-    });
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-const calculateMD5 = (filePath) => {
-  return new Promise((resolve, reject) => {
-    const hash = crypto.createHash('md5');
-    const stream = fs.createReadStream(filePath);
-    stream.on('data', data => hash.update(data));
-    stream.on('end', () => resolve(hash.digest('hex')));
-    stream.on('error', reject);
-  });
-};
-
-app.post('/api/music/upload', uploadMusic.array('files', 10), async (req, res) => {
-  try {
-    const category = req.body.category;
-    const destDir = path.join(ROOT_DIR, 'music', category);
-    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
-
-    const hashesFile = path.join(ROOT_DIR, 'music', 'music_hashes.json');
-    let hashes = {};
-    if (fs.existsSync(hashesFile)) {
-      hashes = JSON.parse(fs.readFileSync(hashesFile, 'utf8'));
-    }
-
-    const imported = [];
-    const ignored = [];
-
-    if (req.files) {
-      for (const file of req.files) {
-        // 1. Vérification du doublon par nom de fichier (globale)
-        let nameConflict = false;
-        const categories = ['calm', 'motivational'];
-        for (const cat of categories) {
-          if (fs.existsSync(path.join(ROOT_DIR, 'music', cat, file.originalname))) {
-            nameConflict = true;
-            break;
-          }
-        }
-
-        if (nameConflict) {
-          ignored.push(file.originalname);
-          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
-          continue;
-        }
-
-        // 2. Vérification du doublon par empreinte MD5
-        const hex = await calculateMD5(file.path);
-
-        if (hashes[hex]) {
-          ignored.push(file.originalname);
-          if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
-        } else {
-          const finalPath = path.join(destDir, file.originalname);
-          try {
-            fs.renameSync(file.path, finalPath);
-          } catch(e) {
-            fs.copyFileSync(file.path, finalPath);
-            fs.unlinkSync(file.path);
-          }
-          hashes[hex] = category + '/' + file.originalname;
-          imported.push(file.originalname);
-        }
-      }
-    }
-
-    fs.writeFileSync(hashesFile, JSON.stringify(hashes, null, 2));
-
-    let msg = `${imported.length} musique(s) importée(s).`;
-    if (ignored.length > 0) {
-      msg += ` ${ignored.length} doublon(s) ignoré(s) (contenu identique).`;
-    }
-
-    res.json({ message: msg, imported, ignored });
-  } catch (err) {
-    if (req.files) {
-      req.files.forEach(f => {
-        if(fs.existsSync(f.path)) fs.unlinkSync(f.path);
-      });
-    }
-    console.error("Erreur upload:", err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.delete('/api/music/:category/:filename', (req, res) => {
-  try {
-    const { category, filename } = req.params;
-    if (!['calm', 'motivational'].includes(category)) return res.status(400).json({ error: "Catégorie invalide" });
-
-    // Security to prevent directory traversal
-    const safeFilename = path.basename(filename);
-    const targetPath = path.join(ROOT_DIR, 'music', category, safeFilename);
-
-    if (fs.existsSync(targetPath)) {
-      fs.unlinkSync(targetPath);
-      res.json({ message: "Fichier supprimé" });
-    } else {
-      res.status(404).json({ error: "Fichier introuvable" });
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Serve React build
+// --- Serve React Build ---
 const REACT_BUILD_DIR = path.join(ROOT_DIR, 'interface', 'web', 'dist');
 app.use(express.static(REACT_BUILD_DIR));
 
@@ -959,45 +136,24 @@ app.use((req, res) => {
   res.sendFile(path.join(REACT_BUILD_DIR, 'index.html'));
 });
 
-// Sécurité / Robustesse : Global Error Handler
-app.use((err, req, res, next) => {
-  console.error("Erreur serveur non gérée:", err.stack);
-  res.status(500).json({ error: err.message || "Une erreur interne est survenue." });
-});
+// --- Global Error Handler (Express 5 natively handles async rejection passed to next) ---
+app.use(globalErrorHandler);
 
+// ===================== SERVER START =====================
 async function startServer() {
-  // 1. Initialiser MongoDB
   const isMongoEnabled = await initMongo();
 
-  // 2. Si MongoDB est actif, télécharger les données AVANT de démarrer le serveur
   if (isMongoEnabled) {
-    await syncFromMongoToLocal(CONFIG_FILE, COURS_FILE, HISTORIQUE_FILE);
+    await syncFromMongoToLocal();
   }
 
-  // 3. Démarrer le serveur Express
-  const server = app.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`ELPIS Bridge démarré sur https://0.0.0.0:${PORT}`);
     console.log(`Moteur Node.js natif — plus de dépendance C++ !`);
-
-    // 4. Lancer l'agent Python d'Audit en arrière-plan
-    const pyScript = path.join(ROOT_DIR, 'agent_audit', 'main.py');
-    if (fs.existsSync(pyScript)) {
-      console.log(`Lancement de l'agent d'audit Python en arrière-plan...`);
-      // Use python or python3 depending on availability, defaulting to python on Windows
-      const pythonProcess = spawn('python', [pyScript, '--once'], {
-        detached: true,
-        stdio: 'ignore'
-      });
-      pythonProcess.on('error', (err) => {
-        console.error(`Erreur au lancement de l'agent Python : ${err.message}`);
-      });
-      pythonProcess.unref();
-    }
-  });
-
-  server.on('error', (err) => {
-    console.error('Erreur Express Serveur:', err);
+    startPythonAuditAgent(ROOT_DIR);
   });
 }
 
-startServer().catch(console.error);
+startServer().catch(err => {
+  console.error("Erreur critique au démarrage:", err);
+});

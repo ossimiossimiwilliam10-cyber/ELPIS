@@ -192,7 +192,7 @@ describe('Intelligence Engine - buildCognitiveLoadMap', () => {
   });
 });
 
-describe('Intelligence Engine - parseDateLocal (Anti-régression)', () => {
+describe('Intelligence Engine - parseDateLocal (Anti-rÃ©gression)', () => {
   const { parseDateLocal } = require('../moteur/intelligence');
 
   test('handles valid ISO format YYYY-MM-DD', () => {

@@ -4,22 +4,14 @@ import * as path from 'path';
 // We test the pure functions by importing them directly
 import { DEFAULT_CONFIG, validateConfigSchema, sanitize, loadConfig, saveConfig } from '../moteur/config';
 
-const testDir = path.join(__dirname, 'temp_config_test');
-const testConfigPath = path.join(testDir, 'espoir_config.json');
+const { db } = require('../db/setup');
 
 beforeEach(() => {
-  if (!fs.existsSync(testDir)) fs.mkdirSync(testDir, { recursive: true });
-  // Clean up any leftover files
-  if (fs.existsSync(testConfigPath)) fs.unlinkSync(testConfigPath);
-  const tmp = testConfigPath + '.tmp';
-  if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
+  db.exec('DELETE FROM config');
 });
 
 afterEach(() => {
-  if (fs.existsSync(testConfigPath)) fs.unlinkSync(testConfigPath);
-  const tmp = testConfigPath + '.tmp';
-  if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
-  if (fs.existsSync(testDir)) fs.rmSync(testDir, { recursive: true, force: true });
+  db.exec('DELETE FROM config');
 });
 
 describe('Config Module - DEFAULT_CONFIG', () => {
@@ -41,6 +33,9 @@ describe('Config Module - DEFAULT_CONFIG', () => {
     expect(DEFAULT_CONFIG.defaultDurationNewCM).toBe(120);
     expect(DEFAULT_CONFIG.antiEnnuiMultiplier).toBe(2.0);
     expect(DEFAULT_CONFIG.dernierePratiqueAnki).toBe('');
+    expect(DEFAULT_CONFIG.subjects).toEqual([]);
+    expect(DEFAULT_CONFIG.fixedCommitments).toEqual([]);
+    expect(DEFAULT_CONFIG.skippedRestDays).toEqual([]);
   });
 
   test('default subjects and fixedCommitments are empty arrays', () => {
@@ -86,6 +81,10 @@ describe('Config Module - validateConfigSchema', () => {
 
   test('rejects non-array fixedCommitments', () => {
     expect(validateConfigSchema({ fixedCommitments: {} })).toBe(false);
+  });
+
+  test('rejects non-array skippedRestDays', () => {
+    expect(validateConfigSchema({ skippedRestDays: 'not array' })).toBe(false);
   });
 
   test('rejects non-array restDays', () => {
@@ -174,61 +173,43 @@ describe('Config Module - sanitize', () => {
 });
 
 describe('Config Module - loadConfig', () => {
-  test('returns defaults when file does not exist', () => {
-    const cfg = loadConfig(testConfigPath);
+  test('returns defaults when db is empty', () => {
+    const cfg = loadConfig();
     expect(cfg.maxStudyHoursPerDay).toBe(8);
     expect(cfg.targetGrade).toBe(14);
   });
 
   test('loads and merges with defaults', () => {
-    fs.writeFileSync(testConfigPath, JSON.stringify({ targetGrade: 18 }));
-    const cfg = loadConfig(testConfigPath);
+    saveConfig({ targetGrade: 18 });
+    const cfg = loadConfig();
     expect(cfg.targetGrade).toBe(18);
     expect(cfg.maxStudyHoursPerDay).toBe(8); // from defaults
-  });
-
-  test('handles corrupted JSON gracefully', () => {
-    fs.writeFileSync(testConfigPath, 'not valid json {{{');
-    const cfg = loadConfig(testConfigPath);
-    expect(cfg.maxStudyHoursPerDay).toBe(8); // falls back to defaults
-  });
-
-  test('handles empty file gracefully', () => {
-    fs.writeFileSync(testConfigPath, '');
-    const cfg = loadConfig(testConfigPath);
-    expect(cfg.maxStudyHoursPerDay).toBe(8);
   });
 });
 
 describe('Config Module - saveConfig', () => {
   test('saves config to disk', () => {
-    const success = saveConfig({ targetGrade: 16 }, testConfigPath);
+    const success = saveConfig({ targetGrade: 16 });
     expect(success).toBe(true);
-    expect(fs.existsSync(testConfigPath)).toBe(true);
     
-    const loaded = JSON.parse(fs.readFileSync(testConfigPath, 'utf8'));
+    const loaded = loadConfig();
     expect(loaded.targetGrade).toBe(16);
   });
 
   test('preserves existing fields on partial update', () => {
     // First save a full config
-    saveConfig({ targetGrade: 16, maxStudyHoursPerDay: 6 }, testConfigPath);
+    saveConfig({ targetGrade: 16, maxStudyHoursPerDay: 6 });
     // Then update only one field
-    saveConfig({ targetGrade: 18 }, testConfigPath);
+    saveConfig({ targetGrade: 18 });
     
-    const loaded = JSON.parse(fs.readFileSync(testConfigPath, 'utf8'));
+    const loaded = loadConfig();
     expect(loaded.targetGrade).toBe(18);
     expect(loaded.maxStudyHoursPerDay).toBe(6); // preserved from previous save
   });
 
   test('sanitizes values before saving', () => {
-    saveConfig({ maxStudyHoursPerDay: 30 }, testConfigPath);
-    const loaded = JSON.parse(fs.readFileSync(testConfigPath, 'utf8'));
+    saveConfig({ maxStudyHoursPerDay: 30 });
+    const loaded = loadConfig();
     expect(loaded.maxStudyHoursPerDay).toBe(24); // clamped
-  });
-
-  test('returns false on write error (invalid path)', () => {
-    const success = saveConfig({}, '/invalid/path/that/does/not/exist/config.json');
-    expect(success).toBe(false);
   });
 });

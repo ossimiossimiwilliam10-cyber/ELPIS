@@ -5,6 +5,10 @@ vi.mock('fs', () => ({
   existsSync: vi.fn(() => false)
 }));
 
+vi.mock('../moteur/historique', () => ({
+  loadHistorique: () => ([])
+}));
+
 vi.mock('../moteur/config', () => ({
   loadConfig: () => ({
     maxStudyHoursPerDay: 8,
@@ -49,7 +53,7 @@ vi.mock('../moteur/cours', () => ({
 
 describe('Orchestrateur - genererRapportQuotidien', () => {
   test('returns a valid daily report structure', () => {
-    const r = genererRapportQuotidien('dummyCfg', 'dummyCrs');
+    const r = genererRapportQuotidien(0);
     expect(r).toBeDefined();
     expect(r).toHaveProperty('statut');
     expect(r).toHaveProperty('tachesDuJour');
@@ -60,12 +64,12 @@ describe('Orchestrateur - genererRapportQuotidien', () => {
   });
 
   test('extraTimeMin changes tempsDispoMin behavior', () => {
-    const r60 = genererRapportQuotidien('dummyCfg', 'dummyCrs', 60);
+    const r60 = genererRapportQuotidien(60);
     expect(r60.tempsDispoMin).toBeDefined();
   });
 
   test('report contains intelligence object with all axes', () => {
-    const r = genererRapportQuotidien('dummyCfg', 'dummyCrs', 0);
+    const r = genererRapportQuotidien(0);
     
     expect(r.intelligence).toBeDefined();
     expect(r.intelligence).toHaveProperty('compensationMap');
@@ -86,7 +90,7 @@ describe('Orchestrateur - genererRapportQuotidien', () => {
     
     // Test Soir
     Date.prototype.getHours = vi.fn(() => 20);
-    const rSoir = genererRapportQuotidien('dummyCfg', 'dummyCrs');
+    const rSoir = genererRapportQuotidien(0);
     if (rSoir.tachesDuJour && rSoir.tachesDuJour.length > 0) {
       for (const t of rSoir.tachesDuJour) {
         expect(t.moment).toBe('soir');
@@ -95,7 +99,7 @@ describe('Orchestrateur - genererRapportQuotidien', () => {
 
     // Test Aprem
     Date.prototype.getHours = vi.fn(() => 15);
-    const rAprem = genererRapportQuotidien('dummyCfg', 'dummyCrs');
+    const rAprem = genererRapportQuotidien(0);
     if (rAprem.tachesDuJour && rAprem.tachesDuJour.length > 0) {
       for (const t of rAprem.tachesDuJour) {
         expect(t.moment).not.toBe('matin');

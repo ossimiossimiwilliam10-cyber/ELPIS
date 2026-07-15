@@ -1,20 +1,17 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { genererRapportQuotidien } from '../moteur/orchestrateur';
-import * as fs from 'fs';
-import * as path from 'path';
-
-// We will use fake timers for date control
-// We write real files to temp dir to avoid fs mock hell
-
-const TEMP_DIR = path.join(__dirname, 'temp_coverage_data');
-const CFG_PATH = path.join(TEMP_DIR, 'espoir_config.json');
-const CRS_PATH = path.join(TEMP_DIR, 'espoir_cours.json');
-const HIST_PATH = path.join(TEMP_DIR, 'espoir_historique.json');
+const { db } = require('../db/setup');
+import { saveConfig } from '../moteur/config';
+import { saveCours } from '../moteur/cours';
+import { saveHistorique } from '../moteur/historique';
 
 const getBaseCours = () => ({
   licences: [{
+    nom: 'L1',
     semestres: [{
+      nom: 'S1',
       ues: [{
+        nom: 'U1',
         matieres: [{
           nom: 'Maths',
           coefficient: 3,
@@ -31,14 +28,11 @@ describe('Orchestrateur - Extreme Coverage', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-06-21T12:00:00Z')); // Dimanche 21 Juin 2026
 
-    if (!fs.existsSync(TEMP_DIR)) fs.mkdirSync(TEMP_DIR);
-    fs.writeFileSync(HIST_PATH, '[]');
+    db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
   });
 
   afterEach(() => {
-    if (fs.existsSync(CFG_PATH)) fs.unlinkSync(CFG_PATH);
-    if (fs.existsSync(CRS_PATH)) fs.unlinkSync(CRS_PATH);
-    if (fs.existsSync(HIST_PATH)) fs.unlinkSync(HIST_PATH);
+    db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
   });
 
   test('Branch: Anti-Burnout forced rest', () => {
@@ -48,26 +42,27 @@ describe('Orchestrateur - Extreme Coverage', () => {
       d.setDate(d.getDate() - i);
       hist.push({ timestamp: d.toISOString(), dureeMinutes: 400 });
     }
-    fs.writeFileSync(CFG_PATH, JSON.stringify({ maxStudyHoursPerDay: 8 }));
-    fs.writeFileSync(CRS_PATH, JSON.stringify(getBaseCours()));
-    fs.writeFileSync(HIST_PATH, JSON.stringify(hist));
+    saveConfig({ maxStudyHoursPerDay: 8 });
+    saveCours(getBaseCours());
+    saveHistorique(hist);
 
-    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
+    const r = genererRapportQuotidien(0);
     expect(r.statut).toBe('REPOS');
     expect(r.message).toContain('Anti-Burnout');
   });
 
   test('Branch: Config restDays imposed rest', () => {
-    fs.writeFileSync(CFG_PATH, JSON.stringify({ restDays: ['2026-06-21'] }));
-    fs.writeFileSync(CRS_PATH, JSON.stringify(getBaseCours()));
+    saveConfig({ restDays: ['2026-06-21'] });
+    saveCours(getBaseCours());
+    saveHistorique([{ type: 'CM', timestamp: '2026-06-20T10:00:00Z', dureeMinutes: 120 }]); // Worked yesterday!
 
-    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
+    const r = genererRapportQuotidien(0);
     expect(r.statut).toBe('REPOS');
     expect(r.message).toContain('Jour de repos');
   });
 
   test('Branch: Fixed Commitments parsing across midnight and valid', () => {
-    fs.writeFileSync(CFG_PATH, JSON.stringify({
+    saveConfig({
       maxStudyHoursPerDay: 8,
       fixedCommitments: [
         { day: 'Dimanche', start: '10:00', end: '12:00', matiereLinked: 'Maths' }, // 120 mins
@@ -75,50 +70,50 @@ describe('Orchestrateur - Extreme Coverage', () => {
         { day: 'Lundi', start: '08:00', end: '10:00' }, // Ignored
         { day: 'Dimanche', start: 'XX:00', end: 'YY' } // Invalid parsing
       ]
-    }));
-    fs.writeFileSync(CRS_PATH, JSON.stringify(getBaseCours()));
-    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
+    });
+    saveCours(getBaseCours());
+    const r = genererRapportQuotidien(0);
     expect(r.fixedCommitmentsMin).toBe(240);
   });
 
   test('Branch: Temps Deja Travaille (today) - CM, TD, TP, Annales', () => {
-    fs.writeFileSync(CFG_PATH, JSON.stringify({
+    saveConfig({
       dernierePratiqueAnki: '2026-06-21',
       defaultDurationAnki: 25,
       defaultDurationNewCM: 120,
       defaultDurationTD: 20,
       defaultDurationTP_Etape1: 45,
       defaultDurationAnnales: 60
-    }));
+    });
     const crs = getBaseCours();
     crs.licences[0].semestres[0].ues[0].matieres[0].listeCM.push({ titre: 'CM1', jActuel: 0, derniereRevision: '2026-06-21' });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeTD.push({ titre: 'TD1', dernierePratique: '2026-06-21', difficulte: 'moyen' });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeTP.push({ titre: 'TP1', dernierePratique: '2026-06-21', nombrePratiques: 1, difficulte: 'moyen' });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeAnnales.push({ titre: 'ANN1', dernierePratique: '2026-06-21', difficulte: 'moyen' });
-    fs.writeFileSync(CRS_PATH, JSON.stringify(crs));
+    saveCours(crs);
 
-    fs.writeFileSync(HIST_PATH, JSON.stringify([
+    saveHistorique([
       { type: 'ANKI', timestamp: '2026-06-21T10:00:00Z', dureeMinutes: 25 },
       { type: 'CM', timestamp: '2026-06-21T10:30:00Z', dureeMinutes: 120 },
       { type: 'TD', timestamp: '2026-06-21T11:00:00Z', dureeMinutes: 20 },
       { type: 'TP', timestamp: '2026-06-21T11:30:00Z', dureeMinutes: 45 },
       { type: 'ANNALE', timestamp: '2026-06-21T12:00:00Z', dureeMinutes: 60 }
-    ]));
+    ]);
 
-    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
+    const r = genererRapportQuotidien(0);
     expect(r.tempsDejaTravailleMin).toBe(270);
   });
 
   test('Branch: Annales Unlocking & Synergy Prep Boost', () => {
-    fs.writeFileSync(CFG_PATH, JSON.stringify({ maxStudyHoursPerDay: 8 }));
+    saveConfig({ maxStudyHoursPerDay: 8 });
     const crs = getBaseCours();
     crs.licences[0].semestres[0].ues[0].matieres[0].evaluations = [{ date: '2026-07-01' }]; // ~10 days
     crs.licences[0].semestres[0].ues[0].matieres[0].listeAnnales.push({ titre: 'ANN_URGENT', difficulte: 'difficile' });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeCM.push({ titre: 'CM_PREP', jActuel: 5, derniereRevision: '2026-06-11' });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeTD.push({ titre: 'TD_TARGET', difficulte: 'difficile' });
-    fs.writeFileSync(CRS_PATH, JSON.stringify(crs));
+    saveCours(crs);
 
-    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
+    const r = genererRapportQuotidien(0);
     const annaleTask = r.tachesDuJour.find(t => t.type === 'ANNALE');
     expect(annaleTask).toBeDefined();
     expect(annaleTask.raisons).toContain('EXAMEN_IMMINENT');
@@ -129,46 +124,70 @@ describe('Orchestrateur - Extreme Coverage', () => {
   });
 
   test('Branch: FillGap mode', () => {
-    fs.writeFileSync(CFG_PATH, JSON.stringify({ maxStudyHoursPerDay: 8 }));
+    saveConfig({ maxStudyHoursPerDay: 8 });
     const crs = getBaseCours();
     crs.licences[0].semestres[0].ues[0].matieres[0].listeTD.push({ titre: 'TD_GAP' });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeTP.push({ titre: 'TP_GAP', nombrePratiques: 1 });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeCM.push({ titre: 'CM_GAP', jActuel: 0 });
-    fs.writeFileSync(CRS_PATH, JSON.stringify(crs));
+    saveCours(crs);
 
-    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH, 0, true);
+    const r = genererRapportQuotidien(0, true);
     expect(r.tachesDuJour.filter(t => t.type === 'TD').length).toBeLessThanOrEqual(1);
     expect(r.tachesDuJour.filter(t => t.type === 'TP').length).toBeLessThanOrEqual(1);
   });
 
   test('Anti-regression: tempsDejaTravailleMin calculates exact minutes from history regardless of moving averages or default durations', () => {
     // Configure default durations to 1000 each, which would cause massive bloat if the old bug was present
-    fs.writeFileSync(CFG_PATH, JSON.stringify({
+    saveConfig({
       defaultDurationAnki: 1000,
       defaultDurationNewCM: 1000,
       defaultDurationRevCM: 1000,
       defaultDurationTD: 1000,
       defaultDurationTP_Etape1: 1000,
       defaultDurationAnnales: 1000
-    }));
+    });
 
     // Add tasks that were revised/completed today.
     // In the old bug, their default durations or moving averages would be summed.
     const crs = getBaseCours();
     crs.licences[0].semestres[0].ues[0].matieres[0].listeCM.push({ titre: 'CM1', jActuel: 0, derniereRevision: '2026-06-21', tempsMoyen: 500 });
     crs.licences[0].semestres[0].ues[0].matieres[0].listeTD.push({ titre: 'TD1', dernierePratique: '2026-06-21', tempsMoyen: 500 });
-    fs.writeFileSync(CRS_PATH, JSON.stringify(crs));
+    saveCours(crs);
 
     // The ONLY source of truth must be the history file.
     // We only completed two tasks today: 12 minutes and 8 minutes. Total = 20 minutes.
-    fs.writeFileSync(HIST_PATH, JSON.stringify([
+    saveHistorique([
       { type: 'CM', timestamp: '2026-06-21T10:30:00Z', dureeMinutes: 12 },
       { type: 'TD', timestamp: '2026-06-21T11:00:00Z', dureeMinutes: 8 }
-    ]));
+    ]);
 
-    const r = genererRapportQuotidien(CFG_PATH, CRS_PATH);
+    const r = genererRapportQuotidien(0);
     // If the old bug was active, this would be 1000 (from tempsMoyen) or 2000 (from default configs).
     // It MUST be exactly 20.
     expect(r.tempsDejaTravailleMin).toBe(20);
+  });
+
+  test('Branch: Variable Rest Days (2nd day optional)', () => {
+    // Today is forced rest via config
+    saveConfig({ restDays: ['2026-06-22', '2026-06-23'], skippedRestDays: [] });
+    // Work on Sunday so Monday is Day 1
+    saveHistorique([{ type: 'CM', timestamp: '2026-06-21T10:00:00Z', dureeMinutes: 120 }]);
+    
+    // Simulate Monday (Day 1)
+    vi.setSystemTime(new Date('2026-06-22T12:00:00Z')); // Monday
+    let r = genererRapportQuotidien(0);
+    expect(r.statut).toBe('REPOS');
+
+    // Simulate Tuesday (Day 2)
+    // History has nothing for Monday, so restedYesterday is true
+    vi.setSystemTime(new Date('2026-06-23T12:00:00Z')); // Tuesday
+    r = genererRapportQuotidien(0);
+    expect(r.statut).toBe('REPOS_OPTIONNEL');
+
+    // If skipped
+    saveConfig({ restDays: ['2026-06-22', '2026-06-23'], skippedRestDays: ['2026-06-23'] });
+    r = genererRapportQuotidien(0);
+    expect(r.statut).not.toBe('REPOS_OPTIONNEL');
+    expect(r.statut).not.toBe('REPOS');
   });
 });

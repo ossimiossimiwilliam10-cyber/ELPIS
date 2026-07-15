@@ -1,5 +1,7 @@
 const { MongoClient } = require('mongodb');
-const fs = require('fs');
+const { saveConfig } = require('./moteur/config');
+const { saveCours } = require('./moteur/cours');
+const { saveHistorique } = require('./moteur/historique');
 require('dotenv').config();
 
 let client;
@@ -7,7 +9,7 @@ let db;
 
 async function initMongo() {
   if (!process.env.MONGODB_URI) {
-    console.log("⚠️  Aucune variable MONGODB_URI trouvée. ELPIS tournera en mode local (fichiers).");
+    console.log("⚠️  Aucune variable MONGODB_URI trouvée. ELPIS tournera en mode local (SQLite).");
     return false;
   }
 
@@ -23,7 +25,7 @@ async function initMongo() {
   }
 }
 
-async function syncFromMongoToLocal(CONFIG_FILE, COURS_FILE, HISTORIQUE_FILE) {
+async function syncFromMongoToLocal() {
   if (!db) return;
 
   try {
@@ -31,17 +33,17 @@ async function syncFromMongoToLocal(CONFIG_FILE, COURS_FILE, HISTORIQUE_FILE) {
 
     const configDoc = await db.collection('app_data').findOne({ type: 'config' });
     if (configDoc && configDoc.data && Object.keys(configDoc.data).length > 0) {
-      fs.writeFileSync(CONFIG_FILE, JSON.stringify(configDoc.data, null, 4), 'utf8');
+      saveConfig(configDoc.data);
     }
 
     const coursDoc = await db.collection('app_data').findOne({ type: 'cours' });
     if (coursDoc && coursDoc.data && coursDoc.data.licences) {
-      fs.writeFileSync(COURS_FILE, JSON.stringify(coursDoc.data, null, 4), 'utf8');
+      saveCours(coursDoc.data);
     }
 
     const histDoc = await db.collection('app_data').findOne({ type: 'historique' });
     if (histDoc && histDoc.data && Array.isArray(histDoc.data)) {
-      fs.writeFileSync(HISTORIQUE_FILE, JSON.stringify(histDoc.data, null, 4), 'utf8');
+      saveHistorique(histDoc.data);
     }
 
     console.log("✅  Synchronisation initiale terminée.");

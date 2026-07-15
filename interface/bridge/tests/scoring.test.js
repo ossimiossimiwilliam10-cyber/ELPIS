@@ -38,7 +38,7 @@ describe('Scoring Engine - getSubjectExamBoost', () => {
   });
 
   test('fuzzy matches exam subject by prefix', () => {
-    const matiere = { nom: 'Physique Avancée' };
+    const matiere = { nom: 'Physique AvancÃ©e' };
     const map = { 'physique': { multiplier: 1.2, daysToExam: 15 } };
     const r = getSubjectExamBoost(matiere, map);
     expect(r.boost).toBeCloseTo(1.2);
@@ -103,7 +103,7 @@ describe('Scoring Engine - getPrioScore', () => {
     expect(prioWithComp).toBeCloseTo(prioWithoutComp * 0.7);
   });
 
-  test('AXE 13: Synergies Inter-Matières boosts priority if related subject ratio < 0.3', () => {
+  test('AXE 13: Synergies Inter-MatiÃ¨res boosts priority if related subject ratio < 0.3', () => {
     const ex = { nombrePratiques: 0, difficulte: 'moyen' };
     const matiere = { nom: 'Maths', _ueMatieres: ['maths', 'physique'] };
     const velocityMap = { 'physique': { totalCMs: 10, masteredCMs: 1 } }; // ratio 0.1 < 0.3 => boost +0.2
@@ -114,7 +114,7 @@ describe('Scoring Engine - getPrioScore', () => {
     expect(prioWithSynergy).toBeCloseTo(prioWithoutSynergy * 1.2);
   });
 
-  test('AXE 13: Synergies Inter-Matières reduces priority if related subject ratio > 0.8', () => {
+  test('AXE 13: Synergies Inter-MatiÃ¨res reduces priority if related subject ratio > 0.8', () => {
     const ex = { nombrePratiques: 0, difficulte: 'moyen' };
     const matiere = { nom: 'Maths', _ueMatieres: ['maths', 'physique'] };
     const velocityMap = { 'physique': { totalCMs: 10, masteredCMs: 9 } }; // ratio 0.9 > 0.8 => boost -0.1

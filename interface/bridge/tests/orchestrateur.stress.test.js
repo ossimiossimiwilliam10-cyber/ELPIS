@@ -1,16 +1,12 @@
 import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import { genererRapportQuotidien } from '../moteur/orchestrateur';
-import * as fs from 'fs';
-import * as path from 'path';
-// ── No Mocks! Real Files! ──────────────────────────────────────────────────
-
-const tempDir = path.join(__dirname, 'temp_stress_data');
-const tempConfigPath = path.join(tempDir, 'espoir_config.json');
-const tempHistPath = path.join(tempDir, 'espoir_historique.json');
-const tempCrsPath = path.join(tempDir, 'espoir_cours.json');
+const { db } = require('../db/setup');
+import { saveConfig } from '../moteur/config';
+import { saveCours } from '../moteur/cours';
+import { saveHistorique } from '../moteur/historique';
 
 beforeAll(() => {
-  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+  db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
 
   const days = [];
   for (let i = 0; i < 5; i++) {
@@ -34,24 +30,21 @@ beforeAll(() => {
     defaultDurationAnnales: 60,
     defaultDurationAnki: 30,
   };
-  fs.writeFileSync(tempConfigPath, JSON.stringify(configData));
+  saveConfig(configData);
 
   const mockYesterday = new Date();
   mockYesterday.setDate(mockYesterday.getDate() - 1);
   const histData = [
     { timestamp: mockYesterday.toISOString(), dureeMinutes: 60 }
   ];
-  fs.writeFileSync(tempHistPath, JSON.stringify(histData));
+  saveHistorique(histData);
 });
 
 afterAll(() => {
-  if (fs.existsSync(tempConfigPath)) fs.unlinkSync(tempConfigPath);
-  if (fs.existsSync(tempHistPath)) fs.unlinkSync(tempHistPath);
-  if (fs.existsSync(tempCrsPath)) fs.unlinkSync(tempCrsPath);
-  if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
+  db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
 });
 
-// ── Scenarios ──────────────────────────────────────────────────────────────
+// â”€â”€ Scenarios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 describe('Le Chantier des 1000 Tests - Stress Testing Orchestrator', () => {
   const stressScenarios = [];
   
@@ -84,8 +77,11 @@ describe('Le Chantier des 1000 Tests - Stress Testing Orchestrator', () => {
 
     const testCrs = {
       licences: [{
+        nom: 'L1',
         semestres: [{
+          nom: 'S1',
           ues: [{
+            nom: 'U1',
             matieres: [
               {
                 nom: matName,
@@ -129,9 +125,10 @@ describe('Le Chantier des 1000 Tests - Stress Testing Orchestrator', () => {
       }]
     };
 
-    fs.writeFileSync(tempCrsPath, JSON.stringify(testCrs));
+    saveCours(testCrs);
 
-    const r = genererRapportQuotidien(tempConfigPath, tempCrsPath);
+    // Call orchestrator
+    const r = genererRapportQuotidien(0);
     const taskTitles = r.tachesDuJour.map(t => t.titre);
     
     expect(r.statut).not.toBe('REPOS');

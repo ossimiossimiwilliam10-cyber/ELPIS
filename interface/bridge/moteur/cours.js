@@ -1,50 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+const { db } = require('../db/setup');
+const crypto = require('crypto');
 
-const ROOT_DIR = path.join(__dirname, '..', '..', '..');
-const COURS_PATH = path.join(ROOT_DIR, 'data', 'espoir_cours.json');
-
-/**
- * Validation minimale de la structure du fichier cours.
- * Retourne true si la structure est cohérente, false sinon.
- */
 function validateCoursSchema(data) {
   if (!data || typeof data !== 'object') {
-    console.error('[VALIDATION] Structure cours invalide : données nulles ou non-objet.');
     return false;
   }
   if (!Array.isArray(data.licences)) {
-    console.error('[VALIDATION] Structure cours invalide : champ "licences" manquant ou non-tableau.');
     return false;
-  }
-  for (let li = 0; li < data.licences.length; li++) {
-    const l = data.licences[li];
-    if (!l || typeof l !== 'object') {
-      console.error(`[VALIDATION] Licence[${li}] invalide.`);
-      return false;
-    }
-    if (!Array.isArray(l.semestres)) {
-      console.error(`[VALIDATION] Licence[${li}] : "semestres" manquant.`);
-      return false;
-    }
-    for (let si = 0; si < l.semestres.length; si++) {
-      const s = l.semestres[si];
-      if (!s || typeof s !== 'object' || !Array.isArray(s.ues)) {
-        console.error(`[VALIDATION] Licence[${li}].semestres[${si}] : "ues" manquant.`);
-        return false;
-      }
-      for (let ui = 0; ui < s.ues.length; ui++) {
-        const u = s.ues[ui];
-        if (!u || typeof u !== 'object') {
-          console.error(`[VALIDATION] UE[${li}][${si}][${ui}] invalide.`);
-          return false;
-        }
-        if (!Array.isArray(u.matieres)) {
-          console.error(`[VALIDATION] UE "${u.nom || '?'}" : "matieres" manquant.`);
-          return false;
-        }
-      }
-    }
   }
   return true;
 }
@@ -55,84 +17,113 @@ function sanitizeCours(c) {
     delete c.semestres;
   }
   if (!c.licences) c.licences = [];
-  // Nettoyer le champ legacy "semestres" au niveau racine s'il persiste
   if (c.semestres) delete c.semestres;
-
-  for (const l of c.licences) {
-    if (!l.nom) l.nom = "Nouvelle Licence";
-    if (!l.semestres) l.semestres = [];
-    for (const s of l.semestres) {
-      if (!s.ues) s.ues = [];
-      for (const ue of s.ues) {
-        ue.ects = Math.max(0, Math.min(180, ue.ects ?? 0));
-        if (!ue.matieres) ue.matieres = [];
-        for (const m of ue.matieres) {
-          m.coefficient = Math.max(1, Math.min(10, m.coefficient ?? 1));
-          m.cm_h = Math.max(0, Math.min(500, m.cm_h ?? 0));
-          m.td_h = Math.max(0, Math.min(500, m.td_h ?? 0));
-          m.tp_h = Math.max(0, Math.min(500, m.tp_h ?? 0));
-
-          if (!m.listeCM) m.listeCM = [];
-          for (const cm of m.listeCM) {
-            cm.jActuel = Math.max(0, Math.min(3000, cm.jActuel ?? 0));
-            if (cm.jActuel > 0 && (!cm.derniereRevision || cm.derniereRevision === "")) {
-              const d = new Date();
-              d.setHours(d.getHours() - 4);
-              cm.derniereRevision = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-            }
-          }
-
-          if (!m.listeTD) m.listeTD = [];
-          for (const ex of m.listeTD) {
-            ex.page = Math.max(1, Math.min(9999, ex.page ?? 1));
-            ex.nombrePratiques = Math.max(0, Math.min(10000, ex.nombrePratiques ?? 0));
-          }
-
-          if (!m.listeTP) m.listeTP = [];
-          for (const ex of m.listeTP) {
-            ex.page = Math.max(1, Math.min(9999, ex.page ?? 1));
-            ex.nombrePratiques = Math.max(0, Math.min(10000, ex.nombrePratiques ?? 0));
-          }
-
-          if (!m.listeAnnales) m.listeAnnales = [];
-          for (const ex of m.listeAnnales) {
-            ex.page = Math.max(1, Math.min(9999, ex.page ?? 1));
-            ex.nombrePratiques = Math.max(0, Math.min(10000, ex.nombrePratiques ?? 0));
-          }
-        }
-      }
-    }
-  }
   return c;
 }
 
-function loadCours(filePath = COURS_PATH) {
+function loadCours() {
   try {
-    if (!fs.existsSync(filePath)) return { licences: [] };
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const parsed = JSON.parse(raw);
-    if (!validateCoursSchema(parsed)) {
-      console.error('[VALIDATION] Fichier cours corrompu — chargement du fallback vide.');
-      return { licences: [] };
+    const licences = db.prepare('SELECT * FROM licences').all();
+    const semestres = db.prepare('SELECT * FROM semestres').all();
+    const ues = db.prepare('SELECT * FROM ues').all();
+    const matieres = db.prepare('SELECT * FROM matieres').all();
+    const cms = db.prepare('SELECT * FROM cours_cm').all();
+    const exos = db.prepare('SELECT * FROM exercices').all();
+
+    // Reconstruct the tree
+    const data = { licences: [] };
+    
+    const semMap = {}; // licence_id -> []
+    for (const s of semestres) {
+      if (!semMap[s.licence_id]) semMap[s.licence_id] = [];
+      semMap[s.licence_id].push({ ...s, archived: s.archived === 1, ues: [] });
     }
-    return sanitizeCours(parsed);
+
+    const ueMap = {}; // semestre_id -> []
+    for (const u of ues) {
+      if (!ueMap[u.semestre_id]) ueMap[u.semestre_id] = [];
+      ueMap[u.semestre_id].push({ ...u, matieres: [] });
+    }
+
+    const matMap = {}; // ue_id -> []
+    for (const m of matieres) {
+      if (!matMap[m.ue_id]) matMap[m.ue_id] = [];
+      matMap[m.ue_id].push({ 
+        ...m, 
+        evaluations: m.evaluations ? JSON.parse(m.evaluations) : undefined,
+        listeCM: [], 
+        listeTD: [], 
+        listeTP: [], 
+        listeAnnales: [] 
+      });
+    }
+
+    const cmMap = {}; // matiere_id -> []
+    for (const cm of cms) {
+      if (!cmMap[cm.matiere_id]) cmMap[cm.matiere_id] = [];
+      cmMap[cm.matiere_id].push({
+        ...cm,
+        pdfPaths: cm.pdfPaths ? JSON.parse(cm.pdfPaths) : undefined,
+        fsrsCard: cm.fsrsCard ? JSON.parse(cm.fsrsCard) : undefined
+      });
+    }
+
+    const exMap = {}; // matiere_id -> []
+    for (const ex of exos) {
+      if (!exMap[ex.matiere_id]) exMap[ex.matiere_id] = [];
+      exMap[ex.matiere_id].push({
+        ...ex,
+        tempsMoyenEtapes: ex.tempsMoyenEtapes ? JSON.parse(ex.tempsMoyenEtapes) : undefined,
+        pdfPaths: ex.pdfPaths ? JSON.parse(ex.pdfPaths) : undefined
+      });
+    }
+
+    // Assemble Matieres
+    for (const ueId in matMap) {
+      for (const m of matMap[ueId]) {
+        if (cmMap[m.id]) m.listeCM = cmMap[m.id];
+        if (exMap[m.id]) {
+          m.listeTD = exMap[m.id].filter(e => e.type === 'TD');
+          m.listeTP = exMap[m.id].filter(e => e.type === 'TP');
+          m.listeAnnales = exMap[m.id].filter(e => e.type === 'ANNALE');
+        }
+      }
+    }
+
+    // Assemble UEs
+    for (const semId in ueMap) {
+      for (const u of ueMap[semId]) {
+        if (matMap[u.id]) u.matieres = matMap[u.id];
+      }
+    }
+
+    // Assemble Semestres
+    for (const licId in semMap) {
+      for (const s of semMap[licId]) {
+        if (ueMap[s.id]) s.ues = ueMap[s.id];
+      }
+    }
+
+    // Assemble Licences
+    for (const l of licences) {
+      const lObj = { ...l, archived: l.archived === 1, semestres: [] };
+      if (semMap[l.id]) lObj.semestres = semMap[l.id];
+      data.licences.push(lObj);
+    }
+
+    return sanitizeCours(data);
   } catch (err) {
-    console.error("Erreur lecture cours:", err.message);
+    console.error("Erreur lecture cours (SQLite):", err.message);
     return { licences: [] };
   }
 }
 
-/**
- * Deep merge une licence du frontend dans l'existant, en préservant
- * les données FSRS et l'historique de pratique sur les exercices.
- */
 function deepMergeLicence(existingLicence, newLicence) {
   const merged = { ...existingLicence, ...newLicence };
   if (!newLicence.semestres || !Array.isArray(newLicence.semestres)) {
     merged.semestres = existingLicence.semestres || [];
     return merged;
   }
-
   merged.semestres = newLicence.semestres.map((newSem, si) => {
     const existingSem = (existingLicence.semestres && existingLicence.semestres[si]) || {};
     const mergedSem = { ...existingSem, ...newSem };
@@ -140,7 +131,6 @@ function deepMergeLicence(existingLicence, newLicence) {
       mergedSem.ues = existingSem.ues || [];
       return mergedSem;
     }
-
     mergedSem.ues = newSem.ues.map((newUE, ui) => {
       const existingUE = (existingSem.ues && existingSem.ues[ui]) || {};
       const mergedUE = { ...existingUE, ...newUE };
@@ -148,13 +138,9 @@ function deepMergeLicence(existingLicence, newLicence) {
         mergedUE.matieres = existingUE.matieres || [];
         return mergedUE;
       }
-
       mergedUE.matieres = newUE.matieres.map((newMat, mi) => {
         const existingMat = (existingUE.matieres && existingUE.matieres[mi]) || {};
-        // Deep merge: on préserve les propriétés FSRS (fsrsCard, tempsMoyen, etc.)
-        // du existant, sauf si le nouveau les écrase explicitement
         const mergedMat = { ...existingMat, ...newMat };
-        // Fusion récursive pour les listes d'exercices
         if (newMat.listeCM) {
           mergedMat.listeCM = newMat.listeCM.map((newCM, ci) => {
             const existingCM = (existingMat.listeCM && existingMat.listeCM[ci]) || {};
@@ -188,44 +174,157 @@ function deepMergeLicence(existingLicence, newLicence) {
   return merged;
 }
 
-function saveCours(coursConfig, filePath = COURS_PATH) {
-  // Deep merge: fuse au niveau licences/semestres/UEs/matières pour préserver les données
-  // que le frontend n'envoie pas (ex: listes d'exercices avec historique FSRS)
-  const existing = loadCours(filePath);
+function saveCours(coursConfig) {
+  const existing = loadCours();
 
-  // Si le frontend n'envoie pas de licences, on garde l'existant
   if (!coursConfig.licences || !Array.isArray(coursConfig.licences)) {
-    console.error('[VALIDATION] saveCours: "licences" manquant ou invalide. Sauvegarde annulée.');
     return false;
   }
 
-  // Deep merge: pour chaque licence du nouveau payload, fusionner dans l'existant
   const mergedLicences = coursConfig.licences.map((newLicence, li) => {
     const existingLicence = (existing.licences && existing.licences[li]) || {};
     return deepMergeLicence(existingLicence, newLicence);
   });
+  
+  const cleaned = sanitizeCours({ ...coursConfig, licences: mergedLicences });
 
-  const cleaned = sanitizeCours({ licences: mergedLicences });
-
-  // Refuser d'écrire une structure corrompue
   if (!validateCoursSchema(cleaned)) {
-    console.error('[VALIDATION] Refus d\'écriture : la structure cours est corrompue. Sauvegarde annulée.');
     return false;
   }
 
-  const json = JSON.stringify(cleaned, null, 4);
-  const tmpPath = filePath + '.tmp';
+  // WIPE AND INSERT TRANSACTION
+  const insLicence = db.prepare('INSERT INTO licences (id, nom, archived) VALUES (?, ?, ?)');
+  const insSemestre = db.prepare('INSERT INTO semestres (id, nom, archived, dateFin, licence_id) VALUES (?, ?, ?, ?, ?)');
+  const insUe = db.prepare('INSERT INTO ues (id, nom, semestre_id) VALUES (?, ?, ?)');
+  const insMatiere = db.prepare('INSERT INTO matieres (id, nom, coef, ects, dateExamen, ankiDeckName, evaluations, ue_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+  const insCm = db.prepare(`
+    INSERT INTO cours_cm (id, titre, derniereRevision, prochaineRevisionDate, jActuel, tempsMoyen, fichePdfPath, pdfPath, pdfPaths, fsrsCard, matiere_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const insEx = db.prepare(`
+    INSERT INTO exercices (id, type, titre, dernierePratique, dateTP, nombrePratiques, tempsMoyen, tempsMoyenEtapes, pdfPath, pdfPaths, page, difficulte, matiere_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
 
   try {
-    fs.writeFileSync(tmpPath, json, 'utf8');
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    fs.renameSync(tmpPath, filePath);
+    const tx = db.transaction(() => {
+      db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences;');
+
+      for (const licence of cleaned.licences) {
+        const lid = licence.id || crypto.randomUUID();
+        insLicence.run(lid, licence.nom, licence.archived ? 1 : 0);
+
+        for (const semestre of (licence.semestres || [])) {
+          const sid = semestre.id || crypto.randomUUID();
+          insSemestre.run(sid, semestre.nom, semestre.archived ? 1 : 0, semestre.dateFin || null, lid);
+
+          for (const ue of (semestre.ues || [])) {
+            const uid = ue.id || crypto.randomUUID();
+            insUe.run(uid, ue.nom, sid);
+
+            for (const matiere of (ue.matieres || [])) {
+              const mid = matiere.id || crypto.randomUUID();
+              insMatiere.run(
+                mid,
+                matiere.nom,
+                matiere.coef || null,
+                matiere.ects || null,
+                matiere.dateExamen || null,
+                matiere.ankiDeckName || null,
+                matiere.evaluations ? JSON.stringify(matiere.evaluations) : null,
+                uid
+              );
+
+              // CM
+              for (const cm of (matiere.listeCM || [])) {
+                insCm.run(
+                  cm.id || crypto.randomUUID(),
+                  cm.titre,
+                  cm.derniereRevision || null,
+                  cm.prochaineRevisionDate || null,
+                  cm.jActuel !== undefined && cm.jActuel !== null ? cm.jActuel : null,
+                  cm.tempsMoyen !== undefined && cm.tempsMoyen !== null ? cm.tempsMoyen : null,
+                  cm.fichePdfPath || null,
+                  cm.pdfPath || null,
+                  cm.pdfPaths ? JSON.stringify(cm.pdfPaths) : null,
+                  cm.fsrsCard ? JSON.stringify(cm.fsrsCard) : null,
+                  mid
+                );
+              }
+
+              // TD
+              for (const td of (matiere.listeTD || [])) {
+                insEx.run(
+                  td.id || crypto.randomUUID(),
+                  'TD',
+                  td.titre,
+                  td.dernierePratique || null,
+                  td.dateTP || null,
+                  td.nombrePratiques || null,
+                  td.tempsMoyen || null,
+                  td.tempsMoyenEtapes ? JSON.stringify(td.tempsMoyenEtapes) : null,
+                  td.pdfPath || null,
+                  td.pdfPaths ? JSON.stringify(td.pdfPaths) : null,
+                  td.page || null,
+                  td.difficulte || null,
+                  mid
+                );
+              }
+
+              // TP
+              for (const tp of (matiere.listeTP || [])) {
+                insEx.run(
+                  tp.id || crypto.randomUUID(),
+                  'TP',
+                  tp.titre,
+                  tp.dernierePratique || null,
+                  tp.dateTP || null,
+                  tp.nombrePratiques || null,
+                  tp.tempsMoyen || null,
+                  tp.tempsMoyenEtapes ? JSON.stringify(tp.tempsMoyenEtapes) : null,
+                  tp.pdfPath || null,
+                  tp.pdfPaths ? JSON.stringify(tp.pdfPaths) : null,
+                  tp.page || null,
+                  tp.difficulte || null,
+                  mid
+                );
+              }
+
+              // ANNALES
+              for (const annale of (matiere.listeAnnales || [])) {
+                insEx.run(
+                  annale.id || crypto.randomUUID(),
+                  'ANNALE',
+                  annale.titre,
+                  annale.dernierePratique || null,
+                  annale.dateTP || null,
+                  annale.nombrePratiques || null,
+                  annale.tempsMoyen || null,
+                  annale.tempsMoyenEtapes ? JSON.stringify(annale.tempsMoyenEtapes) : null,
+                  annale.pdfPath || null,
+                  annale.pdfPaths ? JSON.stringify(annale.pdfPaths) : null,
+                  annale.page || null,
+                  annale.difficulte || null,
+                  mid
+                );
+              }
+            }
+          }
+        }
+      }
+    });
+
+    tx();
     return true;
   } catch (err) {
-    console.error("Erreur sauvegarde cours:", err.message);
-    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch {}
+    console.error("Erreur sauvegarde cours (SQLite):", err.message);
     return false;
   }
 }
 
-module.exports = { validateCoursSchema, sanitizeCours, loadCours, saveCours, COURS_PATH };
+module.exports = {
+  loadCours,
+  saveCours,
+  validateCoursSchema,
+  sanitizeCours
+};

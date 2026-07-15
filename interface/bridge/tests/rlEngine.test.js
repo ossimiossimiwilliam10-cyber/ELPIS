@@ -27,9 +27,9 @@ describe('Reinforcement Learning Engine (UCB)', () => {
       } 
     };
     
-    // c = Math.SQRT2 ≈ 1.414
-    // Math.sqrt(Math.log(10) / 2) ≈ Math.sqrt(2.302 / 2) ≈ Math.sqrt(1.151) ≈ 1.073
-    // explorationTerm = 1.414 * 1.073 ≈ 1.517
+    // c = Math.SQRT2 â‰ˆ 1.414
+    // Math.sqrt(Math.log(10) / 2) â‰ˆ Math.sqrt(2.302 / 2) â‰ˆ Math.sqrt(1.151) â‰ˆ 1.073
+    // explorationTerm = 1.414 * 1.073 â‰ˆ 1.517
     // score = 0.5 + 1.517 = 2.017
     
     const score = calculateUCBScore('maths', rlState);
@@ -68,14 +68,14 @@ describe('Reinforcement Learning Engine (UCB)', () => {
       } 
     };
     mult = getRLMultiplier('chimie', rlState);
-    // UCB ≈ -1.0 + 1.414 * sqrt(ln(100)/50) = -1.0 + 1.414 * 0.303 = -0.57
+    // UCB â‰ˆ -1.0 + 1.414 * sqrt(ln(100)/50) = -1.0 + 1.414 * 0.303 = -0.57
     // Boost = 1.0 + (-0.57 * 0.5) = 0.715 -> capped at 0.8
     expect(mult).toBe(0.8);
     
     // Explored subject with high reward (Q = 1.5)
     rlState.subjects['chimie'] = { qValue: 1.5, trials: 50 };
     mult = getRLMultiplier('chimie', rlState);
-    // UCB ≈ 1.5 + 0.43 = 1.93
+    // UCB â‰ˆ 1.5 + 0.43 = 1.93
     // Boost = 1.0 + (1.93 * 0.5) = 1.965
     expect(mult).toBeGreaterThan(1.5);
     expect(mult).toBeLessThanOrEqual(2.5); // bounded
