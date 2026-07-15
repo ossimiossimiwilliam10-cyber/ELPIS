@@ -62,12 +62,16 @@ export const getDb = async () => {
         try { isTestEnv = (process.env.NODE_ENV === 'test'); } catch(e){}
         try { if (!isTestEnv && import.meta.env.MODE === 'test') isTestEnv = true; } catch(e){}
         
+        let isDev = false;
+        try { isDev = (process.env.NODE_ENV === 'development'); } catch(e){}
+        try { if (!isDev && import.meta.env?.DEV) isDev = true; } catch(e){}
+
         const dbName = isTestEnv ? 'elpisdb_test_' + Date.now() + '_' + Math.random().toString().slice(2) : 'elpisdb';
         const db = await createRxDatabase({
             name: dbName,
             storage: isTestEnv ? getRxStorageMemory() : getRxStorageDexie(),
             multiInstance: !isTestEnv,
-            ignoreDuplicate: true
+            ignoreDuplicate: isTestEnv || isDev
         });
 
         await db.addCollections({
