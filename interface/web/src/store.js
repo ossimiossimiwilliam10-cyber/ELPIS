@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { persist } from 'zustand/middleware';
 import debounce from 'lodash/debounce';
+import { getDb, syncFromBackend } from './database';
 
 // API base URL
 const API_URL = '/api';
@@ -75,8 +75,17 @@ const debouncedSaveProjets = debounce(async (projets, get) => {
   }
 }, 500);
 
+// Helper to write to RxDB
+const writeToDb = async (collectionName, data) => {
+  try {
+    const db = await getDb();
+    await db[collectionName].upsert({ id: 'main', data });
+  } catch (e) {
+    console.error(`Erreur d'écriture locale (${collectionName}) :`, e);
+  }
+};
 
-const useStore = create(persist(immer((set, get) => ({
+const useStore = create(immer((set, get) => ({
   // --- STATE ---
   config: {},
   coursConfig: { licences: [] },
@@ -142,7 +151,6 @@ const useStore = create(persist(immer((set, get) => ({
 
   // --- CHRONO STATE MOVED TO useChronoStore TO PREVENT RE-RENDERS ---
 
-
   updatePendingTasksCount: async () => {
     await get().fetchOrchestrator({ extraTime: 0, fillGap: false });
   },
@@ -151,60 +159,62 @@ const useStore = create(persist(immer((set, get) => ({
   initData: async () => {
     set({ loading: true, error: null });
     try {
-      const [resConfig, resCours, resHist, resProjets] = await Promise.all([
-        fetch(`${API_URL}/config`).then(async r => {
-          if (!r.ok) throw new Error(`Erreur chargement config (${r.status})`);
-          return r.json();
-        }),
-        fetch(`${API_URL}/cours`).then(async r => {
-          if (!r.ok) throw new Error(`Erreur chargement cours (${r.status})`);
-          return r.json();
-        }),
-        fetch(`${API_URL}/historique`).then(r => r.ok ? r.json() : []),
-        fetch(`${API_URL}/projets`).then(r => r.ok ? r.json() : [])
-      ]);
+      const db = await getDb();
 
-      set({
-        config: resConfig,
-        coursConfig: resCours,
-        historique: Array.isArray(resHist) ? resHist : [],
-        projets: Array.isArray(resProjets) ? resProjets : [],
-        loading: false
+      // Au premier lancement ou mode online, synchroniser depuis le serveur
+      if (navigator.onLine) {
+        await syncFromBackend(db);
+      }
+
+      // Initialiser l'état depuis RxDB
+      const configDoc = await db.config.findOne('main').exec();
+      const coursDoc = await db.cours.findOne('main').exec();
+      const histDoc = await db.historique.findOne('main').exec();
+      const projDoc = await db.projets.findOne('main').exec();
+
+      set(state => {
+        state.config = configDoc?.data || {};
+        state.coursConfig = coursDoc?.data || { licences: [] };
+        state.historique = histDoc?.data || [];
+        state.projets = projDoc?.data || [];
+        state.loading = false;
       });
 
-      // Call streak check immediately after load (passif)
-      get().checkStreak(false);
-      // Fetch orchestrator data (intelligence + tasks) once after init
-      get().fetchOrchestrator();
+      // Souscrire aux modifications de RxDB pour mise à jour en temps réel
+      db.config.findOne('main').$.subscribe(doc => {
+        if (doc) set(state => { state.config = doc.data; });
+      });
+      db.cours.findOne('main').$.subscribe(doc => {
+        if (doc) set(state => { state.coursConfig = doc.data; });
+      });
+      db.historique.findOne('main').$.subscribe(doc => {
+        if (doc) set(state => { state.historique = doc.data; });
+      });
+      db.projets.findOne('main').$.subscribe(doc => {
+        if (doc) set(state => { state.projets = doc.data; });
+      });
 
-    } catch (err) {
-      set({ error: err?.message || 'Erreur réseau lors du chargement des données.', loading: false });
+      // Fetch orchestrator data directly from API
+      await get().fetchOrchestrator();
+    } catch (error) {
+      console.error('Erreur lors du chargement des données RxDB:', error);
+      set({ error: error.message, loading: false });
     }
   },
 
   // Update config state and trigger auto-save
-  setConfig: (newConfig) => {
-    // Merge with current state to never lose streak/lastActiveDate
-    const merged = { ...get().config, ...newConfig };
-    set({ config: merged });
-    debouncedSaveConfig(merged, get);
-  },
+  setConfig: (newConfig) => set(state => {
+    state.config = newConfig;
+    writeToDb('config', newConfig);
+    debouncedSaveConfig(newConfig, get);
+  }),
 
   // Update projets state and save
-  setProjets: async (newProjets) => {
-    set({ projets: newProjets });
-    try {
-      const res = await fetch(`${API_URL}/projets`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProjets)
-      });
-      if (!res.ok) throw new Error('API Error');
-      if (get) get().fetchOrchestrator();
-    } catch(e) {
-      handleOfflineError('projets sync', e);
-    }
-  },
+  setProjets: (newProjets) => set(state => {
+    state.projets = newProjets;
+    writeToDb('projets', newProjets);
+    debouncedSaveProjets(newProjets, get);
+  }),
 
   activateRestDay: async () => {
     const config = get().config;
@@ -256,30 +266,54 @@ const useStore = create(persist(immer((set, get) => ({
     }
   },
 
+  // Helper method for the tree updates
+  updateSubjectInTree: (licenceId, semestreId, ueId, subjectName, updateFn) => {
+    set(state => {
+      const licence = state.coursConfig.licences?.find(l => l.id === licenceId);
+      if (!licence) return;
+      const semestre = licence.semestres?.find(s => s.id === semestreId);
+      if (!semestre) return;
+      const ue = semestre.ues?.find(u => u.id === ueId);
+      if (!ue) return;
+      const matiere = ue.matieres?.find(m => m.nom === subjectName);
+      if (!matiere) return;
+
+      updateFn(matiere);
+    });
+    
+    const newCoursConfig = get().coursConfig;
+    writeToDb('cours', newCoursConfig);
+    debouncedSaveCours(newCoursConfig, get);
+  },
+
   // Update cours state and trigger auto-save
-  setCoursConfig: (newCours) => {
-    set({ coursConfig: newCours });
-    debouncedSaveCours(newCours, get);
+  setCoursConfig: (newCoursConfig) => {
+    set(state => { state.coursConfig = newCoursConfig; });
+    writeToDb('cours', newCoursConfig);
+    debouncedSaveCours(newCoursConfig, get);
   },
 
   // Update history state and trigger auto-save
   addHistoriqueEntry: (entry) => {
-    const stateBefore = get().intelligence;
-    const priorScore = stateBefore?.projectedScoreMap?.[(entry.matiere || '').toLowerCase().trim()] || null;
-
-    const newHist = [...get().historique, { ...entry, timestamp: new Date().toISOString() }];
-    set({ historique: newHist });
+    const newEntry = { ...entry, timestamp: new Date().toISOString() };
+    set(state => {
+      if (!state.historique) state.historique = [];
+      state.historique.push(newEntry);
+    });
+    
+    const newHist = get().historique;
+    writeToDb('historique', newHist);
     debouncedSaveHistorique(newHist, get);
+    
     // Update streak on every completed task (actif)
     get().checkStreak(true);
 
-    // Envoi Télémétrie (Fire and forget)
-    fetch('/api/telemetry/session', {
+    // [Epic 2] - Background Telemetry
+    fetch(`${API_URL}/ai/historique-update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sessionData: entry,
-        aiStateBefore: { projectedScore: priorScore },
         aiStateAfter: { note: "calculé au prochain cycle" }
       })
     }).catch(e => console.error("Erreur télémétrie:", e));
@@ -357,17 +391,7 @@ const useStore = create(persist(immer((set, get) => ({
     }
   }
 
-})), {
-  name: 'elpis-offline-storage',
-  partialize: (state) => ({
-    config: state.config,
-    coursConfig: state.coursConfig,
-    projets: state.projets,
-    historique: state.historique,
-    orchestratorData: state.orchestratorData,
-    intelligence: state.intelligence,
-  }),
-}));
+})));
 
 export default useStore;
 

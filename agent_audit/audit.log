@@ -3143,3 +3143,27 @@
 [2026-07-15 08:01:04] [WARNING]   [!] Performance degradee: 4.5 fichiers/s
 [2026-07-15 08:01:04] [INFO]   [i] 56 regles inactives. Verifier si elles sont encore pertinentes.
 [2026-07-15 08:01:04] [INFO] Audit termine en 41.8s. Health Score projet: 70/100
+[2026-07-15 09:35:49] [INFO] ============================================================
+[2026-07-15 09:35:49] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-15 09:35:49] [INFO] ============================================================
+[2026-07-15 09:35:49] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-15 09:35:49] [INFO] Etablissement de la baseline de tests...
+[2026-07-15 09:35:49] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-15 09:35:50] [INFO] Phase 1 terminee: 190 fichiers, 1553578 lignes
+[2026-07-15 09:35:50] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-15 09:35:50] [INFO]   -> 62 anomalies globales detectees
+[2026-07-15 09:35:50] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-15 09:37:00] [INFO]   Passe 1: 58 defauts trouves, 2 corrections appliquees
+[2026-07-15 09:37:00] [INFO]   Health Score: 71/100
+[2026-07-15 09:37:00] [INFO]   Anomalies Critiques: 47
+[2026-07-15 09:37:00] [INFO]   Avertissements (Warning): 11
+[2026-07-15 09:37:00] [INFO]   Suggestions & Code Smells (Info): 62
+[2026-07-15 09:37:00] [INFO]   Total defauts detectes: 120
+[2026-07-15 09:37:00] [INFO]   Corrections appliquees: 2
+[2026-07-15 09:37:00] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-15 09:37:00] [INFO] Agent Health: WARNING
+[2026-07-15 09:37:00] [WARNING]   [!] Performance degradee: 2.7 fichiers/s
+[2026-07-15 09:37:00] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-15 09:37:00] [INFO] Auto-commit de 2 fichier(s) corrige(s)...
+[2026-07-15 09:37:04] [INFO] Auto-commit et push reussis.
+[2026-07-15 09:37:04] [INFO] Audit termine en 74.4s. Health Score projet: 71/100

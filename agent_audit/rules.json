@@ -25,6 +25,49 @@
         "CATEGORIE: SECURITE (8 regles)",
         "=============================================",
         {
+            "id": "SEC-001",
+            "category": "SECURITY",
+            "severity": "critical",
+            "description": "Vulnérabilité NPM Critique/High détectée.",
+            "file_types": [".json"],
+            "patterns": ["\"isDirect\": true"],
+            "fix_confidence": 95,
+            "auto_fix_strategy": "npm_update",
+            "fix": {
+                "action": "npm_update"
+            }
+        },
+        {
+            "id": "TEST-HEAL-001",
+            "category": "TESTING",
+            "severity": "warning",
+            "description": "Erreur Jest/Vitest : describe ou test n'est pas défini. Import manquant.",
+            "file_types": [".test.js", ".test.jsx"],
+            "patterns": ["ReferenceError: describe is not defined", "ReferenceError: test is not defined", "ReferenceError: expect is not defined", "ReferenceError: vi is not defined"],
+            "fix_confidence": 90,
+            "auto_fix_strategy": "replace_regex",
+            "fix": {
+                "action": "replace_regex",
+                "search": "^",
+                "replacement": "import { describe, test, expect, vi } from 'vitest';\n"
+            }
+        },
+        {
+            "id": "TEST-HEAL-002",
+            "category": "TESTING",
+            "severity": "warning",
+            "description": "Erreur fetch() non mocké dans Vitest.",
+            "file_types": [".test.js", ".test.jsx"],
+            "patterns": ["TypeError: Failed to parse URL from /api/"],
+            "fix_confidence": 90,
+            "auto_fix_strategy": "replace_regex",
+            "fix": {
+                "action": "replace_regex",
+                "search": "^",
+                "replacement": "global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));\n"
+            }
+        },
+        {
             "id": "NO_HARDCODED_SECRETS",
             "category": "SECURITY",
             "severity": "critical",

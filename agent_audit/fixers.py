@@ -19,6 +19,7 @@ import os
 import re
 import shutil
 import datetime
+import subprocess
 
 # ---------------------------------------------------------------------------
 # Backup System
@@ -104,6 +105,34 @@ def apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run=False):
 
         if action == 'delete_line':
             new_line = None  # Marqueur pour suppression
+
+        elif action == 'npm_update':
+            # Fix spécial pour sécurité npm
+            pkg = anomaly.get('_npm_package')
+            cwd = anomaly.get('_npm_dir')
+            if pkg and cwd:
+                try:
+                    subprocess.run(['npm', 'update', pkg], cwd=cwd, check=True)
+                    correction = {
+                        'rule_id': anomaly['rule_id'],
+                        'file': os.path.join(cwd, 'package.json'),
+                        'line': 1,
+                        'before': f"Vulnérabilité dans {pkg}",
+                        'after': f"Package {pkg} mis à jour",
+                        'action': 'npm_update',
+                        'fix_confidence': 100
+                    }
+                    corrections.append(correction)
+                except subprocess.CalledProcessError:
+                    escalations.append({
+                        'type': 'NPM_UPDATE_FAILED',
+                        'file': rel_path,
+                        'line': 1,
+                        'message': f"Échec de 'npm update {pkg}'",
+                        'severity': 'critical',
+                        'rule_id': anomaly['rule_id']
+                    })
+            continue
 
         elif action in ('replace', 'replace_regex'):
             search = fix.get('search', rule.get('patterns', [rule.get('pattern', '')])[0])
