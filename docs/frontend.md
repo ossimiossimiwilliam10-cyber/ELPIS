@@ -82,7 +82,54 @@ L'application utilise `vite-plugin-pwa` avec **Workbox**.
 
 ---
 
-## 5. Recommandations de Développement
+## 5. Système de Repos Adaptatif (2 Jours)
+
+Le système de repos permet à l'utilisateur de prendre **jusqu'à 2 jours de repos par semaine**, avec une mécanique intelligente de proposition.
+
+### Flux Utilisateur
+
+```mermaid
+sequenceDiagram
+    participant U as Utilisateur
+    participant D as Dashboard
+    participant S as Store (Zustand)
+
+    U->>D: Clique "☕ Activer Jour de Repos" (Jour 1)
+    D->>S: activateRestDay()
+    S->>S: Vérifie quota 1/semaine + ajoute date
+    Note over S: restDays = [...restDays, todayStr]
+
+    U->>D: Ouvre l'app le lendemain (J+1)
+    D->>D: useEffect détecte hier = repos
+    D->>U: Affiche modal "Prolonger la récupération ?"
+
+    alt Accepte
+        U->>S: activateExtendedRestDay()
+        S->>S: Ajoute J+1 dans restDays (bypass quota)
+    else Refuse
+        U->>S: declineExtendedRestDay()
+        S->>S: Sauvegarde restDayExtensionDeclinedDate
+    end
+```
+
+### Règles Clés
+
+| Règle | Détail |
+|---|---|
+| **Jour 1** | Clic manuel sur le bouton (quota 1/semaine) |
+| **Jour 2** | Exclusivement via le modal automatique J+1 |
+| **Fenêtre** | Le modal n'apparaît QUE le lendemain (J+1). Passé ce délai, l'offre expire. |
+| **Persistance** | Si l'utilisateur refuse, un flag `restDayExtensionDeclinedDate` empêche toute réapparition pour la journée. |
+| **Night Owl** | La période de grâce de 4h s'applique (réviser à 3h du matin compte comme la veille). |
+
+### Actions Store
+
+- **`activateExtendedRestDay()`** : Ajoute la date du jour dans `restDays`, purge les vieux jours (> 30j), relance l'orchestrateur.
+- **`declineExtendedRestDay()`** : Enregistre `restDayExtensionDeclinedDate: todayStr` dans la config.
+
+---
+
+## 6. Recommandations de Développement
 
 1. **Prévenir la Double Soumission** : Lors de la validation d'une tâche (ex: clic sur "Terminer"), utilisez toujours un verrou (`useRef` ou désactivation temporaire) pour empêcher un utilisateur impatient de créer des doublons dans `espoir_historique.json`.
 2. **Feedback Visuel** : Toute action importante (ajout d'une matière, validation d'une tâche) doit utiliser le système de `Toast` intégré (`toast.success()`) pour rassurer l'utilisateur.
@@ -90,7 +137,7 @@ L'application utilise `vite-plugin-pwa` avec **Workbox**.
 
 ---
 
-## 6. Ajouter une Nouvelle Fonctionnalité (Nouvel Onglet)
+## 7. Ajouter une Nouvelle Fonctionnalité (Nouvel Onglet)
 
 Lors de la création d'un nouvel onglet ou d'une nouvelle page dans ELPIS, respectez l'architecture suivante :
 
