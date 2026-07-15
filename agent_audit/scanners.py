@@ -12,6 +12,8 @@ ELPIS Immune System — Multi-Strategy Scanners
 
 import re
 import os
+import subprocess
+import json
 from collections import defaultdict
 
 # ---------------------------------------------------------------------------
@@ -718,6 +720,125 @@ def run_global_scanners(rules, all_files_data, source_files, project_root):
     # Test coverage
     anomalies.extend(scan_test_coverage(source_files, rules, project_root))
 
+    # Test Healing (Tests cassés)
+    anomalies.extend(scan_broken_tests(project_root, rules))
+
+    # NPM Audit (Sécurité)
+    anomalies.extend(scan_npm_audit(project_root, rules))
+
+    return anomalies
+
+# ---------------------------------------------------------------------------
+# Strategy 7: SECURITY SCAN (NPM Audit)
+# ---------------------------------------------------------------------------
+
+def scan_npm_audit(project_root, rules):
+    """Exécute npm audit dans les répertoires clés et extrait les vulnérabilités."""
+    anomalies = []
+    
+    # Vérifier si on a une règle active pour la sécurité
+    sec_rule = _find_rule(rules, 'SEC-001') # Supposons qu'on aura une règle SEC-001
+    
+    # Même sans règle, on l'injecte génériquement si vuln trouvée
+    dirs_to_scan = [
+        os.path.join(project_root, 'interface', 'web'),
+        os.path.join(project_root, 'interface', 'bridge')
+    ]
+    
+    for d in dirs_to_scan:
+        if not os.path.exists(d):
+            continue
+            
+        try:
+            result = subprocess.run(
+                ['npm', 'audit', '--json'],
+                cwd=d, capture_output=True, text=True, check=False
+            )
+            audit_data = json.loads(result.stdout)
+            
+            if 'vulnerabilities' in audit_data:
+                for pkg, vuln in audit_data['vulnerabilities'].items():
+                    severity = vuln.get('severity', 'info')
+                    if severity in ['critical', 'high']:
+                        anomaly = {
+                            'rule_id': 'SEC-001',
+                            'severity': 'critical',
+                            'description': f"Vulnérabilité {severity} dans le package '{pkg}'.",
+                            'category': 'SECURITY',
+                            'file': os.path.join(d, 'package.json'),
+                            'line': 1,
+                            'code_snippet': f'"{pkg}": "{vuln.get("range", "unknown")}"',
+                            'cwe_ref': 'CWE-937', # Usage of Vulnerable Component
+                            '_fixable': vuln.get('isDirect', False), # Uniquement fixable si direct
+                            '_npm_package': pkg,
+                            '_npm_dir': d
+                        }
+                        anomalies.append(anomaly)
+        except Exception:
+            pass # Si npm échoue, on ignore
+            
+    return anomalies
+
+# ---------------------------------------------------------------------------
+# Strategy 8: BROKEN TESTS SCAN
+# ---------------------------------------------------------------------------
+
+def scan_broken_tests(project_root, rules):
+    """Exécute Vitest et retourne des anomalies pour les tests cassés."""
+    anomalies = []
+    
+    dirs_to_scan = [
+        os.path.join(project_root, 'interface', 'web'),
+        os.path.join(project_root, 'interface', 'bridge')
+    ]
+    
+    for d in dirs_to_scan:
+        if not os.path.exists(d):
+            continue
+            
+        try:
+            # On run Vitest sur tout, on récupère le JSON
+            result = subprocess.run(
+                ['npx', 'vitest', 'run', '--passWithNoTests', '--reporter=json'],
+                cwd=d, capture_output=True, text=True, check=False
+            )
+            
+            # Vitest JSON output is usually at the end of stdout
+            stdout_str = result.stdout
+            json_start = stdout_str.find('{')
+            if json_start != -1:
+                json_str = stdout_str[json_start:]
+                try:
+                    test_data = json.loads(json_str)
+                    
+                    if not test_data.get('success', True) and 'testResults' in test_data:
+                        for test_file in test_data['testResults']:
+                            if test_file.get('status') == 'failed':
+                                file_path = test_file.get('name', '')
+                                message = test_file.get('message', '')
+                                
+                                # On check si une règle TEST-HEAL correspond
+                                for rule in rules:
+                                    if rule.get('id', '').startswith('TEST-HEAL'):
+                                        patterns = rule.get('patterns', [])
+                                        for pat in patterns:
+                                            if pat in message:
+                                                anomalies.append({
+                                                    'rule_id': rule['id'],
+                                                    'severity': rule.get('severity', 'warning'),
+                                                    'description': rule.get('description', ''),
+                                                    'category': rule.get('category', 'TESTING'),
+                                                    'file': file_path,
+                                                    'line': 1,
+                                                    'code_snippet': message[:100] + '...',
+                                                    '_fixable': True
+                                                })
+                                                break
+                except json.JSONDecodeError:
+                    pass
+        except Exception:
+            pass
+            
     return anomalies
 
 

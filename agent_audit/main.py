@@ -30,7 +30,7 @@ from engine import (load_rules, should_auto_fix, calculate_health_score,
                      _is_text_file)
 from scanners import (run_all_scanners, run_global_scanners, extract_imports)
 from fixers import (apply_fixes, set_backup_dir, set_rule_cache,
-                    cleanup_old_backups, rollback_file)
+                    cleanup_old_backups)
 from validators import (validate_after_fix, run_pre_fix_baseline)
 from escalation import (create_escalation, process_escalations,
                         set_escalation_log, set_emergency_alert_file)
@@ -268,6 +268,11 @@ def run_full_audit(dry_run=False, emergency_only=False):
 
     log.info(f"Phase 1 terminee: {files_scanned} fichiers, {total_lines} lignes")
 
+    # --- Variables de suivi global ---
+    all_corrections = []
+    all_escalations = []
+    files_corrected = set()
+
     # --- 5. Phase 2 : Scanners globaux (import graph, layer, test coverage) ---
     log.info("Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...")
     global_anomalies = run_global_scanners(rules, all_files_data, source_files, PROJECT_ROOT)
@@ -281,13 +286,52 @@ def run_full_audit(dry_run=False, emergency_only=False):
                 anomaly['_fixable'] = should_auto_fix(rule)
                 anomaly['_escalation_message'] = rule.get('escalation_message', '')
 
-    # --- 6. Phase 3 : Scan fichier par fichier + corrections ---
+        # Appliquer les corrections pour les anomalies globales (Tests, Sécurité)
+        if not dry_run:
+            from fixers import apply_fixes, rollback_file
+            fixable_global = [a for a in global_anomalies if a.get('_fixable')]
+            if fixable_global:
+                log.info(f"  Tentative de correction de {len(fixable_global)} anomalies globales...")
+                
+                # Regrouper par fichier
+                global_by_file = defaultdict(list)
+                for a in fixable_global:
+                    global_by_file[a['file']].append(a)
+                    
+                for fpath, file_anomalies in global_by_file.items():
+                    rel_path = os.path.relpath(fpath, PROJECT_ROOT) if os.path.isabs(fpath) else fpath
+                    abs_path = os.path.join(PROJECT_ROOT, rel_path) if not os.path.isabs(fpath) else fpath
+                    
+                    try:
+                        with open(abs_path, 'r', encoding='utf-8') as f:
+                            flines = f.readlines()
+                    except Exception:
+                        flines = []
+                        
+                    # Appliquer le fix via fixers.py
+                    corrections, escalations, backup_path = apply_fixes(abs_path, rel_path, flines, file_anomalies, dry_run=False)
+                    
+                    if corrections:
+                        # Sauvegarder le fichier
+                        if backup_path and corrections[0].get('action') != 'npm_update':
+                            # On revalide si ce n'est pas npm_update
+                            validation_ok = validate_after_fix(abs_path, run_tests=True)
+                            if not validation_ok:
+                                log.warning(f"  [ROLLBACK] Validation échouée pour le fix global sur {rel_path}")
+                                rollback_file(abs_path, backup_path)
+                                continue
+                                
+                        all_corrections.extend(corrections)
+                        files_corrected.add(rel_path)
+                    
+                    if escalations:
+                        all_escalations.extend(escalations)
+
+    # --- 6. Phase 3 : Scan fichier par fichier + corrections (ESLint, Ruff) ---
     log.info("Phase 3: Execution des linters standards (ESLint, Ruff)...")
 
     all_anomalies = list(global_anomalies)
-    all_corrections = []
-    all_escalations = []
-    files_corrected = set()
+    # Les corrections et escalades globales sont déjà dans les listes
     rule_hit_count = defaultdict(int)
 
     if not dry_run:
