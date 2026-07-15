@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-15T02:00:01.314596",
+  "timestamp": "2026-07-15T05:08:06.635879",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 7.58,
+    "elapsed_seconds": 11.0,
     "files_scanned": 179,
-    "files_per_second": 23.6,
-    "lines_per_second": 204176.0
+    "files_per_second": 16.3,
+    "lines_per_second": 140735.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 1,
@@ -30,26 +30,26 @@
     "total_rules": 57,
     "active_rules": 1,
     "inactive_rules": [
-      "MAGIC_NUMBERS",
-      "EXCESSIVE_FILE_SIZE",
-      "NO_HARDCODED_LOCALHOST",
-      "MISSING_TYPE_HINTS",
-      "MISSING_KEY_IN_MAP",
-      "FIX_CONFIDENCE_DECIMAL",
+      "MISSING_REACT_MEMO",
+      "TEST_WITH_ONLY",
       "SCORING_NEW_PARAM_SIGNATURE",
-      "NO_TODO_WITHOUT_TICKET",
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "NO_INDEX_AS_KEY",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "AVOID_ARRAY_CONSTRUCTOR",
+      "EXCESSIVE_FILE_SIZE",
+      "MISSING_TYPE_HINTS",
+      "USE_OPTIONAL_CHAINING",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "MISSING_USEEFFECT_DEPS",
+      "FETCH_WITHOUT_ABORT",
       "NO_TRAILING_WHITESPACE",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "NO_DOUBLE_SEMICOLONS",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
+      "NO_POSITIVE_TABINDEX",
       "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_VAR_KEYWORD",
-      "EXCESSIVE_NESTING_DEPTH",
-      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
-      "NO_WINDOW_PROMPT",
-      "TEST_WITH_SKIP"
+      "NO_HARDCODED_SECRETS",
+      "NO_CIRCULAR_IMPORTS",
+      "FIX_CONFIDENCE_DECIMAL",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER"
     ],
     "inactive_count": 56
   },
