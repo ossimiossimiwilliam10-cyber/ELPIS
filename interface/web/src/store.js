@@ -16,6 +16,7 @@ const handleOfflineError = (type, error) => {
 
 // Auto-save functions using debounce
 const debouncedSaveConfig = debounce(async (config, get) => {
+  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('config', new Error('Offline'));
   try {
     const res = await fetch(`${API_URL}/config`, {
@@ -31,6 +32,7 @@ const debouncedSaveConfig = debounce(async (config, get) => {
 }, 500);
 
 const debouncedSaveCours = debounce(async (coursConfig, get) => {
+  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('cours', new Error('Offline'));
   try {
     const res = await fetch(`${API_URL}/cours`, {
@@ -46,6 +48,7 @@ const debouncedSaveCours = debounce(async (coursConfig, get) => {
 }, 500);
 
 const debouncedSaveHistorique = debounce(async (historique, get) => {
+  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('historique', new Error('Offline'));
   try {
     const res = await fetch(`${API_URL}/historique`, {
@@ -61,6 +64,7 @@ const debouncedSaveHistorique = debounce(async (historique, get) => {
 }, 500);
 
 const debouncedSaveProjets = debounce(async (projets, get) => {
+  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('projets', new Error('Offline'));
   try {
     const res = await fetch(`${API_URL}/projets`, {
