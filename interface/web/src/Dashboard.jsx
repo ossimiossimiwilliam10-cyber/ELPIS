@@ -68,7 +68,9 @@ function Dashboard() {
     setConfig,
     setCoursConfig,
     addHistoriqueEntry,
-    activateRestDay
+    activateRestDay,
+    activateExtendedRestDay,
+    declineExtendedRestDay
   } = useStore();
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -87,6 +89,30 @@ function Dashboard() {
 
   // Audit modal state
   const [auditModalOpen, setAuditModalOpen] = useState(false);
+
+  // Extended rest day modal state (2nd day proposal)
+  const [showExtendedRestModal, setShowExtendedRestModal] = useState(false);
+
+  // Detect if yesterday was a rest day → propose extended rest via modal (J+1 only)
+  useEffect(() => {
+    if (!config || !config.restDays) return;
+    const d = new Date();
+    d.setHours(d.getHours() - 4); // Night Owl grace period
+    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+    // Calculate yesterday's date string
+    const yesterday = new Date(d);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.getFullYear() + '-' + String(yesterday.getMonth() + 1).padStart(2, '0') + '-' + String(yesterday.getDate()).padStart(2, '0');
+
+    const yesterdayWasRest = config.restDays.includes(yesterdayStr);
+    const todayAlreadyRest = config.restDays.includes(todayStr);
+    const alreadyDeclined = config.restDayExtensionDeclinedDate === todayStr;
+
+    if (yesterdayWasRest && !todayAlreadyRest && !alreadyDeclined) {
+      setShowExtendedRestModal(true);
+    }
+  }, [config]);
 
   const allMatieres = useMemo(() => {
     const list = [];
@@ -1224,6 +1250,119 @@ function Dashboard() {
       </AnimatePresence>
 
       <AuditDashboard isOpen={auditModalOpen} onClose={() => setAuditModalOpen(false)} />
+
+      {/* Extended Rest Day Modal (J+1 auto-proposal) */}
+      <AnimatePresence>
+        {showExtendedRestModal && (
+          <motion.div
+            key="extended-rest-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(8px)',
+              zIndex: 9999,
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              padding: '1rem'
+            }}
+            onClick={() => {}} // prevent close on backdrop click — user must choose
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.85, y: 30 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98))',
+                border: '1px solid rgba(148, 163, 184, 0.15)',
+                borderRadius: '1.5rem',
+                padding: '2.5rem',
+                maxWidth: '480px',
+                width: '100%',
+                textAlign: 'center',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.1)'
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: 'spring', stiffness: 400 }}
+                style={{ fontSize: '3.5rem', marginBottom: '1rem' }}
+              >
+                🌙
+              </motion.div>
+
+              <h2 style={{
+                color: 'var(--text-primary)',
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                marginBottom: '0.75rem',
+                lineHeight: 1.3
+              }}>
+                Prolonger la récupération ?
+              </h2>
+
+              <p style={{
+                color: 'var(--text-secondary)',
+                fontSize: '1.05rem',
+                lineHeight: 1.6,
+                marginBottom: '2rem'
+              }}>
+                Tu as pris un jour de repos hier. Souhaites-tu <strong style={{ color: 'var(--accent-primary)' }}>prolonger ta récupération</strong> aujourd'hui ?
+                <br />
+                <span style={{ fontSize: '0.9rem', opacity: 0.7, fontStyle: 'italic' }}>
+                  Écoute ton corps — parfois deux jours valent mieux qu'un.
+                </span>
+              </p>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    activateExtendedRestDay();
+                    setShowExtendedRestModal(false);
+                  }}
+                  className="btn-primary"
+                  style={{
+                    padding: '0.85rem 1.8rem',
+                    fontSize: '1rem',
+                    borderRadius: '0.75rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+                  }}
+                >
+                  ☕ Oui, je récupère
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    declineExtendedRestDay();
+                    setShowExtendedRestModal(false);
+                  }}
+                  className="btn-secondary"
+                  style={{
+                    padding: '0.85rem 1.8rem',
+                    fontSize: '1rem',
+                    borderRadius: '0.75rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  💪 Non, c'est parti !
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

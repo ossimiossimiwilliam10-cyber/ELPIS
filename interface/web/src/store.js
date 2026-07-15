@@ -270,6 +270,66 @@ const useStore = create(immer((set, get) => ({
     }
   },
 
+  // Activate extended (2nd) rest day — only accessible via the auto-modal on J+1
+  activateExtendedRestDay: async () => {
+    const config = get().config;
+    if (!config) return;
+
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    let restDays = config.restDays || [];
+
+    if (!restDays.includes(todayStr)) {
+      // Purge old rest days (> 30 days)
+      const now = new Date();
+      now.setHours(now.getHours() - 4);
+      const thirtyDaysAgo = new Date(now);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      restDays = restDays.filter(rd => {
+        const date = new Date(rd + 'T00:00:00');
+        return date >= thirtyDaysAgo;
+      });
+      restDays = [...restDays, todayStr];
+      const newConfig = { ...config, restDays, restDayExtensionDeclinedDate: null };
+      set({ config: newConfig });
+
+      try {
+        await fetch(`${API_URL}/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newConfig)
+        });
+        get().fetchOrchestrator();
+      } catch (e) {
+        console.error("Failed to save extended rest day", e);
+      }
+    }
+  },
+
+  // Decline extended rest day — saves a flag so the modal won't reappear today
+  declineExtendedRestDay: async () => {
+    const config = get().config;
+    if (!config) return;
+
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+    const newConfig = { ...config, restDayExtensionDeclinedDate: todayStr };
+    set({ config: newConfig });
+
+    try {
+      await fetch(`${API_URL}/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newConfig)
+      });
+    } catch (e) {
+      console.error("Failed to save decline flag", e);
+    }
+  },
+
   // Helper method for the tree updates
   updateSubjectInTree: (licenceId, semestreId, ueId, subjectName, updateFn) => {
     set(state => {

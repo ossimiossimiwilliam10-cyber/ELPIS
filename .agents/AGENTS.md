@@ -183,3 +183,11 @@ Cela permet de rÃ©compenser la rigueur quotidienne et pas seulement la perform
 <RULE[long_task_intermediate_states]>
 - **Tâches Longues et États Intermédiaires** : Lors de l'ajout ou modification de fonctionnalités liées aux tâches dans ELPIS, prévoir systématiquement un état "suspendu/en cours" pour les tâches qui peuvent dépasser 30 minutes. Toujours enregistrer le temps de travail partiel dans l'historique, même en cas de suspension. Utiliser `prochaineRevisionDate` pour forcer la replanification d'une tâche suspendue au lendemain. Ne jamais modifier l'état FSRS d'un CM qui n'a pas été entièrement révisé.
 </RULE[long_task_intermediate_states]>
+
+<RULE[singleton_db_hmr]>
+- **Singleton Database HMR (Prévention DB9)** : Lors de l'initialisation de bases de données locales ou de singletons lourds (comme RxDB, Prisma, Dexie) dans un environnement Vite ou React, il faut TOUJOURS mettre en cache l'instance globale sur l'objet `window` ou `globalThis` (ex: `window.__myDbPromise = dbPromise`). Cela empêche le Hot Module Replacement (HMR) de recréer de multiples instances concurrentes lors de la sauvegarde d'un fichier, ce qui provoque des crashs (ex: RxDB Error DB9) et des pertes temporaires de données.
+</RULE[singleton_db_hmr]>
+
+<RULE[singleton_lazy_loading]>
+- **Singletons & Vite Lazy Loading (Race Condition)** : Lors de la création de promesses ou d'instances uniques globales (comme `dbPromise` pour RxDB) exposées via un module, ne jamais se contenter d'initialiser la variable au niveau du module (`let dbPromise = window.myPromise`). Il faut IMPÉRATIVEMENT vérifier la présence de l'instance dans le scope global (`window`) à l'intérieur de la fonction getter elle-même (`getDb()`). Cela empêche les instanciations parallèles lors du Lazy Loading ou du HMR de Vite, qui peuvent dupliquer temporairement l'état des modules.
+</RULE[singleton_lazy_loading]>

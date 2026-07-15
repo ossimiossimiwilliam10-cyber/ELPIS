@@ -56,6 +56,10 @@ let dbPromise = typeof window !== 'undefined' ? window.__elpisDbPromise || null 
 
 export const getDb = async () => {
     if (dbPromise) return dbPromise;
+    if (typeof window !== 'undefined' && window.__elpisDbPromise) {
+        dbPromise = window.__elpisDbPromise;
+        return dbPromise;
+    }
 
     dbPromise = (async () => {
         let isTestEnv = false;
@@ -64,14 +68,16 @@ export const getDb = async () => {
         
         let isDev = false;
         try { isDev = (process.env.NODE_ENV === 'development'); } catch(e){}
-        try { if (!isDev && import.meta.env?.DEV) isDev = true; } catch(e){}
+        try { if (!isDev && import.meta.env.DEV) isDev = true; } catch(e){}
+        try { if (!isDev && typeof window !== 'undefined' && window.location.hostname === 'localhost') isDev = true; } catch(e){}
 
         const dbName = isTestEnv ? 'elpisdb_test_' + Date.now() + '_' + Math.random().toString().slice(2) : 'elpisdb';
         const db = await createRxDatabase({
             name: dbName,
             storage: isTestEnv ? getRxStorageMemory() : getRxStorageDexie(),
             multiInstance: !isTestEnv,
-            ignoreDuplicate: isTestEnv || isDev
+            ignoreDuplicate: isTestEnv || isDev,
+            closeDuplicates: isDev
         });
 
         await db.addCollections({

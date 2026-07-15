@@ -1,29 +1,29 @@
 {
-  "last_scan": "2026-07-15T09:37:00.780015",
+  "last_scan": "2026-07-15T10:36:22.488812",
   "mode": "SCAN + CORRECTION",
   "files_scanned": 190,
-  "total_lines_of_code": 1553578,
-  "total_anomalies": 120,
-  "total_corrections": 2,
-  "files_corrected": 2,
+  "total_lines_of_code": 1554551,
+  "total_anomalies": 132,
+  "total_corrections": 1,
+  "files_corrected": 1,
   "total_escalations": 0,
   "anomalies_by_severity": {
-    "critical": 47,
+    "critical": 58,
     "warning": 11,
-    "info": 62
+    "info": 63
   },
   "anomalies_by_category": {
-    "TESTING": 62,
-    "CODE_QUALITY": 36,
+    "TESTING": 63,
+    "CODE_QUALITY": 47,
     "REACT_BEST_PRACTICES": 14,
     "PYTHON_SPECIFIC": 8
   },
   "rule_stats": {
     "MISSING_TEST_FILE": {
-      "count": 62,
+      "count": 63,
       "severity": "info",
       "category": "TESTING",
-      "files_affected": 62,
+      "files_affected": 63,
       "top_files": [
         "ELPIS_APPRENTISSAGE\\ELPIS_V2\\main.py",
         "agent_audit\\_analyze.py",
@@ -33,13 +33,13 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 51.7
+      "pct_of_total": 47.7
     },
     "no-unused-vars": {
-      "count": 25,
+      "count": 29,
       "severity": "critical",
       "category": "CODE_QUALITY",
-      "files_affected": 20,
+      "files_affected": 21,
       "top_files": [
         "interface\\web\\public\\sw.js",
         "interface\\web\\src\\App.jsx",
@@ -49,22 +49,36 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 20.8
+      "pct_of_total": 22.0
     },
     "no-undef": {
-      "count": 9,
+      "count": 11,
       "severity": "critical",
       "category": "CODE_QUALITY",
-      "files_affected": 4,
+      "files_affected": 5,
       "top_files": [
         "interface\\web\\public\\sw.js",
         "interface\\web\\src\\__tests__\\App.test.jsx",
         "interface\\web\\src\\components\\AICoachSidebar.test.jsx",
+        "interface\\web\\src\\database.js",
         "interface\\web\\src\\setupTests.js"
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 7.5
+      "pct_of_total": 8.3
+    },
+    "no-empty": {
+      "count": 6,
+      "severity": "critical",
+      "category": "CODE_QUALITY",
+      "files_affected": 2,
+      "top_files": [
+        "interface\\web\\src\\App.jsx",
+        "interface\\web\\src\\database.js"
+      ],
+      "fixable_count": 0,
+      "auto_fixed_count": 0,
+      "pct_of_total": 4.5
     },
     "react-hooks/set-state-in-effect": {
       "count": 5,
@@ -79,7 +93,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 4.2
+      "pct_of_total": 3.8
     },
     "E402": {
       "count": 4,
@@ -93,7 +107,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 3.3
+      "pct_of_total": 3.0
     },
     "react-hooks/purity": {
       "count": 3,
@@ -105,7 +119,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 2.5
+      "pct_of_total": 2.3
     },
     "react-hooks/exhaustive-deps": {
       "count": 3,
@@ -119,7 +133,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 2.5
+      "pct_of_total": 2.3
     },
     "E741": {
       "count": 3,
@@ -133,21 +147,9 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 2.5
+      "pct_of_total": 2.3
     },
     "no-useless-assignment": {
-      "count": 1,
-      "severity": "critical",
-      "category": "CODE_QUALITY",
-      "files_affected": 1,
-      "top_files": [
-        "interface\\web\\src\\App.jsx"
-      ],
-      "fixable_count": 0,
-      "auto_fixed_count": 0,
-      "pct_of_total": 0.8
-    },
-    "no-empty": {
       "count": 1,
       "severity": "critical",
       "category": "CODE_QUALITY",
@@ -208,8 +210,8 @@
       "pct_of_total": 0.8
     }
   },
-  "signal_count": 58,
-  "noise_count": 62,
+  "signal_count": 69,
+  "noise_count": 63,
   "escalation_stats": {
     "total": 0,
     "by_type": {},
@@ -661,6 +663,20 @@
       "file": "interface\\web\\src\\constants.js",
       "line": 1,
       "code_snippet": "Aucun fichier de test pour constants.js",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Pas de fichier de test correspondant. Creez un fichier .test.js(x).",
+      "_suppression_comment": "AUDIT_SUPPRESS:MISSING_TEST"
+    },
+    {
+      "rule_id": "MISSING_TEST_FILE",
+      "severity": "info",
+      "description": "Fichier source sans fichier de test correspondant.",
+      "category": "TESTING",
+      "file": "interface\\web\\src\\database.js",
+      "line": 1,
+      "code_snippet": "Aucun fichier de test pour database.js",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -1596,6 +1612,138 @@
     {
       "rule_id": "no-undef",
       "severity": "critical",
+      "description": "'process' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 66,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'process' is not defined."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'e' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 66,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'e' is defined but never used."
+    },
+    {
+      "rule_id": "no-empty",
+      "severity": "critical",
+      "description": "Empty block statement.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 66,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Empty block statement."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'e' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 67,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'e' is defined but never used."
+    },
+    {
+      "rule_id": "no-empty",
+      "severity": "critical",
+      "description": "Empty block statement.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 67,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Empty block statement."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
+      "description": "'process' is not defined.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 70,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'process' is not defined."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'e' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 70,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'e' is defined but never used."
+    },
+    {
+      "rule_id": "no-empty",
+      "severity": "critical",
+      "description": "Empty block statement.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 70,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Empty block statement."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'e' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 71,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'e' is defined but never used."
+    },
+    {
+      "rule_id": "no-empty",
+      "severity": "critical",
+      "description": "Empty block statement.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 71,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Empty block statement."
+    },
+    {
+      "rule_id": "no-unused-vars",
+      "severity": "critical",
+      "description": "'e' is defined but never used.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 72,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "'e' is defined but never used."
+    },
+    {
+      "rule_id": "no-empty",
+      "severity": "critical",
+      "description": "Empty block statement.",
+      "category": "CODE_QUALITY",
+      "file": "interface\\web\\src\\database.js",
+      "line": 72,
+      "code_snippet": "",
+      "_fixable": false,
+      "_escalation_message": "Empty block statement."
+    },
+    {
+      "rule_id": "no-undef",
+      "severity": "critical",
       "description": "'global' is not defined.",
       "category": "CODE_QUALITY",
       "file": "interface\\web\\src\\setupTests.js",
@@ -1607,21 +1755,10 @@
     {
       "rule_id": "no-unused-vars",
       "severity": "critical",
-      "description": "'debouncedSaveProjets' is assigned a value but never used.",
-      "category": "CODE_QUALITY",
-      "file": "interface\\web\\src\\store.js",
-      "line": 63,
-      "code_snippet": "",
-      "_fixable": false,
-      "_escalation_message": "'debouncedSaveProjets' is assigned a value but never used."
-    },
-    {
-      "rule_id": "no-unused-vars",
-      "severity": "critical",
       "description": "'e' is defined but never used.",
       "category": "CODE_QUALITY",
       "file": "interface\\web\\src\\store.js",
-      "line": 463,
+      "line": 491,
       "code_snippet": "",
       "_fixable": false,
       "_escalation_message": "'e' is defined but never used."
@@ -1727,13 +1864,6 @@
     }
   ],
   "corrections_applied": [
-    {
-      "rule_id": "F401",
-      "file": "agent_audit\\main.py",
-      "line": 33,
-      "before": "",
-      "after": "Fixed by linter"
-    },
     {
       "rule_id": "F841",
       "file": "agent_audit\\scanners.py",

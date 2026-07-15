@@ -3167,3 +3167,147 @@
 [2026-07-15 09:37:00] [INFO] Auto-commit de 2 fichier(s) corrige(s)...
 [2026-07-15 09:37:04] [INFO] Auto-commit et push reussis.
 [2026-07-15 09:37:04] [INFO] Audit termine en 74.4s. Health Score projet: 71/100
+[2026-07-15 09:53:06] [INFO] ============================================================
+[2026-07-15 09:53:06] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-15 09:53:06] [INFO] ============================================================
+[2026-07-15 09:53:06] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-15 09:53:06] [INFO] Etablissement de la baseline de tests...
+[2026-07-15 09:53:06] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-15 09:53:07] [INFO] Phase 1 terminee: 190 fichiers, 1554193 lignes
+[2026-07-15 09:53:07] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-15 09:53:07] [INFO]   -> 63 anomalies globales detectees
+[2026-07-15 09:53:07] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-15 09:54:22] [INFO]   Passe 1: 62 defauts trouves, 1 corrections appliquees
+[2026-07-15 09:54:22] [INFO]   Health Score: 71/100
+[2026-07-15 09:54:22] [INFO]   Anomalies Critiques: 51
+[2026-07-15 09:54:22] [INFO]   Avertissements (Warning): 11
+[2026-07-15 09:54:22] [INFO]   Suggestions & Code Smells (Info): 63
+[2026-07-15 09:54:22] [INFO]   Total defauts detectes: 125
+[2026-07-15 09:54:22] [INFO]   Corrections appliquees: 1
+[2026-07-15 09:54:22] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-15 09:54:22] [INFO] Agent Health: WARNING
+[2026-07-15 09:54:22] [WARNING]   [!] Performance degradee: 2.5 fichiers/s
+[2026-07-15 09:54:22] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-15 09:54:22] [INFO] Auto-commit de 1 fichier(s) corrige(s)...
+[2026-07-15 09:54:23] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'commit', '-m', '🤖 fix(immune-system): auto-correction locale [skip ci]']' returned non-zero exit status 1.
+[2026-07-15 09:54:23] [INFO] Audit termine en 76.5s. Health Score projet: 71/100
+[2026-07-15 09:58:36] [INFO] ============================================================
+[2026-07-15 09:58:36] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-15 09:58:36] [INFO] ============================================================
+[2026-07-15 09:58:36] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-15 09:58:36] [INFO] Etablissement de la baseline de tests...
+[2026-07-15 09:58:36] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-15 09:58:36] [INFO] Phase 1 terminee: 190 fichiers, 1554482 lignes
+[2026-07-15 09:58:36] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-15 09:58:36] [INFO]   -> 63 anomalies globales detectees
+[2026-07-15 09:58:36] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-15 09:59:09] [INFO]   Passe 1: 62 defauts trouves, 1 corrections appliquees
+[2026-07-15 09:59:09] [INFO]   Health Score: 71/100
+[2026-07-15 09:59:09] [INFO]   Anomalies Critiques: 51
+[2026-07-15 09:59:09] [INFO]   Avertissements (Warning): 11
+[2026-07-15 09:59:09] [INFO]   Suggestions & Code Smells (Info): 63
+[2026-07-15 09:59:09] [INFO]   Total defauts detectes: 125
+[2026-07-15 09:59:09] [INFO]   Corrections appliquees: 1
+[2026-07-15 09:59:09] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-15 09:59:09] [INFO] Agent Health: WARNING
+[2026-07-15 09:59:09] [WARNING]   [!] Performance degradee: 5.7 fichiers/s
+[2026-07-15 09:59:09] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-15 09:59:09] [INFO] Auto-commit de 1 fichier(s) corrige(s)...
+[2026-07-15 09:59:10] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'commit', '-m', '🤖 fix(immune-system): auto-correction locale [skip ci]']' returned non-zero exit status 1.
+[2026-07-15 09:59:10] [INFO] Audit termine en 33.9s. Health Score projet: 71/100
+[2026-07-15 10:03:44] [INFO] ============================================================
+[2026-07-15 10:03:44] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-15 10:03:44] [INFO] ============================================================
+[2026-07-15 10:03:44] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-15 10:03:44] [INFO] Etablissement de la baseline de tests...
+[2026-07-15 10:03:44] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-15 10:03:44] [INFO] Phase 1 terminee: 190 fichiers, 1554486 lignes
+[2026-07-15 10:03:44] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-15 10:03:44] [INFO]   -> 63 anomalies globales detectees
+[2026-07-15 10:03:44] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-15 10:04:19] [INFO]   Passe 1: 67 defauts trouves, 1 corrections appliquees
+[2026-07-15 10:04:19] [INFO]   Health Score: 71/100
+[2026-07-15 10:04:19] [INFO]   Anomalies Critiques: 56
+[2026-07-15 10:04:19] [INFO]   Avertissements (Warning): 11
+[2026-07-15 10:04:19] [INFO]   Suggestions & Code Smells (Info): 63
+[2026-07-15 10:04:19] [INFO]   Total defauts detectes: 130
+[2026-07-15 10:04:19] [INFO]   Corrections appliquees: 1
+[2026-07-15 10:04:19] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-15 10:04:19] [INFO] Agent Health: WARNING
+[2026-07-15 10:04:19] [WARNING]   [!] Performance degradee: 5.4 fichiers/s
+[2026-07-15 10:04:19] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-15 10:04:19] [INFO] Auto-commit de 1 fichier(s) corrige(s)...
+[2026-07-15 10:04:20] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'commit', '-m', '🤖 fix(immune-system): auto-correction locale [skip ci]']' returned non-zero exit status 1.
+[2026-07-15 10:04:20] [INFO] Audit termine en 35.9s. Health Score projet: 71/100
+[2026-07-15 10:24:51] [INFO] ============================================================
+[2026-07-15 10:24:51] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-15 10:24:51] [INFO] ============================================================
+[2026-07-15 10:24:51] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-15 10:24:51] [INFO] Etablissement de la baseline de tests...
+[2026-07-15 10:24:51] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-15 10:24:51] [INFO] Phase 1 terminee: 190 fichiers, 1554542 lignes
+[2026-07-15 10:24:51] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-15 10:24:52] [INFO]   -> 63 anomalies globales detectees
+[2026-07-15 10:24:52] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-15 10:25:26] [INFO]   Passe 1: 67 defauts trouves, 1 corrections appliquees
+[2026-07-15 10:25:26] [INFO]   Health Score: 71/100
+[2026-07-15 10:25:26] [INFO]   Anomalies Critiques: 56
+[2026-07-15 10:25:26] [INFO]   Avertissements (Warning): 11
+[2026-07-15 10:25:26] [INFO]   Suggestions & Code Smells (Info): 63
+[2026-07-15 10:25:26] [INFO]   Total defauts detectes: 130
+[2026-07-15 10:25:26] [INFO]   Corrections appliquees: 1
+[2026-07-15 10:25:26] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-15 10:25:26] [INFO] Agent Health: WARNING
+[2026-07-15 10:25:26] [WARNING]   [!] Performance degradee: 5.5 fichiers/s
+[2026-07-15 10:25:26] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-15 10:25:26] [INFO] Auto-commit de 1 fichier(s) corrige(s)...
+[2026-07-15 10:25:27] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'commit', '-m', '🤖 fix(immune-system): auto-correction locale [skip ci]']' returned non-zero exit status 1.
+[2026-07-15 10:25:27] [INFO] Audit termine en 36.1s. Health Score projet: 71/100
+[2026-07-15 10:29:33] [INFO] ============================================================
+[2026-07-15 10:29:33] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-15 10:29:33] [INFO] ============================================================
+[2026-07-15 10:29:33] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-15 10:29:33] [INFO] Etablissement de la baseline de tests...
+[2026-07-15 10:29:33] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-15 10:29:34] [INFO] Phase 1 terminee: 190 fichiers, 1554546 lignes
+[2026-07-15 10:29:34] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-15 10:29:34] [INFO]   -> 63 anomalies globales detectees
+[2026-07-15 10:29:34] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-15 10:30:24] [INFO]   Passe 1: 67 defauts trouves, 1 corrections appliquees
+[2026-07-15 10:30:24] [INFO]   Health Score: 71/100
+[2026-07-15 10:30:24] [INFO]   Anomalies Critiques: 56
+[2026-07-15 10:30:24] [INFO]   Avertissements (Warning): 11
+[2026-07-15 10:30:24] [INFO]   Suggestions & Code Smells (Info): 63
+[2026-07-15 10:30:24] [INFO]   Total defauts detectes: 130
+[2026-07-15 10:30:24] [INFO]   Corrections appliquees: 1
+[2026-07-15 10:30:24] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-15 10:30:24] [INFO] Agent Health: WARNING
+[2026-07-15 10:30:24] [WARNING]   [!] Performance degradee: 3.8 fichiers/s
+[2026-07-15 10:30:24] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-15 10:30:24] [INFO] Auto-commit de 1 fichier(s) corrige(s)...
+[2026-07-15 10:30:27] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'commit', '-m', '🤖 fix(immune-system): auto-correction locale [skip ci]']' returned non-zero exit status 1.
+[2026-07-15 10:30:27] [INFO] Audit termine en 53.4s. Health Score projet: 71/100
+[2026-07-15 10:35:38] [INFO] ============================================================
+[2026-07-15 10:35:38] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-15 10:35:38] [INFO] ============================================================
+[2026-07-15 10:35:38] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-15 10:35:38] [INFO] Etablissement de la baseline de tests...
+[2026-07-15 10:35:38] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-15 10:35:38] [INFO] Phase 1 terminee: 190 fichiers, 1554551 lignes
+[2026-07-15 10:35:38] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-15 10:35:38] [INFO]   -> 63 anomalies globales detectees
+[2026-07-15 10:35:38] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-15 10:36:22] [INFO]   Passe 1: 69 defauts trouves, 1 corrections appliquees
+[2026-07-15 10:36:22] [INFO]   Health Score: 71/100
+[2026-07-15 10:36:22] [INFO]   Anomalies Critiques: 58
+[2026-07-15 10:36:22] [INFO]   Avertissements (Warning): 11
+[2026-07-15 10:36:22] [INFO]   Suggestions & Code Smells (Info): 63
+[2026-07-15 10:36:22] [INFO]   Total defauts detectes: 132
+[2026-07-15 10:36:22] [INFO]   Corrections appliquees: 1
+[2026-07-15 10:36:22] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-15 10:36:22] [INFO] Agent Health: WARNING
+[2026-07-15 10:36:22] [WARNING]   [!] Performance degradee: 4.3 fichiers/s
+[2026-07-15 10:36:22] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-15 10:36:22] [INFO] Auto-commit de 1 fichier(s) corrige(s)...
+[2026-07-15 10:36:25] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'commit', '-m', '🤖 fix(immune-system): auto-correction locale [skip ci]']' returned non-zero exit status 1.
+[2026-07-15 10:36:25] [INFO] Audit termine en 47.4s. Health Score projet: 71/100

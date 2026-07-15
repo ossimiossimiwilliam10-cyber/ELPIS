@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-15T09:37:00.780136",
+  "timestamp": "2026-07-15T10:36:22.489042",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,25 +8,25 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 71.04,
+    "elapsed_seconds": 43.99,
     "files_scanned": 190,
-    "files_per_second": 2.7,
-    "lines_per_second": 21868.0
+    "files_per_second": 4.3,
+    "lines_per_second": 35340.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 14,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 62,
-      "no-unused-vars": 25,
-      "no-undef": 9,
+      "MISSING_TEST_FILE": 63,
+      "no-unused-vars": 29,
+      "no-undef": 11,
+      "no-empty": 6,
       "react-hooks/set-state-in-effect": 5,
       "E402": 4,
       "react-hooks/purity": 3,
       "react-hooks/exhaustive-deps": 3,
       "E741": 3,
-      "no-useless-assignment": 1,
-      "no-empty": 1
+      "no-useless-assignment": 1
     }
   },
   "escalation_health": {
@@ -39,36 +39,36 @@
     "total_rules": 60,
     "active_rules": 14,
     "inactive_rules": [
-      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "MAGIC_NUMBERS",
       "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "USE_OPTIONAL_CHAINING",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
-      "MISSING_ALT_ATTRIBUTE",
-      "NO_TRAILING_WHITESPACE",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "MISSING_JSDOC_ON_EXPORT",
-      "ZUSTAND_FULL_STORE_DESTRUCTURE",
-      "EMPTY_PROMISE_CATCH",
-      "NO_DOUBLE_SEMICOLONS",
-      "NO_BARREL_IMPORT_CYCLES",
-      "NO_INDEX_AS_KEY",
-      "NO_BARE_EXCEPT",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "JSON_DEEP_CLONE",
+      "EXCESSIVE_NESTING_DEPTH",
+      "PROP_SPREADING_WARNING",
       "IMPORT_BOUNDARY_VIOLATION",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "SEC-001",
+      "EXCESSIVE_FILE_SIZE",
+      "NO_BARREL_IMPORT_CYCLES",
+      "TEST-HEAL-001",
+      "FIX_CONFIDENCE_DECIMAL",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
       "NO_SQL_INJECTION_PATTERNS",
-      "NO_PRINT_IN_PRODUCTION",
-      "NO_WINDOW_PROMPT"
+      "NO_POSITIVE_TABINDEX",
+      "MISSING_KEY_IN_MAP",
+      "UNGUARDED_JSON_PARSE",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "NO_EMPTY_CATCH",
+      "NO_BARE_EXCEPT",
+      "NO_CIRCULAR_IMPORTS"
     ],
     "inactive_count": 59
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 76.4
+    "size_kb": 82.8
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 2.7 fichiers/s"
+    "Performance degradee: 4.3 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."
