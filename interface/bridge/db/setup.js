@@ -19,7 +19,9 @@ function initDb() {
     CREATE TABLE IF NOT EXISTS licences (
       id TEXT PRIMARY KEY,
       nom TEXT NOT NULL,
-      archived INTEGER DEFAULT 0
+      archived INTEGER DEFAULT 0,
+      targetGrade TEXT,
+      targetRank TEXT
     );
 
     CREATE TABLE IF NOT EXISTS semestres (
@@ -34,6 +36,7 @@ function initDb() {
     CREATE TABLE IF NOT EXISTS ues (
       id TEXT PRIMARY KEY,
       nom TEXT NOT NULL,
+      ects REAL,
       semestre_id TEXT,
       FOREIGN KEY(semestre_id) REFERENCES semestres(id) ON DELETE CASCADE
     );
@@ -89,6 +92,7 @@ function initDb() {
       difficulteInitiale TEXT,
       derniereNote REAL,
       notes TEXT, -- JSON array
+      nombreRevisionsTemps INTEGER,
       matiere_id TEXT,
       FOREIGN KEY(matiere_id) REFERENCES matieres(id) ON DELETE CASCADE
     );

@@ -49,7 +49,9 @@ function loadCours() {
     for (const m of matieres) {
       if (!matMap[m.ue_id]) matMap[m.ue_id] = [];
       matMap[m.ue_id].push({ 
-        ...m, 
+        ...m,
+        coefficient: m.coef,
+        examDates: m.dateExamen ? (m.dateExamen.startsWith('[') ? JSON.parse(m.dateExamen) : [m.dateExamen]) : undefined,
         evaluations: m.evaluations ? JSON.parse(m.evaluations) : undefined,
         synergies: m.synergies ? JSON.parse(m.synergies) : undefined,
         listeCM: [], 
@@ -57,6 +59,8 @@ function loadCours() {
         listeTP: [], 
         listeAnnales: [] 
       });
+      delete matMap[m.ue_id][matMap[m.ue_id].length - 1].coef;
+      delete matMap[m.ue_id][matMap[m.ue_id].length - 1].dateExamen;
     }
 
     const cmMap = {}; // matiere_id -> []
@@ -195,17 +199,17 @@ function saveCours(coursConfig) {
   }
 
   // WIPE AND INSERT TRANSACTION
-  const insLicence = db.prepare('INSERT INTO licences (id, nom, archived) VALUES (?, ?, ?)');
+  const insLicence = db.prepare('INSERT INTO licences (id, nom, archived, targetGrade, targetRank) VALUES (?, ?, ?, ?, ?)');
   const insSemestre = db.prepare('INSERT INTO semestres (id, nom, archived, dateFin, licence_id) VALUES (?, ?, ?, ?, ?)');
-  const insUe = db.prepare('INSERT INTO ues (id, nom, semestre_id) VALUES (?, ?, ?)');
+  const insUe = db.prepare('INSERT INTO ues (id, nom, ects, semestre_id) VALUES (?, ?, ?, ?)');
   const insMatiere = db.prepare('INSERT INTO matieres (id, nom, coef, ects, dateExamen, ankiDeckName, evaluations, notebookLMLink, cm_h, td_h, tp_h, synergies, ue_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   const insCm = db.prepare(`
     INSERT INTO cours_cm (id, titre, derniereRevision, prochaineRevisionDate, jActuel, tempsMoyen, fichePdfPath, pdfPath, pdfPaths, fsrsCard, easeFactor, repetitions, nombreRevisionsTemps, matiere_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const insEx = db.prepare(`
-    INSERT INTO exercices (id, type, titre, dernierePratique, dateTP, nombrePratiques, tempsMoyen, tempsMoyenEtapes, pdfPath, pdfPaths, page, difficulte, difficulteInitiale, derniereNote, notes, matiere_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO exercices (id, type, titre, dernierePratique, dateTP, nombrePratiques, tempsMoyen, tempsMoyenEtapes, pdfPath, pdfPaths, page, difficulte, difficulteInitiale, derniereNote, notes, nombreRevisionsTemps, matiere_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   try {
@@ -214,7 +218,7 @@ function saveCours(coursConfig) {
 
       for (const licence of cleaned.licences) {
         const lid = licence.id || crypto.randomUUID();
-        insLicence.run(lid, licence.nom, licence.archived ? 1 : 0);
+        insLicence.run(lid, licence.nom, licence.archived ? 1 : 0, licence.targetGrade || null, licence.targetRank || null);
 
         for (const semestre of (licence.semestres || [])) {
           const sid = semestre.id || crypto.randomUUID();
@@ -222,16 +226,16 @@ function saveCours(coursConfig) {
 
           for (const ue of (semestre.ues || [])) {
             const uid = ue.id || crypto.randomUUID();
-            insUe.run(uid, ue.nom, sid);
+            insUe.run(uid, ue.nom, ue.ects || null, sid);
 
             for (const matiere of (ue.matieres || [])) {
               const mid = matiere.id || crypto.randomUUID();
               insMatiere.run(
                 mid,
                 matiere.nom,
-                matiere.coef || null,
+                matiere.coefficient || matiere.coef || null,
                 matiere.ects || null,
-                matiere.dateExamen || null,
+                matiere.examDates ? JSON.stringify(matiere.examDates) : (matiere.dateExamen || null),
                 matiere.ankiDeckName || null,
                 matiere.evaluations ? JSON.stringify(matiere.evaluations) : null,
                 matiere.notebookLMLink || null,
@@ -280,6 +284,7 @@ function saveCours(coursConfig) {
                   td.difficulteInitiale || null,
                   td.derniereNote || null,
                   td.notes ? JSON.stringify(td.notes) : null,
+                  td.nombreRevisionsTemps || null,
                   mid
                 );
               }
@@ -302,6 +307,7 @@ function saveCours(coursConfig) {
                   tp.difficulteInitiale || null,
                   tp.derniereNote || null,
                   tp.notes ? JSON.stringify(tp.notes) : null,
+                  tp.nombreRevisionsTemps || null,
                   mid
                 );
               }
@@ -324,6 +330,7 @@ function saveCours(coursConfig) {
                   annale.difficulteInitiale || null,
                   annale.derniereNote || null,
                   annale.notes ? JSON.stringify(annale.notes) : null,
+                  annale.nombreRevisionsTemps || null,
                   mid
                 );
               }

@@ -215,3 +215,10 @@ Cela permet de rÃƒÂ©compenser la rigueur quotidienne et pas seulement la per
 <RULE[optional_rest_day_chaining]>
 - **Système de Repos Dynamique** : Lors de la modification des systèmes de repos ou de planification, il faut respecter la règle du "2ème jour optionnel offert". Si l'utilisateur active manuellement un jour de repos (ce qui incrémente son quota et ajoute le jour dans `restDays`), l'application doit **automatiquement** lui proposer de prolonger sa récupération le lendemain (si `yesterdayStr` est un jour de repos, mais pas `todayStr`). S'il accepte, la journée en cours bascule en repos (statut `REPOS_OPTIONNEL`), l'UI masque les boutons d'action, et cela ne décrémente **pas** de nouveau quota (le 2ème jour consécutif ne doit pas être ajouté à `restDays`). L'orchestrateur reprendra naturellement le planning normal le 3ème jour. S'il refuse, l'API `/api/skip-rest` est appelée pour annuler l'option.
 </RULE[optional_rest_day_chaining]>
+
+<RULE[safe_data_migrations]>
+- **Migrations JSON vers SQL (Zero Data Loss)** : Lors de la conception ou de la modification d'un schéma de base de données relationnelle (ex: SQLite) destiné à remplacer un stockage JSON/NoSQL :
+  1. L'agent DOIT obligatoirement écrire un script de comparaison profonde (deep-compare) entre les clés de l'ancien objet JSON et les clés de l'objet reconstruit depuis SQL.
+  2. Aucun champ dynamique du JSON (même optionnel comme `targetGrade`, `coefficient`, `ects`) ne doit être silencieusement ignoré ou renommé sans être re-mappé à l'identique lors de l'extraction (`SELECT`).
+  3. Les tableaux JSON (Arrays) doivent être explicitement stringifiés (`JSON.stringify()`) lors de l'insertion et parsés (`JSON.parse()`) lors de l'extraction.
+</RULE[safe_data_migrations]>

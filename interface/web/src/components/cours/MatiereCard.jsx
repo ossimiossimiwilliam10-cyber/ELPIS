@@ -308,7 +308,7 @@ export default function MatiereCard({
             <div style={{width: '100%', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem', paddingLeft: '1.5rem'}}>
               {allPdfs.map((pdf, pIdx) => (
                 <div key={pIdx} style={{display: 'flex', alignItems: 'center', gap: '0.2rem', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.4rem', borderRadius: '4px'}}>
-                  <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Doc {pIdx + 1}</span>
+                  <a href={pdf} target="_blank" rel="noopener noreferrer" style={{fontSize: '0.75rem', color: '#60a5fa', textDecoration: 'underline', cursor: 'pointer'}}>Doc {pIdx + 1}</a>
                   <button 
                     onClick={() => {
                       if(window.confirm("Supprimer ce document ?")) {
@@ -384,7 +384,7 @@ export default function MatiereCard({
             <div style={{width: '100%', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem', paddingLeft: '1.5rem'}}>
               {allPdfs.map((pdf, pIdx) => (
                 <div key={pIdx} style={{display: 'flex', alignItems: 'center', gap: '0.2rem', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.4rem', borderRadius: '4px'}}>
-                  <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Doc {pIdx + 1}</span>
+                  <a href={pdf} target="_blank" rel="noopener noreferrer" style={{fontSize: '0.75rem', color: '#60a5fa', textDecoration: 'underline', cursor: 'pointer'}}>Doc {pIdx + 1}</a>
                   <button 
                     onClick={() => {
                       if(window.confirm("Supprimer ce document ?")) {
@@ -472,7 +472,7 @@ export default function MatiereCard({
             <div style={{width: '100%', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem', paddingLeft: '1.5rem'}}>
               {allPdfs.map((pdf, pIdx) => (
                 <div key={pIdx} style={{display: 'flex', alignItems: 'center', gap: '0.2rem', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.4rem', borderRadius: '4px'}}>
-                  <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Doc {pIdx + 1}</span>
+                  <a href={pdf} target="_blank" rel="noopener noreferrer" style={{fontSize: '0.75rem', color: '#60a5fa', textDecoration: 'underline', cursor: 'pointer'}}>Doc {pIdx + 1}</a>
                   <button 
                     onClick={() => {
                       if(window.confirm("Supprimer ce document ?")) {
@@ -548,7 +548,7 @@ export default function MatiereCard({
             <div style={{width: '100%', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.2rem', paddingLeft: '1.5rem'}}>
               {allPdfs.map((pdf, pIdx) => (
                 <div key={pIdx} style={{display: 'flex', alignItems: 'center', gap: '0.2rem', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.4rem', borderRadius: '4px'}}>
-                  <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Doc {pIdx + 1}</span>
+                  <a href={pdf} target="_blank" rel="noopener noreferrer" style={{fontSize: '0.75rem', color: '#60a5fa', textDecoration: 'underline', cursor: 'pointer'}}>Doc {pIdx + 1}</a>
                   <button 
                     onClick={() => {
                       if(window.confirm("Supprimer ce document ?")) {
