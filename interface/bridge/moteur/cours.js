@@ -51,6 +51,7 @@ function loadCours() {
       matMap[m.ue_id].push({ 
         ...m, 
         evaluations: m.evaluations ? JSON.parse(m.evaluations) : undefined,
+        synergies: m.synergies ? JSON.parse(m.synergies) : undefined,
         listeCM: [], 
         listeTD: [], 
         listeTP: [], 
@@ -74,7 +75,8 @@ function loadCours() {
       exMap[ex.matiere_id].push({
         ...ex,
         tempsMoyenEtapes: ex.tempsMoyenEtapes ? JSON.parse(ex.tempsMoyenEtapes) : undefined,
-        pdfPaths: ex.pdfPaths ? JSON.parse(ex.pdfPaths) : undefined
+        pdfPaths: ex.pdfPaths ? JSON.parse(ex.pdfPaths) : undefined,
+        notes: ex.notes ? JSON.parse(ex.notes) : undefined
       });
     }
 
@@ -196,14 +198,14 @@ function saveCours(coursConfig) {
   const insLicence = db.prepare('INSERT INTO licences (id, nom, archived) VALUES (?, ?, ?)');
   const insSemestre = db.prepare('INSERT INTO semestres (id, nom, archived, dateFin, licence_id) VALUES (?, ?, ?, ?, ?)');
   const insUe = db.prepare('INSERT INTO ues (id, nom, semestre_id) VALUES (?, ?, ?)');
-  const insMatiere = db.prepare('INSERT INTO matieres (id, nom, coef, ects, dateExamen, ankiDeckName, evaluations, ue_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+  const insMatiere = db.prepare('INSERT INTO matieres (id, nom, coef, ects, dateExamen, ankiDeckName, evaluations, notebookLMLink, cm_h, td_h, tp_h, synergies, ue_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   const insCm = db.prepare(`
-    INSERT INTO cours_cm (id, titre, derniereRevision, prochaineRevisionDate, jActuel, tempsMoyen, fichePdfPath, pdfPath, pdfPaths, fsrsCard, matiere_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO cours_cm (id, titre, derniereRevision, prochaineRevisionDate, jActuel, tempsMoyen, fichePdfPath, pdfPath, pdfPaths, fsrsCard, easeFactor, repetitions, nombreRevisionsTemps, matiere_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const insEx = db.prepare(`
-    INSERT INTO exercices (id, type, titre, dernierePratique, dateTP, nombrePratiques, tempsMoyen, tempsMoyenEtapes, pdfPath, pdfPaths, page, difficulte, matiere_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO exercices (id, type, titre, dernierePratique, dateTP, nombrePratiques, tempsMoyen, tempsMoyenEtapes, pdfPath, pdfPaths, page, difficulte, difficulteInitiale, derniereNote, notes, matiere_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   try {
@@ -232,6 +234,11 @@ function saveCours(coursConfig) {
                 matiere.dateExamen || null,
                 matiere.ankiDeckName || null,
                 matiere.evaluations ? JSON.stringify(matiere.evaluations) : null,
+                matiere.notebookLMLink || null,
+                matiere.cm_h || null,
+                matiere.td_h || null,
+                matiere.tp_h || null,
+                matiere.synergies ? JSON.stringify(matiere.synergies) : null,
                 uid
               );
 
@@ -248,6 +255,9 @@ function saveCours(coursConfig) {
                   cm.pdfPath || null,
                   cm.pdfPaths ? JSON.stringify(cm.pdfPaths) : null,
                   cm.fsrsCard ? JSON.stringify(cm.fsrsCard) : null,
+                  cm.easeFactor || null,
+                  cm.repetitions || null,
+                  cm.nombreRevisionsTemps || null,
                   mid
                 );
               }
@@ -267,6 +277,9 @@ function saveCours(coursConfig) {
                   td.pdfPaths ? JSON.stringify(td.pdfPaths) : null,
                   td.page || null,
                   td.difficulte || null,
+                  td.difficulteInitiale || null,
+                  td.derniereNote || null,
+                  td.notes ? JSON.stringify(td.notes) : null,
                   mid
                 );
               }
@@ -286,6 +299,9 @@ function saveCours(coursConfig) {
                   tp.pdfPaths ? JSON.stringify(tp.pdfPaths) : null,
                   tp.page || null,
                   tp.difficulte || null,
+                  tp.difficulteInitiale || null,
+                  tp.derniereNote || null,
+                  tp.notes ? JSON.stringify(tp.notes) : null,
                   mid
                 );
               }
@@ -305,6 +321,9 @@ function saveCours(coursConfig) {
                   annale.pdfPaths ? JSON.stringify(annale.pdfPaths) : null,
                   annale.page || null,
                   annale.difficulte || null,
+                  annale.difficulteInitiale || null,
+                  annale.derniereNote || null,
+                  annale.notes ? JSON.stringify(annale.notes) : null,
                   mid
                 );
               }

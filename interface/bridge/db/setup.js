@@ -46,6 +46,11 @@ function initDb() {
       dateExamen TEXT,
       ankiDeckName TEXT,
       evaluations TEXT,
+      notebookLMLink TEXT,
+      cm_h INTEGER,
+      td_h INTEGER,
+      tp_h INTEGER,
+      synergies TEXT,
       ue_id TEXT,
       FOREIGN KEY(ue_id) REFERENCES ues(id) ON DELETE CASCADE
     );
@@ -61,6 +66,9 @@ function initDb() {
       pdfPath TEXT,
       pdfPaths TEXT, -- JSON array
       fsrsCard TEXT, -- JSON FSRS data
+      easeFactor REAL,
+      repetitions INTEGER,
+      nombreRevisionsTemps INTEGER,
       matiere_id TEXT,
       FOREIGN KEY(matiere_id) REFERENCES matieres(id) ON DELETE CASCADE
     );
@@ -78,6 +86,9 @@ function initDb() {
       pdfPaths TEXT, -- JSON array
       page INTEGER,
       difficulte TEXT,
+      difficulteInitiale TEXT,
+      derniereNote REAL,
+      notes TEXT, -- JSON array
       matiere_id TEXT,
       FOREIGN KEY(matiere_id) REFERENCES matieres(id) ON DELETE CASCADE
     );
