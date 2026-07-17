@@ -128,7 +128,9 @@ export const syncFromBackend = async (db) => {
         }
         if (histRes.ok) {
             const data = await histRes.json();
-            await db.historique.upsert({ id: 'main', data });
+            if (Array.isArray(data) && data.length > 0) {
+               await db.historique.upsert({ id: 'main', data });
+            }
         }
         if (projRes.ok) {
             const data = await projRes.json();

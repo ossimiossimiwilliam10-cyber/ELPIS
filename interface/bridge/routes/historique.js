@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { loadHistorique, saveHistorique, clearHistorique, historiqueSchema } = require('../moteur/historique');
+const { loadHistorique, saveHistorique, clearHistorique } = require('../moteur/historique');
+const { historiqueSchema } = require('../moteur/schemas');
 const { syncToMongo } = require('../mongoAdapter');
 
 // GET history
