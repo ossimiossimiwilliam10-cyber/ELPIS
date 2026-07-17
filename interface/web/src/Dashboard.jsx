@@ -147,7 +147,7 @@ function Dashboard() {
     };
     doFetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coursConfig, extraTime, dailyFillGap, fetchOrchestrator]);
+  }, [extraTime, dailyFillGap, fetchOrchestrator]);
 
   const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
   if (orchestratorData !== prevOrchestratorData) {

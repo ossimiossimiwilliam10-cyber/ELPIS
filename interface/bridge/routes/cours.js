@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { loadCours, saveCours, coursSchema } = require('../moteur/cours');
+const { loadCours, saveCours, validateCoursSchema } = require('../moteur/cours');
 const { syncToMongo } = require('../mongoAdapter');
 
 // GET current courses
@@ -16,11 +16,9 @@ router.get('/', (req, res, next) => {
 // POST update courses
 router.post('/', (req, res, next) => {
   try {
-    const parseResult = coursSchema.safeParse(req.body);
-    if (!parseResult.success) {
+    if (!validateCoursSchema(req.body)) {
       return res.status(400).json({ 
-        error: "Structure de cours invalide.",
-        details: parseResult.error.errors 
+        error: "Structure de cours invalide."
       });
     }
     const success = saveCours(req.body);

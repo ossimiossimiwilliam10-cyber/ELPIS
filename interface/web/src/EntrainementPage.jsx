@@ -76,7 +76,7 @@ function EntrainementPage() {
       fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coursConfig, dailyFillGap]);
+  }, [dailyFillGap]);
 
   const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
   if (orchestratorData !== prevOrchestratorData) {
@@ -326,7 +326,7 @@ function EntrainementPage() {
       });
       resetGlobalChrono();
       setTempsDejaTravaille(prev => prev + effectiveMinutes);
-      setTimeout(() => fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 }), 600);
+
       return;
     }
 

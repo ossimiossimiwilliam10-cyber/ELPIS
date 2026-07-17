@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { loadConfig, saveConfig, configSchema } = require('../moteur/config');
+const { loadConfig, saveConfig, validateConfigSchema } = require('../moteur/config');
 const { syncToMongo } = require('../mongoAdapter');
 
 // GET current config
@@ -16,11 +16,9 @@ router.get('/', (req, res, next) => {
 // POST update config
 router.post('/', (req, res, next) => {
   try {
-    const parseResult = configSchema.safeParse(req.body);
-    if (!parseResult.success) {
+    if (!validateConfigSchema(req.body)) {
       return res.status(400).json({ 
-        error: "Données de configuration invalides.",
-        details: parseResult.error.errors 
+        error: "Données de configuration invalides."
       });
     }
     const success = saveConfig(req.body);
