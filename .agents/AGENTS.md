@@ -222,3 +222,11 @@ Cela permet de rÃƒÂ©compenser la rigueur quotidienne et pas seulement la per
   2. Aucun champ dynamique du JSON (même optionnel comme `targetGrade`, `coefficient`, `ects`) ne doit être silencieusement ignoré ou renommé sans être re-mappé à l'identique lors de l'extraction (`SELECT`).
   3. Les tableaux JSON (Arrays) doivent être explicitement stringifiés (`JSON.stringify()`) lors de l'insertion et parsés (`JSON.parse()`) lors de l'extraction.
 </RULE[safe_data_migrations]>
+
+<RULE[centralized_schema_imports]>
+- **Centralisation des Schémas de Validation** : Lors de l'utilisation de bibliothèques de validation (comme Zod) sur le backend, les schémas DOIVENT toujours être importés depuis leur fichier de définition centralisé (ex: `moteur/schemas.js`). Ne jamais importer un schéma depuis un fichier de service métier (ex: `moteur/historique.js`) pour éviter les importations `undefined` liées aux dépendances circulaires, qui causeraient des crashs (Erreur 500) lors de l'exécution de `safeParse`.
+</RULE[centralized_schema_imports]>
+
+<RULE[pwa_anti_wipe_sync]>
+- **Sécurité de Synchronisation PWA (Anti-Wipe)** : Lors de la synchronisation initiale de données depuis le backend vers une base de données locale (ex: RxDB, IndexedDB), il faut TOUJOURS s'assurer que les données reçues de l'API sont structurellement valides et non vides (ex: `Array.isArray(data) && data.length > 0`) AVANT d'effectuer un `upsert` ou un écrasement (`replace`). Cela empêche l'application frontend d'effacer accidentellement les données hors-ligne de l'utilisateur en cas de panne de la base distante.
+</RULE[pwa_anti_wipe_sync]>
