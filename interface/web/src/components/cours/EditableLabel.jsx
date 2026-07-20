@@ -1,10 +1,13 @@
 import { useToast } from '../../ToastProvider';
+import useInputModal from '../../hooks/useInputModal';
+import InputModal from '../InputModal';
 
 export default function EditableLabel({ value, onRename, placeholder, style }) {
   const { toast } = useToast();
+  const { prompt, isOpen, config, handleConfirm, handleCancel } = useInputModal();
 
-  const handleRename = () => {
-    const newName = window.prompt("Nouveau nom :", value || '');
+  const handleRename = async () => {
+    const newName = await prompt("Nouveau nom :", value || '');
     if (newName !== null) {
       if (newName.trim() === '') {
         toast.error("Le nom ne peut pas être vide.");
@@ -26,6 +29,14 @@ export default function EditableLabel({ value, onRename, placeholder, style }) {
       >
         ✏️
       </button>
+      <InputModal
+        isOpen={isOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        title={config.title}
+        defaultValue={config.defaultValue}
+        placeholder={config.placeholder}
+      />
     </div>
   );
 }

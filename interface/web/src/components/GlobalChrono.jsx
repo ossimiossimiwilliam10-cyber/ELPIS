@@ -3,11 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import useStore, { useChronoStore } from '../store';
 import { useToast } from '../ToastProvider';
+import useInputModal from '../hooks/useInputModal';
+import InputModal from '../components/InputModal';
 
 export default function GlobalChrono() {
   const { globalChrono, toggleGlobalChrono, resetGlobalChrono, tickGlobalChrono, setGlobalChronoTime } = useChronoStore();
   const { isRunning, elapsedSeconds, titre, matiereNom, exoId, type } = globalChrono;
   const { toast } = useToast();
+  const { prompt, isOpen, config, handleConfirm, handleCancel } = useInputModal();
 
   const [isVisible, setIsVisible] = useState(true);
   const [pipWindow, setPipWindow] = useState(null);
@@ -129,8 +132,8 @@ export default function GlobalChrono() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const handleEditTime = () => {
-    const input = window.prompt("Saisir le temps en minutes (ex: 15.5 pour 15m30s) :", (elapsedSeconds / 60).toFixed(1));
+  const handleEditTime = async () => {
+    const input = await prompt("Saisir le temps en minutes (ex: 15.5 pour 15m30s) :", (elapsedSeconds / 60).toFixed(1));
     if (input !== null) {
       const mins = parseFloat(input.replace(',', '.'));
       if (!isNaN(mins) && mins >= 0) {
@@ -541,6 +544,14 @@ export default function GlobalChrono() {
       whileDrag={{ cursor: 'grabbing', scale: 1.05 }}
     >
       {inlineContent}
+      <InputModal
+        isOpen={isOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        title={config.title}
+        defaultValue={config.defaultValue}
+        placeholder={config.placeholder}
+      />
     </motion.div>
   );
 }

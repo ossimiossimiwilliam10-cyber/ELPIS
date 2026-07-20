@@ -1,4 +1,5 @@
 import { getApiUrl } from './utils/apiConfig';
+import { fetchWithRetry } from './utils/fetchWithRetry';
 import { createRxDatabase, addRxPlugin } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
@@ -113,10 +114,10 @@ export const getDb = async () => {
 export const syncFromBackend = async (db) => {
     try {
         const [confRes, coursRes, histRes, projRes] = await Promise.all([
-            fetch(`${getApiUrl()}/config`),
-            fetch(`${getApiUrl()}/cours`),
-            fetch(`${getApiUrl()}/historique`),
-            fetch(`${getApiUrl()}/projets`)
+            fetchWithRetry(`${getApiUrl()}/config`),
+            fetchWithRetry(`${getApiUrl()}/cours`),
+            fetchWithRetry(`${getApiUrl()}/historique`),
+            fetchWithRetry(`${getApiUrl()}/projets`)
         ]);
 
         if (confRes.ok) {

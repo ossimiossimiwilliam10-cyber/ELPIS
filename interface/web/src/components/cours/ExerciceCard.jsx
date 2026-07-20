@@ -5,11 +5,14 @@ import { useToast } from '../../ToastProvider';
 import InfoTooltip from '../InfoTooltip';
 import { DIFFICULTY_LEVELS } from '../../constants';
 import { parseTimeInput } from '../../utils/timeParser';
+import useInputModal from '../../hooks/useInputModal';
+import InputModal from '../InputModal';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
   // resetGlobalChrono is also needed for suspend action
   const { toast } = useToast();
+  const { prompt, isOpen, config, handleConfirm, handleCancel } = useInputModal();
   const [note, setNote] = useState('');
   const [manualTime, setManualTime] = useState(null);
 
@@ -72,7 +75,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const handleValidation = (callback, ...args) => {
+  const handleValidation = async (callback, ...args) => {
     if (isThisExoActive) {
       resetGlobalChrono();
     }
@@ -82,7 +85,10 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
       : (elapsedSeconds > 0 ? Math.max(1, Math.ceil(elapsedSeconds / 60)) : 0);
 
     if (finalMinutes === 0 && exo.type === 'ANKI') {
-      const input = window.prompt(`Temps passé sur Anki (en minutes) ? Laissez vide pour utiliser le temps moyen (${Math.round(exo.tempsMoyen || 30)} min).`, "");
+      const input = await prompt(
+        `Temps passé sur Anki (en minutes) ? Laissez vide pour utiliser le temps moyen (${Math.round(exo.tempsMoyen || 30)} min).`,
+        ""
+      );
       if (input !== null && input.trim() !== "") {
         const parsed = parseTimeInput(input);
         if (parsed !== null) {
@@ -231,7 +237,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
           if (exo.pdfPath && !allPdfs.includes(exo.pdfPath)) {
             allPdfs.unshift(exo.pdfPath);
           }
-          
+
           if (allPdfs.length === 0) return null;
 
           if (allPdfs.length === 1) {
@@ -362,6 +368,14 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
           )}
         </div>
       </div>
+      <InputModal
+        isOpen={isOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        title={config.title}
+        defaultValue={config.defaultValue}
+        placeholder={config.placeholder}
+      />
     </motion.div>
   );
 }

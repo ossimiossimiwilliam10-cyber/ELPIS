@@ -1,3 +1,43 @@
+/**
+ * @typedef {object} ElpisConfig
+ * @property {number} [targetGrade]
+ * @property {number} [currentStreak]
+ * @property {number} [bestStreak]
+ * @property {string} [lastActiveDate]
+ * @property {string[]} [restDays]
+ * @property {string} [bedtime]
+ * @property {string} [wakeUpTime]
+ * @property {number} [antiEnnuiMultiplier]
+ * @property {number} [defaultDurationNewCM]
+ * @property {number} [defaultDurationRevCM]
+ * @property {number} [defaultDurationTD]
+ * @property {number} [defaultDurationTP]
+ * @property {number} [defaultDurationAnnales]
+ * @property {number} [defaultDurationAnki]
+ * @property {number} [maxNewCMPerSubjectPerDay]
+ * @property {number} [maxNewCMPerSemesterPerDay]
+ * @property {boolean} [enableTD]
+ * @property {boolean} [enableAnnales]
+ * @property {string} [dernierePratiqueAnki]
+ */
+
+/**
+ * @typedef {object} ElpisStore
+ * @property {ElpisConfig} config
+ * @property {object} coursConfig
+ * @property {Array} projets
+ * @property {Array} historique
+ * @property {boolean} loading
+ * @property {string|null} error
+ * @property {string} activeTab
+ * @property {number} pendingTasksCount
+ * @property {boolean} dailyFillGap
+ * @property {object|null} orchestratorData
+ * @property {object|null} intelligence
+ * @property {object} rankingBaseline
+ * @property {object|null} forcedTask
+ */
+
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import debounce from 'lodash/debounce';
@@ -5,6 +45,7 @@ import { getDb, syncFromBackend } from './database';
 
 // API base URL
 import { getApiUrl } from './utils/apiConfig';
+import { fetchWithRetry, fetchFireAndForget } from './utils/fetchWithRetry';
 
 // Fonction utilitaire pour gérer l'échec de la synchronisation (Mode Hors-Ligne)
 const handleOfflineError = (type, error) => {
@@ -20,7 +61,7 @@ const debouncedSaveConfig = debounce(async (config, get) => {
   if (!navigator.onLine) return handleOfflineError('config', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
-    const res = await fetch(`${apiBase}/config`, {
+    const res = await fetchWithRetry(`${apiBase}/config`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config)
@@ -37,7 +78,7 @@ const debouncedSaveCours = debounce(async (coursConfig, get) => {
   if (!navigator.onLine) return handleOfflineError('cours', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
-    const res = await fetch(`${apiBase}/cours`, {
+    const res = await fetchWithRetry(`${apiBase}/cours`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(coursConfig)
@@ -54,7 +95,7 @@ const debouncedSaveHistorique = debounce(async (historique, get) => {
   if (!navigator.onLine) return handleOfflineError('historique', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
-    const res = await fetch(`${apiBase}/historique`, {
+    const res = await fetchWithRetry(`${apiBase}/historique`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(historique)
@@ -71,7 +112,7 @@ const debouncedSaveProjets = debounce(async (projets, get) => {
   if (!navigator.onLine) return handleOfflineError('projets', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
-    const res = await fetch(`${apiBase}/projets`, {
+    const res = await fetchWithRetry(`${apiBase}/projets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(projets)
@@ -144,7 +185,7 @@ const useStore = create(immer((set, get) => ({
     const { extraTime = 0, fillGap = false } = params;
     try {
       const apiBase = getApiUrl();
-      const res = await fetch(`${apiBase}/orchestrateur?extraTime=${extraTime}&fillGap=${fillGap}`);
+      const res = await fetchWithRetry(`${apiBase}/orchestrateur?extraTime=${extraTime}&fillGap=${fillGap}`);
       if (res.ok) {
         const data = await res.json();
         set({
@@ -269,7 +310,7 @@ const useStore = create(immer((set, get) => ({
       // Save directly without debounce to ensure immediate effect before re-fetching
       try {
         const apiBase = getApiUrl();
-        await fetch(`${apiBase}/config`, {
+        await fetchWithRetry(`${apiBase}/config`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newConfig)
@@ -308,7 +349,7 @@ const useStore = create(immer((set, get) => ({
 
       try {
         const apiBase = getApiUrl();
-        await fetch(`${apiBase}/config`, {
+        await fetchWithRetry(`${apiBase}/config`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newConfig)
@@ -334,7 +375,7 @@ const useStore = create(immer((set, get) => ({
 
     try {
       const apiBase = getApiUrl();
-      await fetch(`${apiBase}/config`, {
+      await fetchWithRetry(`${apiBase}/config`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newConfig)
@@ -388,14 +429,14 @@ const useStore = create(immer((set, get) => ({
 
     // [Epic 2] - Background Telemetry
     const apiBase = getApiUrl();
-    fetch(`${apiBase}/ai/historique-update`, {
+    fetchFireAndForget(`${apiBase}/ai/historique-update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sessionData: entry,
         aiStateAfter: { note: "calculé au prochain cycle" }
       })
-    }).catch(e => console.error("Erreur télémétrie:", e));
+    });
   },
 
   // Check and update streak logic
@@ -582,10 +623,10 @@ if (typeof window !== 'undefined') {
       try {
         const apiBase = getApiUrl();
         await Promise.all([
-          fetch(`${apiBase}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
-          fetch(`${apiBase}/cours`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
-          fetch(`${apiBase}/historique`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
-          fetch(`${apiBase}/projets`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
+          fetchWithRetry(`${apiBase}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
+          fetchWithRetry(`${apiBase}/cours`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
+          fetchWithRetry(`${apiBase}/historique`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
+          fetchWithRetry(`${apiBase}/projets`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
         ]);
         localStorage.removeItem('elpis_offline_pending_sync');
       } catch (e) {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../ToastProvider';
+import { fetchWithRetry } from '../utils/fetchWithRetry';
 
 export default function AICoachSidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +13,7 @@ export default function AICoachSidebar() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch('/api/chat');
+      const res = await fetchWithRetry('/api/chat');
       const data = await res.json();
       setMessages(data);
     } catch (err) {
@@ -39,7 +40,7 @@ export default function AICoachSidebar() {
     setIsTyping(true);
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetchWithRetry('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: updatedMessages }),
@@ -62,7 +63,7 @@ export default function AICoachSidebar() {
   const handleClear = async () => {
     if (!window.confirm('Voulez-vous vraiment effacer tout l\'historique du coach ?')) return;
     try {
-      await fetch('/api/chat', { method: 'DELETE' });
+      await fetchWithRetry('/api/chat', { method: 'DELETE' });
       setMessages([]);
       toast.success('Historique effacé.');
     } catch (err) {

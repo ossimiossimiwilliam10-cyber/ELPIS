@@ -3,10 +3,13 @@ import { motion } from 'framer-motion';
 import useStore, { useChronoStore } from './store';
 
 import { getApiUrl } from './utils/apiConfig';
+import useInputModal from './hooks/useInputModal';
+import InputModal from './components/InputModal';
 
 function ProjetsPage() {
   const { projets, setProjets, pendingTasksCount, historique } = useStore();
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
+  const { prompt, isOpen, config, handleConfirm, handleCancel } = useInputModal();
   const [newProjectTitle, setNewProjectTitle] = useState('');
   const [newProjectDateFin, setNewProjectDateFin] = useState('');
   const [newPhaseName, setNewPhaseName] = useState('');
@@ -46,7 +49,7 @@ function ProjetsPage() {
     }
 
     const defaultInput = finalMinutes > 0 ? finalMinutes.toString() : "";
-    const minStr = window.prompt("Combien de minutes as-tu travaillé sur ce projet ?", defaultInput);
+    const minStr = await prompt("Combien de minutes as-tu travaillé sur ce projet ?", defaultInput);
     if (!minStr) return;
 
     const min = parseInt(minStr, 10);
@@ -314,6 +317,14 @@ function ProjetsPage() {
           Aucun projet pour le moment. C'est le moment d'être créatif !
         </div>
       )}
+      <InputModal
+        isOpen={isOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        title={config.title}
+        defaultValue={config.defaultValue}
+        placeholder={config.placeholder}
+      />
     </motion.div>
   );
 }

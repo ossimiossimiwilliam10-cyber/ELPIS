@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  elpis:
+    build: .
+    container_name: elpis-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - elpis_data:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Pour le développement local, le bridge écoute sur localhost:3000
+      # Les variables spécifiques (Anki, IA, etc.) sont dans interface/bridge/.env
+    restart: unless-stopped
+
+volumes:
+  elpis_data:
+    driver: local

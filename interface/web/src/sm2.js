@@ -1,3 +1,11 @@
+/**
+ * @deprecated Depuis la migration vers FSRS (fsrsEngine.js), les fonctions SM-2
+ * `calculateSM2` et `findOptimalInterval` ne sont plus utilisées en production.
+ * Conservé uniquement pour la rétrocompatibilité des tests (sm2.test.js).
+ *
+ * Pour toute nouvelle fonctionnalité, utiliser `evaluateFSRS()` dans fsrsEngine.js.
+ */
+
 export function getLoadForDate(dateStr, configLocal, subjectName = null) {
   let count = 0;
   configLocal.licences?.forEach(l => {

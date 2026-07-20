@@ -19,9 +19,26 @@ vi.mock('../../ToastProvider', () => ({
   })
 }));
 
-// Mock InfoTooltip to avoid importing framer-motion unnecessarily
+// Mock useInputModal
+const mockPrompt = vi.fn();
+vi.mock('../../hooks/useInputModal', () => ({
+  default: () => ({
+    prompt: mockPrompt,
+    isOpen: false,
+    config: { title: '', defaultValue: '', placeholder: '' },
+    handleConfirm: vi.fn(),
+    handleCancel: vi.fn()
+  })
+}));
+
+// Mock InputModal
+vi.mock('../InputModal', () => ({
+  default: () => null
+}));
+
+// Mock InfoTooltip
 vi.mock('../InfoTooltip', () => ({
-  default: ({ text }) => <span data-testid="info-tooltip">{text}</span>
+  default: ({ children }) => <span data-testid="info-tooltip">{children}</span>
 }));
 
 describe('ExerciceCard Anti-regression tests', () => {
@@ -39,26 +56,25 @@ describe('ExerciceCard Anti-regression tests', () => {
       toggleGlobalChrono: vi.fn(),
       resetGlobalChrono: vi.fn()
     });
-    
-    // Mock window.prompt
-    vi.spyOn(window, 'prompt').mockImplementation(() => '15');
+
+    // Mock the prompt to resolve with '15'
+    mockPrompt.mockResolvedValue('15');
   });
 
-  it('Anti-regression: shows a prompt for time when completing an ANKI task', () => {
+  it('Anti-regression: shows a prompt for time when completing an ANKI task', async () => {
     const ankiTask = { id: 'anki-1', titre: 'Anki quotidien', type: 'ANKI', matiere: 'Toutes' };
     const onMarkAsDone = vi.fn();
-    
+
     render(<ExerciceCard exo={ankiTask} onMarkAsDone={onMarkAsDone} onEvaluateCM={vi.fn()} />);
-    
-    // The button for ANKI defaults to "Fait"
+
     const completeButton = screen.getByText('Fait');
     fireEvent.click(completeButton);
-    
-    expect(window.prompt).toHaveBeenCalledWith(expect.stringContaining('Temps passé sur Anki'), "");
-    
-    // Check that onMarkAsDone was called with the task and the inputted time (15)
-    // The arguments for onMarkAsDone in handleValidation are (exo, difficulte, finalMinutes)
-    // For the "Fait" button, difficulte is ""
-    expect(onMarkAsDone).toHaveBeenCalledWith(expect.objectContaining({ type: 'ANKI' }), "", 15);
+
+    expect(mockPrompt).toHaveBeenCalledWith(expect.stringContaining('Temps passé sur Anki'), '');
+
+    // Wait for the async prompt to resolve
+    await vi.waitFor(() => {
+      expect(onMarkAsDone).toHaveBeenCalledWith(expect.objectContaining({ type: 'ANKI' }), '', 15);
+    });
   });
 });

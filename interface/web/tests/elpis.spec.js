@@ -137,4 +137,118 @@ test.describe('ELPIS E2E Tests', () => {
     await expect(page.locator('input[type="time"]').first()).toBeVisible();
   });
 
+
+  // === SCÉNARIOS CRITIQUES (P0) ===
+
+  test('[CRITICAL] Flux d\'entraînement complet — Session du Jour avec tâches', async ({ page }) => {
+    // Mock orchestrateur avec des tâches simulées
+    await page.route('/api/orchestrateur**', async route => {
+      await route.fulfill({
+        json: {
+          tachesDuJour: [
+            { matiere: 'Algèbre', type: 'TD', titre: 'Série 3 — Diagonalisation' },
+            { matiere: 'Analyse', type: 'CM', titre: 'Chapitre 5 — Séries de Fourier' },
+            { matiere: 'Programmation', type: 'TP', titre: 'TP Noté — Implémentation Arbre Binaire' }
+          ],
+          tempsDispoMin: 180,
+          tempsDejaTravailleMin: 45,
+          intelligence: null
+        }
+      });
+    });
+
+    // Mock /api/cours pour que les tâches matchent
+    await page.route('/api/cours', async route => {
+      await route.fulfill({
+        json: {
+          licences: [{
+            id: 'l1',
+            semestres: [{
+              id: 's1',
+              ues: [{
+                id: 'u1',
+                matieres: [
+                  {
+                    nom: 'Algèbre',
+                    listeTD: [{ titre: 'Série 3 — Diagonalisation', nombrePratiques: 0 }],
+                    listeTP: [], listeCM: [], listeAnnales: []
+                  },
+                  {
+                    nom: 'Analyse',
+                    listeTD: [], listeTP: [],
+                    listeCM: [{ titre: 'Chapitre 5 — Séries de Fourier', jActuel: 0, repetitions: 0, tempsMoyen: 30 }],
+                    listeAnnales: []
+                  },
+                  {
+                    nom: 'Programmation',
+                    listeTD: [], listeTP: [{ titre: 'TP Noté — Implémentation Arbre Binaire', nombrePratiques: 0, etape: 1 }],
+                    listeCM: [], listeAnnales: []
+                  }
+                ]
+              }]
+            }]
+          }]
+        }
+      });
+    });
+
+    await page.goto('/');
+    await page.click('nav button:has-text("Session du Jour")');
+    await expect(page.locator('h2', { hasText: 'Session du Jour' })).toBeVisible({ timeout: 10000 });
+    const cards = page.locator('.card.glass-panel');
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
+    const actionButton = page.locator('button:has-text("Fait"), button:has-text("Bien (3)")').first();
+    await expect(actionButton).toBeVisible();
+  });
+
+  test('[CRITICAL] Coach IA — ouverture, envoi de message et réponse', async ({ page }) => {
+    await page.route('/api/chat', async route => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({ json: [] });
+      } else if (route.request().method() === 'POST') {
+        await route.fulfill({ json: { content: 'Voici une suggestion de révision pour toi.' } });
+      } else {
+        await route.fulfill({ json: {} });
+      }
+    });
+
+    await page.goto('/');
+    const coachBtn = page.locator('button[title="Ouvrir le Coach IA"]');
+    await expect(coachBtn).toBeVisible({ timeout: 5000 });
+    await coachBtn.click();
+    const sidebar = page.locator('h3:has-text("Coach ELPIS")');
+    await expect(sidebar).toBeVisible({ timeout: 5000 });
+    const input = page.locator('input[placeholder="Posez votre question..."]');
+    await expect(input).toBeVisible();
+    await input.fill('Quels cours réviser aujourd\'hui ?');
+    const sendBtn = page.locator('button:has-text("\u27a4")');
+    await sendBtn.click();
+    const typing = page.locator('text=Le coach réfléchit');
+    await expect(typing).toBeVisible({ timeout: 5000 });
+    const response = page.locator('text=Voici une suggestion de révision pour toi');
+    await expect(response).toBeVisible({ timeout: 10000 });
+  });
+
+  test('[CRITICAL] Résilience hors-ligne — détection et reconnexion', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('h2', { hasText: /Bonjour|Bon après-midi|Bonsoir/i })).toBeVisible({ timeout: 10000 });
+    await page.evaluate(() => window.dispatchEvent(new Event('offline')));
+    await expect(page.locator('h2', { hasText: /Bonjour|Bon après-midi|Bonsoir/i })).toBeVisible({ timeout: 5000 });
+    await page.evaluate(() => window.dispatchEvent(new Event('online')));
+    await page.waitForTimeout(500);
+    await expect(page.locator('h2', { hasText: /Bonjour|Bon après-midi|Bonsoir/i })).toBeVisible();
+  });
+
+  test('[CRITICAL] Gestion d\'erreur API — échec réseau ne crash pas l\'app', async ({ page }) => {
+    await page.route('/api/**', async route => {
+      await route.abort('connectionrefused');
+    });
+    await page.goto('/');
+    await page.waitForTimeout(3000);
+    const anyContent = page.locator('nav, .sidebar, .error-boundary, .app-container').first();
+    await expect(anyContent).toBeVisible({ timeout: 10000 });
+    const bodyText = await page.textContent('body');
+    expect(bodyText.length).toBeGreaterThan(50);
+  });
+
 });
