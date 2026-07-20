@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ELPIS</string>
+    <string name="title_activity_main">ELPIS</string>
+    <string name="package_name">com.elpis.app</string>
+    <string name="custom_url_scheme">com.elpis.app</string>
+</resources>

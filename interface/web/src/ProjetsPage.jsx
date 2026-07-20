@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import useStore, { useChronoStore } from './store';
 
-const API_URL = '/api';
+import { getApiUrl } from './utils/apiConfig';
 
 function ProjetsPage() {
   const { projets, setProjets, pendingTasksCount, historique } = useStore();
@@ -65,7 +65,7 @@ function ProjetsPage() {
 
     const updatedHistory = [...historique, newHistoryEntry];
     try {
-      await fetch(`${API_URL}/historique`, {
+      await fetch(`${getApiUrl()}/historique`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedHistory)

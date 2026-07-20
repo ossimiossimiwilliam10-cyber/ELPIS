@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { loadConfig, saveConfig, validateConfigSchema } = require('../moteur/config');
-const { syncToMongo } = require('../mongoAdapter');
 
 // GET current config
 router.get('/', (req, res, next) => {
@@ -26,11 +25,6 @@ router.post('/', (req, res, next) => {
       return res.status(500).json({ error: "Erreur sauvegarde configuration." });
     }
     global.dbVersion = (global.dbVersion || 0) + 1;
-    // Let async errors bubble up naturally
-    syncToMongo('config', req.body).catch(err => {
-      console.error("Erreur syncToMongo (config):", err.message);
-    });
-
     res.json({ success: true, message: "Configuration mise à jour." });
   } catch (err) {
     next(err);

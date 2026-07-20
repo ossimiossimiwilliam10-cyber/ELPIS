@@ -1,0 +1,60 @@
+Avant de te donner des chiffres, je veux être honnête sur un point important pour la suite : une partie de ce que tu demandes correspond à des données réelles et publiées (que je vais chercher et citer), et une autre partie correspond à des corrélations qui n'ont tout simplement jamais été étudiées ni publiées nulle part (la maîtrise d'exercices niveau 3 vs note, l'Ease Factor SM-2 vs note d'examen). Je vais distinguer clairement les deux plutôt que d'inventer des pourcentages à virgule qui auraient l'air sérieux sans l'être. Laisse-moi vérifier ce qui existe réellement.Voici ce que disent vraiment les données, et où je dois trancher entre fait établi et estimation raisonnée.
+
+**1. Répartition statistique des notes**
+
+Il n'existe pas de courbe de distribution publique pour la L2 SPI Strasbourg, ni même à ce niveau de granularité pour les licences scientifiques françaises en général — et ce n'est pas un trou de recherche, c'est structurel. Le guide officiel ECTS déconseille explicitement les correspondances par mention car les pratiques de notation varient énormément, non seulement d'un pays à l'autre mais aussi au sein d'un même pays, voire d'un même établissement. Aucune université française ni le ministère ne publient "X% de la promo entre 14 et 16/20" au niveau d'un semestre. Si je te donnais "le top 5% commence à 14,8/20", ce serait un chiffre inventé — et pour un outil de calibration, une fausse précision est pire qu'une fourchette honnête.
+
+Ce qui est réellement documenté :
+- L'écrémage est mesurable au niveau national : le taux de passage des néo-bacheliers en 2ème année de licence tournait autour de 47,8% à la session 2023, donc environ une moitié de la cohorte de L1 n'accède pas directement en L2 — ta promotion est déjà un échantillon "survivant".
+- Le taux de réussite en licence de la filière sciences-santé est passé de 48,3% en 2023 à 43,2% en 2024 (cohorte 2020), et à l'échelle nationale toutes filières confondues, la mention obtenue au bac reste très prédictive de la réussite ultérieure en licence.
+- Convention culturelle réelle mais non chiffrée précisément : en sciences dures françaises, 16+/20 reste statistiquement rare et 18-20 quasi inexistant — beaucoup d'enseignants calibrent leur barème pour que la moyenne de promo tombe autour de 10-12.
+
+Les seuils de mention (10-12 P, 12-14 AB, 14-16 B, 16-20 TB) sont eux bien réels et standardisés. Ce qui manque, c'est la proportion d'étudiants dans chaque bande — simplement non publiée.
+
+**2. Corrélation difficulté des exercices / note finale**
+
+Aucune étude académique ne relie une échelle de difficulté à 5 niveaux à une note finale en sciences de l'ingénieur. Ce n'est pas une lacune de recherche, c'est un mapping que personne n'a formalisé — la difficulté perçue d'un exercice dépend du correcteur, du sujet, de l'année.
+
+Ce que je peux t'offrir est un raisonnement pédagogique, pas une statistique : les examens français incluent presque toujours des questions au-delà de l'application directe, donc une maîtrise limitée au niveau 1-2 plafonne souvent près de la moyenne. Le niveau 3 couvre généralement le gros du barème d'un TD bien construit — souvent suffisant pour une zone passable/assez bien confortable. Le niveau 4 devient nécessaire pour basculer en zone "bien", car les questions de réflexion discriminent les bons des très bons. Le niveau 5 (annales) sépare souvent "bien" de "très bien", parce que les annales reproduisent le style réel de l'examen, contrairement aux TD parfois plus didactiques que représentatifs.
+
+C'est une inférence, pas un fait mesuré. Ta vraie calibration est à portée de main : compare rétrospectivement, pour tes semestres passés, le niveau de difficulté que tu maîtrisais vs. la note obtenue. Même 4-5 points de données personnelles valent mieux qu'une moyenne nationale inventée.
+
+**3. SM-2, rétention, et pondération CM/TD**
+
+Sur l'Ease Factor spécifiquement : aucune étude ne le corrèle à une note d'examen universitaire. Mieux — les études existantes sur Anki en contexte académique (essentiellement en médecine américaine, où l'usage est massivement documenté) vont dans une direction qui devrait te faire reconsidérer ta variable B. Une étude de cohorte a montré que les utilisateurs d'Anki obtenaient des scores significativement plus élevés sur quatre examens, avec des écarts de 6,2 à 12,9 points de pourcentage par rapport aux non-utilisateurs — mais elle précise aussi que les marqueurs statistiques internes spécifiques d'Anki montraient peu de corrélation avec la performance aux examens. Autrement dit : le volume et la régularité d'usage prédisent la réussite, pas les paramètres fins de l'algorithme. Pour ton modèle, B devrait donc probablement représenter un taux de rappel mesuré (% de cartes correctement rappelées) plutôt que l'EF brut, qui est un paramètre d'implémentation, pas une mesure de connaissance.
+
+Sur la pondération CM/TD : il n'y a pas de ratio national standard en SPI, et c'est volontaire — chaque université fixe ses coefficients par UE dans son propre document MECC. Pour ton cas précis, c'est encore plus spécifique : des ressources résumant le MECC 2025-2026 indiquent que le parcours Santé à Strasbourg fonctionne en Évaluation Continue Intégrale, sans examen terminal unique mais avec une série d'évaluations réparties sur toute l'année, ce qui récompense la régularité plutôt qu'un pari sur un partiel final. Ça change la question : ce n'est pas "40% CM / 60% TD" à un instant T, c'est une accumulation continue. Tu as déjà manipulé le cadre MECC pour tes calculs de S2 — c'est là qu'il faut vérifier directement la pondération réelle par UE, pas dans une moyenne nationale qui n'existe pas.
+
+**4. Formule proposée (modèle exploratoire, pas une donnée validée)**
+
+Soit A ∈ [1,5] la difficulté moyenne maîtrisée, et B ∈ [0,1] le taux de rétention normalisé.
+
+Plafond potentiel à rétention parfaite (rendements décroissants — l'exposant <1 reflète la compression réelle des notes françaises en haut de l'échelle) :
+G_base(A) = 7 + 10 × ((A−1)/4)^0,6
+
+Modulation par la rétention (un exercice maîtrisé sans rappel théorique fiable s'effondre sous pression d'examen) :
+R(B) = 0,5 + 0,55 × B
+
+Note estimée : G(A,B) = min(20, G_base(A) × R(B))
+
+| A | B | G_base | R | Note estimée |
+|---|---|--------|---|--------------|
+| 1,5 | 0,5 | 9,9 | 0,78 | ≈ 7,7 (échec) |
+| 3 | 0,7 | 13,6 | 0,89 | ≈ 12,0 (assez bien) |
+| 4 | 0,85 | 15,4 | 0,97 | ≈ 14,9 (bien) |
+| 5 | 0,3 | 17,0 | 0,67 | ≈ 11,3 (assez bien — la rétention faible plombe tout) |
+| 5 | 0,95 | 17,0 | 1,02 | ≈ 17,4 (très bien) |
+
+Percentile (table illustrative, à corriger avec de vraies données de promo dès que tu en captes) :
+
+| Note estimée | Percentile illustratif |
+|---|---|
+| ≥ 17 | Top ~3% |
+| 15,5–17 | Top ~3-8% |
+| 14–15,5 | Top ~8-20% |
+| 12,5–14 | Top ~20-35% |
+| 11–12,5 | Top ~35-55% (médiane) |
+| 9–11 | Top ~55-80% |
+| < 9 | bottom ~20% |
+
+Deux points pour que ce modèle devienne vraiment le tien : tes constantes (7, 10, 0,6, 0,5, 0,55) sont à refitter dès que tu as 5-10 vrais points (A, B, note réelle) — une régression simple suffit, et tu sais déjà coder ça en Python. Et A et B seront probablement corrélés entre eux en pratique (qui maîtrise les annales a généralement aussi bien retenu la théorie) : une régression multivariée sur tes vraies données fera mieux que traiter les deux variables comme indépendantes, ce que ce modèle de départ fait par simplicité.

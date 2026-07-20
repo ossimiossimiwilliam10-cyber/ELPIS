@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { getDb } = require('../mongoAdapter');
 
 const TELEMETRY_FILE = path.join(__dirname, '..', '..', 'data', 'telemetry.json');
 
@@ -24,20 +23,13 @@ async function logSession(sessionData, aiStateBefore, aiStateAfter) {
       duree: sessionData.dureeMinutes,
       score: sessionData.scoreObtenu,
       ai_context: {
-        before: aiStateBefore, // ex: projectedScore avant la session
-        after: aiStateAfter    // ex: projectedScore après la session
+        before: aiStateBefore,
+        after: aiStateAfter
       }
     };
 
     data.sessions.push(entry);
     fs.writeFileSync(TELEMETRY_FILE, JSON.stringify(data, null, 2), 'utf-8');
-
-    // Tentative de push asynchrone vers Mongo si dispo (Fire and forget)
-    const db = getDb();
-    if (db) {
-      db.collection('telemetry_sessions').insertOne(entry).catch(err => console.error("Erreur Mongo Télémétrie:", err));
-    }
-
   } catch (error) {
     console.error("Erreur d'écriture de télémétrie session:", error);
   }
@@ -53,18 +45,12 @@ async function logRecommendationAction(actionType, taskContext) {
     const entry = {
       timestamp: new Date().toISOString(),
       type: 'recommendation_action',
-      action: actionType, // 'accepted', 'ignored', 'skipped'
-      task_context: taskContext // ex: { matiere: 'Maths', isExploration: true, prioScore: 8.5 }
+      action: actionType,
+      task_context: taskContext
     };
 
     data.actions.push(entry);
     fs.writeFileSync(TELEMETRY_FILE, JSON.stringify(data, null, 2), 'utf-8');
-
-    const db = getDb();
-    if (db) {
-      db.collection('telemetry_actions').insertOne(entry).catch(err => console.error("Erreur Mongo Télémétrie:", err));
-    }
-
   } catch (error) {
     console.error("Erreur d'écriture de télémétrie action:", error);
   }

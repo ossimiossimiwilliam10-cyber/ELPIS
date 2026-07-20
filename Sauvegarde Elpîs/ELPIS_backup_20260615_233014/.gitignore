@@ -1,0 +1,15 @@
+# Fichiers de compilation
+build/
+*.exe
+*.o
+
+# Fichiers de configuration générés localement (pour ne pas écraser les données des autres en équipe)
+*config.json
+
+# Dépendances Node (pour la future interface)
+node_modules/
+.env
+
+# Données personnelles (PDFs et suivi)
+fiches_revision/
+espoir_cours.json

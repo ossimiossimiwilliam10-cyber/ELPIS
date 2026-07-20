@@ -1,3 +1,4 @@
+import { getApiUrl } from './utils/apiConfig';
 import { createRxDatabase, addRxPlugin } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
@@ -112,10 +113,10 @@ export const getDb = async () => {
 export const syncFromBackend = async (db) => {
     try {
         const [confRes, coursRes, histRes, projRes] = await Promise.all([
-            fetch('/api/config'),
-            fetch('/api/cours'),
-            fetch('/api/historique'),
-            fetch('/api/projets')
+            fetch(`${getApiUrl()}/config`),
+            fetch(`${getApiUrl()}/cours`),
+            fetch(`${getApiUrl()}/historique`),
+            fetch(`${getApiUrl()}/projets`)
         ]);
 
         if (confRes.ok) {

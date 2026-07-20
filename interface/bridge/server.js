@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 // Initialisations & Adapters
-const { initMongo, syncFromMongoToLocal } = require('./mongoAdapter');
 const { startPythonAuditAgent } = require('./services/auditAgent');
 const globalErrorHandler = require('./middleware/errorHandler');
 
@@ -44,7 +43,7 @@ app.use(helmet({
 
 // Middleware: CORS
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`],
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`, 'http://localhost', 'capacitor://localhost'],
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
@@ -141,15 +140,9 @@ app.use(globalErrorHandler);
 
 // ===================== SERVER START =====================
 async function startServer() {
-  const isMongoEnabled = await initMongo();
-
-  if (isMongoEnabled) {
-    await syncFromMongoToLocal();
-  }
-
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`ELPIS Bridge démarré sur https://0.0.0.0:${PORT}`);
-    console.log(`Moteur Node.js natif — plus de dépendance C++ !`);
+    console.log(`ELPIS Bridge démarré sur http://localhost:${PORT}`);
+    console.log(`Moteur Node.js 100% local (SQLite) — zéro dépendance cloud.`);
     startPythonAuditAgent(ROOT_DIR);
   });
 }

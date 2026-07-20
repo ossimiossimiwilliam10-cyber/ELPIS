@@ -218,7 +218,7 @@ function saveCours(coursConfig) {
 
       for (const licence of cleaned.licences) {
         const lid = licence.id || crypto.randomUUID();
-        insLicence.run(lid, licence.nom, licence.archived ? 1 : 0, licence.targetGrade || null, licence.targetRank || null);
+        insLicence.run(lid, licence.nom, licence.archived ? 1 : 0, licence.targetGrade ?? null, licence.targetRank ?? null);
 
         for (const semestre of (licence.semestres || [])) {
           const sid = semestre.id || crypto.randomUUID();

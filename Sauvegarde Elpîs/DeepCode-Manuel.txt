@@ -1,0 +1,128 @@
+================================================================================
+                    DEEPCODE - MANUEL D'UTILISATION
+                         Version 1.0 - 04/06/2026
+================================================================================
+
+【 SOMMAIRE 】
+  1. Outils installés
+  2. Commandes utiles au quotidien
+  3. Lancer un terminal administrateur (3 méthodes)
+  4. Réinstaller Windows depuis la clé USB
+  5. Annuler / désinstaller
+
+================================================================================
+1. OUTILS INSTALLÉS
+================================================================================
+
+  Outil         Version     Usage
+  ─────────     ───────     ──────────────────────────────────────────
+  jq            1.8.1       Parser JSON en ligne de commande
+  rg (ripgrep)  15.1.0      Recherche texte ultra-rapide dans fichiers
+  playwright    1.60        Navigateur headless Chromium
+  7-Zip         26.01       Compression/décompression tous formats
+  gsudo         2.6.1       Élévation admin (équivalent Windows de sudo)
+  GitHub Token  5000 req/h  Accès API GitHub sans limite
+
+  Fichiers créés :
+    ~/.bashrc               Configuration shell persistante
+    ~/.github_token         Token GitHub (5000 req/h)
+    ~/scripts/*             Scripts utilitaires
+    Bureau\Terminal Admin.bat  Raccourci terminal admin sans popup
+
+================================================================================
+2. COMMANDES UTILES AU QUOTIDIEN
+================================================================================
+
+  ── Élévation admin ──────────────────────────────────────────────────
+
+    gsudo <commande>        Exécute une commande en admin
+    gsudo cmd               Ouvre un terminal Windows en admin
+    gsudo powershell        Ouvre PowerShell en admin
+
+  ── Recherche ────────────────────────────────────────────────────────
+
+    rg "texte" dossier/     Cherche "texte" dans tous les fichiers
+    rg -l "texte"           Affiche uniquement les noms de fichiers
+    rg --type-add 'web:*.js' -t web "function"   Cherche dans fichiers .js
+
+  ── API / JSON ───────────────────────────────────────────────────────
+
+    curl -s URL | jq .                    Formate du JSON lisible
+    curl -s URL | jq -r '.champ'         Extrait un champ précis
+    curl -s URL | jq '.[] | .nom'        Parcourt un tableau
+
+  ── Archives ─────────────────────────────────────────────────────────
+
+    7z x archive.zip -odossier/          Extrait dans dossier/
+    7z a archive.7z dossier/             Compresse en .7z
+
+  ── Tâche planifiée admin ────────────────────────────────────────────
+
+    cmd //c "schtasks /run /tn DeepCodeAdminTerminal"
+        Lance un nouveau terminal Git Bash en admin (zéro popup)
+
+================================================================================
+3. LANCER UN TERMINAL ADMINISTRATEUR
+================================================================================
+
+  Méthode 1 ── Raccourci Bureau (recommandé, zéro popup)
+  ──────────────────────────────────────────────────────────
+  1. Double-clic sur "Terminal Admin.bat" sur le Bureau
+  2. Un terminal Git Bash s'ouvre directement en admin
+  3. Toutes les commandes dans ce terminal héritent des droits admin
+
+  Méthode 2 ── Manuel (une popup)
+  ──────────────────────────────────────────────────────────
+  1. Clic droit sur l'icône Git Bash
+  2. "Exécuter en tant qu'administrateur"
+  3. Accepter la popup UAC
+
+  Méthode 3 ── gsudo dans le terminal actuel
+  ──────────────────────────────────────────────────────────
+  > gsudo cmd              (une popup, puis plus rien pendant 12h)
+  > gsudo <commande>
+
+================================================================================
+4. RÉINSTALLER WINDOWS DEPUIS LA CLÉ USB
+================================================================================
+
+  ⚠ Prérequis : Clé USB d'au moins 8 Go (sera EFFACÉE entièrement)
+
+  Étapes :
+  1. Insérer la clé USB
+  2. Redémarrer le PC
+  3. Au démarrage, appuyer sur F2/F12/DEL/Supr (varie selon le PC)
+     → Touches courantes : F12 (Dell), F9 (HP), F2 (Acer/Asus), Option (Mac)
+  4. Dans le menu Boot, choisir la clé USB
+  5. Suivre l'assistant d'installation Windows
+  6. Choisir "Personnalisé" → sélectionner le disque → "Suivant"
+
+  Note : L'installation conserve tes fichiers personnels si tu ne
+  formates PAS le disque (option "Conserver les fichiers personnels").
+
+================================================================================
+5. ANNULER / DÉSINSTALLER
+================================================================================
+
+  ── Supprimer la tâche planifiée ─────────────────────────────────────
+  > gsudo schtasks /delete /tn DeepCodeAdminTerminal /f
+
+  ── Supprimer le raccourci Bureau ────────────────────────────────────
+  Supprimer manuellement "Terminal Admin.bat" du Bureau
+
+  ── Supprimer gsudo ──────────────────────────────────────────────────
+  > winget uninstall gerardog.gsudo
+
+  ── Supprimer le token GitHub ────────────────────────────────────────
+  > rm ~/.github_token
+  > Retirer la ligne dans ~/.bashrc
+
+  ── Nettoyer les scripts ─────────────────────────────────────────────
+  > rm -rf ~/scripts/
+
+  ── Restaurer le .bashrc d'origine ───────────────────────────────────
+  > rm ~/.bashrc  (ou éditer pour retirer les lignes ajoutées)
+
+================================================================================
+                        FIN DU MANUEL
+================================================================================

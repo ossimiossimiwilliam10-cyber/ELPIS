@@ -5,8 +5,6 @@ const path = require('path');
 const { spawn } = require('child_process');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
-const { getDb } = require('../mongoAdapter');
-const { GridFSBucket } = require('mongodb');
 
 const ROOT_DIR = path.resolve(__dirname, '..', '..', '..');
 const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
@@ -113,17 +111,8 @@ router.post('/upload/pdf', (req, res, next) => {
       const ext = path.extname(req.file.originalname);
       const filename = 'doc-' + uniqueSuffix + ext;
 
-      const db = getDb();
-      if (db) {
-        const bucket = new GridFSBucket(db, { bucketName: 'documents' });
-        const uploadStream = bucket.openUploadStream(filename, {
-          contentType: req.file.mimetype
-        });
-        uploadStream.end(req.file.buffer);
-      } else {
-        if (!fs.existsSync(DOCUMENTS_DIR)) fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
-        fs.writeFileSync(path.join(DOCUMENTS_DIR, filename), req.file.buffer);
-      }
+      if (!fs.existsSync(DOCUMENTS_DIR)) fs.mkdirSync(DOCUMENTS_DIR, { recursive: true });
+      fs.writeFileSync(path.join(DOCUMENTS_DIR, filename), req.file.buffer);
 
       const url = `/api/documents/${filename}`;
 
@@ -156,26 +145,13 @@ router.post('/upload/pdf', (req, res, next) => {
   });
 });
 
-router.get('/documents/:filename', async (req, res, next) => {
+router.get('/documents/:filename', (req, res, next) => {
   try {
     const filename = req.params.filename;
-    const db = getDb();
-
-    if (db) {
-      const bucket = new GridFSBucket(db, { bucketName: 'documents' });
-      const files = await bucket.find({ filename }).toArray();
-      if (files.length > 0) {
-        res.set('Content-Type', files[0].contentType || 'application/pdf');
-        const downloadStream = bucket.openDownloadStreamByName(filename);
-        return downloadStream.pipe(res);
-      }
-    }
-
     const localPath = path.join(DOCUMENTS_DIR, filename);
     if (fs.existsSync(localPath)) {
       return res.sendFile(localPath);
     }
-
     res.status(404).json({ error: "Fichier non trouvé" });
   } catch (err) {
     next(err);
@@ -189,7 +165,9 @@ router.post('/shutdown', (req, res, next) => {
     }
     const origin = req.get('origin') || req.get('referer') || '';
     const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`];
-    const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';
+    const clientIp = req.ip || req.socket?.remoteAddress || '';
+    const isLocalhost = ['127.0.0.1', '::1', '::ffff:127.0.0.1', '::ffff:127.0.0.1'].includes(clientIp)
+      || clientIp === '::1' || clientIp.startsWith('127.');
 
     if (!isLocalhost && !allowedOrigins.some(o => origin.startsWith(o))) {
       return res.status(403).json({ error: "Arrêt non autorisé depuis cette origine." });

@@ -1,0 +1,685 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import useStore from './store';
+import MarkdownModal from './MarkdownModal';
+
+// Séquence complète de la méthode des J sur 6 ans
+const J_SEQUENCE = [0, 1, 3, 7, 14, 30, 60, 90, 180, 270, 365, 547, 730, 1095, 1460, 1825, 2190];
+
+// Deep clone helper
+const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
+
+// Composant utilitaire : Affiche un nom + bouton renommer
+function EditableLabel({ value, onRename, placeholder, style }) {
+  const handleRename = () => {
+    const newName = window.prompt("Nouveau nom :", value || '');
+    if (newName !== null && newName.trim() !== '') {
+      onRename(newName.trim());
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, ...style }}>
+      <span title={value} style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+        {value || <em style={{color:'var(--text-secondary)'}}>{placeholder}</em>}
+      </span>
+      <button 
+        onClick={handleRename} 
+        style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.9rem', padding:'0.2rem', flexShrink: 0}} 
+        title="Renommer"
+      >
+        ✏️
+      </button>
+    </div>
+  );
+}
+
+// Composant utilitaire : Affiche un texte éditable (notes/mémos) avec bouton
+function EditableNote({ value, onClick, placeholder }) {
+  return (
+    <div 
+      onClick={onClick}
+      style={{
+        padding:'0.3rem', fontSize:'0.75rem', 
+        background: 'transparent', border: '1px dashed rgba(255,255,255,0.1)', 
+        color: 'var(--text-secondary)', borderRadius: '4px', cursor: 'pointer',
+        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+      }}
+      title="Cliquer pour modifier"
+    >
+      {value || <em>{placeholder}</em>}
+    </div>
+  );
+}
+
+function CoursPage() {
+  const { coursConfig, setCoursConfig } = useStore();
+  const [configLocal, setConfigLocal] = useState(() => deepClone(coursConfig || { licences: [] }));
+  const [isScanning, setIsScanning] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
+  const [activeSemestreIndex, setActiveSemestreIndex] = useState(0);
+  const [collapsedUEs, setCollapsedUEs] = useState({});
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', initialValue: '', onSave: null });
+
+  const toggleUE = (lIndex, sIndex, uIndex) => {
+    const key = `${lIndex}-${sIndex}-${uIndex}`;
+    setCollapsedUEs(prev => ({...prev, [key]: !prev[key]}));
+  };
+
+  // Resynchroniser le state local quand le parent change (ex: import backup)
+  useEffect(() => {
+    if (coursConfig) {
+      setConfigLocal(deepClone(coursConfig));
+    }
+  }, [coursConfig]);
+
+  // Écouter la recherche globale (Ctrl+K) pour naviguer vers l'élément trouvé
+  useEffect(() => {
+    const handleSearchSelect = (e) => {
+      const item = e.detail;
+      if (item.lIndex !== undefined) {
+        setActiveLicenceIndex(item.lIndex);
+        setActiveSemestreIndex(item.sIndex || 0);
+        if (item.uIndex !== undefined) {
+          // Déployer l'UE cible
+          const key = `${item.lIndex}-${item.sIndex || 0}-${item.uIndex}`;
+          setCollapsedUEs(prev => ({ ...prev, [key]: false }));
+        }
+      }
+    };
+    window.addEventListener('elpisSearchSelect', handleSearchSelect);
+    return () => window.removeEventListener('elpisSearchSelect', handleSearchSelect);
+  }, []);
+
+  // ---- Recherche ----
+  const matchesSearch = (str) => {
+    if (!searchTerm.trim()) return true;
+    return str?.toLowerCase().includes(searchTerm.toLowerCase());
+  };
+  const ueMatchesSearch = (ue) => matchesSearch(ue.nom) || ue.matieres?.some(m => matiereMatchesSearch(m));
+  const matiereMatchesSearch = (m) => {
+    if (matchesSearch(m.nom)) return true;
+    if (m.listeCM?.some(cm => matchesSearch(cm.titre) || matchesSearch(cm.notes))) return true;
+    if (m.listeTD?.some(td => matchesSearch(td.titre) || matchesSearch(td.notes))) return true;
+    if (m.listeTP?.some(tp => matchesSearch(tp.titre) || matchesSearch(tp.notes))) return true;
+    return false;
+  };
+  const semestreMatchesSearch = (semestre) => matchesSearch(semestre.nom) || semestre.ues?.some(ue => ueMatchesSearch(ue));
+  const licenceMatchesSearch = (licence) => matchesSearch(licence.nom) || licence.semestres?.some(s => semestreMatchesSearch(s));
+
+  // ---- Helpers de mutation (toujours deep clone) ----
+  const updateField = (path, value) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      let target = newConf;
+      for (let i = 0; i < path.length - 1; i++) {
+        target = target[path[i]];
+      }
+      target[path[path.length - 1]] = value;
+      setCoursConfig(newConf); // Auto-save via Zustand debounce
+      return newConf;
+    });
+  };
+
+  const addLicence = () => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      if (!newConf.licences) newConf.licences = [];
+      newConf.licences.push({ nom: `Licence ${newConf.licences.length + 1}`, semestres: [] });
+      setCoursConfig(newConf); // Auto-save
+      return newConf;
+    });
+    setActiveLicenceIndex(configLocal.licences ? configLocal.licences.length : 0);
+    setActiveSemestreIndex(0);
+  };
+
+  const deleteLicence = (lIndex) => {
+    if (window.confirm("Supprimer cette licence et tous ses semestres ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences.splice(lIndex, 1);
+        setCoursConfig(newConf); // Auto-save
+        return newConf;
+      });
+      if (activeLicenceIndex === lIndex) {
+        setActiveLicenceIndex(Math.max(0, lIndex - 1));
+        setActiveSemestreIndex(0);
+      } else if (activeLicenceIndex > lIndex) {
+        setActiveLicenceIndex(activeLicenceIndex - 1);
+      }
+    }
+  };
+
+  const addSemestre = (lIndex) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      if (!newConf.licences[lIndex].semestres) newConf.licences[lIndex].semestres = [];
+      newConf.licences[lIndex].semestres.push({ nom: `Semestre ${newConf.licences[lIndex].semestres.length + 1}`, ues: [] });
+      setCoursConfig(newConf); // Auto-save
+      return newConf;
+    });
+    setActiveSemestreIndex(configLocal.licences[lIndex].semestres ? configLocal.licences[lIndex].semestres.length : 0);
+  };
+
+  const deleteSemestre = (lIndex, sIndex) => {
+    if (window.confirm("Supprimer ce semestre et toutes ses UEs ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences[lIndex].semestres.splice(sIndex, 1);
+        setCoursConfig(newConf); // Auto-save
+        return newConf;
+      });
+      if (activeSemestreIndex === sIndex) {
+        setActiveSemestreIndex(Math.max(0, sIndex - 1));
+      } else if (activeSemestreIndex > sIndex) {
+        setActiveSemestreIndex(activeSemestreIndex - 1);
+      }
+    }
+  };
+
+  const addUE = (lIndex, sIndex) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      if (!newConf.licences[lIndex].semestres[sIndex].ues) newConf.licences[lIndex].semestres[sIndex].ues = [];
+      newConf.licences[lIndex].semestres[sIndex].ues.push({ nom: "Nouvelle UE", ects: 0, matieres: [] });
+      return newConf;
+    });
+  };
+
+  const deleteUE = (lIndex, sIndex, uIndex) => {
+    if (window.confirm("Supprimer cette UE et toutes ses matières ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences[lIndex].semestres[sIndex].ues.splice(uIndex, 1);
+        setCoursConfig(newConf);
+        return newConf;
+      });
+    }
+  };
+
+  const addMatiere = (lIndex, sIndex, uIndex) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      const newMatiere = { nom: "Nouvelle Matière", listeCM: [], listeTD: [], listeTP: [] };
+      if(!newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres) newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres = [];
+      newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres.push(newMatiere);
+      setCoursConfig(newConf);
+      return newConf;
+    });
+  };
+
+  const deleteMatiere = (lIndex, sIndex, uIndex, mIndex) => {
+    if (window.confirm("Supprimer cette matière (et ses CM/TD/TP) ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres.splice(mIndex, 1);
+        setCoursConfig(newConf);
+        return newConf;
+      });
+    }
+  };
+
+  const addCM = (lIndex, sIndex, uIndex, mIndex) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      const mat = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
+      if (!mat.listeCM) mat.listeCM = [];
+      const newCM = { titre: "Nouveau CM", jActuel: 0, derniereRevision: "" };
+      mat.listeCM.push(newCM);
+      setCoursConfig(newConf);
+      return newConf;
+    });
+  };
+
+  const deleteCM = (lIndex, sIndex, uIndex, mIndex, cmIndex) => {
+    if (window.confirm("Supprimer ce CM ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM.splice(cmIndex, 1);
+        setCoursConfig(newConf);
+        return newConf;
+      });
+    }
+  };
+
+  const addTDManuel = (lIndex, sIndex, uIndex, mIndex) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      const m = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
+      if(!m.listeTD) m.listeTD = [];
+      m.listeTD.push({ titre: "Nouveau TD Manuel", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      setCoursConfig(newConf);
+      return newConf;
+    });
+  };
+
+  const deleteTD = (lIndex, sIndex, uIndex, mIndex, tdIndex) => {
+    if (window.confirm("Supprimer ce TD ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeTD.splice(tdIndex, 1);
+        setCoursConfig(newConf);
+        return newConf;
+      });
+    }
+  };
+
+  const addTPManuel = (lIndex, sIndex, uIndex, mIndex) => {
+    setConfigLocal(prev => {
+      const newConf = deepClone(prev);
+      const m = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
+      if(!m.listeTP) m.listeTP = [];
+      m.listeTP.push({ titre: "Nouveau TP Manuel", dernierePratique: "", nombrePratiques: 0, notes: "" });
+      setCoursConfig(newConf);
+      return newConf;
+    });
+  };
+
+  const deleteTP = (lIndex, sIndex, uIndex, mIndex, tpIndex) => {
+    if (window.confirm("Supprimer ce TP ?")) {
+      setConfigLocal(prev => {
+        const newConf = deepClone(prev);
+        newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeTP.splice(tpIndex, 1);
+        setCoursConfig(newConf);
+        return newConf;
+      });
+    }
+  };
+
+
+
+  const getNextReviewDate = (cm) => {
+    if (!cm.derniereRevision) return "Aujourd'hui";
+    if (cm.jActuel === 0) return "Aujourd'hui";
+    const date = new Date(cm.derniereRevision);
+    date.setDate(date.getDate() + cm.jActuel);
+    const diffTime = date.getTime() - new Date().getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 0) return "Aujourd'hui";
+    if (diffDays === 1) return "Demain";
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+  };
+
+  const handleFileUpload = async (lIndex, sIndex, uIndex, mIndex, file, type) => {
+    if (!file) return;
+    setIsScanning(true);
+    const formData = new FormData();
+    formData.append('pdfFile', file);
+    try {
+      const res = await fetch('/api/scan-pdf', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success && data.exercises) {
+        setConfigLocal(prev => {
+          const newConf = deepClone(prev);
+          const m = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex];
+          if (type === 'TD') {
+            if (!m.listeTD) m.listeTD = [];
+            m.listeTD.push(...data.exercises);
+          } else if (type === 'TP') {
+            if (!m.listeTP) m.listeTP = [];
+            m.listeTP.push(...data.exercises);
+          }
+          
+          setCoursConfig(newConf);
+          return newConf;
+        });
+        alert(`${data.exercises.length} exercices trouvés et ajoutés !`);
+      } else {
+        alert("Erreur serveur : " + data.error);
+      }
+    } catch(err) {
+      alert("Erreur lors de l'upload : " + err.message);
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
+  return (
+    <div className="cours-page">
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'2rem', flexWrap:'wrap', gap:'1rem'}}>
+        <div>
+          <h2 style={{margin:0}}>Bibliothèque de Cours</h2>
+          <p style={{color:'var(--text-secondary)', marginTop:'0.5rem'}}>Configure ton année scolaire : Semestres, UEs, et Matières.</p>
+        </div>
+        <div style={{display:'flex', gap:'1rem', alignItems: 'center', flexWrap:'wrap'}}>
+          <input 
+            type="text"
+            placeholder="🔍 Rechercher..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid var(--bg-tertiary)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', width: '220px'}}
+          />
+          <button onClick={addLicence} className="btn-secondary" style={{padding:'0.4rem 0.8rem'}}>+ Licence</button>
+        </div>
+      </div>
+
+      <div style={{color:'var(--text-secondary)', fontSize:'0.9rem', fontStyle:'italic', marginTop:'1rem', textAlign:'right'}}>
+        Sauvegarde automatique activée
+      </div>
+
+      <div className="licence-tabs" style={{display:'flex', gap:'1.5rem', marginBottom:'1rem', borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.5rem'}}>
+        {configLocal.licences?.map((licence, lIndex) => (
+          <button 
+            key={`lic-${lIndex}`} 
+            className={`tab-btn ${activeLicenceIndex === lIndex ? 'active' : ''}`}
+            onClick={() => { setActiveLicenceIndex(lIndex); setActiveSemestreIndex(0); }}
+            style={{fontSize:'1.1rem', fontWeight: activeLicenceIndex === lIndex ? 'bold' : 'normal'}}
+          >
+            {licence.nom}
+          </button>
+        ))}
+        <button className="tab-btn" onClick={addLicence} style={{color:'var(--accent-primary)', fontSize:'1.1rem'}}>+ Licence</button>
+      </div>
+
+      {configLocal.licences && configLocal.licences[activeLicenceIndex] && (() => {
+        const lIndex = activeLicenceIndex;
+        const licence = configLocal.licences[lIndex];
+        if (!licenceMatchesSearch(licence)) return null;
+        
+        return (
+          <div key={`l-${lIndex}`}>
+            {/* === LICENCE HEADER === */}
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
+              <EditableLabel 
+                value={licence.nom} 
+                onRename={(v) => updateField(['licences', lIndex, 'nom'], v)}
+                placeholder="Nom de la licence"
+                style={{fontSize:'1.8rem', fontWeight:'bold', flex: 1}}
+              />
+              <button onClick={() => deleteLicence(lIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1.2rem'}} title="Supprimer la licence">🗑️</button>
+            </div>
+
+            <div className="semestre-tabs" style={{display:'flex', gap:'1.5rem'}}>
+              {licence.semestres?.map((semestre, sIndex) => (
+                <button 
+                  key={`tab-${sIndex}`} 
+                  className={`tab-btn ${activeSemestreIndex === sIndex ? 'active' : ''}`}
+                  onClick={() => setActiveSemestreIndex(sIndex)}
+                >
+                  {semestre.nom}
+                </button>
+              ))}
+              <button className="tab-btn" onClick={() => addSemestre(lIndex)} style={{color:'var(--accent-primary)'}}>+ Semestre</button>
+            </div>
+
+            <div style={{display:'flex', flexDirection:'column', gap:'2rem', marginTop:'1.5rem'}}>
+              {licence.semestres && licence.semestres[activeSemestreIndex] && (() => {
+                const sIndex = activeSemestreIndex;
+                const semestre = licence.semestres[sIndex];
+                if (!semestreMatchesSearch(semestre)) return null;
+                return (
+                <div key={`s-${sIndex}`} className="card glass-panel" style={{borderLeft:'4px solid var(--accent-primary)'}}>
+                  
+                  {/* === SEMESTRE HEADER === */}
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
+                    <EditableLabel 
+                      value={semestre.nom} 
+                      onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'nom'], v)}
+                      placeholder="Nom du semestre"
+                      style={{fontSize:'1.4rem', fontWeight:'bold', flex: 1}}
+                    />
+                    <div style={{display:'flex', gap:'0.5rem', marginLeft:'1rem'}}>
+                      <button className="btn-secondary" onClick={() => addUE(lIndex, sIndex)}>+ UE</button>
+                      <button onClick={() => deleteSemestre(lIndex, sIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1.2rem'}} title="Supprimer">🗑️</button>
+                    </div>
+                  </div>
+
+                  {/* === UES === */}
+                  <div style={{display:'flex', flexDirection:'column', gap:'1.5rem', marginLeft:'1rem'}}>
+                    {semestre.ues?.map((ue, uIndex) => {
+                      if (!ueMatchesSearch(ue)) return null;
+                      const isCollapsed = collapsedUEs[`${lIndex}-${sIndex}-${uIndex}`];
+                      
+                      let ueTotalExos = 0;
+                      let ueTotalCMs = 0;
+                      ue.matieres?.forEach(m => {
+                        ueTotalCMs += (m.listeCM?.length || 0);
+                        ueTotalExos += (m.listeTD?.length || 0) + (m.listeTP?.length || 0);
+                      });
+
+                      return (
+                      <div key={`u-${sIndex}-${uIndex}`} style={{background:'rgba(255,255,255,0.02)', padding:'1.5rem', borderRadius:'12px', border:'1px solid var(--bg-tertiary)'}}>
+                        
+                        {/* UE HEADER */}
+                        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: isCollapsed ? '0' : '1rem'}}>
+                          <div style={{display:'flex', alignItems:'center', gap:'0.75rem', flex: 1}}>
+                            <button 
+                              className={`ue-accordion-btn ${!isCollapsed ? 'open' : ''}`} 
+                              onClick={() => toggleUE(lIndex, sIndex, uIndex)}
+                              title={isCollapsed ? "Développer" : "Réduire"}
+                            >
+                              🔽
+                            </button>
+                            <button onClick={() => deleteUE(lIndex, sIndex, uIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1.1rem'}} title="Supprimer l'UE">🗑️</button>
+                            <EditableLabel 
+                              value={ue.nom}
+                              onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'nom'], v)}
+                              placeholder="Nom de l'UE"
+                              style={{fontWeight:'bold', fontSize:'1.1rem', flex: 1}}
+                            />
+                            <div style={{display:'flex', alignItems:'center', gap:'0.3rem', flexShrink: 0}}>
+                              <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>ECTS:</span>
+                              <input 
+                                type="number" 
+                                value={ue.ects || 0} 
+                                onChange={(e) => {
+                                  let val = parseInt(e.target.value) || 0;
+                                  val = Math.min(60, Math.max(0, val));
+                                  updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'ects'], val);
+                                }}
+                                style={{width:'60px', padding:'0.3rem'}}
+                                title="Crédits ECTS (0-60)"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
+                            {isCollapsed && (
+                              <span style={{fontSize:'0.85rem', color:'var(--text-secondary)'}}>
+                                {ue.matieres?.length || 0} Matière(s) • {ueTotalCMs} CM(s) • {ueTotalExos} Exercice(s)
+                              </span>
+                            )}
+                            <button className="btn-secondary" style={{fontSize:'0.9rem'}} onClick={() => { if(isCollapsed) toggleUE(lIndex, sIndex, uIndex); addMatiere(lIndex, sIndex, uIndex); }}>+ Matière</button>
+                          </div>
+                        </div>
+
+                        {/* MATIERES GRID (Accordion Content) */}
+                        <div className={`ue-accordion-content ${isCollapsed ? 'closed' : 'open'}`}>
+                          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(350px, 1fr))', gap:'1rem'}}>
+                          {ue.matieres?.map((matiere, mIndex) => {
+                            if (!matiereMatchesSearch(matiere)) return null;
+                            return (
+                            <div key={`m-${sIndex}-${uIndex}-${mIndex}`} style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0}}>
+                              
+                              {/* MATIERE HEADER */}
+                              <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.5rem', minWidth: 0}}>
+                                <button onClick={() => deleteMatiere(lIndex, sIndex, uIndex, mIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', padding:0}} title="Supprimer">🗑️</button>
+                                <EditableLabel
+                                  value={matiere.nom}
+                                  onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'nom'], v)}
+                                  placeholder="Nom de la matière"
+                                  style={{flex:1, borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.3rem'}}
+                                />
+                              </div>
+                              
+                              {/* CONFIG NOTEBOOK LM */}
+                              <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
+                                <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
+                                  <span style={{fontSize:'1rem'}} title="Lien NotebookLM">📖</span>
+                                  <input 
+                                    type="text" 
+                                    placeholder="Collez ici le lien NotebookLM pour cette matière..." 
+                                    value={matiere.notebookLMLink || ''}
+                                    onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'notebookLMLink'], e.target.value)}
+                                    style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--bg-tertiary)', borderRadius:'4px', color:'var(--text-primary)'}}
+                                  />
+                                </div>
+                              </div>
+                              
+                              {/* --- CM --- */}
+                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem'}}>
+                                <span style={{fontSize:'0.9rem', color:'var(--text-secondary)'}}>{matiere.listeCM?.length || 0} CM</span>
+                                <button className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem'}} onClick={() => addCM(lIndex, sIndex, uIndex, mIndex)}>+ CM</button>
+                              </div>
+                              {matiere.listeCM?.map((cm, cmIndex) => (
+                                <div key={`cm-${cmIndex}`} className="cm-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(255,255,255,0.02)', padding:'0.4rem', borderRadius:'4px'}}>
+                                  <button onClick={() => deleteCM(lIndex, sIndex, uIndex, mIndex, cmIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+                                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                                    <EditableLabel
+                                      value={cm.titre}
+                                      onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'titre'], v)}
+                                      placeholder="Titre du CM"
+                                      style={{fontSize:'0.85rem'}}
+                                    />
+                                    <EditableNote 
+                                      value={cm.notes} 
+                                      onClick={() => setModalConfig({
+                                        isOpen: true,
+                                        title: `Notes CM : ${cm.titre}`,
+                                        initialValue: cm.notes,
+                                        onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'notes'], v)
+                                      })} 
+                                      placeholder="+ Ajouter une note (markdown supporté)" 
+                                    />
+                                  </div>
+                                  <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
+                                    <span style={{fontSize:'0.75rem', color:'var(--text-secondary)'}}>
+                                      Prochain : {getNextReviewDate(cm)}
+                                    </span>
+                                    <div style={{display:'flex', alignItems:'center', gap:'0.3rem'}}>
+                                      <span style={{fontSize:'0.75rem', color:'var(--text-secondary)'}}>J actuel:</span>
+                                      <select 
+                                        value={cm.jActuel || 0}
+                                        onChange={(e) => {
+                                          const newJ = parseInt(e.target.value) || 0;
+                                          setConfigLocal(prev => {
+                                            const newConf = deepClone(prev);
+                                            const currentCM = newConf.licences[lIndex].semestres[sIndex].ues[uIndex].matieres[mIndex].listeCM[cmIndex];
+                                            currentCM.jActuel = newJ;
+                                            if (newJ > 0 && (!currentCM.derniereRevision || currentCM.derniereRevision === "")) {
+                                              currentCM.derniereRevision = new Date().toISOString().split('T')[0];
+                                            }
+                                            setCoursConfig(newConf);
+                                            return newConf;
+                                          });
+                                        }}
+                                        style={{padding:'0.2rem', borderRadius:'4px', background:'var(--bg-tertiary)', color:'white', border:'none', fontSize:'0.75rem'}}
+                                        title="Définir le J actuel (Méthode des J)"
+                                      >
+                                        <option value={0}>J0 (Nouveau)</option>
+                                        <option value={1}>J1</option>
+                                        <option value={3}>J3</option>
+                                        <option value={7}>J7</option>
+                                        <option value={14}>J14</option>
+                                        <option value={30}>J30</option>
+                                        <option value={60}>J60</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+
+                              {/* --- TD --- */}
+                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
+                                <span style={{fontSize:'0.9rem', color:'var(--success-color)'}}>{matiere.listeTD?.length || 0} TD</span>
+                                <div style={{display:'flex', gap:'0.5rem'}}>
+                                  <button onClick={() => addTDManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--success-color)', border:'1px solid var(--success-glow)'}}>+ Manuel</button>
+                                  <input type="file" accept="application/pdf" id={`td-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} style={{display:'none'}} onChange={(e) => handleFileUpload(lIndex, sIndex, uIndex, mIndex, e.target.files[0], 'TD')} disabled={isScanning} />
+                                  <label htmlFor={`td-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--success-color)', border:'1px solid var(--success-glow)', opacity: isScanning ? 0.5 : 1}}>
+                                    {isScanning ? '⏳ Scan...' : 'Scanner PDF'}
+                                  </label>
+                                </div>
+                              </div>
+                              {matiere.listeTD?.map((td, tdIndex) => (
+                                <div key={`td-${tdIndex}`} className="td-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(52, 211, 153, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
+                                  <button onClick={() => deleteTD(lIndex, sIndex, uIndex, mIndex, tdIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+                                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                                    <EditableLabel
+                                      value={td.titre}
+                                      onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'titre'], v)}
+                                      placeholder="Nom de l'exercice"
+                                      style={{fontSize:'0.85rem'}}
+                                    />
+                                    <EditableNote 
+                                      value={td.notes} 
+                                      onClick={() => setModalConfig({
+                                        isOpen: true,
+                                        title: `Notes TD : ${td.titre}`,
+                                        initialValue: td.notes,
+                                        onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'notes'], v)
+                                      })}
+                                      placeholder="+ Ajouter une note (markdown supporté)" 
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+
+                              {/* --- TP --- */}
+                              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem', marginTop:'1rem'}}>
+                                <span style={{fontSize:'0.9rem', color:'var(--warning-color)'}}>{matiere.listeTP?.length || 0} TP</span>
+                                <div style={{display:'flex', gap:'0.5rem'}}>
+                                  <button onClick={() => addTPManuel(lIndex, sIndex, uIndex, mIndex)} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)'}}>+ Manuel</button>
+                                  <input type="file" accept="application/pdf" id={`tp-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} style={{display:'none'}} onChange={(e) => handleFileUpload(lIndex, sIndex, uIndex, mIndex, e.target.files[0], 'TP')} disabled={isScanning} />
+                                  <label htmlFor={`tp-up-${lIndex}-${sIndex}-${uIndex}-${mIndex}`} className="btn-secondary" style={{padding:'0.3rem 0.6rem', fontSize:'0.8rem', cursor: isScanning ? 'not-allowed' : 'pointer', color:'var(--warning-color)', border:'1px solid rgba(245, 158, 11, 0.4)', opacity: isScanning ? 0.5 : 1}}>
+                                    {isScanning ? '⏳ Scan...' : 'Scanner PDF'}
+                                  </label>
+                                </div>
+                              </div>
+                              {matiere.listeTP?.map((tp, tpIndex) => (
+                                <div key={`tp-${tpIndex}`} className="tp-item" style={{display:'flex', gap:'0.5rem', marginBottom:'0.5rem', alignItems:'center', background:'rgba(251, 191, 36, 0.05)', padding:'0.4rem', borderRadius:'4px'}}>
+                                  <button onClick={() => deleteTP(lIndex, sIndex, uIndex, mIndex, tpIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.8rem', color:'var(--danger-color)', padding:0}}>❌</button>
+                                  <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: '0.2rem'}}>
+                                    <EditableLabel
+                                      value={tp.titre}
+                                      onRename={(v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'titre'], v)}
+                                      placeholder="Nom de l'exercice"
+                                      style={{fontSize:'0.85rem'}}
+                                    />
+                                    <EditableNote 
+                                      value={tp.notes} 
+                                      onClick={() => setModalConfig({
+                                        isOpen: true,
+                                        title: `Notes TP : ${tp.titre}`,
+                                        initialValue: tp.notes,
+                                        onSave: (v) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'notes'], v)
+                                      })}
+                                      placeholder="+ Ajouter une note (markdown supporté)" 
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                              
+                            </div>
+                            )
+                          })}
+                          </div>
+                        </div>
+
+                      </div>
+                      )
+                    })}
+                  </div>
+
+                </div>
+                )
+              })()}
+            </div>
+          </div>
+        )
+      })()}
+      
+
+      <MarkdownModal 
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        initialValue={modalConfig.initialValue}
+        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+        onSave={modalConfig.onSave}
+      />
+    </div>
+  );
+}
+
+export default CoursPage;

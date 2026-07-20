@@ -202,23 +202,25 @@ function buildTaskPools({
           }
 
           // --- TD ---
-          for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
-            if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
-            const dureeBase = cfg.defaultDurationTD || 20;
-            const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
-            poolTD.push({
-              _semestreId: `L${licenceIdx}-S${semestreIdx}`,
-              matiere: m.nom,
-              type: "TD",
-              titre: ex.titre,
-              dureeMinutes: Math.round(dureeEstimee),
-              pdfPath: ex.pdfPath || "",
-              pdfPaths: ex.pdfPaths || [],
-              page: ex.page || 1,
-              difficulte: ex.difficulte || "",
-              prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail, rlState) * inactivityBoost * discoveryBoost * intraDayPenalty,
-              raisons: [...baseRaisons]
-            });
+          if (cfg.enableTD) {
+            for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
+              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
+              const dureeBase = cfg.defaultDurationTD || 20;
+              const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
+              poolTD.push({
+                _semestreId: `L${licenceIdx}-S${semestreIdx}`,
+                matiere: m.nom,
+                type: "TD",
+                titre: ex.titre,
+                dureeMinutes: Math.round(dureeEstimee),
+                pdfPath: ex.pdfPath || "",
+                pdfPaths: ex.pdfPaths || [],
+                page: ex.page || 1,
+                difficulte: ex.difficulte || "",
+                prio: getPrioScore(ex, examUrgencyMap, m, remainingWeightMap, compensationMap, velocityMap, projectedScoreDetail, rlState) * inactivityBoost * discoveryBoost * intraDayPenalty,
+                raisons: [...baseRaisons]
+              });
+            }
           }
 
           // --- TP ---
@@ -293,7 +295,7 @@ function buildTaskPools({
           else if (isEarlyReady && !isMastered) annalesRaisons.push("DEFI_PRECOCE");
           else if (isMastered) annalesRaisons.push("MAITRISE_ATTEINTE");
 
-          if (isMastered || isUrgent || hasStartedAnnales) {
+          if ((isMastered || isUrgent || hasStartedAnnales) && cfg.enableAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
               if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
               if ((ex.nombrePratiques || 0) >= 3 && !isUrgent) continue;
@@ -420,9 +422,24 @@ function genererRapportQuotidien(extraTimeMin = 0, fillGap = false, ankiStats = 
   }
 
   // Mode repos
-  // Mode repos
   const todayIsRest = cfg.restDays && cfg.restDays.includes(todayStr);
   const yesterdayWasRest = cfg.restDays && cfg.restDays.includes(yesterdayStr);
+
+  const studyStartStr = normalizeDateStr(cfg.studyStartDate);
+  const studyStart = parseDateLocal(studyStartStr);
+  const isPreparationPhase = (!isNaN(studyStart.getTime()) && now < studyStart);
+
+  // Règle d'anticipation : Week-ends en repos optionnel durant la phase de préparation
+  if (isPreparationPhase && isWeekend && !todayIsRest) {
+    if (!cfg.skippedRestDays.includes(todayStr)) {
+      rapport.statut = "REPOS_OPTIONNEL";
+      rapport.tachesDuJour = [];
+      rapport.tempsRequisMin = 0;
+      rapport.tempsDispoMin = 0;
+      rapport.message = "Phase de préparation : C'est le week-end ! Prends le temps de te reposer, ou choisis tes tâches manuellement.";
+      return rapport;
+    }
+  }
 
   if (todayIsRest || yesterdayWasRest) {
     if (yesterdayWasRest && !todayIsRest) {
@@ -527,9 +544,7 @@ function genererRapportQuotidien(extraTimeMin = 0, fillGap = false, ankiStats = 
   tempsLibreMin -= tempsDejaTravailleMin;
   if (tempsLibreMin < 0) tempsLibreMin = 0;
 
-  // Base de parité
-  const studyStartStr = normalizeDateStr(cfg.studyStartDate);
-  const studyStart = parseDateLocal(studyStartStr);
+  // Base de parité — réutilisation de studyStart déclaré plus haut
   const parityBase = (!isNaN(studyStart.getTime()) && studyStart <= now) ? studyStart : new Date(now.getFullYear(), 0, 1);
   const parityJour = Math.floor((now - parityBase) / (1000 * 60 * 60 * 24)) % 2;
 
@@ -726,18 +741,12 @@ function genererRapportQuotidien(extraTimeMin = 0, fillGap = false, ankiStats = 
   return rapport;
 }
 
-module.exports = {
-  genererRapportQuotidien,
-  genererTacheSpecifique
-};
-
 /**
  * Génère UNE seule tâche spécifique selon les critères demandés par l'utilisateur (matière, type).
  */
-function genererTacheSpecifique(configPath, coursPath, options) {
-  const { matiere = 'all', type = 'all', dureeMin = 30 } = options;
-  const cfg = loadConfig(configPath);
-  const crs = loadCours(coursPath);
+function genererTacheSpecifique(matiere = 'all', type = 'all', dureeMin = 30) {
+  const cfg = loadConfig();
+  const crs = loadCours();
 
   const todayStr = getTodayString();
   const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
@@ -809,3 +818,8 @@ function genererTacheSpecifique(configPath, coursPath, options) {
   bestTask.moment = 'sur-mesure';
   return bestTask;
 }
+
+module.exports = {
+  genererRapportQuotidien,
+  genererTacheSpecifique
+};

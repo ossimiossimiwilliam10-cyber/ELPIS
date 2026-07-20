@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { loadHistorique, saveHistorique, clearHistorique } = require('../moteur/historique');
 const { historiqueSchema } = require('../moteur/schemas');
-const { syncToMongo } = require('../mongoAdapter');
 
 // GET history
 router.get('/', (req, res, next) => {
@@ -30,10 +29,6 @@ router.post('/', (req, res, next) => {
       return res.status(500).json({ error: "Erreur sauvegarde historique." });
     }
     global.dbVersion = (global.dbVersion || 0) + 1;
-    
-    syncToMongo('historique', saved).catch(err => {
-      console.error("Erreur syncToMongo (historique):", err.message);
-    });
     res.json({ success: true, message: "Historique mis à jour." });
   } catch (err) {
     next(err);
@@ -47,9 +42,6 @@ router.post('/clear', (req, res, next) => {
     if (!success) {
       return res.status(500).json({ error: "Erreur lors de la suppression de l'historique." });
     }
-    syncToMongo('historique', []).catch(err => {
-      console.error("Erreur syncToMongo (historique):", err.message);
-    });
     res.json({ message: "Historique vidé" });
   } catch (err) {
     next(err);

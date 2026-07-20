@@ -20,8 +20,8 @@ function initDb() {
       id TEXT PRIMARY KEY,
       nom TEXT NOT NULL,
       archived INTEGER DEFAULT 0,
-      targetGrade TEXT,
-      targetRank TEXT
+      targetGrade REAL,
+      targetRank REAL
     );
 
     CREATE TABLE IF NOT EXISTS semestres (

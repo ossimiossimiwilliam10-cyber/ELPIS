@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { loadCours, saveCours } = require('../moteur/cours');
-const { syncToMongo } = require('../mongoAdapter');
 const { syncAnkiRetention, extractSubjectNames, fetchDeckNames } = require('../moteur/ankiSync');
 
 
@@ -29,9 +28,6 @@ router.post('/sync', async (req, res, next) => {
     if (ankiStats.success) {
        coursData._globalAnkiStats = ankiStats;
        saveCours(coursData);
-       syncToMongo('cours', coursData).catch(err => {
-         console.error("Erreur syncToMongo (cours via anki):", err.message);
-       });
 
        res.json({ success: true, message: `Synchronisation réussie (${Object.keys(ankiStats.retentionBySubject || {}).length} matières mises à jour)` });
     } else {

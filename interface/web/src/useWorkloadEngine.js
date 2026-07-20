@@ -52,11 +52,20 @@ export function useWorkloadEngine() {
             let hoursDone = 0;
             if (historique && config.studyStartDate) {
               const studyStart = parseDateLocal(config.studyStartDate);
+              const sixMonthsAgo = new Date();
+              sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+              
               const subjectHistory = historique.filter(h => {
                 if (h.matiere !== m.nom) return false;
                 if (!h.timestamp) return false;
                 const entryDate = new Date(h.timestamp);
-                return studyStart ? entryDate >= studyStart : true;
+                
+                if (studyStart) {
+                  if (entryDate >= studyStart) return true;
+                  if (entryDate < studyStart && entryDate >= sixMonthsAgo) return true;
+                  return false;
+                }
+                return true;
               });
               hoursDone = subjectHistory.reduce((sum, h) => {
                 let mins = h.dureeMinutes;

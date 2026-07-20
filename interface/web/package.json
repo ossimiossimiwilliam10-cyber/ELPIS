@@ -4,14 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node node_modules/vite/bin/vite.js",
+    "build": "node node_modules/vite/bin/vite.js build",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "preview": "node node_modules/vite/bin/vite.js preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "cap:sync": "node node_modules/vite/bin/vite.js build && node node_modules/@capacitor/cli/bin/capacitor sync",
+    "cap:open": "node node_modules/@capacitor/cli/bin/capacitor open android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/core": "^8.4.2",
     "@hello-pangea/dnd": "^18.0.1",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.40.0",
@@ -31,6 +35,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.2",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.0",
     "@testing-library/jest-dom": "^6.9.1",

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getApiUrl, getServerUrl } from '../utils/apiConfig';
 import useStore, { useChronoStore } from '../store';
 import MusicSettingsModal from './MusicSettingsModal';
 
@@ -26,7 +27,7 @@ function BackgroundMusicPlayer() {
   const fetchNextTrack = async (forceCategory = null) => {
     try {
       const cat = forceCategory || getRequestedCategory();
-      const url = cat ? `/api/music/recommendation?category=${cat}` : '/api/music/recommendation';
+      const url = cat ? `${getApiUrl()}/music/recommendation?category=${cat}` : `${getApiUrl()}/music/recommendation`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
@@ -196,7 +197,7 @@ function BackgroundMusicPlayer() {
     >
       <audio
         ref={audioRef}
-        src={musicData.url}
+        src={musicData.url.startsWith('http') ? musicData.url : `${getServerUrl()}${musicData.url}`}
         onEnded={handleEnded}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}

@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "titre": "Projet Alpha",
+    "phases": [
+      {
+        "nom": "Recherche",
+        "active": true
+      },
+      {
+        "id": "1782562839720",
+        "nom": "rzedfdf",
+        "complete": false
+      }
+    ]
+  }
+]

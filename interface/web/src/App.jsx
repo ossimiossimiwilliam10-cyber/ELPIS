@@ -23,6 +23,8 @@ const MesVideosPage = lazy(() => import('./MesVideosPage'));
 const ClassementPage = lazy(() => import('./ClassementPage'));
 const GraphPage = lazy(() => import('./GraphPage'));
 import useStore from './store';
+import { getRawIp, setApiUrl } from './utils/apiConfig';
+import { getDb, syncFromBackend } from './database';
 
 // Mini-fallback pour le chargement paresseux des pages
 const LoadingFallback = () => (
@@ -173,11 +175,23 @@ function AppInner() {
     event.target.value = null;
   };
 
+  const handleManualSync = async () => {
+    addToast("Synchronisation en cours...", 'info');
+    try {
+      const db = await getDb();
+      await syncFromBackend(db);
+      addToast("Synchronisation terminée !", 'success');
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (e) {
+      addToast("Erreur de synchronisation. Le serveur est-il allumé ?", 'error');
+    }
+  };
+
   const handleFactoryReset = async () => {
     if (window.confirm("ATTENTION : Supprimer toutes les données ? Cette action est IRREVERSIBLE.")) {
       if (window.confirm("Derniere chance ! Confirmez la suppression totale ?")) {
         try {
-          const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", targetGrade: 14, targetRank: 10, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0, bestStreak: 0 };
+          const emptyConfig = { studyStartDate: "07-09-2026", bedtime: "23:00", wakeUpTime: "07:00", targetGrade: 14, targetRank: 10, summerStudyHoursCompleted: 0, maxSubjectsPerDay: 3, studyBlockDurationMinutes: 50, activeRecallMinutesPerDay: 30, subjects: [], fixedCommitments: [], theme: "dark", pomoWork: 25, pomoBreak: 5, lastActiveDate: "", currentStreak: 0, bestStreak: 0, enableTD: false, enableAnnales: false };
           useStore.getState().setConfig(emptyConfig);
           const emptyCours = { licences: [] };
           useStore.getState().setCoursConfig(emptyCours);
@@ -455,6 +469,31 @@ function AppInner() {
                   </p>
 
                   <div style={{display: 'grid', gap: '1rem', marginBottom: '1rem'}}>
+                    {/* Apprentissage par phases */}
+                    <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', borderLeft: '3px solid #3b82f6'}}>
+                      <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer'}}>
+                        <input
+                          type="checkbox"
+                          checked={!!config.enableTD}
+                          onChange={e => setConfig({...config, enableTD: e.target.checked})}
+                          style={{accentColor: '#3b82f6', width: '16px', height: '16px'}}
+                        />
+                        Activer les Travaux Dirigés (TD)
+                      </label>
+                      <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer'}}>
+                        <input
+                          type="checkbox"
+                          checked={!!config.enableAnnales}
+                          onChange={e => setConfig({...config, enableAnnales: e.target.checked})}
+                          style={{accentColor: '#3b82f6', width: '16px', height: '16px'}}
+                        />
+                        Activer les Annales
+                      </label>
+                      <p style={{fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginBottom: 0}}>
+                        Désactivez ces options pour vous focaliser uniquement sur la théorie (CM) dans un premier temps.
+                      </p>
+                    </div>
+
                     <div style={{background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', borderLeft: '3px solid #a855f7'}}>
                       <label style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem'}}>
                         Agressivité Anti-Ennui (Fast-Track)
@@ -588,6 +627,32 @@ function AppInner() {
                       onMouseOut={e => {e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; e.currentTarget.style.color = '#ef4444'}}
                     >
                       Remise à Zéro Totale
+                    </button>
+                  </div>
+                </div>
+
+                {/* Sync Locale */}
+                <div className="card glass-panel" style={{flex: '1 1 300px', borderTop: '3px solid #3b82f6', display: 'flex', flexDirection: 'column'}}>
+                  <h3 style={{color: '#3b82f6', marginBottom: '1rem'}}>🔄 Synchro Locale (Wi-Fi)</h3>
+                  <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', flex: 1}}>
+                    Synchronisez le téléphone avec le PC via le réseau local.
+                  </p>
+                  <div style={{marginTop: '1rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.85rem'}}>
+                      Adresse IP du PC (ex: 192.168.1.15)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="192.168.x.x"
+                      defaultValue={getRawIp()}
+                      onBlur={(e) => setApiUrl(e.target.value)}
+                      style={{width: '100%', padding: '0.6rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '6px', marginBottom: '1rem'}}
+                    />
+                    <button
+                      onClick={handleManualSync}
+                      style={{width: '100%', padding: '0.6rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer'}}
+                    >
+                      Synchroniser Maintenant
                     </button>
                   </div>
                 </div>

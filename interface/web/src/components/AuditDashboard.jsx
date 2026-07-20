@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const API_URL = '/api';
+import { getApiUrl } from '../utils/apiConfig';
 
 export default function AuditDashboard({ isOpen, onClose }) {
   const [auditData, setAuditData] = useState(null);
@@ -15,7 +15,7 @@ export default function AuditDashboard({ isOpen, onClose }) {
   const fetchAudit = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/audit`);
+      const res = await fetch(`${getApiUrl()}/audit`);
       const data = await res.json();
       setAuditData(data);
     } catch (e) {

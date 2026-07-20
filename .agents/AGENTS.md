@@ -230,3 +230,22 @@ Cela permet de rÃƒÆ’Ã‚Â©compenser la rigueur quotidienne et pas seulement la per
 <RULE[pwa_anti_wipe_sync]>
 - **SÃ©curitÃ© de Synchronisation PWA (Anti-Wipe)** : Lors de la synchronisation initiale de donnÃ©es depuis le backend vers une base de donnÃ©es locale (ex: RxDB, IndexedDB), il faut TOUJOURS s'assurer que les donnÃ©es reÃ§ues de l'API sont structurellement valides et non vides (ex: `Array.isArray(data) && data.length > 0`) AVANT d'effectuer un `upsert` ou un Ã©crasement (`replace`). Cela empÃªche l'application frontend d'effacer accidentellement les donnÃ©es hors-ligne de l'utilisateur en cas de panne de la base distante.
 </RULE[pwa_anti_wipe_sync]>
+
+
+<RULE[workload_summer_study_awareness]>
+- **Prise en compte du travail en avance (Summer Study)** : Lors de l'implémentation de filtres d'historique basés sur une date de rentrée (studyStartDate), l'agent DOIT toujours inclure une condition pour comptabiliser le travail effectué en avance (ex: si la date d'entrée est inférieure à la date de rentrée officielle ET récente). Ne jamais écarter aveuglément l'historique sous prétexte que la rentrée n'a pas encore eu lieu.
+</RULE[workload_summer_study_awareness]>
+
+
+<RULE[anki_dynamic_workload_split]>
+- **Répartition Intelligente du Temps Anki** : Lors de la complétion d'une tâche de type ANKI (Routine), le système DOIT interroger AnkiConnect en arrière-plan (/api/anki/today-stats) pour déterminer le volume de cartes révisées par matière le jour même. Le temps total alloué à la tâche (ex: 30 minutes) DOIT ensuite être proportionnellement divisé et ajouté à l'historique sous le nom exact des matières travaillées. Si AnkiConnect est inaccessible ou si aucune carte n'a été révisée, le système DOIT basculer sur l'enregistrement "Routine" par défaut (fallback).
+</RULE[anki_dynamic_workload_split]>
+
+
+<RULE[phased_learning_progression]>
+- **Apprentissage par Phases (Théorie vs Pratique)** : Lors de la conception ou de la modification de planificateurs de tâches académiques, l'agent DOIT toujours prévoir des options permettant d'isoler la théorie de la pratique. Ne jamais imposer un mélange simultané de CM (Cours Magistraux), TD (Travaux Dirigés) et Annales. L'interface DOIT permettre à l'utilisateur de désactiver/activer ces modules de pratique afin de respecter une progression d'apprentissage logique (Phase 1: Théorie -> Phase 2: Pratique).
+</RULE[phased_learning_progression]>
+
+<RULE[preparation_phase_weekends]>
+- **Repos automatique avant la rentrÃ©e** : Lors de la modification de l'orchestrateur (ou de tout algorithme de planification), si la date actuelle est antÃ©rieure Ã  la date de rentrÃ©e (studyStartDate), l'algorithme DOIT automatiquement proposer le mode REPOS_OPTIONNEL les week-ends (samedi et dimanche). L'utilisateur doit pouvoir dÃ©cliner ce repos s'il le souhaite.
+</RULE[preparation_phase_weekends]>

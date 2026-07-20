@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { loadCours } = require('../moteur/cours');
 const { genererRapportQuotidien, genererTacheSpecifique } = require('../moteur/orchestrateur');
-const { CONFIG_PATH } = require('../moteur/config');
-const { COURS_PATH } = require('../moteur/cours');
 
 const orchestratorCache = new Map();
 const CACHE_TTL_MS = 60000;
@@ -72,7 +70,7 @@ router.post('/force-task', (req, res, next) => {
       dureeMin: parseInt(req.body.dureeMin) || 0
     };
 
-    const task = genererTacheSpecifique(CONFIG_PATH, COURS_PATH, options);
+    const task = genererTacheSpecifique(options.matiere, options.type, options.dureeMin);
     if (!task) {
       return res.status(404).json({ error: "Aucune tâche trouvée pour ces critères." });
     }

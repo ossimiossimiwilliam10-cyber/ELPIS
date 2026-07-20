@@ -4,7 +4,7 @@ import debounce from 'lodash/debounce';
 import { getDb, syncFromBackend } from './database';
 
 // API base URL
-const API_URL = '/api';
+import { getApiUrl } from './utils/apiConfig';
 
 // Fonction utilitaire pour gérer l'échec de la synchronisation (Mode Hors-Ligne)
 const handleOfflineError = (type, error) => {
@@ -19,7 +19,8 @@ const debouncedSaveConfig = debounce(async (config, get) => {
   if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('config', new Error('Offline'));
   try {
-    const res = await fetch(`${API_URL}/config`, {
+    const apiBase = getApiUrl();
+    const res = await fetch(`${apiBase}/config`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config)
@@ -35,7 +36,8 @@ const debouncedSaveCours = debounce(async (coursConfig, get) => {
   if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('cours', new Error('Offline'));
   try {
-    const res = await fetch(`${API_URL}/cours`, {
+    const apiBase = getApiUrl();
+    const res = await fetch(`${apiBase}/cours`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(coursConfig)
@@ -51,7 +53,8 @@ const debouncedSaveHistorique = debounce(async (historique, get) => {
   if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('historique', new Error('Offline'));
   try {
-    const res = await fetch(`${API_URL}/historique`, {
+    const apiBase = getApiUrl();
+    const res = await fetch(`${apiBase}/historique`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(historique)
@@ -67,7 +70,8 @@ const debouncedSaveProjets = debounce(async (projets, get) => {
   if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('projets', new Error('Offline'));
   try {
-    const res = await fetch(`${API_URL}/projets`, {
+    const apiBase = getApiUrl();
+    const res = await fetch(`${apiBase}/projets`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(projets)
@@ -139,7 +143,8 @@ const useStore = create(immer((set, get) => ({
   fetchOrchestrator: async (params = {}) => {
     const { extraTime = 0, fillGap = false } = params;
     try {
-      const res = await fetch(`${API_URL}/orchestrateur?extraTime=${extraTime}&fillGap=${fillGap}`);
+      const apiBase = getApiUrl();
+      const res = await fetch(`${apiBase}/orchestrateur?extraTime=${extraTime}&fillGap=${fillGap}`);
       if (res.ok) {
         const data = await res.json();
         set({
@@ -185,18 +190,24 @@ const useStore = create(immer((set, get) => ({
       });
 
       // Souscrire aux modifications de RxDB pour mise à jour en temps réel
-      db.config.findOne('main').$.subscribe(doc => {
+      // Nettoyer les anciennes souscriptions avant d'en créer de nouvelles
+      if (get()._rxSubscriptions) {
+        get()._rxSubscriptions.forEach(sub => { try { sub.unsubscribe(); } catch {} });
+      }
+      const subs = [];
+      subs.push(db.config.findOne('main').$.subscribe(doc => {
         if (doc) set(state => { state.config = doc.data; });
-      });
-      db.cours.findOne('main').$.subscribe(doc => {
+      }));
+      subs.push(db.cours.findOne('main').$.subscribe(doc => {
         if (doc) set(state => { state.coursConfig = doc.data; });
-      });
-      db.historique.findOne('main').$.subscribe(doc => {
+      }));
+      subs.push(db.historique.findOne('main').$.subscribe(doc => {
         if (doc) set(state => { state.historique = doc.data; });
-      });
-      db.projets.findOne('main').$.subscribe(doc => {
+      }));
+      subs.push(db.projets.findOne('main').$.subscribe(doc => {
         if (doc) set(state => { state.projets = doc.data; });
-      });
+      }));
+      set(state => { state._rxSubscriptions = subs; });
 
       // Fetch orchestrator data directly from API
       await get().fetchOrchestrator();
@@ -257,7 +268,8 @@ const useStore = create(immer((set, get) => ({
 
       // Save directly without debounce to ensure immediate effect before re-fetching
       try {
-        await fetch(`${API_URL}/config`, {
+        const apiBase = getApiUrl();
+        await fetch(`${apiBase}/config`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newConfig)
@@ -295,7 +307,8 @@ const useStore = create(immer((set, get) => ({
       set({ config: newConfig });
 
       try {
-        await fetch(`${API_URL}/config`, {
+        const apiBase = getApiUrl();
+        await fetch(`${apiBase}/config`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newConfig)
@@ -320,7 +333,8 @@ const useStore = create(immer((set, get) => ({
     set({ config: newConfig });
 
     try {
-      await fetch(`${API_URL}/config`, {
+      const apiBase = getApiUrl();
+      await fetch(`${apiBase}/config`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newConfig)
@@ -373,7 +387,8 @@ const useStore = create(immer((set, get) => ({
     get().checkStreak(true);
 
     // [Epic 2] - Background Telemetry
-    fetch(`${API_URL}/ai/historique-update`, {
+    const apiBase = getApiUrl();
+    fetch(`${apiBase}/ai/historique-update`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -565,11 +580,12 @@ if (typeof window !== 'undefined') {
       // Wait, we need to access the store methods or fetch directly.
       // But debouncedSaveConfig is not exported. We can just do a fetch here.
       try {
+        const apiBase = getApiUrl();
         await Promise.all([
-          fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
-          fetch('/api/cours', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
-          fetch('/api/historique', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
-          fetch('/api/projets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
+          fetch(`${apiBase}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
+          fetch(`${apiBase}/cours`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
+          fetch(`${apiBase}/historique`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
+          fetch(`${apiBase}/projets`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
         ]);
         localStorage.removeItem('elpis_offline_pending_sync');
       } catch (e) {

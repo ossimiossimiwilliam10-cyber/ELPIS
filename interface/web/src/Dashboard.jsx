@@ -7,7 +7,7 @@ import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import { useWorkloadEngine } from './useWorkloadEngine';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from './ToastProvider';
-import CMCompletionModal from './components/CMCompletionModal';
+import TaskCompletionModal from './components/TaskCompletionModal';
 import InfoTooltip from './components/InfoTooltip';
 import AuditDashboard from './components/AuditDashboard';
 import { DIFFICULTY_LEVELS } from './constants';
@@ -78,10 +78,10 @@ function Dashboard() {
   const { toast } = useToast();
   const { playTaskComplete } = useSoundEffects();
 
-  // CM modal state
-  const [cmModalOpen, setCmModalOpen] = useState(false);
-  const [pendingCMTask, setPendingCMTask] = useState(null);
-  const cmModalLockRef = useRef(false); // prevents double-open race condition
+  // Task Completion modal state
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [pendingTask, setPendingTask] = useState(null);
+  const taskModalLockRef = useRef(false); // prevents double-open race condition
 
   // Custom Task (Activité Libre) modal state
   const [customTaskModalOpen, setCustomTaskModalOpen] = useState(false);
@@ -189,30 +189,15 @@ function Dashboard() {
     setOrderedTaches(items);
   };
 
-  const handleTaskComplete = async (tache, difficulte = "") => {
+  const handleTaskComplete = async (tache) => {
     if (!coursConfig) return;
 
-    // For CM tasks, open the mini-modal to capture real time and retention score
-    if (tache.type === 'CM') {
-      // Prevent race condition: if modal is already open, ignore subsequent clicks
-      if (cmModalLockRef.current) {
-        toast.info("Termine d'abord le CM en cours avant d'en commencer un autre.");
-        return;
-      }
-      cmModalLockRef.current = true;
-      setPendingCMTask(tache);
-      setCmModalOpen(true);
-      return;
-    }
-
-    const today = getTodayStr();
-
-    let taskFound = false;
-
     if (tache.type === 'ANKI') {
+      const today = getTodayStr();
       setConfig({ ...config, dernierePratiqueAnki: today });
       try {
-        const res = await fetch('/api/anki/today-stats');
+        const apiBase = getApiUrl();
+        const res = await fetch(`${apiBase}/anki/today-stats`);
         if (res.ok) {
           const ankiStats = await res.json();
           if (ankiStats && ankiStats.success && ankiStats.cardsBySubject && Object.keys(ankiStats.cardsBySubject).length > 0) {
@@ -245,159 +230,159 @@ function Dashboard() {
       } catch (e) {
         console.error("Erreur lors de la ventilation proportionnelle Anki :", e);
       }
-      taskFound = true; // Fallback to generic if API failed or 0 cards
-    } else if (tache.isCustom) {
-      taskFound = true; // Bypass strict syllabus search
-    } else {
-      const configLocal = coursConfig;
-      const newConfig = produce(configLocal, draft => {
-      draft.licences.forEach(licence =>
-        licence.semestres.forEach(semestre =>
-          semestre.ues.forEach(ue =>
-            ue.matieres.forEach(matiere => {
-              if (matiere.nom !== tache.matiere) return;
-              if (tache.type === 'TD') {
-                matiere.listeTD?.forEach(td => {
-                  if (td.titre !== tache.titre) return;
-                  td.dernierePratique = today;
-                  td.nombrePratiques = (td.nombrePratiques || 0) + 1;
-                  if (difficulte) td.difficulte = difficulte;
-                  taskFound = true;
-                });
-              } else if (tache.type === 'TP') {
-                matiere.listeTP?.forEach(tp => {
-                  if (tp.titre !== tache.titre) return;
-                  tp.dernierePratique = today;
-                  tp.nombrePratiques = (tp.nombrePratiques || 0) + 1;
-                  if (difficulte) tp.difficulte = difficulte;
-                  taskFound = true;
-                });
-              } else if (tache.type === 'ANNALE') {
-                matiere.listeAnnales?.forEach(annale => {
-                  if (annale.titre !== tache.titre) return;
-                  annale.dernierePratique = today;
-                  annale.nombrePratiques = (annale.nombrePratiques || 0) + 1;
-                  if (difficulte) annale.difficulte = difficulte;
-                  taskFound = true;
-                });
-              }
-            })
-          )
-        )
-      );
-    });
-    if (taskFound && tache.type !== 'ANKI') {
-      setCoursConfig(newConfig);
-    }
-    }
-
-    if (taskFound) {
-      // Remove immediately from UI to prevent double submission and provide instant feedback
+      
+      // Fallback Anki if API failed
       setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
-
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#3B82F6', '#10B981', '#F59E0B']
-      });
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#818CF8', '#34D399', '#FBBF24'] });
       playTaskComplete();
       addHistoriqueEntry({
-        type: tache.type,
+        type: 'ANKI',
         titre: tache.titre,
         matiere: tache.matiere,
         action: 'Terminé',
         dureeMinutes: tache.dureeMinutes || 0
       });
-    } else if (tache.type !== 'ANKI' && tache.type !== 'CM') {
-      toast.error(`Tâche "${tache.titre}" introuvable. Recharge le planning.`);
+      return;
     }
+
+    // For all other tasks, open the generic TaskCompletionModal
+    if (taskModalLockRef.current) {
+      toast.info("Termine d'abord l'activité en cours avant d'en commencer une autre.");
+      return;
+    }
+    taskModalLockRef.current = true;
+    setPendingTask(tache);
+    setTaskModalOpen(true);
   };
 
-  // Called by CMCompletionModal when user submits real time + retention score
-  const handleCMComplete = useCallback(({ minutes, sm2Score }) => {
-    if (!coursConfig || !pendingCMTask) return;
-    const tache = pendingCMTask;
+  // Called by TaskCompletionModal when user submits real time (+ optional retention score / difficulte)
+  const handleTaskSubmit = useCallback(({ minutes, sm2Score, difficulte }) => {
+    if (!coursConfig || !pendingTask) return;
+    const tache = pendingTask;
     const today = getTodayStr();
 
-    // AXE 9: Personalized Decay Multiplier (cohérent avec EntrainementPage)
-    let personalizedDecayMultiplier = 1.0;
-    if (intelligence?.velocityMap && tache.matiere) {
-      const vData = intelligence.velocityMap[(tache.matiere || '').toLowerCase().trim()];
-      if (vData && vData.isSlowLearner) {
-        personalizedDecayMultiplier = 0.8;
-      } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {
-        personalizedDecayMultiplier = 1.2;
+    let taskFound = false;
+
+    if (tache.isCustom) {
+      taskFound = true; // Bypass strict syllabus search
+    } else {
+      const newConfig = produce(coursConfig, draft => {
+        draft.licences.forEach(licence =>
+          licence.semestres.forEach(semestre =>
+            semestre.ues.forEach(ue =>
+              ue.matieres.forEach(matiere => {
+                if (matiere.nom !== tache.matiere) return;
+
+                if (tache.type === 'CM') {
+                  matiere.listeCM.forEach(cm => {
+                    if (cm.titre !== tache.titre) return;
+                    taskFound = true;
+
+                    // AXE 9: Personalized Decay Multiplier
+                    let personalizedDecayMultiplier = 1.0;
+                    if (intelligence?.velocityMap && tache.matiere) {
+                      const vData = intelligence.velocityMap[(tache.matiere || '').toLowerCase().trim()];
+                      if (vData && vData.isSlowLearner) {
+                        personalizedDecayMultiplier = 0.8;
+                      } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {
+                        personalizedDecayMultiplier = 1.2;
+                      }
+                    }
+
+                    let finalScore = sm2Score;
+                    // --- Pénalité / Bonus Temporel ---
+                    if (minutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
+                      const ratio = minutes / cm.tempsMoyen;
+                      if (ratio > 1.5 && finalScore > 1) finalScore -= 1;
+                      if (ratio > 2.0 && finalScore > 1) finalScore -= 1;
+                      if (ratio < 0.5 && finalScore < 4) finalScore += 1;
+                    }
+
+                    let fsrsCard = cm.fsrsCard ? { ...cm.fsrsCard } : migrateToFSRSCard(cm);
+                    if (typeof fsrsCard.due === 'string') fsrsCard.due = new Date(fsrsCard.due);
+                    if (typeof fsrsCard.last_review === 'string') fsrsCard.last_review = new Date(fsrsCard.last_review);
+
+                    const ratingMap = { 1: Rating.Again, 2: Rating.Hard, 3: Rating.Good, 4: Rating.Easy };
+                    const fsrsRating = ratingMap[finalScore] || Rating.Good;
+
+                    const newCard = evaluateFSRS(fsrsCard, fsrsRating, personalizedDecayMultiplier);
+                    cm.fsrsCard = newCard;
+
+                    cm.jActuel = newCard.scheduled_days || 1;
+                    cm.easeFactor = (10 - newCard.difficulty) / 4 + 1.3;
+                    cm.repetitions = newCard.reps;
+                    cm.derniereRevision = today;
+                    cm.prochaineRevisionDate = newCard.due instanceof Date
+                      ? newCard.due.toISOString().split('T')[0]
+                      : new Date(newCard.due).toISOString().split('T')[0];
+                      
+                    const currentAvg = cm.tempsMoyen || 0;
+                    const currentCount = cm.nombreRevisionsTemps || 0;
+                    cm.tempsMoyen = ((currentAvg * currentCount) + minutes) / (currentCount + 1);
+                    cm.nombreRevisionsTemps = currentCount + 1;
+                  });
+                } else if (tache.type === 'TD') {
+                  matiere.listeTD?.forEach(td => {
+                    if (td.titre !== tache.titre) return;
+                    td.dernierePratique = today;
+                    td.nombrePratiques = (td.nombrePratiques || 0) + 1;
+                    if (difficulte) td.difficulte = difficulte;
+                    taskFound = true;
+                  });
+                } else if (tache.type === 'TP') {
+                  matiere.listeTP?.forEach(tp => {
+                    if (tp.titre !== tache.titre) return;
+                    tp.dernierePratique = today;
+                    tp.nombrePratiques = (tp.nombrePratiques || 0) + 1;
+                    if (difficulte) tp.difficulte = difficulte;
+                    taskFound = true;
+                  });
+                } else if (tache.type === 'ANNALE') {
+                  matiere.listeAnnales?.forEach(annale => {
+                    if (annale.titre !== tache.titre) return;
+                    annale.dernierePratique = today;
+                    annale.nombrePratiques = (annale.nombrePratiques || 0) + 1;
+                    if (difficulte) annale.difficulte = difficulte;
+                    taskFound = true;
+                  });
+                }
+              })
+            )
+          )
+        );
+      });
+      if (taskFound) {
+        setCoursConfig(newConfig);
       }
     }
 
-    let finalScore = sm2Score;
+    if (taskFound) {
+      setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#3B82F6', '#10B981', '#F59E0B'] });
+      playTaskComplete();
+      
+      let actionLabel = 'Terminé';
+      if (tache.type === 'CM' && sm2Score) {
+        actionLabel = `Révisé (${sm2Score}/4)`;
+      } else if (difficulte) {
+        actionLabel = `Terminé (${difficulte})`;
+      }
 
-    const newConfig = produce(coursConfig, draft => {
-      draft.licences.forEach(licence =>
-        licence.semestres.forEach(semestre =>
-          semestre.ues.forEach(ue =>
-            ue.matieres.forEach(matiere => {
-              if (matiere.nom !== tache.matiere) return;
-              matiere.listeCM.forEach(cm => {
-                if (cm.titre !== tache.titre) return;
+      addHistoriqueEntry({
+        type: tache.type,
+        titre: tache.titre,
+        matiere: tache.matiere,
+        action: actionLabel,
+        dureeMinutes: minutes
+      });
+    } else {
+      toast.error(`Tâche "${tache.titre}" introuvable.`);
+    }
 
-                // --- Pénalité / Bonus Temporel (cohérent avec EntrainementPage) ---
-                if (minutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
-                  const ratio = minutes / cm.tempsMoyen;
-                  if (ratio > 1.5 && finalScore > 1) finalScore -= 1;
-                  if (ratio > 2.0 && finalScore > 1) finalScore -= 1;
-                  if (ratio < 0.5 && finalScore < 4) finalScore += 1;
-                }
-
-                // --- FSRS : Migration ou récupération de la carte ---
-                let fsrsCard = cm.fsrsCard ? { ...cm.fsrsCard } : migrateToFSRSCard(cm);
-                if (typeof fsrsCard.due === 'string') fsrsCard.due = new Date(fsrsCard.due);
-                if (typeof fsrsCard.last_review === 'string') fsrsCard.last_review = new Date(fsrsCard.last_review);
-
-                const ratingMap = { 1: Rating.Again, 2: Rating.Hard, 3: Rating.Good, 4: Rating.Easy };
-                const fsrsRating = ratingMap[finalScore] || Rating.Good;
-
-                const newCard = evaluateFSRS(fsrsCard, fsrsRating, personalizedDecayMultiplier);
-                cm.fsrsCard = newCard;
-
-                // Rétrocompatibilité SM-2
-                cm.jActuel = newCard.scheduled_days || 1;
-                cm.easeFactor = (10 - newCard.difficulty) / 4 + 1.3;
-                cm.repetitions = newCard.reps;
-                cm.derniereRevision = today;
-                cm.prochaineRevisionDate = newCard.due instanceof Date
-                  ? newCard.due.toISOString().split('T')[0]
-                  : new Date(newCard.due).toISOString().split('T')[0];
-                // Tracking tempsMoyen with real elapsed minutes
-                const currentAvg = cm.tempsMoyen || 0;
-                const currentCount = cm.nombreRevisionsTemps || 0;
-                cm.tempsMoyen = ((currentAvg * currentCount) + minutes) / (currentCount + 1);
-                cm.nombreRevisionsTemps = currentCount + 1;
-              });
-            })
-          )
-        )
-      );
-    });
-
-    setCoursConfig(newConfig);
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#818CF8', '#34D399', '#FBBF24']
-    });
-    addHistoriqueEntry({
-      type: 'CM',
-      titre: tache.titre,
-      matiere: tache.matiere,
-      action: `Révisé (${finalScore}/4)`,
-      dureeMinutes: minutes
-    });
-    setPendingCMTask(null);
-    cmModalLockRef.current = false;
-  }, [coursConfig, pendingCMTask, setCoursConfig, addHistoriqueEntry, intelligence]);
+    setPendingTask(null);
+    setTaskModalOpen(false);
+    taskModalLockRef.current = false;
+  }, [coursConfig, pendingTask, setCoursConfig, addHistoriqueEntry, intelligence]);
 
   // --- SUSPEND CM: Clôturer une séance partielle depuis le Dashboard ---
   const handleSuspendCM = useCallback((tache) => {
@@ -1152,13 +1137,14 @@ function Dashboard() {
           <p style={{color:'var(--text-secondary)'}}>Aucune donnée disponible. Ajoute des cours pour voir tes statistiques.</p>
         )}
       </motion.div>
-      {/* === CM Completion Modal === */}
-      <CMCompletionModal
-        isOpen={cmModalOpen}
-        onClose={() => { setCmModalOpen(false); setPendingCMTask(null); cmModalLockRef.current = false; }}
-        onSubmit={handleCMComplete}
-        taskTitle={pendingCMTask?.titre || ''}
-        defaultMinutes={pendingCMTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)}
+      {/* === Task Completion Modal === */}
+      <TaskCompletionModal
+        isOpen={taskModalOpen}
+        onClose={() => { setTaskModalOpen(false); setPendingTask(null); taskModalLockRef.current = false; }}
+        onSubmit={handleTaskSubmit}
+        taskTitle={pendingTask?.titre || ''}
+        defaultMinutes={pendingTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)}
+        taskType={pendingTask?.type || 'CM'}
       />
 
       {/* === Custom Task Modal === */}

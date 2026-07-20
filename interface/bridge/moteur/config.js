@@ -34,7 +34,9 @@ const DEFAULT_CONFIG = {
   antiEnnuiMultiplier: 2.0,
   restDays: [],
   skippedRestDays: [],
-  dernierePratiqueAnki: ""
+  dernierePratiqueAnki: "",
+  enableTD: false,
+  enableAnnales: false
 };
 
 function validateConfigSchema(data) {

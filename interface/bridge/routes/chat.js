@@ -12,7 +12,14 @@ router.get('/', (req, res, next) => {
   try {
     if (fs.existsSync(CHAT_FILE)) {
       const data = fs.readFileSync(CHAT_FILE, 'utf-8');
-      res.json(JSON.parse(data));
+      try {
+        const parsed = JSON.parse(data);
+        res.json(parsed);
+      } catch (parseErr) {
+        console.error('Fichier chat corrompu, reset:', parseErr.message);
+        atomicWriteFileSync(CHAT_FILE, JSON.stringify([]));
+        res.json([]);
+      }
     } else {
       res.json([]);
     }
