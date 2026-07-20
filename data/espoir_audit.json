@@ -1,8 +1,8 @@
 {
-  "last_scan": "2026-07-20T12:55:52.062701",
+  "last_scan": "2026-07-20T13:09:15.466222",
   "mode": "SCAN + CORRECTION",
   "files_scanned": 724,
-  "total_lines_of_code": 3206998,
+  "total_lines_of_code": 3206528,
   "total_anomalies": 265,
   "total_corrections": 12,
   "files_corrected": 12,

@@ -4049,3 +4049,77 @@
 [2026-07-20 12:55:52] [INFO] Auto-commit de 12 fichier(s) corrige(s)...
 [2026-07-20 12:55:52] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'Sauvegarde Elpîs\\ELPIS\\agent_audit\\backups\\20260715_095326\\agent_audit\\scanners.py']' returned non-zero exit status 128.
 [2026-07-20 12:55:52] [INFO] Audit termine en 14.4s. Health Score projet: 100/100
+[2026-07-20 13:06:31] [INFO] ============================================================
+[2026-07-20 13:06:31] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-20 13:06:31] [INFO] ============================================================
+[2026-07-20 13:06:31] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-20 13:06:31] [INFO] Etablissement de la baseline de tests...
+[2026-07-20 13:06:31] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-20 13:06:31] [INFO] Phase 1 terminee: 724 fichiers, 3206528 lignes
+[2026-07-20 13:06:31] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-20 13:06:32] [INFO]   -> 231 anomalies globales detectees
+[2026-07-20 13:06:32] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-20 13:07:56] [INFO] Agent demarre en mode continu. Intervalle: 1h
+[2026-07-20 13:07:56] [INFO] Mode: SCAN + CORRECTION
+[2026-07-20 13:07:56] [INFO] ============================================================
+[2026-07-20 13:07:56] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-20 13:07:56] [INFO] ============================================================
+[2026-07-20 13:07:56] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-20 13:07:56] [INFO] Etablissement de la baseline de tests...
+[2026-07-20 13:07:56] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-20 13:07:57] [INFO] Phase 1 terminee: 724 fichiers, 3206528 lignes
+[2026-07-20 13:07:57] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-20 13:07:57] [INFO]   -> 231 anomalies globales detectees
+[2026-07-20 13:07:57] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-20 13:08:17] [INFO]   Passe 1: 1815 defauts trouves, 13 corrections appliquees
+[2026-07-20 13:08:17] [INFO]   Health Score: 75/100
+[2026-07-20 13:08:17] [INFO]   Anomalies Critiques: 1777
+[2026-07-20 13:08:17] [INFO]   Avertissements (Warning): 38
+[2026-07-20 13:08:17] [INFO]   Suggestions & Code Smells (Info): 231
+[2026-07-20 13:08:17] [INFO]   Total defauts detectes: 2046
+[2026-07-20 13:08:17] [INFO]   Corrections appliquees: 13
+[2026-07-20 13:08:17] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-20 13:08:17] [INFO] Agent Health: WARNING
+[2026-07-20 13:08:17] [WARNING]   [!] Performance degradee: 6.8 fichiers/s
+[2026-07-20 13:08:17] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-20 13:08:17] [INFO] Auto-commit de 13 fichier(s) corrige(s)...
+[2026-07-20 13:08:17] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'Sauvegarde Elpîs\\ELPIS\\agent_audit\\backups\\20260715_213530\\agent_audit\\scanners.py']' returned non-zero exit status 128.
+[2026-07-20 13:08:17] [INFO] Audit termine en 106.5s. Health Score projet: 75/100
+[2026-07-20 13:09:15] [INFO]   Passe 1: 34 defauts trouves, 12 corrections appliquees
+[2026-07-20 13:09:15] [INFO]   Health Score: 100/100
+[2026-07-20 13:09:15] [INFO]   Anomalies Critiques: 0
+[2026-07-20 13:09:15] [INFO]   Avertissements (Warning): 34
+[2026-07-20 13:09:15] [INFO]   Suggestions & Code Smells (Info): 231
+[2026-07-20 13:09:15] [INFO]   Total defauts detectes: 265
+[2026-07-20 13:09:15] [INFO]   Corrections appliquees: 12
+[2026-07-20 13:09:15] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-20 13:09:15] [INFO] Agent Health: WARNING
+[2026-07-20 13:09:15] [WARNING]   [!] Performance degradee: 9.2 fichiers/s
+[2026-07-20 13:09:15] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-20 13:09:15] [INFO] Auto-commit de 12 fichier(s) corrige(s)...
+[2026-07-20 13:09:15] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'Sauvegarde Elpîs\\ELPIS\\agent_audit\\backups\\20260715_102509\\agent_audit\\scanners.py']' returned non-zero exit status 128.
+[2026-07-20 13:09:15] [INFO] Audit termine en 79.4s. Health Score projet: 100/100
+[2026-07-20 13:09:16] [INFO] Prochain audit dans 1h...
+[2026-07-20 13:28:49] [INFO] Agent demarre en mode continu. Intervalle: 1h
+[2026-07-20 13:28:49] [INFO] Mode: SCAN + CORRECTION
+[2026-07-20 13:28:49] [INFO] ============================================================
+[2026-07-20 13:28:49] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-20 13:28:49] [INFO] ============================================================
+[2026-07-20 13:28:49] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-20 13:28:49] [INFO] Etablissement de la baseline de tests...
+[2026-07-20 13:28:49] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-20 13:28:50] [INFO] Phase 1 terminee: 725 fichiers, 3207143 lignes
+[2026-07-20 13:28:50] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-20 13:28:51] [INFO]   -> 232 anomalies globales detectees
+[2026-07-20 13:28:51] [INFO] Phase 2.5: Dead Code Scanner (fichiers orphelins, exports inutilises, dependances fantomes)...
+[2026-07-20 13:29:52] [ERROR] Erreur pendant l'audit: cannot access local variable 'all_anomalies' where it is not associated with a value
+[2026-07-20 13:29:52] [ERROR] Traceback (most recent call last):
+  File "c:\Users\User\Desktop\Dev & Code\ELPIS\agent_audit\main.py", line 651, in <module>
+    run_full_audit(dry_run=dry_run)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "c:\Users\User\Desktop\Dev & Code\ELPIS\agent_audit\main.py", line 337, in run_full_audit
+    all_anomalies.append({
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'all_anomalies' where it is not associated with a value
+
+[2026-07-20 13:29:52] [INFO] Prochain audit dans 1h...

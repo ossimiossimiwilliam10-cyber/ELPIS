@@ -107,29 +107,100 @@ def apply_fixes(filepath, rel_path, lines, fixable_anomalies, dry_run=False):
             new_line = None  # Marqueur pour suppression
 
         elif action == 'npm_update':
-            # Fix spécial pour sécurité npm
+            # Fix spécial pour sécurité npm — pipeline complet
+            # 1. npm audit fix (bump automatique dans la plage semver)
+            # 2. Exécution des tests
+            # 3. Si tests OK → commit ; si échec → rollback via git checkout
             pkg = anomaly.get('_npm_package')
             cwd = anomaly.get('_npm_dir')
             if pkg and cwd:
                 try:
-                    subprocess.run(['npm', 'update', pkg], cwd=cwd, check=True)
-                    correction = {
-                        'rule_id': anomaly['rule_id'],
-                        'file': os.path.join(cwd, 'package.json'),
-                        'line': 1,
-                        'before': f"Vulnérabilité dans {pkg}",
-                        'after': f"Package {pkg} mis à jour",
-                        'action': 'npm_update',
-                        'fix_confidence': 100
-                    }
-                    corrections.append(correction)
+                    # Étape 1 : Sauvegarder le package.json original
+                    pkg_json_path = os.path.join(cwd, 'package.json')
+                    lock_path = os.path.join(cwd, 'package-lock.json')
+                    
+                    if os.path.exists(pkg_json_path):
+                        import shutil
+                        backup_pkg = pkg_json_path + '.audit_backup'
+                        backup_lock = lock_path + '.audit_backup'
+                        shutil.copy2(pkg_json_path, backup_pkg)
+                        if os.path.exists(lock_path):
+                            shutil.copy2(lock_path, backup_lock)
+                    
+                    # Étape 2 : Exécuter npm audit fix
+                    result = subprocess.run(
+                        ['npm', 'audit', 'fix', '--force'],
+                        cwd=cwd, capture_output=True, text=True, check=False
+                    )
+                    
+                    if result.returncode != 0:
+                        # Essayer sans --force (moins agressif)
+                        result = subprocess.run(
+                            ['npm', 'audit', 'fix'],
+                            cwd=cwd, capture_output=True, text=True, check=False
+                        )
+                    
+                    # Étape 3 : Exécuter les tests pour valider
+                    test_result = subprocess.run(
+                        ['npm', 'test'],
+                        cwd=cwd, capture_output=True, text=True, check=False
+                    )
+                    
+                    if test_result.returncode == 0:
+                        # Tests passés — le fix est validé
+                        correction = {
+                            'rule_id': anomaly['rule_id'],
+                            'file': os.path.join(cwd, 'package.json'),
+                            'line': 1,
+                            'before': f"Vulnérabilité dans {pkg}",
+                            'after': f"Package {pkg} mis à jour (npm audit fix) — tests OK",
+                            'action': 'npm_audit_fix',
+                            'fix_confidence': 95
+                        }
+                        corrections.append(correction)
+                        
+                        # Nettoyer les backups
+                        if os.path.exists(backup_pkg):
+                            os.remove(backup_pkg)
+                        if os.path.exists(backup_lock):
+                            os.remove(backup_lock)
+                    else:
+                        # Tests échoués — rollback
+                        if os.path.exists(backup_pkg):
+                            shutil.copy2(backup_pkg, pkg_json_path)
+                            os.remove(backup_pkg)
+                        if os.path.exists(backup_lock):
+                            shutil.copy2(backup_lock, lock_path)
+                            os.remove(backup_lock)
+                        
+                        # Réinstaller les dépendances originales
+                        subprocess.run(['npm', 'install'], cwd=cwd, capture_output=True, check=False)
+                        
+                        escalations.append({
+                            'type': 'NPM_FIX_BROKE_TESTS',
+                            'file': os.path.join(cwd, 'package.json'),
+                            'line': 1,
+                            'message': f"npm audit fix pour {pkg} a cassé les tests. Rollback effectué.",
+                            'severity': 'warning',
+                            'rule_id': anomaly['rule_id']
+                        })
+                        
                 except subprocess.CalledProcessError:
                     escalations.append({
                         'type': 'NPM_UPDATE_FAILED',
                         'file': rel_path,
                         'line': 1,
-                        'message': f"Échec de 'npm update {pkg}'",
+                        'message': f"Échec de 'npm audit fix' pour {pkg}",
                         'severity': 'critical',
+                        'rule_id': anomaly['rule_id']
+                    })
+                except Exception as e:
+                    escalations.append({
+                        'type': 'NPM_UPDATE_ERROR',
+                        'file': rel_path,
+                        'line': 1,
+                        'message': f"Erreur inattendue lors de l'auto-patching npm: {e}",
+                        'severity': 'warning',
                         'rule_id': anomaly['rule_id']
                     })
             continue

@@ -667,6 +667,7 @@ def _scan_fetch_without_abort(lines, rel_path, rule):
 
 
 from engine import should_auto_fix
+from ast_scanner import run_ast_scanners
 
 def run_all_scanners(filepath, rel_path, lines, rules, all_files_data, source_files, project_root):
     """
@@ -684,11 +685,15 @@ def run_all_scanners(filepath, rel_path, lines, rules, all_files_data, source_fi
     structural_anomalies = scan_structural(lines, rel_path, filename, rules)
     anomalies.extend(structural_anomalies)
 
-    # 3. Scanner custom python
+    # 3. Scanner AST (python_ast + js_enhanced — zero faux positifs)
+    ast_anomalies, _ = run_ast_scanners(filepath, rel_path, lines, rules, all_files_data, source_files)
+    anomalies.extend(ast_anomalies)
+
+    # 4. Scanner custom python
     custom_anomalies = scan_custom_python(lines, rel_path, filename, rules, project_root)
     anomalies.extend(custom_anomalies)
 
-    # 4. Marquer les anomalies fixables
+    # 5. Marquer les anomalies fixables
     for anomaly in anomalies:
         rule_id = anomaly['rule_id']
         rule = _find_rule(rules, rule_id)

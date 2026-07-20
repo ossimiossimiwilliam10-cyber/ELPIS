@@ -10,6 +10,9 @@ Usage:
     python main.py --once --dry-run   # Audit unique, rapport seul
     python main.py --health           # Auto-diagnostic de l'agent
     python main.py --emergency-check  # Verifie uniquement les regles d'urgence
+    python main.py --perf             # Analyse de performance (build + tests)
+    python main.py --trending         # Analyse des tendances
+    python main.py --generate-tests   # Genere les fichiers de test manquants
 """
 
 import os
@@ -30,11 +33,15 @@ from engine import (load_rules, should_auto_fix, calculate_health_score,
                      _is_text_file)
 from scanners import (run_all_scanners, run_global_scanners, extract_imports)
 from fixers import (apply_fixes, set_backup_dir, set_rule_cache,
-                    cleanup_old_backups)
+                    cleanup_old_backups, rollback_file, create_backup)
 from validators import (validate_after_fix, run_pre_fix_baseline)
 from escalation import (create_escalation, process_escalations,
                         set_escalation_log, set_emergency_alert_file)
 from health import run_health_check
+from deadcode import scan_dead_code, format_dead_code_report
+from testgen import generate_all_missing_tests, format_generation_report
+from trending import load_audit_history, analyze_trends, format_trending_report
+from perf import collect_build_metrics, collect_test_metrics, load_perf_history, save_perf_metrics, detect_regressions, format_perf_report
 
 # ---------------------------------------------------------------------------
 # CONFIGURATION
@@ -288,7 +295,7 @@ def run_full_audit(dry_run=False, emergency_only=False):
 
         # Appliquer les corrections pour les anomalies globales (Tests, Sécurité)
         if not dry_run:
-            from fixers import apply_fixes, rollback_file
+            # (apply_fixes, rollback_file importes au niveau module)
             fixable_global = [a for a in global_anomalies if a.get('_fixable')]
             if fixable_global:
                 log.info(f"  Tentative de correction de {len(fixable_global)} anomalies globales...")
@@ -327,11 +334,67 @@ def run_full_audit(dry_run=False, emergency_only=False):
                     if escalations:
                         all_escalations.extend(escalations)
 
-    # --- 6. Phase 3 : Scan fichier par fichier + corrections (ESLint, Ruff) ---
+    # Initialiser la liste des anomalies avec les resultats globaux
+    all_anomalies = list(global_anomalies)
+
+    # --- 5.5. Phase 2.5 : Dead Code Scan ---
+    log.info("Phase 2.5: Dead Code Scanner (fichiers orphelins, exports inutilises, dependances fantomes)...")
+    dead_results = scan_dead_code(PROJECT_ROOT, source_files, all_files_data)
+    
+    # Ajouter les fichiers orphelins comme anomalies
+    for orphan in dead_results['orphan_files']:
+        all_anomalies.append({
+            'rule_id': 'DEAD-ORPHAN-001',
+            'severity': 'warning',
+            'description': f"Fichier orphelin : jamais importe par aucun autre fichier du projet.",
+            'category': 'DEAD_CODE',
+            'file': orphan,
+            'line': 1,
+            'code_snippet': f'Orphan file: {orphan}',
+            '_fixable': False,
+            '_escalation_message': 'Verifier si ce fichier est vraiment necessaire. Sinon, le supprimer.'
+        })
+    
+    # Ajouter les exports inutilisés
+    for exp in dead_results['unused_exports']:
+        all_anomalies.append({
+            'rule_id': 'DEAD-EXPORT-001',
+            'severity': 'info',
+            'description': f"Export inutilise : '{exp['export_name']}' jamais importe ailleurs.",
+            'category': 'DEAD_CODE',
+            'file': exp['file'],
+            'line': exp['line'],
+            'code_snippet': f"export {exp['export_name']}",
+            '_fixable': True,
+            '_escalation_message': 'Supprimer cet export s\'il n\'est vraiment plus utilise.'
+        })
+    
+    # Ajouter les dependances fantomes
+    for dep in dead_results['phantom_dependencies']:
+        all_anomalies.append({
+            'rule_id': 'DEAD-DEP-001',
+            'severity': 'warning',
+            'description': f"Dependance fantome : '{dep['package']}' dans {dep['type']} mais jamais importe.",
+            'category': 'DEAD_CODE',
+            'file': dep['package_json'],
+            'line': 1,
+            'code_snippet': f'Unused dep: {dep["package"]}',
+            '_fixable': True,
+            '_escalation_message': f'Supprimer {dep["package"]} du {dep["type"]} dans {dep["package_json"]} avec npm uninstall.'
+        })
+    
+    dead_report = format_dead_code_report(dead_results)
+    log.info(f"  Dead Code: {len(dead_results['orphan_files'])} orphelins, {len(dead_results['unused_exports'])} exports inutilises, {len(dead_results['phantom_dependencies'])} dependances fantomes")
+    # Afficher le rapport en console
+    for line in dead_report.split('\n'):
+        if line.strip():
+            log.info(f"  {line}")
+
+
+# --- 6. Phase 3 : Scan fichier par fichier + corrections (ESLint, Ruff) ---
     log.info("Phase 3: Execution des linters standards (ESLint, Ruff)...")
 
-    all_anomalies = list(global_anomalies)
-    # Les corrections et escalades globales sont déjà dans les listes
+    # all_anomalies deja initialise avec global_anomalies + dead code (Phase 2/2.5)
     rule_hit_count = defaultdict(int)
 
     if not dry_run:
@@ -346,7 +409,7 @@ def run_full_audit(dry_run=False, emergency_only=False):
             ext = os.path.splitext(filepath)[1].lower()
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             timestamp_dir = os.path.join(BACKUPS_DIR, timestamp)
-            from fixers import create_backup
+            # (create_backup importe au niveau module)
             try:
                 backup_path = create_backup(filepath, timestamp_dir)
             except Exception:
@@ -576,10 +639,69 @@ if __name__ == "__main__":
     dry_run = "--dry-run" in sys.argv
     emergency_only = "--emergency-check" in sys.argv
     health_only = "--health" in sys.argv
+    generate_tests = "--generate-tests" in sys.argv
+    perf_only = "--perf" in sys.argv
+    trending_only = "--trending" in sys.argv
 
     # Mode auto-diagnostic
     if health_only:
         run_health_only()
+        sys.exit(0)
+
+    # Mode génération de tests
+    if generate_tests:
+        print("\n=== GÉNÉRATION DE TESTS ===\n")
+        from testgen import generate_all_missing_tests, format_generation_report
+        
+        # Quick collecte des fichiers source
+        import os as _os
+        source_files = []
+        for _root, _dirs, _files in _os.walk(PROJECT_ROOT):
+            _dirs[:] = [d for d in _dirs if d not in {
+                'node_modules', '.git', 'dist', 'build', '__pycache__',
+                '.venv', 'backups', 'documents', 'Sauvegarde Elpîs',
+                'ELPIS_APPRENTISSAGE', '.antigravity'
+            }]
+            for _f in _files:
+                _ext = _os.path.splitext(_f)[1].lower()
+                if _ext in ('.js', '.jsx', '.py'):
+                    source_files.append(_os.path.relpath(_os.path.join(_root, _f), PROJECT_ROOT))
+        
+        dry = "--dry-run" in sys.argv
+        generated, skipped = generate_all_missing_tests(PROJECT_ROOT, source_files, dry_run=dry)
+        report = format_generation_report(generated, skipped, dry)
+        print(report)
+        if not dry and generated:
+            print(f"\n✅ {len(generated)} fichiers de test créés !")
+        sys.exit(0)
+
+    # Mode performance
+    if perf_only:
+        print("\n=== ANALYSE DE PERFORMANCE ===\n")
+        print("Collecte des metriques de build...")
+        build_metrics = collect_build_metrics()
+        if build_metrics:
+            print(format_perf_report(build_metrics, {'status': 'OK', 'regressions': []}))
+            history = load_perf_history()
+            if history:
+                regressions = detect_regressions(build_metrics, history)
+                print(format_perf_report(build_metrics, regressions))
+            save_perf_metrics(build_metrics)
+        else:
+            print("  ⚠️ Impossible de collecter les metriques de build.")
+        print("\nCollecte des metriques de test...")
+        test_metrics = collect_test_metrics()
+        if test_metrics:
+            print(f"  Tests: {test_metrics.get('passed', '?')}/{test_metrics.get('test_count', '?')} reussis en {test_metrics.get('test_duration_seconds', '?')}s")
+        sys.exit(0)
+
+    # Mode trending
+    if trending_only:
+        print("\n=== ANALYSE DE TENDANCES ===\n")
+        history = load_audit_history(max_runs=10)
+        trends = analyze_trends(history)
+        report = format_trending_report(trends, history)
+        print(report)
         sys.exit(0)
 
     # Mode one-shot
