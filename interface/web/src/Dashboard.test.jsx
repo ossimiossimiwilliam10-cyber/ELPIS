@@ -25,6 +25,28 @@ vi.mock('@hello-pangea/dnd', () => ({
   Draggable: ({ children }) => children({ innerRef: vi.fn(), draggableProps: {}, dragHandleProps: {} }, { isDragging: false })
 }));
 
+vi.mock('./hooks/useTaskCompletion', () => ({
+  useTaskCompletion: () => ({
+    completeTask: vi.fn(() => true),
+    suspendCM: vi.fn(),
+  }),
+}));
+
+vi.mock('./hooks/useDashboardStats', () => ({
+  useDashboardStats: () => ({
+    stats: { cmDue: 0, cmDone: 0, cmTotal: 0 },
+    globalPercent: 0,
+    allMatieres: ['Droit'],
+    restDaysUsed: 0,
+    todayStr: new Date().toISOString().split('T')[0],
+    isRestDayToday: false,
+  }),
+}));
+
+vi.mock('./hooks/useSoundEffects', () => ({
+  useSoundEffects: () => ({ playTaskComplete: vi.fn() }),
+}));
+
 describe('Dashboard Component', () => {
   let fetchOrchestratorMock;
 

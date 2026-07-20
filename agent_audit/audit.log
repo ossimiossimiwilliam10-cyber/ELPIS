@@ -4026,3 +4026,26 @@
 [2026-07-20 09:31:24] [INFO] Auto-commit de 12 fichier(s) corrige(s)...
 [2026-07-20 09:31:28] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'commit', '-m', '🤖 fix(immune-system): auto-correction locale [skip ci]']' returned non-zero exit status 1.
 [2026-07-20 09:31:28] [INFO] Audit termine en 17.8s. Health Score projet: 100/100
+[2026-07-20 12:55:38] [INFO] ============================================================
+[2026-07-20 12:55:38] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-20 12:55:38] [INFO] ============================================================
+[2026-07-20 12:55:38] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-20 12:55:38] [INFO] Etablissement de la baseline de tests...
+[2026-07-20 12:55:38] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-20 12:55:38] [INFO] Phase 1 terminee: 724 fichiers, 3206998 lignes
+[2026-07-20 12:55:38] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-20 12:55:38] [INFO]   -> 231 anomalies globales detectees
+[2026-07-20 12:55:38] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-20 12:55:52] [INFO]   Passe 1: 34 defauts trouves, 12 corrections appliquees
+[2026-07-20 12:55:52] [INFO]   Health Score: 100/100
+[2026-07-20 12:55:52] [INFO]   Anomalies Critiques: 0
+[2026-07-20 12:55:52] [INFO]   Avertissements (Warning): 34
+[2026-07-20 12:55:52] [INFO]   Suggestions & Code Smells (Info): 231
+[2026-07-20 12:55:52] [INFO]   Total defauts detectes: 265
+[2026-07-20 12:55:52] [INFO]   Corrections appliquees: 12
+[2026-07-20 12:55:52] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-20 12:55:52] [INFO] Agent Health: HEALTHY
+[2026-07-20 12:55:52] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-20 12:55:52] [INFO] Auto-commit de 12 fichier(s) corrige(s)...
+[2026-07-20 12:55:52] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'Sauvegarde Elpîs\\ELPIS\\agent_audit\\backups\\20260715_095326\\agent_audit\\scanners.py']' returned non-zero exit status 128.
+[2026-07-20 12:55:52] [INFO] Audit termine en 14.4s. Health Score projet: 100/100

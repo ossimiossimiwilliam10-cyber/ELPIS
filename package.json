@@ -1,1 +1,19 @@
-{}
+{
+  "name": "elpis",
+  "version": "2.0.0",
+  "private": true,
+  "description": "ELPIS — Assistant d'étude intelligent (monorepo)",
+  "workspaces": [
+    "interface/web",
+    "interface/bridge"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=elpis-web",
+    "dev:bridge": "npm run start --workspace=elpis-bridge",
+    "build": "npm run build --workspace=elpis-web",
+    "test": "npm run test --workspaces --if-present",
+    "test:web": "npm run test --workspace=elpis-web",
+    "test:bridge": "npm run test --workspace=elpis-bridge",
+    "lint": "npm run lint --workspaces --if-present"
+  }
+}

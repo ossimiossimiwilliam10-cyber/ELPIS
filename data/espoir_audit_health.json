@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-20T09:31:24.783222",
+  "timestamp": "2026-07-20T12:55:52.062840",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,19 +8,19 @@
   },
   "scan_performance": {
     "status": "HEALTHY",
-    "elapsed_seconds": 13.66,
+    "elapsed_seconds": 13.95,
     "files_scanned": 724,
-    "files_per_second": 53.0,
-    "lines_per_second": 234996.0
+    "files_per_second": 51.9,
+    "lines_per_second": 229863.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 4,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 234,
+      "MISSING_TEST_FILE": 231,
       "E402": 18,
       "F841": 12,
-      "E741": 6
+      "E741": 4
     }
   },
   "escalation_health": {
@@ -33,26 +33,26 @@
     "total_rules": 60,
     "active_rules": 4,
     "inactive_rules": [
-      "USE_OPTIONAL_CHAINING",
-      "JSON_DEEP_CLONE",
-      "NO_CONSOLE_LOG_IN_PROD",
-      "SEC-001",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "NO_HARDCODED_LOCALHOST",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "NO_BARE_EXCEPT",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "AVOID_ARRAY_CONSTRUCTOR",
       "MISSING_KEY_IN_MAP",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "EXCESSIVE_NESTING_DEPTH",
-      "NO_VAR_KEYWORD",
-      "NO_WILDCARD_CORS",
-      "NO_PRINT_IN_PRODUCTION",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "NO_INDEX_AS_KEY",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "EMPTY_PROMISE_CATCH",
+      "MISSING_REACT_MEMO",
+      "MAGIC_NUMBERS",
+      "NO_POSITIVE_TABINDEX",
       "PROP_SPREADING_WARNING",
-      "MISSING_TYPE_HINTS",
-      "PWA_STATIC_ROUTE_EXCLUSION",
-      "TOAST_DIRECT_CALL",
-      "NO_BARREL_IMPORT_CYCLES",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "NO_TODO_WITHOUT_TICKET"
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "NO_CONSOLE_LOG_IN_PROD",
+      "NO_CIRCULAR_IMPORTS",
+      "NO_HARDCODED_LOCALHOST"
     ],
     "inactive_count": 59
   },
