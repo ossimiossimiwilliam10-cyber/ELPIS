@@ -1,145 +1,53 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { produce } from 'immer';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore, { useChronoStore } from './store';
-import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import { useWorkloadEngine } from './useWorkloadEngine';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useToast } from './ToastProvider';
-import TaskCompletionModal from './components/TaskCompletionModal';
-import InfoTooltip from './components/InfoTooltip';
-import AuditDashboard from './components/AuditDashboard';
-import { DIFFICULTY_LEVELS } from './constants';
 import { useSoundEffects } from './hooks/useSoundEffects';
-const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percent / 100) * circumference;
-
-  return (
-    <div className="circular-progress" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="circular-progress-circle">
-        <circle
-          className="circular-progress-bg"
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-        />
-        <motion.circle
-          className="circular-progress-fill"
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-        />
-      </svg>
-      <div className="circular-progress-text" style={{ fontSize: size * 0.25 }}>
-        <motion.span
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          {percent}%
-        </motion.span>
-      </div>
-    </div>
-  );
-};
+import { useTaskCompletion } from './hooks/useTaskCompletion';
+import { useDashboardStats } from './hooks/useDashboardStats';
+import TaskCompletionModal from './components/TaskCompletionModal';
+import AuditDashboard from './components/AuditDashboard';
+import WelcomeCard from './components/dashboard/WelcomeCard';
+import TaskList from './components/dashboard/TaskList';
+import InsightsPanel from './components/dashboard/InsightsPanel';
+import ProjectsWidget from './components/dashboard/ProjectsWidget';
+import StatsSection from './components/dashboard/StatsSection';
+import { DIFFICULTY_LEVELS } from './constants';
+import { getApiUrl } from './utils/apiConfig';
 
 function Dashboard() {
   const {
-    config,
-    coursConfig,
-    loading: storeLoading,
-    historique,
-    projets,
-    orchestratorData,
-    fetchOrchestrator,
-    intelligence,
-    pendingTasksCount,
-    dailyFillGap,
-    setDailyFillGap,
-    setConfig,
-    setCoursConfig,
-    addHistoriqueEntry,
-    activateRestDay,
-    activateExtendedRestDay,
-    declineExtendedRestDay
+    config, coursConfig, loading: storeLoading, historique, projets,
+    orchestratorData, fetchOrchestrator, intelligence, pendingTasksCount,
+    dailyFillGap, setDailyFillGap, setConfig, addHistoriqueEntry,
+    activateRestDay, activateExtendedRestDay, declineExtendedRestDay
   } = useStore();
-  const [orderedTaches, setOrderedTaches] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [extraTime, setExtraTime] = useState(0);
+
+  const { completeTask, suspendCM } = useTaskCompletion();
+  const { stats, globalPercent, allMatieres, restDaysUsed, todayStr, isRestDayToday } = useDashboardStats();
+  const recommendedDailyHours = useWorkloadEngine();
   const { toast } = useToast();
   const { playTaskComplete } = useSoundEffects();
 
-  // Task Completion modal state
+  const [orderedTaches, setOrderedTaches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [extraTime, setExtraTime] = useState(0);
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [pendingTask, setPendingTask] = useState(null);
-  const taskModalLockRef = useRef(false); // prevents double-open race condition
-
-  // Custom Task (Activité Libre) modal state
+  const taskModalLockRef = useRef(false);
   const [customTaskModalOpen, setCustomTaskModalOpen] = useState(false);
   const [customTaskParams, setCustomTaskParams] = useState({ titre: '', type: 'PERSO', matiere: '' });
-
-  // Audit modal state
   const [auditModalOpen, setAuditModalOpen] = useState(false);
-
   const [acceptedRest, setAcceptedRest] = useState(false);
 
-  const allMatieres = useMemo(() => {
-    const list = [];
-    if (!coursConfig) return list;
-    coursConfig.licences?.forEach(l => {
-      l.semestres?.forEach(s => {
-        s.ues?.forEach(u => {
-          u.matieres?.forEach(m => {
-            list.push(m.nom);
-          });
-        });
-      });
-    });
-    return list;
-  }, [coursConfig]);
-
-  const recommendedDailyHours = useWorkloadEngine();
-
-  const getRestDaysUsed = () => {
-    if (!config || !config.restDays) return 0;
-    const now = new Date();
-    now.setHours(now.getHours() - 4); // Night Owl
-    const dayOfWeek = now.getDay() || 7;
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - dayOfWeek + 1);
-    startOfWeek.setHours(0,0,0,0);
-    return config.restDays.filter(d => {
-      const date = new Date(d + 'T00:00:00');
-      return date >= startOfWeek;
-    }).length;
-  };
-
-  const getTodayStr = () => {
-    const d = new Date();
-    d.setHours(d.getHours() - 4);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  };
-
-  const restDaysUsed = getRestDaysUsed();
-  const todayStr = getTodayStr();
-  const isRestDayToday = config?.restDays?.includes(todayStr);
-
-  // Fetch orchestrator via store (global) — triggers on param changes
+  // ---- Orchestrator fetch ----
   useEffect(() => {
     const doFetch = async () => {
       try {
         await fetchOrchestrator({ extraTime, fillGap: dailyFillGap });
       } catch (err) {
-        console.error(err);
         toast.error("Impossible de charger le planning. Vérifie que le serveur est lancé.");
       } finally {
         setLoading(false);
@@ -153,7 +61,6 @@ function Dashboard() {
   if (orchestratorData !== prevOrchestratorData) {
     setPrevOrchestratorData(orchestratorData);
     if (orchestratorData?.tachesDuJour) {
-      const todayStr = getTodayStr();
       const filtered = orchestratorData.tachesDuJour.filter(t => {
         if (t.type === 'ANKI' && config?.dernierePratiqueAnki === todayStr) return false;
         return true;
@@ -162,10 +69,8 @@ function Dashboard() {
     }
   }
 
-  const handleAddExtraTime = () => {
-    const newTime = extraTime + 30;
-    setExtraTime(newTime);
-  };
+  // ---- Actions ----
+  const handleAddExtraTime = () => setExtraTime(prev => prev + 30);
 
   const handleSkipRest = async () => {
     try {
@@ -176,9 +81,7 @@ function Dashboard() {
       } else {
         toast.error("Erreur lors de l'annulation du repos.");
       }
-    } catch (e) {
-      toast.error("Erreur serveur.");
-    }
+    } catch { toast.error("Erreur serveur."); }
   };
 
   const onDragEnd = (result) => {
@@ -189,290 +92,63 @@ function Dashboard() {
     setOrderedTaches(items);
   };
 
-  const handleTaskComplete = async (tache) => {
-    if (!coursConfig) return;
-
+  // ---- Task completion flow ----
+  const handleTaskComplete = (tache, difficulteKey) => {
     if (tache.type === 'ANKI') {
       const today = getTodayStr();
       setConfig({ ...config, dernierePratiqueAnki: today });
-      try {
-        const apiBase = getApiUrl();
-        const res = await fetch(`${apiBase}/anki/today-stats`);
-        if (res.ok) {
-          const ankiStats = await res.json();
-          if (ankiStats && ankiStats.success && ankiStats.cardsBySubject && Object.keys(ankiStats.cardsBySubject).length > 0) {
-            const totalCards = Object.values(ankiStats.cardsBySubject).reduce((a, b) => a + b, 0);
-            if (totalCards > 0) {
-              setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
-              confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#818CF8', '#34D399', '#FBBF24'] });
-              playTaskComplete();
-              
-              const totalDuration = tache.dureeMinutes || 30;
-              Object.keys(ankiStats.cardsBySubject).forEach(subj => {
-                const count = ankiStats.cardsBySubject[subj];
-                if (count > 0) {
-                  const subjDuration = Math.round((count / totalCards) * totalDuration);
-                  if (subjDuration > 0) {
-                    addHistoriqueEntry({
-                      type: 'ANKI',
-                      titre: `Anki - ${subj}`,
-                      matiere: subj,
-                      action: 'Terminé',
-                      dureeMinutes: subjDuration
-                    });
-                  }
-                }
-              });
-              return; // End early, proportional split is complete
-            }
-          }
-        }
-      } catch (e) {
-        console.error("Erreur lors de la ventilation proportionnelle Anki :", e);
-      }
-      
-      // Fallback Anki if API failed
       setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#818CF8', '#34D399', '#FBBF24'] });
       playTaskComplete();
-      addHistoriqueEntry({
-        type: 'ANKI',
-        titre: tache.titre,
-        matiere: tache.matiere,
-        action: 'Terminé',
-        dureeMinutes: tache.dureeMinutes || 0
-      });
+      addHistoriqueEntry({ type: 'ANKI', titre: tache.titre, matiere: tache.matiere, action: 'Terminé', dureeMinutes: tache.dureeMinutes || 0 });
       return;
     }
 
-    // For all other tasks, open the generic TaskCompletionModal
     if (taskModalLockRef.current) {
       toast.info("Termine d'abord l'activité en cours avant d'en commencer une autre.");
       return;
     }
     taskModalLockRef.current = true;
-    setPendingTask(tache);
+    setPendingTask({ ...tache, difficulteKey });
     setTaskModalOpen(true);
   };
 
-  // Called by TaskCompletionModal when user submits real time (+ optional retention score / difficulte)
+  const getTodayStr = () => {
+    const d = new Date();
+    d.setHours(d.getHours() - 4);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  };
+
   const handleTaskSubmit = useCallback(({ minutes, sm2Score, difficulte }) => {
-    if (!coursConfig || !pendingTask) return;
+    if (!pendingTask) return;
     const tache = pendingTask;
-    const today = getTodayStr();
+    const finalDifficulte = difficulte || tache.difficulteKey;
 
-    let taskFound = false;
-
-    if (tache.isCustom) {
-      taskFound = true; // Bypass strict syllabus search
-    } else {
-      const newConfig = produce(coursConfig, draft => {
-        draft.licences.forEach(licence =>
-          licence.semestres.forEach(semestre =>
-            semestre.ues.forEach(ue =>
-              ue.matieres.forEach(matiere => {
-                if (matiere.nom !== tache.matiere) return;
-
-                if (tache.type === 'CM') {
-                  matiere.listeCM.forEach(cm => {
-                    if (cm.titre !== tache.titre) return;
-                    taskFound = true;
-
-                    // AXE 9: Personalized Decay Multiplier
-                    let personalizedDecayMultiplier = 1.0;
-                    if (intelligence?.velocityMap && tache.matiere) {
-                      const vData = intelligence.velocityMap[(tache.matiere || '').toLowerCase().trim()];
-                      if (vData && vData.isSlowLearner) {
-                        personalizedDecayMultiplier = 0.8;
-                      } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {
-                        personalizedDecayMultiplier = 1.2;
-                      }
-                    }
-
-                    let finalScore = sm2Score;
-                    // --- Pénalité / Bonus Temporel ---
-                    if (minutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
-                      const ratio = minutes / cm.tempsMoyen;
-                      if (ratio > 1.5 && finalScore > 1) finalScore -= 1;
-                      if (ratio > 2.0 && finalScore > 1) finalScore -= 1;
-                      if (ratio < 0.5 && finalScore < 4) finalScore += 1;
-                    }
-
-                    let fsrsCard = cm.fsrsCard ? { ...cm.fsrsCard } : migrateToFSRSCard(cm);
-                    if (typeof fsrsCard.due === 'string') fsrsCard.due = new Date(fsrsCard.due);
-                    if (typeof fsrsCard.last_review === 'string') fsrsCard.last_review = new Date(fsrsCard.last_review);
-
-                    const ratingMap = { 1: Rating.Again, 2: Rating.Hard, 3: Rating.Good, 4: Rating.Easy };
-                    const fsrsRating = ratingMap[finalScore] || Rating.Good;
-
-                    const newCard = evaluateFSRS(fsrsCard, fsrsRating, personalizedDecayMultiplier);
-                    cm.fsrsCard = newCard;
-
-                    cm.jActuel = newCard.scheduled_days || 1;
-                    cm.easeFactor = (10 - newCard.difficulty) / 4 + 1.3;
-                    cm.repetitions = newCard.reps;
-                    cm.derniereRevision = today;
-                    cm.prochaineRevisionDate = newCard.due instanceof Date
-                      ? newCard.due.toISOString().split('T')[0]
-                      : new Date(newCard.due).toISOString().split('T')[0];
-                      
-                    const currentAvg = cm.tempsMoyen || 0;
-                    const currentCount = cm.nombreRevisionsTemps || 0;
-                    cm.tempsMoyen = ((currentAvg * currentCount) + minutes) / (currentCount + 1);
-                    cm.nombreRevisionsTemps = currentCount + 1;
-                  });
-                } else if (tache.type === 'TD') {
-                  matiere.listeTD?.forEach(td => {
-                    if (td.titre !== tache.titre) return;
-                    td.dernierePratique = today;
-                    td.nombrePratiques = (td.nombrePratiques || 0) + 1;
-                    if (difficulte) td.difficulte = difficulte;
-                    taskFound = true;
-                  });
-                } else if (tache.type === 'TP') {
-                  matiere.listeTP?.forEach(tp => {
-                    if (tp.titre !== tache.titre) return;
-                    tp.dernierePratique = today;
-                    tp.nombrePratiques = (tp.nombrePratiques || 0) + 1;
-                    if (difficulte) tp.difficulte = difficulte;
-                    taskFound = true;
-                  });
-                } else if (tache.type === 'ANNALE') {
-                  matiere.listeAnnales?.forEach(annale => {
-                    if (annale.titre !== tache.titre) return;
-                    annale.dernierePratique = today;
-                    annale.nombrePratiques = (annale.nombrePratiques || 0) + 1;
-                    if (difficulte) annale.difficulte = difficulte;
-                    taskFound = true;
-                  });
-                }
-              })
-            )
-          )
-        );
-      });
-      if (taskFound) {
-        setCoursConfig(newConfig);
-      }
-    }
-
-    if (taskFound) {
+    const success = completeTask(tache, { minutes, sm2Score, difficulte: finalDifficulte }, () => {
       setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#3B82F6', '#10B981', '#F59E0B'] });
       playTaskComplete();
-      
-      let actionLabel = 'Terminé';
-      if (tache.type === 'CM' && sm2Score) {
-        actionLabel = `Révisé (${sm2Score}/4)`;
-      } else if (difficulte) {
-        actionLabel = `Terminé (${difficulte})`;
-      }
+    });
 
-      addHistoriqueEntry({
-        type: tache.type,
-        titre: tache.titre,
-        matiere: tache.matiere,
-        action: actionLabel,
-        dureeMinutes: minutes
-      });
-    } else {
-      toast.error(`Tâche "${tache.titre}" introuvable.`);
-    }
+    if (!success) toast.error(`Tâche "${tache.titre}" introuvable.`);
 
     setPendingTask(null);
     setTaskModalOpen(false);
     taskModalLockRef.current = false;
-  }, [coursConfig, pendingTask, setCoursConfig, addHistoriqueEntry, intelligence]);
+  }, [pendingTask, completeTask, playTaskComplete, toast]);
 
-  // --- SUSPEND CM: Clôturer une séance partielle depuis le Dashboard ---
   const handleSuspendCM = useCallback((tache) => {
-    if (!coursConfig) return;
-
-    // Calcul de "demain" avec la logique Night Owl (-4h)
-    const now = new Date();
-    now.setHours(now.getHours() - 4);
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.getFullYear() + '-' + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrow.getDate()).padStart(2, '0');
-
-    const defaultDuration = config?.defaultDurationRevCM || 30;
-
-    const newConfig = produce(coursConfig, draft => {
-      draft.licences.forEach(licence =>
-        licence.semestres.forEach(semestre =>
-          semestre.ues.forEach(ue =>
-            ue.matieres.forEach(matiere => {
-              if (matiere.nom !== tache.matiere) return;
-              matiere.listeCM?.forEach(cm => {
-                if (cm.titre !== tache.titre) return;
-
-                // Forcer la prochaine révision à demain — SANS toucher à l'état FSRS
-                cm.prochaineRevisionDate = tomorrowStr;
-                // NE PAS modifier : derniereRevision, jActuel, easeFactor, fsrsCard, repetitions
-
-                // Enregistrer le temps passé dans tempsMoyen
-                const currentAvg = cm.tempsMoyen || 0;
-                const currentCount = cm.nombreRevisionsTemps || 0;
-                const weight = Math.min(currentCount, 4);
-                cm.tempsMoyen = ((currentAvg * weight) + defaultDuration) / (weight + 1);
-                cm.nombreRevisionsTemps = currentCount + 1;
-              });
-            })
-          )
-        )
-      );
-    });
-
-    setCoursConfig(newConfig);
-
-    // Retirer la tâche de la liste immédiatement
+    suspendCM(tache, config?.defaultDurationRevCM || 30);
     setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
-
-    addHistoriqueEntry({
-      type: 'CM',
-      titre: tache.titre,
-      matiere: tache.matiere,
-      action: 'Suspendu (séance partielle)',
-      dureeMinutes: defaultDuration
-    });
-
     toast.success(`⏸️ Séance suspendue — "${tache.titre}" reviendra demain.`);
-  }, [coursConfig, config, setCoursConfig, addHistoriqueEntry, toast]);
+  }, [suspendCM, config, toast]);
 
-  // Dynamic greeting (must be before early returns)
+  // ---- Dynamic greeting ----
   const hour = new Date().getHours();
   let greeting = 'Bonsoir';
   if (hour >= 5 && hour < 12) greeting = 'Bonjour';
   else if (hour >= 12 && hour < 18) greeting = 'Bon après-midi';
 
-  const stats = useMemo(() => {
-    if (!coursConfig) return { total: 0, done: 0, perMatiere: [] };
-    let total = 0;
-    let done = 0;
-    let perMatiere = [];
-
-    coursConfig.licences?.forEach(l => {
-      l.semestres?.forEach(s => {
-        s.ues?.forEach(u => {
-          u.matieres?.forEach(m => {
-            let mTotal = 0;
-            let mDone = 0;
-            if (m.listeCM) { mTotal += m.listeCM.length; mDone += m.listeCM.filter(cm => cm.jActuel > 0).length; }
-            if (m.listeTD) { mTotal += m.listeTD.length; mDone += m.listeTD.filter(td => td.nombrePratiques > 0).length; }
-            if (m.listeTP) { mTotal += m.listeTP.length; mDone += m.listeTP.filter(tp => tp.nombrePratiques > 0).length; }
-            if (m.listeAnnales) { mTotal += m.listeAnnales.length; mDone += m.listeAnnales.filter(a => a.nombrePratiques > 0).length; }
-            total += mTotal;
-            done += mDone;
-            if (mTotal > 0) perMatiere.push({ nom: m.nom, total: mTotal, done: mDone, percent: Math.round((mDone/mTotal)*100) });
-          });
-        });
-      });
-    });
-    return { total, done, perMatiere };
-  }, [coursConfig]);
-
-  const globalPercent = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : 0;
-
+  // ---- Loading state ----
   if (loading) {
     return (
       <div style={{textAlign:'center', marginTop:'5rem'}}>
@@ -483,12 +159,7 @@ function Dashboard() {
 
   if (!orchestratorData || orchestratorData.error) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="card glass-panel"
-        style={{textAlign:'center', marginTop:'3rem'}}
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="card glass-panel" style={{textAlign:'center', marginTop:'3rem'}}>
         <h2>{greeting} ! Bienvenue sur ELPIS</h2>
         <p style={{color:'var(--text-secondary)'}}>Configure tes objectifs et tes cours pour activer le Planificateur.</p>
       </motion.div>
@@ -499,173 +170,59 @@ function Dashboard() {
   const surcharge = statut === "SURCHARGE";
   const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0 }
-  };
-
+  // ---- iCal export ----
   const exportToICal = () => {
-    if (!orchestratorData || !orchestratorData.tachesDuJour || orchestratorData.tachesDuJour.length === 0) {
-      alert("Aucune tâche à exporter.");
-      return;
-    }
-
+    if (!orchestratorData?.tachesDuJour?.length) { alert("Aucune tâche à exporter."); return; }
     let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ELPIS//Planning//FR\n";
-    let currentBlockStart = new Date();
-    currentBlockStart.setHours(8, 0, 0, 0);
-
+    let currentBlockStart = new Date(); currentBlockStart.setHours(8, 0, 0, 0);
     orchestratorData.tachesDuJour.forEach((tache, index) => {
       const durationStr = typeof tache.dureeEstimee === 'number' ? tache.dureeEstimee : parseInt(tache.dureeEstimee) || 30;
       const endBlock = new Date(currentBlockStart.getTime() + durationStr * 60000);
-
-      const formatICSDate = (date) => {
-        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
-      };
-
+      const formatICSDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
       const title = tache.type === 'ANKI' ? 'Révisions (Anki)' : `[${tache.type}] ${tache.titre || 'Tâche'}`;
-      const description = tache.type === 'ANKI' ? `Révisions programmées` : `Matière : ${tache.matiereNom || tache.matiere || 'N/A'}`;
-
       icsContent += "BEGIN:VEVENT\n";
-      icsContent += `UID:${Date.now()}-${index}@elpis.app\n`;
-      icsContent += `DTSTAMP:${formatICSDate(new Date())}\n`;
-      icsContent += `DTSTART:${formatICSDate(currentBlockStart)}\n`;
-      icsContent += `DTEND:${formatICSDate(endBlock)}\n`;
-      icsContent += `SUMMARY:${title}\n`;
-      icsContent += `DESCRIPTION:${description}\n`;
-      icsContent += "END:VEVENT\n";
-
+      icsContent += `UID:${Date.now()}-${index}@elpis.app\nDTSTAMP:${formatICSDate(new Date())}\nDTSTART:${formatICSDate(currentBlockStart)}\nDTEND:${formatICSDate(endBlock)}\nSUMMARY:${title}\nEND:VEVENT\n`;
       currentBlockStart = new Date(endBlock.getTime() + 5 * 60000);
     });
-
     icsContent += "END:VCALENDAR";
-
     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `elpis_planning_${new Date().toISOString().split('T')[0]}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const link = document.createElement('a'); link.href = url; link.download = `elpis_planning_${new Date().toISOString().split('T')[0]}.ics`;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
   };
 
+  // ---- Render ----
   return (
-    <motion.div
-      className="dashboard"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      {/* === WELCOME CARD === */}
-      <div className="welcome-card">
-        <div>
-          <h2>{greeting} ! 👋</h2>
-          <p>
-            {orderedTaches.length > 0
-              ? `Tu as ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} à accomplir aujourd'hui.`
-              : "Tu as tout terminé pour aujourd'hui. Bravo !"}
-          </p>
-        </div>
-        <div className="welcome-stats">
-          <div className="welcome-stat">
-            <div className="welcome-stat-value" style={{color: 'var(--success-color)'}}>{recommendedDailyHours}h</div>
-            <div className="welcome-stat-label"><InfoTooltip content="Calculé dynamiquement par le moteur de charge selon tes coefficients et les jours restants avant l'examen.">Cible IA <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
-          </div>
-          <div className="welcome-stat">
-            <div className="welcome-stat-value">{orderedTaches.length}</div>
-            <div className="welcome-stat-label">Tâches</div>
-          </div>
-          <div className="welcome-stat">
-            <div className="welcome-stat-value">{Math.round(tempsRequisMin/60 * 10)/10}h</div>
-            <div className="welcome-stat-label"><InfoTooltip content="Temps total estimé par le système pour accomplir toutes tes tâches du jour.">Requis <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
-          </div>
-          <div className="welcome-stat welcome-stat-circular">
-            <CircularProgress percent={globalPercent} />
-            <div className="welcome-stat-label"><InfoTooltip content="Pourcentage global d'avancement (tous cours et exercices confondus).">Global <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
-          </div>
-          <div className="welcome-stat welcome-stat-streak">
-            <div className="welcome-stat-value" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#F59E0B' }}>
-              <span style={{ filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.8))', fontSize: '2rem', animation: 'float 4s ease-in-out infinite' }}>🔥</span>
-              <span style={{ fontSize: '2.4rem' }}>{config?.currentStreak || 0}</span>
-            </div>
-            <div className="welcome-stat-label" style={{ color: 'var(--text-secondary)' }}><InfoTooltip content="Le nombre de jours consécutifs où tu as validé une tâche ou pris un jour de repos autorisé. Ne brise pas la chaîne !">Record : {config?.bestStreak || 0} <span style={{fontSize:'0.8rem'}}>ℹ️</span></InfoTooltip></div>
-          </div>
-        </div>
-      </div>
+    <motion.div className="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      <WelcomeCard greeting={greeting} orderedTaches={orderedTaches} recommendedDailyHours={recommendedDailyHours} tempsRequisMin={tempsRequisMin} globalPercent={globalPercent} config={config} />
 
+      {/* Action buttons */}
       <div className="dashboard-actions">
-        <button
-          className="btn-primary"
-          onClick={() => {
-            setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' });
-            setCustomTaskModalOpen(true);
-          }}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', background: 'var(--success-color)'}}
-          title="Ajouter une activité libre (Livre, Vidéo, Projet...)"
-        >
+        <button className="btn-primary" onClick={() => { setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' }); setCustomTaskModalOpen(true); }}
+          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', background: 'var(--success-color)'}} title="Ajouter une activité libre">
           ✨ Activité Libre
         </button>
-
-        <button
-          className="btn-secondary"
-          onClick={() => setAuditModalOpen(true)}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}
-          title="Voir le rapport d'audit du code"
-        >
+        <button className="btn-secondary" onClick={() => setAuditModalOpen(true)}
+          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}} title="Voir le rapport d'audit du code">
           🛡️ Code Health
         </button>
-
         {statut !== "REPOS" && !isRestDayToday && (
-          <button
-            className="btn-secondary"
-            onClick={() => {
-              if (window.confirm(`Activer un jour de repos ? Il te reste ${1 - restDaysUsed} repos pour cette semaine.`)) {
-                activateRestDay();
-              }
-            }}
+          <button className="btn-secondary" onClick={() => { if (window.confirm(`Activer un jour de repos ? Il te reste ${1 - restDaysUsed} repos pour cette semaine.`)) activateRestDay(); }}
             disabled={restDaysUsed >= 1}
             style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', opacity: restDaysUsed >= 1 ? 0.5 : 1}}
-            title={restDaysUsed >= 1 ? "Quota de repos (1/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}
-          >
+            title={restDaysUsed >= 1 ? "Quota de repos (1/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}>
             ☕ Activer Jour de Repos ({restDaysUsed}/1)
           </button>
         )}
-        <button
-          className="btn-secondary"
-          onClick={() => window.print()}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}
-          title="Imprimer ou sauvegarder le planning en PDF"
-        >
-          Exporter PDF
-        </button>
-        <button
-          className="btn-secondary"
-          onClick={exportToICal}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#60a5fa', borderColor: 'rgba(96, 165, 250, 0.4)'}}
-          title="Exporter le planning au format iCalendar (.ics)"
-        >
-          📅 Exporter iCal
-        </button>
+        <button className="btn-secondary" onClick={() => window.print()} style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}>Exporter PDF</button>
+        <button className="btn-secondary" onClick={exportToICal} style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#60a5fa', borderColor: 'rgba(96, 165, 250, 0.4)'}}>📅 Exporter iCal</button>
       </div>
 
       <div className="dashboard-grid">
-        {/* === OBJECTIFS (FIRST, more prominent) === */}
-        <motion.div
-          className="card glass-panel"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        >
+        {/* Objectives */}
+        <motion.div className="card glass-panel" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
           <h2>🎯 Objectifs du Jour</h2>
-
-          {/* PROGRESSION QUOTIDIENNE */}
-          {orchestratorData && orchestratorData.tempsDispoMin > 0 && statut !== "REPOS" && (
+          {orchestratorData?.tempsDispoMin > 0 && statut !== "REPOS" && (
             <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--bg-tertiary)' }}>
               <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>Progression de la Journée</h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
@@ -673,580 +230,114 @@ function Dashboard() {
                 <span>Objectif IA : {Math.floor(orchestratorData.tempsDispoMin / 60)}h{String(orchestratorData.tempsDispoMin % 60).padStart(2, '0')}</span>
               </div>
               <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  background: (orchestratorData.tempsDejaTravailleMin || 0) >= orchestratorData.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)',
-                  width: `${Math.min(100, ((orchestratorData.tempsDejaTravailleMin || 0) / orchestratorData.tempsDispoMin) * 100)}%`,
-                  transition: 'width 1s ease-out'
-                }} />
+                <div style={{ height: '100%', background: (orchestratorData.tempsDejaTravailleMin || 0) >= orchestratorData.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)', width: `${Math.min(100, ((orchestratorData.tempsDejaTravailleMin || 0) / orchestratorData.tempsDispoMin) * 100)}%`, transition: 'width 1s ease-out' }} />
               </div>
             </div>
           )}
 
           {(statut === "REPOS" || statut === "REPOS_OPTIONNEL") ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="empty-state-container"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="empty-state-container">
               <div className="empty-state-icon" style={{ filter: 'drop-shadow(0 10px 20px rgba(59, 130, 246, 0.3))' }}>☕</div>
               <h3 style={{color:'var(--accent-primary)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Mode Repos Activé</h3>
               <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>{orchestratorData.message}</p>
-              <p style={{marginTop: '1rem', fontStyle: 'italic', fontSize: '0.95rem', opacity: 0.8}}>Les tâches prévues aujourd'hui ont été suspendues sans pénalité. Prends ce temps pour toi !</p>
-
               <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
                 {surcharge && statut === "REPOS" && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleAddExtraTime}
-                    className="btn-primary"
-                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
-                  >
-                    🔥 J'ai encore de l'énergie (+30 min)
-                  </motion.button>
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleAddExtraTime} className="btn-primary" style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}>🔥 J'ai encore de l'énergie (+30 min)</motion.button>
                 )}
-
                 {statut === "REPOS_OPTIONNEL" && !acceptedRest && (
                   <>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={handleSkipRest}
-                      className="btn-primary"
-                      style={{background: 'var(--success-color)', padding: '0.8rem 1.5rem', fontWeight: 'bold', color: '#000'}}
-                    >
-                      🚀 Non, je suis en forme ! (Travailler)
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="btn-secondary"
-                      style={{padding: '0.8rem 1.5rem', fontWeight: 'bold', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)'}}
-                      onClick={() => {
-                        setAcceptedRest(true);
-                        toast.success("Bon repos !");
-                      }}
-                    >
-                      😌 Oui, me reposer
-                    </motion.button>
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSkipRest} className="btn-primary" style={{background: 'var(--success-color)', padding: '0.8rem 1.5rem', fontWeight: 'bold', color: '#000'}}>🚀 Non, je suis en forme ! (Travailler)</motion.button>
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-secondary" style={{padding: '0.8rem 1.5rem', fontWeight: 'bold', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)'}} onClick={() => { setAcceptedRest(true); toast.success("Bon repos !"); }}>😌 Oui, me reposer</motion.button>
                   </>
-                )}
-
-                {orchestratorData && !dailyFillGap && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={async () => {
-                      toast.info("Génération de nouvelles tâches en cours...");
-                      await fetchOrchestrator({ fillGap: true, extraTime });
-                    }}
-                    className="btn-primary"
-                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
-                  >
-                    🔥 Demander plus de tâches
-                  </motion.button>
                 )}
               </div>
             </motion.div>
           ) : orderedTaches.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="empty-state-container"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="empty-state-container">
               <div className="empty-state-icon">✨</div>
               <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
               <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes tes tâches pour aujourd'hui. Profite de ton temps libre, tu l'as bien mérité !</p>
-
               <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
-                {surcharge && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleAddExtraTime}
-                    className="btn-primary"
-                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
-                  >
-                    🔥 J'ai encore de l'énergie (+30 min)
-                  </motion.button>
-                )}
-
+                {surcharge && <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleAddExtraTime} className="btn-primary" style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}>🔥 J'ai encore de l'énergie (+30 min)</motion.button>}
                 {orchestratorData && !dailyFillGap && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setDailyFillGap(true);
-                      toast.info("Recherche de tâches supplémentaires en cours...");
-                    }}
-                    className="btn-primary"
-                    style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}
-                  >
-                    🚀 Demander plus de tâches
-                  </motion.button>
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setDailyFillGap(true); toast.info("Recherche de tâches supplémentaires en cours..."); }} className="btn-primary" style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}>🚀 Demander plus de tâches</motion.button>
                 )}
               </div>
             </motion.div>
           ) : (
-            <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="taches">
-                {(provided) => (
-                  <motion.div
-                    className="todo-list"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="show"
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    style={{display:'flex', flexDirection:'column', gap:'0.8rem', marginTop:'1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem'}}
-                  >
-                    <AnimatePresence>
-                      {orderedTaches?.map((t, index) => {
-                        const dragId = t.matiere + t.titre + index;
-                        return (
-                          <Draggable key={dragId} draggableId={dragId} index={index}>
-                            {(provided) => (
-                            <motion.div
-                              variants={itemVariants}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className="todo-item"
-                              style={{ marginLeft: '20px' }}
-                            >
-                              <div className="timeline-connector"></div>
-                              <div className="timeline-dot"></div>
-                              <div style={{flex: 1}}>
-                                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '1.05rem', color: 'var(--text-primary)'}}>
-                                  <span style={{
-                                    background: 'var(--bg-tertiary)',
-                                    color: 'var(--text-secondary)',
-                                    padding: '0.1rem 0.4rem',
-                                    borderRadius: '6px',
-                                    fontSize: '0.8rem',
-                                    fontWeight: 'bold',
-                                    border: '1px solid rgba(255,255,255,0.05)'
-                                  }}>#{index + 1}</span>
-                                  {t.titre}
-                                </div>
-                                <div style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>
-                                  {t.matiere} • {t.type}
-                                  {t.moment === 'matin' && <span style={{marginLeft: '0.5rem', background: 'rgba(251, 191, 36, 0.15)', color: '#fbbf24', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>🌅 Matin</span>}
-                                  {t.moment === 'aprem' && <span style={{marginLeft: '0.5rem', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>☀️ Après-midi</span>}
-                                  {t.moment === 'soir' && <span style={{marginLeft: '0.5rem', background: 'rgba(167, 139, 250, 0.15)', color: '#a78bfa', padding: '0.1rem 0.4rem', borderRadius: '4px', fontSize: '0.75rem'}}>🌙 Soir</span>}
-                                </div>
-                              </div>
-                              <div className="todo-item-actions">
-                                <div style={{background:'var(--bg-tertiary)', padding:'0.3rem 0.6rem', borderRadius:'6px', fontSize:'0.8rem'}}>
-                                  ~{t.dureeMinutes || 0} min
-                                </div>
-                                <button
-                                  onClick={() => handleTaskComplete(t)}
-                                  style={{
-                                    background: 'rgba(16, 185, 129, 0.2)',
-                                    color: 'var(--success-color)',
-                                    border: 'none',
-                                    padding: '0.4rem 0.8rem',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontWeight: 'bold',
-                                    transition: 'all 0.2s',
-                                    whiteSpace: 'nowrap',
-                                    flexShrink: 0
-                                  }}
-                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.4)'}
-                                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)'}
-                                >
-                                  Fait
-                                </button>
-                                {t.type !== 'CM' && DIFFICULTY_LEVELS?.map(dl => (
-                                  <button
-                                    key={dl.key}
-                                    onClick={() => handleTaskComplete(t, dl.key)}
-                                    title={dl.title}
-                                    style={{
-                                      background: 'transparent',
-                                      border: 'none',
-                                      cursor: 'pointer',
-                                      fontSize: '0.85rem',
-                                      padding: '0.1rem',
-                                      flexShrink: 0,
-                                      opacity: 0.7,
-                                      transition: 'opacity 0.2s',
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                                    onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
-                                  >
-                                    {dl.label}
-                                  </button>
-                                ))}
-                                {t.type === 'CM' && (
-                                  <button
-                                    onClick={() => handleSuspendCM(t)}
-                                    style={{
-                                      background: 'rgba(245, 158, 11, 0.15)',
-                                      color: '#f59e0b',
-                                      border: '1px solid rgba(245, 158, 11, 0.3)',
-                                      padding: '0.4rem 0.8rem',
-                                      borderRadius: '6px',
-                                      cursor: 'pointer',
-                                      fontWeight: 'bold',
-                                      transition: 'all 0.2s',
-                                      whiteSpace: 'nowrap',
-                                      flexShrink: 0,
-                                      fontSize: '0.8rem'
-                                    }}
-                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(245, 158, 11, 0.3)'}
-                                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(245, 158, 11, 0.15)'}
-                                    title="Clôturer la séance sans terminer le CM — il reviendra demain"
-                                  >
-                                    ⏸️ Suspendre
-                                  </button>
-                                )}
-                              </div>
-                            </motion.div>
-                          )}
-                        </Draggable>
-                      );})}
-                    </AnimatePresence>
-                    {provided.placeholder}
-                  </motion.div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            <TaskList orderedTaches={orderedTaches} onDragEnd={onDragEnd} onTaskComplete={handleTaskComplete} onSuspendCM={handleSuspendCM} />
           )}
         </motion.div>
 
-        {/* === CHARGE DU JOUR === */}
-        <motion.div
-          className="card glass-panel"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.05 }}
-        >
+        {/* Charge du Jour */}
+        <motion.div className="card glass-panel" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.05 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-              <div style={{ fontSize: '1.2rem', color: 'var(--accent-primary)' }}>⚡</div>
-              <h2 style={{ margin: 0 }}>Charge du Jour</h2>
-              {surcharge && (
-                <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                  RETARD ACCUMULÉ
-                </span>
-              )}
-            </div>
-
+            <div style={{ fontSize: '1.2rem', color: 'var(--accent-primary)' }}>⚡</div>
+            <h2 style={{ margin: 0 }}>Charge du Jour</h2>
+            {surcharge && <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>RETARD ACCUMULÉ</span>}
+          </div>
           <div style={{marginTop:'2rem', marginBottom:'1rem'}}>
             <div style={{display:'flex', justifyContent:'space-between', fontSize:'0.9rem'}}>
               <span style={{color:'var(--text-secondary)'}}>Prévu : <strong>{Math.round(tempsRequisMin/60 * 10)/10}h</strong></span>
               <span style={{color:'var(--text-secondary)'}}>Cible IA : <strong>{Math.round(tempsDispoMin/60 * 10)/10}h</strong></span>
             </div>
             <div className="progress-bar-container">
-              <motion.div
-                className={`progress-bar-fill ${surcharge ? 'surcharge' : ''}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${pourcentageCharge}%` }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                style={{
-                  backgroundColor: surcharge ? 'var(--danger-color)' : 'var(--success-color)'
-                }}
-              />
+              <motion.div className={`progress-bar-fill ${surcharge ? 'surcharge' : ''}`} initial={{ width: 0 }} animate={{ width: `${pourcentageCharge}%` }} transition={{ duration: 1, ease: "easeOut" }} style={{ backgroundColor: surcharge ? 'var(--danger-color)' : 'var(--success-color)' }} />
             </div>
           </div>
-
           {surcharge ? (
             <div style={{background: 'rgba(239, 68, 68, 0.1)', padding: '1rem', borderRadius: '8px', marginTop: '1rem', border: '1px solid rgba(239, 68, 68, 0.2)'}}>
-                <p style={{color: 'var(--danger-color)', margin: 0}}>
-                  <strong>⚠️ Attention :</strong> Tu as accumulé du retard sur tes révisions (CM/Annales). L'IA a étalé la charge pour te protéger, mais reste concentré pour tout rattraper !
-                </p>
-              </div>
+              <p style={{color: 'var(--danger-color)', margin: 0}}><strong>⚠️ Attention :</strong> Tu as accumulé du retard. L'IA a étalé la charge, mais reste concentré !</p>
+            </div>
           ) : (
             <div style={{background:'rgba(16, 185, 129, 0.1)', padding:'1rem', borderRadius:'8px', borderLeft:'4px solid var(--success-color)'}}>
               <strong>Équilibre parfait :</strong> Ta charge de travail est compatible avec tes objectifs de santé.
             </div>
           )}
-
-
         </motion.div>
       </div>
 
-      {/* === INSIGHTS IA v2 === */}
-      {intelligence && (
-        <motion.div
-          className="card glass-panel"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
-          style={{ marginTop: '2rem', borderLeft: '4px solid #a78bfa', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(167, 139, 250, 0.05))' }}
-        >
-          <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a78bfa', marginBottom: '1.5rem' }}>
-            🧠 Insights IA
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <InsightsPanel intelligence={intelligence} />
+      <ProjectsWidget projets={projets} pendingTasksCount={pendingTasksCount} />
+      <StatsSection stats={stats} globalPercent={globalPercent} />
 
-            {/* Burnout Risk */}
-            {intelligence?.burnoutRisk && intelligence.burnoutRisk.riskLevel !== 'none' && (
-              <div style={{
-                background: intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.15)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.1)',
-                border: `1px solid ${intelligence.burnoutRisk.riskLevel === 'high' ? 'rgba(239, 68, 68, 0.3)' : intelligence.burnoutRisk.riskLevel === 'medium' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`,
-                padding: '1rem', borderRadius: '8px'
-              }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '0.3rem', color: intelligence.burnoutRisk.riskLevel === 'high' ? 'var(--danger-color)' : '#f59e0b' }}>
-                  {intelligence.burnoutRisk.riskLevel === 'high' ? '🚨 Risque de Burnout Élevé' : intelligence.burnoutRisk.riskLevel === 'medium' ? '⚠️ Fatigue Détectée' : '💤 Sommeil Perturbé'}
-                </div>
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{intelligence.burnoutRisk.reason}</div>
-              </div>
-            )}
+      {/* Modals */}
+      <TaskCompletionModal isOpen={taskModalOpen} onClose={() => { setTaskModalOpen(false); setPendingTask(null); taskModalLockRef.current = false; }}
+        onSubmit={handleTaskSubmit} taskTitle={pendingTask?.titre || ''}
+        defaultMinutes={pendingTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)} taskType={pendingTask?.type || 'CM'} />
 
-            {/* Velocity Insights */}
-            {intelligence?.velocityMap && (() => {
-              const slowSubjects = Object.entries(intelligence.velocityMap).filter(([, v]) => v.isSlowLearner);
-              if (slowSubjects.length === 0) return null;
-              return (
-                <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#f59e0b' }}>🐢 Matières à Apprentissage Lent</div>
-                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    {slowSubjects.map(([name, v]) => (
-                      <div key={name} style={{ marginBottom: '0.3rem' }}>
-                        <strong>{name}</strong> — {v.avgSessionsToMaster?.toFixed(1)} sessions/CM en moyenne
-                        ({v.masteredCMs}/{v.totalCMs} CM maîtrisés, ~{Math.round(v.estimatedRemainingMinutes/60)}h restantes estimées)
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Cognitive Load Summary */}
-            {intelligence?.cognitiveLoadMap && (() => {
-              const heavy = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'heavy');
-              const light = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'light');
-              if (heavy.length === 0 && light.length === 0) return null;
-              return (
-                <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#818cf8' }}>🧬 Chronobiologie Activée</div>
-                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                    {heavy.length > 0 && <div>🌅 <strong>Matin</strong> (charge cognitive élevée) : {heavy.map(([n]) => n).join(', ')}</div>}
-                    {light.length > 0 && <div>🌙 <strong>Soir</strong> (charge cognitive légère) : {light.map(([n]) => n).join(', ')}</div>}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Remaining Weight */}
-            {intelligence?.remainingWeightMap && (() => {
-              const highRemaining = Object.entries(intelligence.remainingWeightMap)
-                .filter(([, v]) => v.remainingRatio === 1 && v.totalCoef > 0)
-                .sort((a, b) => b[1].totalCoef - a[1].totalCoef);
-              if (highRemaining.length === 0) return null;
-              return (
-                <div style={{ background: 'rgba(52, 211, 153, 0.08)', border: '1px solid rgba(52, 211, 153, 0.2)', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--success-color)' }}>📊 Matières Sans Notes (100% du coefficient à jouer)</div>
-                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {highRemaining.map(([name, v]) => (
-                      <span key={name} style={{ background: 'rgba(52, 211, 153, 0.15)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.85rem' }}>
-                        {name} (Coef total: {v.totalCoef.toFixed(1)})
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* All clear */}
-            {intelligence?.burnoutRisk?.riskLevel === 'none' && (
-              <div style={{ background: 'rgba(52, 211, 153, 0.08)', padding: '0.8rem 1rem', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ color: 'var(--success-color)', fontWeight: 'bold' }}>✅ Burnout : Aucun risque détecté</span>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                  ({intelligence.burnoutRisk.daysWithoutRest}j sans repos, {Math.round(intelligence.burnoutRisk.avgDailyMinutes/60 * 10)/10}h/jour moy.)
-                </span>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-
-      {/* === PROJETS PERSONNELS WIDGET === */}
-      <motion.div
-        className="card glass-panel"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3, delay: 0.15 }}
-        style={{ marginTop: '2rem' }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2>💡 Projets Personnels</h2>
-        </div>
-
-        {pendingTasksCount > 0 ? (
-          <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '1.5rem', borderRadius: '12px', textAlign: 'center', border: '1px dashed var(--bg-tertiary)' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🔒</div>
-            <p style={{ color: 'var(--text-secondary)' }}>Termine d'abord tes {pendingTasksCount} tâches du jour pour débloquer tes projets.</p>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-            {projets && projets.length > 0 ? projets.map(p => (
-              <div key={p.id} style={{ minWidth: '200px', background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--bg-tertiary)' }}>
-                <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--text-primary)' }}>{p.titre}</h4>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  {p.phases?.filter(ph => ph.complete).length || 0} / {p.phases?.length || 0} phases complétées
-                </div>
-              </div>
-            )) : (
-              <p style={{ color: 'var(--text-secondary)' }}>Aucun projet en cours. Rendez-vous dans l'onglet Projets pour en créer un !</p>
-            )}
-          </div>
-        )}
-      </motion.div>
-
-      {/* === STATISTIQUES === */}
-      <motion.div
-        className="card glass-panel"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-        style={{ marginTop: '2rem' }}
-      >
-        <h2>Statistiques de Progression</h2>
-        <div style={{display:'flex', gap:'2rem', alignItems:'center', marginBottom:'1.5rem', flexWrap: 'wrap'}}>
-          <div style={{width:'100px', height:'100px', borderRadius:'50%', background:`conic-gradient(var(--success-color) ${globalPercent}%, var(--bg-tertiary) 0)`, display:'flex', alignItems:'center', justifyContent:'center', position:'relative'}}>
-            <div style={{width:'80px', height:'80px', borderRadius:'50%', background:'var(--bg-secondary)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.2rem', fontWeight:'bold', color:'var(--text-primary)'}}>
-              {globalPercent}%
-            </div>
-          </div>
-          <div>
-            <h3 style={{marginTop:0}}>Progression Globale</h3>
-            <p style={{color:'var(--text-secondary)'}}>{stats.done} objectifs (CM/TD/TP) réalisés sur {stats.total} programmés au total.</p>
-          </div>
-        </div>
-
-        {stats.perMatiere?.length > 0 ? (
-          <div className="stats-carousel" style={{display:'flex', gap:'1rem', overflowX:'auto', paddingBottom:'1rem'}}>
-            {stats.perMatiere?.map(m => (
-              <div key={m.nom} style={{minWidth:'250px', flexShrink:0, background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', border:'1px solid var(--bg-tertiary)'}}>
-                <div style={{display:'flex', justifyContent:'space-between', marginBottom:'0.5rem'}}>
-                  <strong style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}} title={m.nom}>{m.nom}</strong>
-                  <span style={{color:'var(--success-color)', fontWeight:'bold'}}>{m.percent}%</span>
-                </div>
-                <div className="progress-bar-container" style={{height:'6px', marginTop:0}}>
-                  <div className="progress-bar-fill" style={{width:`${m.percent}%`, background:'var(--success-color)'}}></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p style={{color:'var(--text-secondary)'}}>Aucune donnée disponible. Ajoute des cours pour voir tes statistiques.</p>
-        )}
-      </motion.div>
-      {/* === Task Completion Modal === */}
-      <TaskCompletionModal
-        isOpen={taskModalOpen}
-        onClose={() => { setTaskModalOpen(false); setPendingTask(null); taskModalLockRef.current = false; }}
-        onSubmit={handleTaskSubmit}
-        taskTitle={pendingTask?.titre || ''}
-        defaultMinutes={pendingTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)}
-        taskType={pendingTask?.type || 'CM'}
-      />
-
-      {/* === Custom Task Modal === */}
       <AnimatePresence>
         {customTaskModalOpen && (
-          <motion.div
-            className="modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="modal-content glass-panel"
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              style={{ maxWidth: '400px', width: '90%' }}
-            >
+          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div className="modal-content glass-panel" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} style={{ maxWidth: '400px', width: '90%' }}>
               <h2 style={{ marginBottom: '1.5rem', color: 'var(--success-color)' }}>✨ Nouvelle Activité Libre</h2>
-
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Titre de l'activité</label>
-                <input
-                  type="text"
-                  value={customTaskParams.titre}
-                  onChange={(e) => setCustomTaskParams({...customTaskParams, titre: e.target.value})}
-                  placeholder="ex: Vidéo YouTube, Projet Perso..."
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
-                  autoFocus
-                />
+                <input type="text" value={customTaskParams.titre} onChange={(e) => setCustomTaskParams({...customTaskParams, titre: e.target.value})} placeholder="ex: Vidéo YouTube, Projet Perso..." style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }} autoFocus />
               </div>
-
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Catégorie</label>
-                <select
-                  value={customTaskParams.type}
-                  onChange={(e) => setCustomTaskParams({...customTaskParams, type: e.target.value})}
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
-                >
-                  <option value="PERSO">Perso / Projet</option>
-                  <option value="LECTURE">Lecture / Veille</option>
-                  <option value="ANKI">Anki (Flashcards)</option>
-                  <option value="CM">CM (Cours)</option>
-                  <option value="TD">TD (Exercices)</option>
-                  <option value="TP">TP (Pratique)</option>
-                  <option value="ANNALE">Annale (Examen)</option>
+                <select value={customTaskParams.type} onChange={(e) => setCustomTaskParams({...customTaskParams, type: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}>
+                  <option value="PERSO">Perso / Projet</option><option value="LECTURE">Lecture / Veille</option><option value="ANKI">Anki (Flashcards)</option><option value="CM">CM (Cours)</option><option value="TD">TD (Exercices)</option><option value="TP">TP (Pratique)</option><option value="ANNALE">Annale (Examen)</option>
                 </select>
               </div>
-
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Matière rattachée (Pour l'IA)</label>
-                <select
-                  value={customTaskParams.matiere}
-                  onChange={(e) => setCustomTaskParams({...customTaskParams, matiere: e.target.value})}
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}
-                >
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Matière rattachée</label>
+                <select value={customTaskParams.matiere} onChange={(e) => setCustomTaskParams({...customTaskParams, matiere: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}>
                   {allMatieres.length === 0 && <option value="">Aucune matière disponible</option>}
-                  {allMatieres.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
+                  {allMatieres.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                  Le temps passé sur cette activité viendra remplir la jauge de cette matière dans l'algorithme.
-                </p>
               </div>
-
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                <button
-                  className="btn-secondary"
-                  onClick={() => setCustomTaskModalOpen(false)}
-                >
-                  Annuler
-                </button>
-                <button
-                  className="btn-primary"
-                  onClick={() => {
-                    if (!customTaskParams.titre.trim()) {
-                      toast.error("Veuillez entrer un titre.");
-                      return;
-                    }
-                    if (!customTaskParams.matiere) {
-                      toast.error("Veuillez sélectionner une matière.");
-                      return;
-                    }
-
-                    const newTask = {
-                      id: 'custom-' + Date.now(),
-                      titre: customTaskParams.titre,
-                      type: customTaskParams.type,
-                      matiereNom: customTaskParams.matiere, // useChronoStore expects matiereNom
-                      isCustom: true,
-                      dureeMinutes: 30 // par défaut, mais le chrono compte ce qu'il veut
-                    };
-
-                    useChronoStore.getState().startGlobalChrono(newTask);
-                    setCustomTaskModalOpen(false);
-                    toast.info("Chronomètre lancé pour l'activité libre !");
-                  }}
-                  style={{ background: 'var(--success-color)' }}
-                >
-                  ▶ Lancer le Chrono
-                </button>
+                <button className="btn-secondary" onClick={() => setCustomTaskModalOpen(false)}>Annuler</button>
+                <button className="btn-primary" onClick={() => {
+                  if (!customTaskParams.titre.trim()) { toast.error("Veuillez entrer un titre."); return; }
+                  if (!customTaskParams.matiere) { toast.error("Veuillez sélectionner une matière."); return; }
+                  const newTask = { id: 'custom-' + Date.now(), titre: customTaskParams.titre, type: customTaskParams.type, matiereNom: customTaskParams.matiere, isCustom: true, dureeMinutes: 30 };
+                  useChronoStore.getState().startGlobalChrono(newTask);
+                  setCustomTaskModalOpen(false);
+                  toast.info("Chronomètre lancé pour l'activité libre !");
+                }} style={{ background: 'var(--success-color)' }}>▶ Lancer le Chrono</button>
               </div>
             </motion.div>
           </motion.div>
@@ -1254,7 +345,6 @@ function Dashboard() {
       </AnimatePresence>
 
       <AuditDashboard isOpen={auditModalOpen} onClose={() => setAuditModalOpen(false)} />
-
     </motion.div>
   );
 }
