@@ -249,3 +249,17 @@ Cela permet de rÃƒÂ©compenser la rigueur quotidienne et pas seulement la per
 <RULE[preparation_phase_weekends]>
 - **Repos automatique avant la rentrée** : Lors de la modification de l'orchestrateur (ou de tout algorithme de planification), si la date actuelle est antérieure à la date de rentrée (studyStartDate), l'algorithme DOIT automatiquement proposer le mode REPOS_OPTIONNEL les week-ends (samedi et dimanche). L'utilisateur doit pouvoir décliner ce repos s'il le souhaite.
 </RULE[preparation_phase_weekends]>
+
+<RULE[progressive_population]>
+- **Remplissage Progressif (Anti-Bulk)** : L'utilisateur a adopté une méthode de remplissage "just-in-time" pour ses cours. Il ne faut plus générer ou ajouter en masse à l'avance des CM, TD, TP ou Annales pour tout un semestre. Les éléments doivent être ajoutés manuellement et progressivement, uniquement au fur et à mesure que l'utilisateur indique les avoir vus ou étudiés.
+</RULE[progressive_population]>
+
+<RULE[compile_and_push_after_task]>
+- **Compilation et Push Systématiques (Fin de Tâche)** : À la fin de chaque tâche ayant entraîné une modification du code source, de la configuration ou de la base de données, l'agent DOIT :
+  1. Recompiler l'application frontend si nécessaire (ex: 
+pm run build dans le dossier web).
+  2. Ajouter tous les fichiers modifiés à Git (git add .).
+  3. Créer un commit descriptif (git commit -m "chore: description des modifications").
+  4. Pousser les modifications sur le dépôt distant (git push).
+Cette routine garantit que l'application est toujours déployable et que le travail est sauvegardé sur le Cloud.
+</RULE[compile_and_push_after_task]>

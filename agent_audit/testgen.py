@@ -11,9 +11,7 @@ Stratégie par type de fichier :
 
 import os
 import re
-import json
 from datetime import datetime
-from collections import defaultdict
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -191,21 +189,21 @@ def _generate_react_test(basename, exports, imports):
     
     lines.append("")
     lines.append(f"describe('{component_name}', () => {{")
-    lines.append(f"  it('should render without crashing', () => {{")
+    lines.append("  it('should render without crashing', () => {")
     lines.append(f"    render(<{component_name} />);")
-    lines.append(f"    // TODO: Ajouter des assertions significatives")
-    lines.append(f"    expect(document.body).toBeDefined();")
-    lines.append(f"  }});")
+    lines.append("    // TODO: Ajouter des assertions significatives")
+    lines.append("    expect(document.body).toBeDefined();")
+    lines.append("  });")
     
     # Tests additionnels pour les exports nommés
     for exp in exports:
         if exp['type'] == 'named' and exp['name'] != component_name:
-            lines.append(f"")
+            lines.append("")
             lines.append(f"  it('should export {exp['name']}', () => {{")
             lines.append(f"    expect({exp['name']}).toBeDefined();")
-            lines.append(f"  }});")
+            lines.append("  });")
     
-    lines.append(f"}});")
+    lines.append("});")
     lines.append("")
     
     return '\n'.join(lines)
@@ -241,29 +239,29 @@ def _generate_js_test(basename, exports, imports, filepath):
     if is_hook and all_export_names:
         hook_name = all_export_names[0]
         lines.append(f"describe('{hook_name}', () => {{")
-        lines.append(f"  it('should return expected shape', () => {{")
+        lines.append("  it('should return expected shape', () => {")
         lines.append(f"    const {{ result }} = renderHook(() => {hook_name}());")
-        lines.append(f"    // TODO: Ajouter des assertions sur result.current")
-        lines.append(f"    expect(result.current).toBeDefined();")
-        lines.append(f"  }});")
-        lines.append(f"}});")
+        lines.append("    // TODO: Ajouter des assertions sur result.current")
+        lines.append("    expect(result.current).toBeDefined();")
+        lines.append("  });")
+        lines.append("});")
     else:
         # Tests standards pour chaque export
         lines.append(f"describe('{name_no_ext}', () => {{")
         for name in all_export_names[:10]:
             lines.append(f"  describe('{name}', () => {{")
-            lines.append(f"    it('should be defined', () => {{")
+            lines.append("    it('should be defined', () => {")
             lines.append(f"      expect({name}).toBeDefined();")
-            lines.append(f"    }});")
-            lines.append(f"")
-            lines.append(f"    it('should be a function', () => {{")
-            lines.append(f"      // TODO: Vérifier le type exact (fonction, objet, classe...)")
+            lines.append("    });")
+            lines.append("")
+            lines.append("    it('should be a function', () => {")
+            lines.append("      // TODO: Vérifier le type exact (fonction, objet, classe...)")
             lines.append(f"      // expect(typeof {name}).toBe('function');")
             lines.append(f"      expect({name}).toBeDefined();")
-            lines.append(f"    }});")
-            lines.append(f"  }});")
-            lines.append(f"")
-        lines.append(f"}});")
+            lines.append("    });")
+            lines.append("  });")
+            lines.append("")
+        lines.append("});")
     
     lines.append("")
     return '\n'.join(lines)
@@ -274,35 +272,35 @@ def _generate_python_test(basename, exports, imports):
     name_no_ext = os.path.splitext(basename)[0]
     
     lines = []
-    lines.append(f'"""')
+    lines.append('"""')
     lines.append(f'Tests auto-générés pour {basename}')
     lines.append(f'Généré le {datetime.now().strftime("%Y-%m-%d %H:%M")}')
-    lines.append(f'"""')
-    lines.append(f'import pytest')
+    lines.append('"""')
+    lines.append('import pytest')
     lines.append(f'from {name_no_ext} import {", ".join([e["name"] for e in exports[:10]])}')
-    lines.append(f'')
+    lines.append('')
     
     for exp in exports[:20]:
         if exp['type'] == 'function':
-            lines.append(f'')
+            lines.append('')
             lines.append(f'def test_{exp["name"]}_exists():')
             lines.append(f'    """Vérifie que la fonction {exp["name"]} est importable."""')
             lines.append(f'    assert callable({exp["name"]})')
-            lines.append(f'')
+            lines.append('')
             lines.append(f'def test_{exp["name"]}_basic():')
-            lines.append(f'    # TODO: Ajouter un vrai test')
-            lines.append(f'    pass')
+            lines.append('    # TODO: Ajouter un vrai test')
+            lines.append('    pass')
         elif exp['type'] == 'class':
-            lines.append(f'')
+            lines.append('')
             lines.append(f'def test_{exp["name"]}_exists():')
             lines.append(f'    """Vérifie que la classe {exp["name"]} est importable."""')
             lines.append(f'    assert {exp["name"]} is not None')
-            lines.append(f'')
+            lines.append('')
             lines.append(f'def test_{exp["name"]}_instantiate():')
-            lines.append(f'    # TODO: Ajouter un vrai test avec instanciation')
-            lines.append(f'    pass')
+            lines.append('    # TODO: Ajouter un vrai test avec instanciation')
+            lines.append('    pass')
     
-    lines.append(f'')
+    lines.append('')
     return '\n'.join(lines)
 
 
@@ -361,19 +359,19 @@ def format_generation_report(generated, skipped, dry_run):
     lines.append("=" * 60)
     lines.append(f"  RAPPORT DE GÉNÉRATION DE TESTS — {'DRY RUN' if dry_run else 'APPLIQUÉ'}")
     lines.append("=" * 60)
-    lines.append(f"")
+    lines.append("")
     lines.append(f"  📝 Tests générés : {len(generated)}")
     lines.append(f"  ⏭️  Fichiers ignorés : {len(skipped)}")
-    lines.append(f"")
+    lines.append("")
     
     if generated:
-        lines.append(f"  Fichiers de test créés :")
+        lines.append("  Fichiers de test créés :")
         for src, test in sorted(generated.items()):
             lines.append(f"    ✅ {src} → {os.path.basename(test)}")
     
     if skipped and len(skipped) <= 30:
-        lines.append(f"")
-        lines.append(f"  Fichiers sans test (déjà couverts ou ignorés) :")
+        lines.append("")
+        lines.append("  Fichiers sans test (déjà couverts ou ignorés) :")
         for s in sorted(skipped):
             lines.append(f"    ⬜ {s}")
     

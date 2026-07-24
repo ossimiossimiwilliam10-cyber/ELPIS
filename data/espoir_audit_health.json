@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-20T13:09:15.466651",
+  "timestamp": "2026-07-24T12:01:00.043138",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,19 +8,18 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 79.02,
-    "files_scanned": 724,
-    "files_per_second": 9.2,
-    "lines_per_second": 40578.0
+    "elapsed_seconds": 100.05,
+    "files_scanned": 833,
+    "files_per_second": 8.3,
+    "lines_per_second": 32097.0
   },
   "false_positive_analysis": {
-    "total_rules_with_hits": 4,
+    "total_rules_with_hits": 3,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "MISSING_TEST_FILE": 231,
-      "E402": 18,
-      "F841": 12,
-      "E741": 4
+      "DEAD-ORPHAN-001": 334,
+      "MISSING_TEST_FILE": 135,
+      "DEAD-EXPORT-001": 31
     }
   },
   "escalation_health": {
@@ -31,38 +30,38 @@
   },
   "rule_activity": {
     "total_rules": 60,
-    "active_rules": 4,
+    "active_rules": 3,
     "inactive_rules": [
-      "MISSING_ALT_ATTRIBUTE",
-      "FIX_CONFIDENCE_DECIMAL",
       "NO_UNSAFE_INNERHTML",
-      "NO_INDEX_AS_KEY",
-      "TEST_WITH_SKIP",
+      "NO_EMPTY_CATCH",
+      "MISSING_TYPE_HINTS",
+      "EXCESSIVE_NESTING_DEPTH",
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "NO_BARE_EXCEPT",
+      "NO_HARDCODED_SECRETS",
+      "NO_WINDOW_PROMPT",
+      "JSON_DEEP_CLONE",
+      "PROP_SPREADING_WARNING",
+      "NO_HTTP_IN_PRODUCTION_URLS",
       "EXCESSIVE_FILE_SIZE",
-      "MAGIC_NUMBERS",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_PRINT_IN_PRODUCTION",
-      "TOAST_DIRECT_CALL",
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
       "NO_TODO_WITHOUT_TICKET",
-      "NO_CONSOLE_LOG_IN_PROD",
-      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
-      "USE_OPTIONAL_CHAINING",
-      "UNGUARDED_JSON_PARSE",
-      "MISSING_USEEFFECT_DEPS",
-      "INTELLIGENCE_EXPORT_COVERAGE",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "NO_WILDCARD_CORS",
-      "LARGE_IMPORT_SIDE_EFFECT"
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "NO_INDEX_AS_KEY",
+      "FIX_CONFIDENCE_DECIMAL",
+      "FETCH_WITHOUT_ABORT",
+      "MISSING_USEEFFECT_DEPS"
     ],
     "inactive_count": 59
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 290.4
+    "size_kb": 278.3
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 9.2 fichiers/s"
+    "Performance degradee: 8.3 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."

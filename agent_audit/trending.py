@@ -13,9 +13,6 @@ Fonctionnalités :
 
 import os
 import json
-import math
-from datetime import datetime, timedelta
-from collections import defaultdict
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 AUDIT_FILE = os.path.join(PROJECT_ROOT, 'data', 'espoir_audit.json')
@@ -371,22 +368,22 @@ def format_trending_report(trends, history):
     # Top 5 règles aggravées
     worsening = trends.get('top_worsening_rules', [])
     if worsening:
-        lines.append(f"")
-        lines.append(f"  📈 Top règles qui s'aggravent :")
+        lines.append("")
+        lines.append("  📈 Top règles qui s'aggravent :")
         for i, w in enumerate(worsening):
             lines.append(f"     {i+1}. {w['rule_id']} : {w['previous_count']} → {w['current_count']} (+{w['delta']}, +{w['pct_increase']}%)")
     
     # Nouveaux types
     new_types = trends.get('new_anomaly_types', [])
     if new_types:
-        lines.append(f"")
+        lines.append("")
         lines.append(f"  🆕 Nouveaux types d'anomalies ({len(new_types)}) :")
         for nt in new_types[:5]:
             lines.append(f"     • {nt['rule_id']} ({nt['severity']}) : {nt['count']} occurrences — {nt['category']}")
     
     # Efficacité des fixes
     fix_eff = trends.get('fix_efficiency', {})
-    lines.append(f"")
+    lines.append("")
     lines.append(f"  🔧 Efficacité des corrections : {fix_eff.get('current_ratio_pct', 0):.1f}% ({fix_eff.get('trend', '?')})")
     
     # Prédiction
@@ -398,8 +395,8 @@ def format_trending_report(trends, history):
     # Recommandations
     recs = trends.get('recommendations', [])
     if recs:
-        lines.append(f"")
-        lines.append(f"  💡 Recommandations :")
+        lines.append("")
+        lines.append("  💡 Recommandations :")
         for r in recs:
             lines.append(f"     {r}")
     

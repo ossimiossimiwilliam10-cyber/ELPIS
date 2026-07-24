@@ -346,7 +346,7 @@ def run_full_audit(dry_run=False, emergency_only=False):
         all_anomalies.append({
             'rule_id': 'DEAD-ORPHAN-001',
             'severity': 'warning',
-            'description': f"Fichier orphelin : jamais importe par aucun autre fichier du projet.",
+            'description': "Fichier orphelin : jamais importe par aucun autre fichier du projet.",
             'category': 'DEAD_CODE',
             'file': orphan,
             'line': 1,

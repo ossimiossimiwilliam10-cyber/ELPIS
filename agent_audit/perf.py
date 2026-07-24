@@ -21,7 +21,6 @@ import re
 import subprocess
 import time
 from datetime import datetime
-from collections import defaultdict
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 PERF_FILE = os.path.join(PROJECT_ROOT, 'data', 'espoir_perf_history.json')
@@ -322,7 +321,7 @@ def format_perf_report(metrics, regressions):
             lines.append(f"    {icon} {r['message']}")
     else:
         lines.append("")
-        lines.append(f"  ✅ Aucune régression détectée.")
+        lines.append("  ✅ Aucune régression détectée.")
     
     lines.append("")
     lines.append("=" * 60)
