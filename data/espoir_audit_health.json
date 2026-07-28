@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-24T12:01:00.043138",
+  "timestamp": "2026-07-24T12:11:50.095192",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,18 +8,18 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 100.05,
-    "files_scanned": 833,
-    "files_per_second": 8.3,
-    "lines_per_second": 32097.0
+    "elapsed_seconds": 101.58,
+    "files_scanned": 836,
+    "files_per_second": 8.2,
+    "lines_per_second": 31615.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 3,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "DEAD-ORPHAN-001": 334,
-      "MISSING_TEST_FILE": 135,
-      "DEAD-EXPORT-001": 31
+      "DEAD-ORPHAN-001": 337,
+      "MISSING_TEST_FILE": 138,
+      "DEAD-EXPORT-001": 25
     }
   },
   "escalation_health": {
@@ -32,26 +32,26 @@
     "total_rules": 60,
     "active_rules": 3,
     "inactive_rules": [
-      "NO_UNSAFE_INNERHTML",
-      "NO_EMPTY_CATCH",
-      "MISSING_TYPE_HINTS",
-      "EXCESSIVE_NESTING_DEPTH",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_BARE_EXCEPT",
-      "NO_HARDCODED_SECRETS",
-      "NO_WINDOW_PROMPT",
-      "JSON_DEEP_CLONE",
-      "PROP_SPREADING_WARNING",
-      "NO_HTTP_IN_PRODUCTION_URLS",
-      "EXCESSIVE_FILE_SIZE",
-      "SCORING_NEW_PARAM_SIGNATURE",
       "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "NO_TODO_WITHOUT_TICKET",
-      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "ZUSTAND_FULL_STORE_DESTRUCTURE",
+      "NO_PRINT_IN_PRODUCTION",
+      "INTELLIGENCE_EXPORT_COVERAGE",
+      "NO_HARDCODED_SECRETS",
       "NO_INDEX_AS_KEY",
+      "MISSING_JSDOC_ON_EXPORT",
+      "UNGUARDED_JSON_PARSE",
+      "NO_POSITIVE_TABINDEX",
+      "TOAST_DIRECT_CALL",
       "FIX_CONFIDENCE_DECIMAL",
-      "FETCH_WITHOUT_ABORT",
-      "MISSING_USEEFFECT_DEPS"
+      "PWA_STATIC_ROUTE_EXCLUSION",
+      "EXCESSIVE_FILE_SIZE",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "TEST_WITH_SKIP",
+      "NO_IMPORTANT_IN_CSS",
+      "NO_DOUBLE_SEMICOLONS",
+      "USE_OPTIONAL_CHAINING"
     ],
     "inactive_count": 59
   },
@@ -61,7 +61,7 @@
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 8.3 fichiers/s"
+    "Performance degradee: 8.2 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."

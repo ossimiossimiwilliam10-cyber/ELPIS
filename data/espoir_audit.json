@@ -1,28 +1,28 @@
 {
-  "last_scan": "2026-07-24T12:01:00.042673",
+  "last_scan": "2026-07-24T12:11:50.094782",
   "mode": "SCAN + CORRECTION",
-  "files_scanned": 833,
-  "total_lines_of_code": 3211299,
-  "total_anomalies": 779,
+  "files_scanned": 836,
+  "total_lines_of_code": 3211334,
+  "total_anomalies": 785,
   "total_corrections": 14,
   "files_corrected": 14,
   "total_escalations": 0,
   "anomalies_by_severity": {
     "critical": 0,
-    "warning": 377,
-    "info": 402
+    "warning": 380,
+    "info": 405
   },
   "anomalies_by_category": {
-    "TESTING": 135,
-    "DEAD_CODE": 603,
+    "TESTING": 138,
+    "DEAD_CODE": 606,
     "PYTHON_SPECIFIC": 41
   },
   "rule_stats": {
     "DEAD-ORPHAN-001": {
-      "count": 334,
+      "count": 337,
       "severity": "warning",
       "category": "DEAD_CODE",
-      "files_affected": 334,
+      "files_affected": 337,
       "top_files": [
         ".agents\\skills\\audit_dead_code\\SKILL.md",
         ".agents\\skills\\manage_exceptional_leave\\SKILL.md",
@@ -48,13 +48,13 @@
       ],
       "fixable_count": 267,
       "auto_fixed_count": 0,
-      "pct_of_total": 34.3
+      "pct_of_total": 34.0
     },
     "MISSING_TEST_FILE": {
-      "count": 135,
+      "count": 138,
       "severity": "info",
       "category": "TESTING",
-      "files_affected": 135,
+      "files_affected": 138,
       "top_files": [
         "ELPIS_APPRENTISSAGE\\ELPIS_V2\\main.py",
         "Sauvegarde Elpîs\\ELPIS\\ELPIS_APPRENTISSAGE\\ELPIS_V2\\main.py",
@@ -64,7 +64,7 @@
       ],
       "fixable_count": 0,
       "auto_fixed_count": 0,
-      "pct_of_total": 17.3
+      "pct_of_total": 17.6
     },
     "E402": {
       "count": 19,
@@ -163,8 +163,8 @@
       "pct_of_total": 0.1
     }
   },
-  "signal_count": 377,
-  "noise_count": 402,
+  "signal_count": 380,
+  "noise_count": 405,
   "escalation_stats": {
     "total": 0,
     "by_type": {},
@@ -182,6 +182,48 @@
       "file": "ELPIS_APPRENTISSAGE\\ELPIS_V2\\main.py",
       "line": 1,
       "code_snippet": "Aucun fichier de test pour main.py",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Pas de fichier de test correspondant. Creez un fichier .test.js(x).",
+      "_suppression_comment": "AUDIT_SUPPRESS:MISSING_TEST"
+    },
+    {
+      "rule_id": "MISSING_TEST_FILE",
+      "severity": "info",
+      "description": "Fichier source sans fichier de test correspondant.",
+      "category": "TESTING",
+      "file": "interface\\bridge\\scratch_clear.js",
+      "line": 1,
+      "code_snippet": "Aucun fichier de test pour scratch_clear.js",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Pas de fichier de test correspondant. Creez un fichier .test.js(x).",
+      "_suppression_comment": "AUDIT_SUPPRESS:MISSING_TEST"
+    },
+    {
+      "rule_id": "MISSING_TEST_FILE",
+      "severity": "info",
+      "description": "Fichier source sans fichier de test correspondant.",
+      "category": "TESTING",
+      "file": "interface\\bridge\\scratch_tables.js",
+      "line": 1,
+      "code_snippet": "Aucun fichier de test pour scratch_tables.js",
+      "cwe_ref": null,
+      "wcag_ref": null,
+      "_fixable": false,
+      "_escalation_message": "Pas de fichier de test correspondant. Creez un fichier .test.js(x).",
+      "_suppression_comment": "AUDIT_SUPPRESS:MISSING_TEST"
+    },
+    {
+      "rule_id": "MISSING_TEST_FILE",
+      "severity": "info",
+      "description": "Fichier source sans fichier de test correspondant.",
+      "category": "TESTING",
+      "file": "interface\\bridge\\scratch_tables2.js",
+      "line": 1,
+      "code_snippet": "Aucun fichier de test pour scratch_tables2.js",
       "cwe_ref": null,
       "wcag_ref": null,
       "_fixable": false,
@@ -2468,6 +2510,39 @@
       "file": "interface\\bridge\\package.json",
       "line": 1,
       "code_snippet": "Orphan file: interface\\bridge\\package.json",
+      "_fixable": false,
+      "_escalation_message": "Verifier si ce fichier est vraiment necessaire. Sinon, le supprimer."
+    },
+    {
+      "rule_id": "DEAD-ORPHAN-001",
+      "severity": "warning",
+      "description": "Fichier orphelin : jamais importe par aucun autre fichier du projet.",
+      "category": "DEAD_CODE",
+      "file": "interface\\bridge\\scratch_clear.js",
+      "line": 1,
+      "code_snippet": "Orphan file: interface\\bridge\\scratch_clear.js",
+      "_fixable": false,
+      "_escalation_message": "Verifier si ce fichier est vraiment necessaire. Sinon, le supprimer."
+    },
+    {
+      "rule_id": "DEAD-ORPHAN-001",
+      "severity": "warning",
+      "description": "Fichier orphelin : jamais importe par aucun autre fichier du projet.",
+      "category": "DEAD_CODE",
+      "file": "interface\\bridge\\scratch_tables.js",
+      "line": 1,
+      "code_snippet": "Orphan file: interface\\bridge\\scratch_tables.js",
+      "_fixable": false,
+      "_escalation_message": "Verifier si ce fichier est vraiment necessaire. Sinon, le supprimer."
+    },
+    {
+      "rule_id": "DEAD-ORPHAN-001",
+      "severity": "warning",
+      "description": "Fichier orphelin : jamais importe par aucun autre fichier du projet.",
+      "category": "DEAD_CODE",
+      "file": "interface\\bridge\\scratch_tables2.js",
+      "line": 1,
+      "code_snippet": "Orphan file: interface\\bridge\\scratch_tables2.js",
       "_fixable": false,
       "_escalation_message": "Verifier si ce fichier est vraiment necessaire. Sinon, le supprimer."
     },
@@ -6010,72 +6085,6 @@
       "file": "interface\\web\\src\\components\\MusicSettingsModal.jsx",
       "line": 4,
       "code_snippet": "export MusicSettingsModal",
-      "_fixable": true,
-      "_escalation_message": "Supprimer cet export s'il n'est vraiment plus utilise."
-    },
-    {
-      "rule_id": "DEAD-EXPORT-001",
-      "severity": "info",
-      "description": "Export inutilise : 'TaskCompletionModal' jamais importe ailleurs.",
-      "category": "DEAD_CODE",
-      "file": "interface\\web\\src\\components\\TaskCompletionModal.jsx",
-      "line": 23,
-      "code_snippet": "export TaskCompletionModal",
-      "_fixable": true,
-      "_escalation_message": "Supprimer cet export s'il n'est vraiment plus utilise."
-    },
-    {
-      "rule_id": "DEAD-EXPORT-001",
-      "severity": "info",
-      "description": "Export inutilise : 'EditableLabel' jamais importe ailleurs.",
-      "category": "DEAD_CODE",
-      "file": "interface\\web\\src\\components\\cours\\EditableLabel.jsx",
-      "line": 5,
-      "code_snippet": "export EditableLabel",
-      "_fixable": true,
-      "_escalation_message": "Supprimer cet export s'il n'est vraiment plus utilise."
-    },
-    {
-      "rule_id": "DEAD-EXPORT-001",
-      "severity": "info",
-      "description": "Export inutilise : 'EditableNote' jamais importe ailleurs.",
-      "category": "DEAD_CODE",
-      "file": "interface\\web\\src\\components\\cours\\EditableNote.jsx",
-      "line": 1,
-      "code_snippet": "export EditableNote",
-      "_fixable": true,
-      "_escalation_message": "Supprimer cet export s'il n'est vraiment plus utilise."
-    },
-    {
-      "rule_id": "DEAD-EXPORT-001",
-      "severity": "info",
-      "description": "Export inutilise : 'ExerciceRow' jamais importe ailleurs.",
-      "category": "DEAD_CODE",
-      "file": "interface\\web\\src\\components\\cours\\ExerciceRow.jsx",
-      "line": 17,
-      "code_snippet": "export ExerciceRow",
-      "_fixable": true,
-      "_escalation_message": "Supprimer cet export s'il n'est vraiment plus utilise."
-    },
-    {
-      "rule_id": "DEAD-EXPORT-001",
-      "severity": "info",
-      "description": "Export inutilise : 'MatiereCard' jamais importe ailleurs.",
-      "category": "DEAD_CODE",
-      "file": "interface\\web\\src\\components\\cours\\MatiereCard.jsx",
-      "line": 7,
-      "code_snippet": "export MatiereCard",
-      "_fixable": true,
-      "_escalation_message": "Supprimer cet export s'il n'est vraiment plus utilise."
-    },
-    {
-      "rule_id": "DEAD-EXPORT-001",
-      "severity": "info",
-      "description": "Export inutilise : 'StarRating' jamais importe ailleurs.",
-      "category": "DEAD_CODE",
-      "file": "interface\\web\\src\\components\\cours\\StarRating.jsx",
-      "line": 5,
-      "code_snippet": "export StarRating",
       "_fixable": true,
       "_escalation_message": "Supprimer cet export s'il n'est vraiment plus utilise."
     }
