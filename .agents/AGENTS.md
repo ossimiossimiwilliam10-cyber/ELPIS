@@ -263,3 +263,7 @@ pm run build dans le dossier web).
   4. Pousser les modifications sur le dépôt distant (git push).
 Cette routine garantit que l'application est toujours déployable et que le travail est sauvegardé sur le Cloud.
 </RULE[compile_and_push_after_task]>
+
+<RULE[data_reset_server_shutdown]>
+- **Arrêt du Serveur avant Manipulation des Données (Anti-Zombie)** : Avant de supprimer, sauvegarder, ou modifier manuellement des fichiers de base de données (ex: SQLite, JSON) dans le dossier data/, l'agent DOIT systématiquement vérifier et tuer les processus du serveur backend en arrière-plan (ex: node server.js ou les processus sur le port 3001). Sinon, le processus en cours garde les données en mémoire et recrée les fichiers, provoquant la réapparition de données "fantômes" côté frontend.
+</RULE[data_reset_server_shutdown]>
