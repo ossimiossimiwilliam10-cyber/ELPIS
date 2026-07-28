@@ -147,7 +147,7 @@ export default function MatiereCard({
   };
 
   return (
-    <div style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0}}>
+    <div style={{background:'rgba(15, 23, 42, 0.4)', padding:'1rem', borderRadius:'8px', border:'1px solid rgba(255,255,255,0.05)', minWidth: 0, opacity: matiere.dispense ? 0.5 : 1, transition: 'opacity 0.3s'}}>
       {/* MATIERE HEADER */}
       <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.5rem', minWidth: 0}}>
         <button onClick={() => deleteMatiere(lIndex, sIndex, uIndex, mIndex)} style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'1rem', padding:0}} title="Supprimer">🗑️</button>
@@ -157,6 +157,22 @@ export default function MatiereCard({
           placeholder="Nom de la matière"
           style={{flex:1, borderBottom:'1px solid var(--bg-tertiary)', paddingBottom:'0.3rem'}}
         />
+        <button
+          onClick={() => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'dispense'], !matiere.dispense)}
+          style={{
+            background: matiere.dispense ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+            border: matiere.dispense ? '1px solid var(--success-color)' : '1px solid var(--border-color)',
+            color: matiere.dispense ? 'var(--success-color)' : 'var(--text-secondary)',
+            padding: '0.2rem 0.5rem',
+            borderRadius: '12px',
+            fontSize: '0.8rem',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap'
+          }}
+          title="Marquer comme dispensé (Validation d'acquis)"
+        >
+          {matiere.dispense ? '🎓 Dispensé' : 'Normal'}
+        </button>
       </div>
 
       {/* CONFIG NOTEBOOK LM & SYNERGIES */}

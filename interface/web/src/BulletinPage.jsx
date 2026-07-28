@@ -105,6 +105,7 @@ export default function BulletinPage() {
         let ueSumNotes = 0;
         let ueBonus = 0;
         ue.matieres?.forEach(m => {
+          if (m.dispense) return;
           const avg = getSubjectAverage(m.evaluations);
           if (avg !== null) {
             const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
@@ -140,6 +141,7 @@ export default function BulletinPage() {
         let ueSumNotes = 0;
         let ueBonus = 0;
         ue.matieres?.forEach(m => {
+          if (m.dispense) return;
           const avg = getSubjectAverage(m.evaluations);
           if (avg !== null) {
             const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
@@ -269,6 +271,7 @@ export default function BulletinPage() {
         let ueSumNotes = 0;
         let ueBonus = 0;
         ue.matieres?.forEach(m => {
+          if (m.dispense) return;
           const avg = getSubjectAverage(m.evaluations);
           if (avg !== null) {
             const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
@@ -308,6 +311,7 @@ export default function BulletinPage() {
         let ueSumNotes = 0;
         let ueBonus = 0;
         siblingUe.matieres?.forEach(m => {
+          if (m.dispense) return;
           const avg = getSubjectAverage(m.evaluations);
           if (avg !== null) {
             const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
@@ -344,15 +348,18 @@ export default function BulletinPage() {
             {!isCollapsed && (
               <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {ue.matieres?.map((matiere, matIndex) => {
+                  const isDispense = matiere.dispense === true;
                   const avg = getSubjectAverage(matiere.evaluations);
                   const coef = matiere.coefficient !== undefined ? Number(matiere.coefficient) : 1;
                   const projected = intelligence?.projectedScoreMap?.[(matiere.nom || '').toLowerCase().trim()];
                   return (
-                    <div key={matIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)' }}>
+                    <div key={matIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)', opacity: isDispense ? 0.6 : 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '1.1rem' }}>{matiere.nom}</div>
+                        <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '1.1rem' }}>
+                           {matiere.nom} {isDispense && <span style={{fontSize:'0.8rem', color:'var(--success)', marginLeft:'0.5rem'}}>🎓 Dispensé</span>}
+                        </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                          {projected !== undefined && (
+                          {projected !== undefined && !isDispense && (
                             <span style={{ fontSize: '0.85rem', color: '#d8b4fe', background: 'rgba(168, 85, 247, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(168, 85, 247, 0.3)', fontWeight: 'bold' }} title="Score Projeté par l'IA">
                               🔮 Projeté : {projected} / 20
                             </span>

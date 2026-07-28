@@ -74,6 +74,10 @@ function buildTaskPools({
         const ueMatiereNames = (ue.matieres || []).map(m => (m.nom || '').toLowerCase().trim()).filter(Boolean);
         for (const m of (ue.matieres || [])) {
           m._ueMatieres = ueMatiereNames;
+          if (m.dispense) {
+            matiereIndexDansSemestre++;
+            continue;
+          }
           const examData = getSubjectExamBoost(m, examUrgencyMap);
           const examBoostOriginal = examData.boost;
           const daysToExam = examData.daysToExam;

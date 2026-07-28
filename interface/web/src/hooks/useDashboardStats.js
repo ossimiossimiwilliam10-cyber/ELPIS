@@ -50,6 +50,7 @@ export function useDashboardStats() {
       l.semestres?.forEach(s => {
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {
+            if (m.dispense) return;
             let mTotal = 0, mDone = 0;
             if (m.listeCM) { mTotal += m.listeCM.length; mDone += m.listeCM.filter(cm => cm.jActuel > 0).length; }
             if (m.listeTD) { mTotal += m.listeTD.length; mDone += m.listeTD.filter(td => td.nombrePratiques > 0).length; }
