@@ -267,3 +267,9 @@ Cette routine garantit que l'application est toujours dÃ©ployable et que le trav
 <RULE[data_reset_server_shutdown]>
 - **ArrÃªt du Serveur avant Manipulation des DonnÃ©es (Anti-Zombie)** : Avant de supprimer, sauvegarder, ou modifier manuellement des fichiers de base de donnÃ©es (ex: SQLite, JSON) dans le dossier data/, l'agent DOIT systÃ©matiquement vÃ©rifier et tuer les processus du serveur backend en arriÃ¨re-plan (ex: node server.js ou les processus sur le port 3001). Sinon, le processus en cours garde les donnÃ©es en mÃ©moire et recrÃ©e les fichiers, provoquant la rÃ©apparition de donnÃ©es "fantÃ´mes" cÃ´tÃ© frontend.
 </RULE[data_reset_server_shutdown]>
+
+<RULE[elpis_school_regulations]>
+- **Intégration du Règlement Universitaire** : Lorsqu'une règle de scolarité (règlement des études, MECC) est fournie (texte ou image), l'agent DOIT toujours considérer deux axes d'intégration pour ELPIS :
+  1. **Knowledge Base (IA)** : Mettre à jour data/reglement_etudes.md (ou similaire) pour que le Coach IA puisse conseiller l'étudiant avec exactitude.
+  2. **Features UI/Backend** : Réfléchir de manière proactive à la manière dont cette règle peut être codée dans l'application (ex: un minuteur, un tracker, une case "Dispensé", un avertissement d'absence) et proposer l'implémentation à l'utilisateur.
+</RULE[elpis_school_regulations]>

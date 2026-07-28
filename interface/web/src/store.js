@@ -19,6 +19,7 @@
  * @property {boolean} [enableTD]
  * @property {boolean} [enableAnnales]
  * @property {string} [dernierePratiqueAnki]
+ * @property {Array} [absences]
  */
 
 /**

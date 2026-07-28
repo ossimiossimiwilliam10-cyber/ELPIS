@@ -34,7 +34,8 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
         { id: 'mes_videos', label: 'Mes Vidéos', icon: '🎥' },
         { id: 'prep_hebdo', label: 'Préparation Hebdo', icon: '📅' },
         { id: 'bulletin', label: 'Bulletin & Notes', icon: '📝' },
-        { id: 'projets', label: 'Projets Personnels', icon: '💡' }
+        { id: 'projets', label: 'Projets Personnels', icon: '💡' },
+        { id: 'absences', label: 'Assiduité', icon: '🚨' }
       ]
     },
     {

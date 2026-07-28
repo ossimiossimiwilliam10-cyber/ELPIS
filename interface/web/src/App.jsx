@@ -22,6 +22,7 @@ const ProjetsPage = lazy(() => import('./ProjetsPage'));
 const MesVideosPage = lazy(() => import('./MesVideosPage'));
 const ClassementPage = lazy(() => import('./ClassementPage'));
 const GraphPage = lazy(() => import('./GraphPage'));
+const AbsencesPage = lazy(() => import('./AbsencesPage'));
 import useStore from './store';
 import { getRawIp, setApiUrl } from './utils/apiConfig';
 import { getDb, syncFromBackend } from './database';
@@ -297,6 +298,20 @@ function AppInner() {
             >
               <Suspense fallback={<LoadingFallback />}>
                 <BulletinPage />
+              </Suspense>
+            </motion.div>
+          )}
+
+          {activeTab === 'absences' && (
+            <motion.div
+              key="absences"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                <AbsencesPage />
               </Suspense>
             </motion.div>
           )}
