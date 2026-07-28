@@ -13,12 +13,15 @@ function buildAIContext(dataDir) {
     const configPath = path.join(dataDir, 'data', 'espoir_config.json');
     const coursPath = path.join(dataDir, 'data', 'espoir_cours.json');
     const histPath = path.join(dataDir, 'data', 'espoir_historique.json');
+    const reglementPath = path.join(dataDir, 'data', 'reglement_etudes.md');
 
     let config = '{}';
     let cours = '{}';
     let histString = '[]';
+    let reglement = '';
 
     if (fs.existsSync(configPath)) config = fs.readFileSync(configPath, 'utf-8');
+    if (fs.existsSync(reglementPath)) reglement = fs.readFileSync(reglementPath, 'utf-8');
 
     // Synthesize Cours (Remove heavy arrays to save tokens)
     if (fs.existsSync(coursPath)) {
@@ -74,6 +77,9 @@ ${cours}
 
 [Historique (7 derniers jours)]
 ${histString}
+
+[Règlement des études]
+${reglement}
 =======================================
 `;
   } catch (err) {

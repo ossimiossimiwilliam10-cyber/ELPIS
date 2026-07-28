@@ -10230,3 +10230,673 @@ UnboundLocalError: cannot access local variable 'all_anomalies' where it is not 
 [2026-07-28 19:07:36] [INFO] Auto-commit de 14 fichier(s) corrige(s)...
 [2026-07-28 19:07:37] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'Sauvegarde Elpîs\\ELPIS\\agent_audit\\backups\\20260715_215127\\agent_audit\\scanners.py']' returned non-zero exit status 128.
 [2026-07-28 19:07:37] [INFO] Audit termine en 101.0s. Health Score projet: 96/100
+[2026-07-28 19:17:44] [INFO] ============================================================
+[2026-07-28 19:17:44] [INFO] Demarrage de l'audit | Mode: SCAN + CORRECTION
+[2026-07-28 19:17:44] [INFO] ============================================================
+[2026-07-28 19:17:44] [INFO] Regles chargees: 60 (version 3.2.0)
+[2026-07-28 19:17:44] [INFO] Etablissement de la baseline de tests...
+[2026-07-28 19:17:44] [INFO] Phase 1: Collecte des fichiers et extraction des imports...
+[2026-07-28 19:17:45] [INFO] Phase 1 terminee: 829 fichiers, 3201775 lignes
+[2026-07-28 19:17:45] [INFO] Phase 2: Scanners globaux (graphe d'imports, frontieres, couverture de tests)...
+[2026-07-28 19:17:46] [INFO]   -> 138 anomalies globales detectees
+[2026-07-28 19:17:46] [INFO] Phase 2.5: Dead Code Scanner (fichiers orphelins, exports inutilises, dependances fantomes)...
+[2026-07-28 19:19:15] [INFO]   Dead Code: 330 orphelins, 267 exports inutilises, 2 dependances fantomes
+[2026-07-28 19:19:15] [INFO]   ============================================================
+[2026-07-28 19:19:15] [INFO]     RAPPORT DE CODE MORT — Agent Audit v4.0
+[2026-07-28 19:19:15] [INFO]   ============================================================
+[2026-07-28 19:19:15] [INFO]   📁 FICHIERS ORPHELINS (330 trouvés)
+[2026-07-28 19:19:15] [INFO]   ----------------------------------------
+[2026-07-28 19:19:15] [INFO]     🔴 .agents\skills\audit_dead_code\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 .agents\skills\manage_exceptional_leave\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 .agents\skills\mode_apprentissage\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 .agents\skills\run_immune_system\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 .deepseek\state\subagents.v1.json
+[2026-07-28 19:19:15] [INFO]     🔴 ARCHITECTURE.md
+[2026-07-28 19:19:15] [INFO]     🔴 CARTOGRAPHIE.md
+[2026-07-28 19:19:15] [INFO]     🔴 CONTRIBUTING.md
+[2026-07-28 19:19:15] [INFO]     🔴 Dockerfile
+[2026-07-28 19:19:15] [INFO]     🔴 ELPIS_APPRENTISSAGE\ELPIS_V2\documentation\01_initialisation_projet_pyqt6.md
+[2026-07-28 19:19:15] [INFO]     🔴 ELPIS_APPRENTISSAGE\ELPIS_V2\main.py
+[2026-07-28 19:19:15] [INFO]     🔴 ELPIS_APPRENTISSAGE\traces\apprentissage_elpis_plan.md
+[2026-07-28 19:19:15] [INFO]     🔴 ELPIS_APPRENTISSAGE\traces\elpis_mindmap.md
+[2026-07-28 19:19:15] [INFO]     🔴 ELPIS_APPRENTISSAGE\traces\suivi_erreurs.md
+[2026-07-28 19:19:15] [INFO]     🔴 Lancer ELPIS.vbs
+[2026-07-28 19:19:15] [INFO]     🔴 README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\DeepCode-Manuel.txt
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\.agents\skills\audit_dead_code\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\.agents\skills\manage_exceptional_leave\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\.agents\skills\mode_apprentissage\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\.agents\skills\run_immune_system\SKILL.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\ARCHITECTURE.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\CONTRIBUTING.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\ELPIS_APPRENTISSAGE\ELPIS_V2\documentation\01_initialisation_projet_pyqt6.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\ELPIS_APPRENTISSAGE\ELPIS_V2\main.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\ELPIS_APPRENTISSAGE\traces\apprentissage_elpis_plan.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\ELPIS_APPRENTISSAGE\traces\elpis_mindmap.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\ELPIS_APPRENTISSAGE\traces\suivi_erreurs.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\Lancer ELPIS.vbs
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\agent_audit\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\agent_audit\_analyze.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\agent_audit\_test_rules.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\agent_audit\main.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\agent_audit\refactor.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\agent_audit\rules.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\data\espoir_audit.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\data\espoir_audit_health.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\data\espoir_chat.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\data\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\data\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\data\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\docs\backend.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\docs\devops.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\docs\frontend.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\docs\guide_debutant.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\docs\immune_system.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\.env
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\base.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\block-navigation.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\config.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\cours.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\coverage-final.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\intelligence.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\orchestrateur.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\prettify.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\prettify.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\scoring.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\coverage\sorter.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\debug_test.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\temp_debug\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\temp_debug\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\bridge\temp_debug\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\data\telemetry.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\public\manifest.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\public\sw.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\src\ClassementPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\src\EntrainementPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\src\GraphPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\src\MesVideosPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\src\StatistiquesPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\interface\web\test-results\.last-run.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\music\music_hashes.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\render.yaml
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\_apply_fixes.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\_fix_intelligence.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\_fix_main.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\_verify_algo.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\diff_courses.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\inspect_ue5.py
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\smoke_test_v3.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\stats.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\test_orch_fix.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\test_saveCours.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scratch\test_timezone.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scripts\agent_qa.bat
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scripts\deploy_oracle.sh
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scripts\map-anki-decks.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scripts\validation\calibrate_weights.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scripts\validation\dataset.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\scripts\validation\generate_dataset.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\start_elpis.bat
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS\test_orch.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\Lancer ELPIS.vbs
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\RAPPORT_ANALYSE_COMPLET.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\deploy_oracle.sh
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\bridge\moteur\orchestrateur_debug.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\bridge\moteur\orchestrateur_debug2.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\bridge\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\bridge\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\bridge\test_orchestrateur.js
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\playwright-report\data\0648a325f7e7afe9664d77a8eb834ffa63d5a22f.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\playwright-report\data\389daa2c14159a2e70f182c4e8fadd8541ecc7ba.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\playwright-report\data\aaa2457839cb4538203280d2825114a75841a50d.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\playwright-report\data\bcdc84d7291015dedc9e8e9c6b0edb6d476e9f8e.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\playwright-report\data\cbcdbc2c976fe6bde1c22f95d17f9cad69f4e014.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\src\BulletinPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\src\CoursPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\src\EntrainementPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\src\StatistiquesPage.jsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\test-results\.last-run.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\test-results\elpis-ELPIS-E2E-Tests-devr-402b1-rs-la-page-des-Statistiques-chromium\error-context.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\test-results\elpis-ELPIS-E2E-Tests-devr-5532e-rs-la-page-de-Configuration-chromium\error-context.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\test-results\elpis-ELPIS-E2E-Tests-devr-9c7d8-icence-depuis-la-page-Cours-chromium\error-context.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\test-results\elpis-ELPIS-E2E-Tests-devr-9e370-a-page-d-accueil-Dashboard--chromium\error-context.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\interface\web\test-results\elpis-ELPIS-E2E-Tests-devr-e507c-guer-vers-la-page-des-Cours-chromium\error-context.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\plans_historique\01_plan_v1_python.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\plans_historique\02_plan_v2_cpp.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\plans_historique\03_plan_v3_modular_brains.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\plans_historique\04_plan_v4_config_parameters.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\plans_historique\05_plan_v5_refactoring_deepseek.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-09-mea-culpa.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-10-phase2.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-11-suivi-cerveaucours.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-12-exercices.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-13-cerveau-principal.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-14-architecture-connectee.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-15-planning-v02.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11-rapport-16-bilan.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_analyse_approfondie.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_auto_correction.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_contre_audit.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_etat_des_lieux.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_plan_v6_react.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_post_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\rapports_analyse\2026-06-11_suivi_corrections.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2\start_elpis.bat
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_Backup_V2_Extracted\espoir_projets.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\CMakeLists.txt
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\deploy_oracle.sh
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\interface\bridge\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\interface\bridge\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\interface\web\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\interface\web\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\interface\web\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\interface\web\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\plans_historique\01_plan_v1_python.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\plans_historique\02_plan_v2_cpp.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\plans_historique\03_plan_v3_modular_brains.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\plans_historique\04_plan_v4_config_parameters.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\plans_historique\05_plan_v5_refactoring_deepseek.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-09-mea-culpa.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-10-phase2.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-11-suivi-cerveaucours.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-12-exercices.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-13-cerveau-principal.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-14-architecture-connectee.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-15-planning-v02.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11-rapport-16-bilan.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_analyse_approfondie.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_auto_correction.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_contre_audit.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_etat_des_lieux.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_plan_v6_react.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_post_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\rapports_analyse\2026-06-11_suivi_corrections.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_SAUVEGARDE_20260613\start_elpis.bat
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\CMakeLists.txt
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\RAPPORT_ANALYSE_COMPLET.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\deploy_oracle.sh
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\interface\bridge\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\interface\bridge\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\interface\web\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\interface\web\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\interface\web\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\interface\web\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\plans_historique\01_plan_v1_python.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\plans_historique\02_plan_v2_cpp.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\plans_historique\03_plan_v3_modular_brains.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\plans_historique\04_plan_v4_config_parameters.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\plans_historique\05_plan_v5_refactoring_deepseek.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-09-mea-culpa.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-10-phase2.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-11-suivi-cerveaucours.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-12-exercices.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-13-cerveau-principal.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-14-architecture-connectee.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-15-planning-v02.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11-rapport-16-bilan.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_analyse_approfondie.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_auto_correction.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_contre_audit.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_etat_des_lieux.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_plan_v6_react.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_post_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\rapports_analyse\2026-06-11_suivi_corrections.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260613_185936\start_elpis.bat
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\CMakeLists.txt
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\Lancer ELPIS.vbs
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\RAPPORT_ANALYSE_COMPLET.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\backup_avant_test\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\backup_avant_test\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\backup_avant_test\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\deploy_oracle.sh
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\interface\bridge\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\interface\bridge\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\interface\web\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\interface\web\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\interface\web\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\interface\web\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\plans_historique\01_plan_v1_python.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\plans_historique\02_plan_v2_cpp.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\plans_historique\03_plan_v3_modular_brains.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\plans_historique\04_plan_v4_config_parameters.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\plans_historique\05_plan_v5_refactoring_deepseek.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-09-mea-culpa.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-10-phase2.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-11-suivi-cerveaucours.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-12-exercices.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-13-cerveau-principal.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-14-architecture-connectee.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-15-planning-v02.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11-rapport-16-bilan.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_analyse_approfondie.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_auto_correction.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_contre_audit.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_etat_des_lieux.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_plan_v6_react.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_post_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_restructuration.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\rapports_analyse\2026-06-11_suivi_corrections.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\ELPIS_backup_20260615_233014\start_elpis.bat
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\backend\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\backend\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\backend\src\server.ts
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\backend\testAtomic.ts
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\backend\tsconfig.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\data\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\.oxlintrc.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\src\App.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\src\main.tsx
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\tsconfig.app.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\tsconfig.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\tsconfig.node.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Elpis amélioré\frontend\vite.config.ts
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Projet 1001\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Projet 1001\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Projet 1001\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Projet 1001\src\App.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Projet 1001\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Rapports\Rapport Claude.txt
+[2026-07-28 19:19:15] [INFO]     🔴 Sauvegarde Elpîs\Terminal Admin.bat
+[2026-07-28 19:19:15] [INFO]     🔴 agent_audit\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 agent_audit\rules.json
+[2026-07-28 19:19:15] [INFO]     🔴 docker-compose.yml
+[2026-07-28 19:19:15] [INFO]     🔴 docs\backend.md
+[2026-07-28 19:19:15] [INFO]     🔴 docs\devops.md
+[2026-07-28 19:19:15] [INFO]     🔴 docs\frontend.md
+[2026-07-28 19:19:15] [INFO]     🔴 docs\guide_debutant.md
+[2026-07-28 19:19:15] [INFO]     🔴 docs\immune_system.md
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\.env
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\base.css
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\block-navigation.js
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\config.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\cours.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\coverage-final.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\intelligence.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\orchestrateur.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\prettify.css
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\prettify.js
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\scoring.js.html
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\coverage\sorter.js
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\scratch_clear.js
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\scratch_tables.js
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\scratch_tables2.js
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\temp_debug\espoir_config.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\temp_debug\espoir_cours.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\bridge\temp_debug\espoir_historique.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\data\telemetry.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\README.md
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\android\app\src\main\assets\capacitor.config.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\android\app\src\main\assets\capacitor.plugins.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\android\app\src\main\assets\public\assets\index-DRdanpB8.css
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\android\app\src\main\assets\public\manifest.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\android\gradlew
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\android\gradlew.bat
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\capacitor.config.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\package.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\public\manifest.json
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\src\index.css
+[2026-07-28 19:19:15] [INFO]     🔴 interface\web\test-results\.last-run.json
+[2026-07-28 19:19:15] [INFO]     🔴 package-lock.json
+[2026-07-28 19:19:15] [INFO]     🔴 package.json
+[2026-07-28 19:19:15] [INFO]     🔴 render.yaml
+[2026-07-28 19:19:15] [INFO]     🔴 scripts\agent_qa.bat
+[2026-07-28 19:19:15] [INFO]     🔴 scripts\deploy_oracle.sh
+[2026-07-28 19:19:15] [INFO]     🔴 scripts\validation\dataset.json
+[2026-07-28 19:19:15] [INFO]     🔴 start_elpis.bat
+[2026-07-28 19:19:15] [INFO]   📤 EXPORTS INUTILISÉS (267 trouvés)
+[2026-07-28 19:19:15] [INFO]   ----------------------------------------
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\_test_rules.py
+[2026-07-28 19:19:15] [INFO]        L19: export test
+[2026-07-28 19:19:15] [INFO]        L120: export fake_rule
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\_test_rules_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_test_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_test_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_fake_rule_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_fake_rule_basic
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\ast_scanner.py
+[2026-07-28 19:19:15] [INFO]        L35: export scan_python_ast
+[2026-07-28 19:19:15] [INFO]        L267: export scan_javascript_enhanced
+[2026-07-28 19:19:15] [INFO]        L504: export run_ast_scanners
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\ast_scanner_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_scan_python_ast_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_scan_python_ast_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_scan_javascript_enhanced_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_scan_javascript_enhanced_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_run_ast_scanners_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_run_ast_scanners_basic
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\deadcode.py
+[2026-07-28 19:19:15] [INFO]        L21: export find_orphan_files
+[2026-07-28 19:19:15] [INFO]        L83: export find_unused_exports
+[2026-07-28 19:19:15] [INFO]        L239: export find_phantom_dependencies
+[2026-07-28 19:19:15] [INFO]        L391: export scan_dead_code
+[2026-07-28 19:19:15] [INFO]        L444: export format_dead_code_report
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\deadcode_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_find_orphan_files_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_find_orphan_files_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_find_unused_exports_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_find_unused_exports_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_find_phantom_dependencies_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_find_phantom_dependencies_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_scan_dead_code_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_scan_dead_code_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_format_dead_code_report_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_format_dead_code_report_basic
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\engine.py
+[2026-07-28 19:19:15] [INFO]        L28: export load_rules
+[2026-07-28 19:19:15] [INFO]        L47: export file_hash
+[2026-07-28 19:19:15] [INFO]        L55: export load_last_hashes
+[2026-07-28 19:19:15] [INFO]        L65: export save_hashes
+[2026-07-28 19:19:15] [INFO]        L81: export severity_sort_key
+[2026-07-28 19:19:15] [INFO]        L85: export prioritize_anomalies
+[2026-07-28 19:19:15] [INFO]        L93: export should_auto_fix
+[2026-07-28 19:19:15] [INFO]        L115: export is_emergency
+[2026-07-28 19:19:15] [INFO]        L123: export run_multi_pass
+[2026-07-28 19:19:15] [INFO]        L316: export calculate_health_score
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\engine_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_load_rules_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_load_rules_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_file_hash_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_file_hash_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_load_last_hashes_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_load_last_hashes_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_save_hashes_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_save_hashes_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_severity_sort_key_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_severity_sort_key_basic
+[2026-07-28 19:19:15] [INFO]        ... et 10 autres
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\escalation.py
+[2026-07-28 19:19:15] [INFO]        L25: export set_escalation_log
+[2026-07-28 19:19:15] [INFO]        L33: export EscalationLevel
+[2026-07-28 19:19:15] [INFO]        L38: export create_escalation
+[2026-07-28 19:19:15] [INFO]        L187: export set_emergency_alert_file
+[2026-07-28 19:19:15] [INFO]        L191: export trigger_emergency
+[2026-07-28 19:19:15] [INFO]        L242: export process_escalations
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\escalation_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_set_escalation_log_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_set_escalation_log_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_EscalationLevel_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_EscalationLevel_instantiate
+[2026-07-28 19:19:15] [INFO]        L24: export test_create_escalation_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_create_escalation_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_set_emergency_alert_file_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_set_emergency_alert_file_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_trigger_emergency_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_trigger_emergency_basic
+[2026-07-28 19:19:15] [INFO]        ... et 2 autres
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\fixers.py
+[2026-07-28 19:19:15] [INFO]        L30: export set_backup_dir
+[2026-07-28 19:19:15] [INFO]        L34: export create_backup
+[2026-07-28 19:19:15] [INFO]        L50: export apply_fixes
+[2026-07-28 19:19:15] [INFO]        L291: export rollback_file
+[2026-07-28 19:19:15] [INFO]        L306: export cleanup_old_backups
+[2026-07-28 19:19:15] [INFO]        L333: export set_rule_cache
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\fixers_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_set_backup_dir_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_set_backup_dir_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_create_backup_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_create_backup_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_apply_fixes_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_apply_fixes_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_rollback_file_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_rollback_file_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_cleanup_old_backups_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_cleanup_old_backups_basic
+[2026-07-28 19:19:15] [INFO]        ... et 2 autres
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\health.py
+[2026-07-28 19:19:15] [INFO]        L22: export run_health_check
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\health_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_run_health_check_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_run_health_check_basic
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\linters.py
+[2026-07-28 19:19:15] [INFO]        L5: export run_eslint
+[2026-07-28 19:19:15] [INFO]        L53: export run_ruff
+[2026-07-28 19:19:15] [INFO]        L94: export get_all_linter_anomalies
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\linters_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_run_eslint_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_run_eslint_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_run_ruff_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_run_ruff_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_get_all_linter_anomalies_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_get_all_linter_anomalies_basic
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\main.py
+[2026-07-28 19:19:15] [INFO]        L68: export setup_logger
+[2026-07-28 19:19:15] [INFO]        L105: export scan_single_file
+[2026-07-28 19:19:15] [INFO]        L114: export fix_single_file
+[2026-07-28 19:19:15] [INFO]        L123: export generate_output
+[2026-07-28 19:19:15] [INFO]        L144: export reporter_fn
+[2026-07-28 19:19:15] [INFO]        L163: export auto_commit_and_push
+[2026-07-28 19:19:15] [INFO]        L191: export run_full_audit
+[2026-07-28 19:19:15] [INFO]        L490: export run_health_only
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\main_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_setup_logger_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_setup_logger_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_scan_single_file_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_scan_single_file_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_fix_single_file_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_fix_single_file_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_generate_output_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_generate_output_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_reporter_fn_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_reporter_fn_basic
+[2026-07-28 19:19:15] [INFO]        ... et 6 autres
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\perf.py
+[2026-07-28 19:19:15] [INFO]        L32: export collect_build_metrics
+[2026-07-28 19:19:15] [INFO]        L120: export collect_test_metrics
+[2026-07-28 19:19:15] [INFO]        L174: export load_perf_history
+[2026-07-28 19:19:15] [INFO]        L186: export save_perf_metrics
+[2026-07-28 19:19:15] [INFO]        L200: export detect_regressions
+[2026-07-28 19:19:15] [INFO]        L291: export format_perf_report
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\perf_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_collect_build_metrics_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_collect_build_metrics_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_collect_test_metrics_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_collect_test_metrics_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_load_perf_history_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_load_perf_history_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_save_perf_metrics_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_save_perf_metrics_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_detect_regressions_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_detect_regressions_basic
+[2026-07-28 19:19:15] [INFO]        ... et 2 autres
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\scanners.py
+[2026-07-28 19:19:15] [INFO]        L23: export scan_regex
+[2026-07-28 19:19:15] [INFO]        L91: export scan_import_graph
+[2026-07-28 19:19:15] [INFO]        L174: export scan_structural
+[2026-07-28 19:19:15] [INFO]        L281: export scan_test_coverage
+[2026-07-28 19:19:15] [INFO]        L340: export scan_layer_boundaries
+[2026-07-28 19:19:15] [INFO]        L397: export extract_imports
+[2026-07-28 19:19:15] [INFO]        L425: export scan_custom_python
+[2026-07-28 19:19:15] [INFO]        L672: export run_all_scanners
+[2026-07-28 19:19:15] [INFO]        L712: export run_global_scanners
+[2026-07-28 19:19:15] [INFO]        L740: export scan_npm_audit
+[2026-07-28 19:19:15] [INFO]        ... et 1 autres
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\scanners_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_scan_regex_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_scan_regex_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_scan_import_graph_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_scan_import_graph_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_scan_structural_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_scan_structural_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_scan_test_coverage_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_scan_test_coverage_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_scan_layer_boundaries_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_scan_layer_boundaries_basic
+[2026-07-28 19:19:15] [INFO]        ... et 12 autres
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\testgen.py
+[2026-07-28 19:19:15] [INFO]        L22: export generate_test_for_file
+[2026-07-28 19:19:15] [INFO]        L311: export generate_all_missing_tests
+[2026-07-28 19:19:15] [INFO]        L356: export format_generation_report
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\testgen_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_generate_test_for_file_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_generate_test_for_file_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_generate_all_missing_tests_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_generate_all_missing_tests_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_format_generation_report_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_format_generation_report_basic
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\trending.py
+[2026-07-28 19:19:15] [INFO]        L24: export load_audit_history
+[2026-07-28 19:19:15] [INFO]        L61: export analyze_trends
+[2026-07-28 19:19:15] [INFO]        L343: export format_trending_report
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\trending_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_load_audit_history_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_load_audit_history_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_analyze_trends_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_analyze_trends_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_format_trending_report_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_format_trending_report_basic
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\validators.py
+[2026-07-28 19:19:15] [INFO]        L21: export validate_syntax
+[2026-07-28 19:19:15] [INFO]        L65: export run_test_suite
+[2026-07-28 19:19:15] [INFO]        L103: export mark_last_fixed
+[2026-07-28 19:19:15] [INFO]        L111: export run_lint_check
+[2026-07-28 19:19:15] [INFO]        L136: export validate_after_fix
+[2026-07-28 19:19:15] [INFO]        L167: export run_pre_fix_baseline
+[2026-07-28 19:19:15] [INFO]        L174: export get_baseline_result
+[2026-07-28 19:19:15] [INFO]     📄 agent_audit\validators_test.py
+[2026-07-28 19:19:15] [INFO]        L8: export test_validate_syntax_exists
+[2026-07-28 19:19:15] [INFO]        L12: export test_validate_syntax_basic
+[2026-07-28 19:19:15] [INFO]        L16: export test_run_test_suite_exists
+[2026-07-28 19:19:15] [INFO]        L20: export test_run_test_suite_basic
+[2026-07-28 19:19:15] [INFO]        L24: export test_mark_last_fixed_exists
+[2026-07-28 19:19:15] [INFO]        L28: export test_mark_last_fixed_basic
+[2026-07-28 19:19:15] [INFO]        L32: export test_run_lint_check_exists
+[2026-07-28 19:19:15] [INFO]        L36: export test_run_lint_check_basic
+[2026-07-28 19:19:15] [INFO]        L40: export test_validate_after_fix_exists
+[2026-07-28 19:19:15] [INFO]        L44: export test_validate_after_fix_basic
+[2026-07-28 19:19:15] [INFO]        ... et 4 autres
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\BulletinPage.jsx
+[2026-07-28 19:19:15] [INFO]        L7: export BulletinPage
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\ClassementPage.jsx
+[2026-07-28 19:19:15] [INFO]        L23: export ClassementPage
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\GraphPage.jsx
+[2026-07-28 19:19:15] [INFO]        L6: export GraphPage
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\MesVideosPage.jsx
+[2026-07-28 19:19:15] [INFO]        L5: export MesVideosPage
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\PreparationHebdoPage.jsx
+[2026-07-28 19:19:15] [INFO]        L8: export PreparationHebdoPage
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\RevisionsAvanceesPage.jsx
+[2026-07-28 19:19:15] [INFO]        L6: export RevisionsAvanceesPage
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\ToastProvider.jsx
+[2026-07-28 19:19:15] [INFO]        L7: export useToast
+[2026-07-28 19:19:15] [INFO]        L15: export ToastProvider
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\AICoachSidebar.jsx
+[2026-07-28 19:19:15] [INFO]        L6: export AICoachSidebar
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\AuditDashboard.jsx
+[2026-07-28 19:19:15] [INFO]        L5: export AuditDashboard
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\DisclaimerModal.jsx
+[2026-07-28 19:19:15] [INFO]        L3: export DisclaimerModal
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\GlobalChrono.jsx
+[2026-07-28 19:19:15] [INFO]        L9: export GlobalChrono
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\InfoTooltip.jsx
+[2026-07-28 19:19:15] [INFO]        L4: export InfoTooltip
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\InputModal.jsx
+[2026-07-28 19:19:15] [INFO]        L13: export InputModal
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\MusicSettingsModal.jsx
+[2026-07-28 19:19:15] [INFO]        L4: export MusicSettingsModal
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\TaskCompletionModal.jsx
+[2026-07-28 19:19:15] [INFO]        L23: export TaskCompletionModal
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\cours\EditableLabel.jsx
+[2026-07-28 19:19:15] [INFO]        L5: export EditableLabel
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\cours\EditableNote.jsx
+[2026-07-28 19:19:15] [INFO]        L1: export EditableNote
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\cours\ExerciceRow.jsx
+[2026-07-28 19:19:15] [INFO]        L17: export ExerciceRow
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\cours\MatiereCard.jsx
+[2026-07-28 19:19:15] [INFO]        L7: export MatiereCard
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\cours\StarRating.jsx
+[2026-07-28 19:19:15] [INFO]        L5: export StarRating
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\dashboard\InsightsPanel.jsx
+[2026-07-28 19:19:15] [INFO]        L6: export InsightsPanel
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\dashboard\ProjectsWidget.jsx
+[2026-07-28 19:19:15] [INFO]        L6: export ProjectsWidget
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\dashboard\StatsSection.jsx
+[2026-07-28 19:19:15] [INFO]        L6: export StatsSection
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\dashboard\TaskList.jsx
+[2026-07-28 19:19:15] [INFO]        L11: export TaskList
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\components\dashboard\WelcomeCard.jsx
+[2026-07-28 19:19:15] [INFO]        L7: export WelcomeCard
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\constants.js
+[2026-07-28 19:19:15] [INFO]        L1: export DIFFICULTY_LEVELS
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\database.js
+[2026-07-28 19:19:15] [INFO]        L59: export getDb
+[2026-07-28 19:19:15] [INFO]        L114: export syncFromBackend
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\fsrsEngine.js
+[2026-07-28 19:19:15] [INFO]        L10: export Rating
+[2026-07-28 19:19:15] [INFO]        L10: export State
+[2026-07-28 19:19:15] [INFO]        L16: export migrateToFSRSCard
+[2026-07-28 19:19:15] [INFO]        L58: export evaluateFSRS
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\hooks\useDashboardStats.js
+[2026-07-28 19:19:15] [INFO]        L8: export useDashboardStats
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\hooks\useInputModal.js
+[2026-07-28 19:19:15] [INFO]        L13: export useInputModal
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\hooks\useSoundEffects.js
+[2026-07-28 19:19:15] [INFO]        L7: export useSoundEffects
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\hooks\useTaskCompletion.js
+[2026-07-28 19:19:15] [INFO]        L11: export useTaskCompletion
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\parseDateLocal.js
+[2026-07-28 19:19:15] [INFO]        L6: export parseDateLocal
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\store.js
+[2026-07-28 19:19:15] [INFO]        L553: export useChronoStore
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\useWorkloadEngine.js
+[2026-07-28 19:19:15] [INFO]        L11: export useWorkloadEngine
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\utils\apiConfig.js
+[2026-07-28 19:19:15] [INFO]        L1: export getApiUrl
+[2026-07-28 19:19:15] [INFO]        L9: export getServerUrl
+[2026-07-28 19:19:15] [INFO]        L17: export setApiUrl
+[2026-07-28 19:19:15] [INFO]        L21: export getRawIp
+[2026-07-28 19:19:15] [INFO]     📄 interface\web\src\utils\timeParser.js
+[2026-07-28 19:19:15] [INFO]        L16: export parseTimeInput
+[2026-07-28 19:19:15] [INFO]   📦 DÉPENDANCES FANTÔMES (2 trouvées)
+[2026-07-28 19:19:15] [INFO]   ----------------------------------------
+[2026-07-28 19:19:15] [INFO]     🟡 rxjs (dependencies) — interface\web\package.json
+[2026-07-28 19:19:15] [INFO]     🟡 three (dependencies) — interface\web\package.json
+[2026-07-28 19:19:15] [INFO]   ============================================================
+[2026-07-28 19:19:15] [INFO] Phase 3: Execution des linters standards (ESLint, Ruff)...
+[2026-07-28 19:19:35] [INFO]   Passe 1: 41 defauts trouves, 14 corrections appliquees
+[2026-07-28 19:19:35] [INFO]   Health Score: 96/100
+[2026-07-28 19:19:35] [INFO]   Anomalies Critiques: 0
+[2026-07-28 19:19:35] [INFO]   Avertissements (Warning): 373
+[2026-07-28 19:19:35] [INFO]   Suggestions & Code Smells (Info): 405
+[2026-07-28 19:19:35] [INFO]   Total defauts detectes: 778
+[2026-07-28 19:19:35] [INFO]   Corrections appliquees: 14
+[2026-07-28 19:19:35] [INFO]   Escalades (verifications manuelles requises): 0
+[2026-07-28 19:19:35] [INFO] Agent Health: WARNING
+[2026-07-28 19:19:35] [WARNING]   [!] Performance degradee: 7.4 fichiers/s
+[2026-07-28 19:19:35] [WARNING]   [!] Probleme avec le fichier de sortie
+[2026-07-28 19:19:35] [INFO]   [i] 59 regles inactives. Verifier si elles sont encore pertinentes.
+[2026-07-28 19:19:35] [INFO] Auto-commit de 14 fichier(s) corrige(s)...
+[2026-07-28 19:19:37] [ERROR] Erreur lors de l'auto-commit/push: Command '['git', 'add', 'Sauvegarde Elpîs\\ELPIS\\agent_audit\\backups\\20260715_103559\\agent_audit\\scanners.py']' returned non-zero exit status 128.
+[2026-07-28 19:19:37] [INFO] Audit termine en 113.3s. Health Score projet: 96/100
