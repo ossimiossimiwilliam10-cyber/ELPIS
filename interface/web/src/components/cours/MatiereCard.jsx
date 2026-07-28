@@ -173,6 +173,23 @@ export default function MatiereCard({
         >
           {matiere.dispense ? '🎓 Dispensé' : 'Normal'}
         </button>
+        <button
+          onClick={() => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'dette'], !matiere.dette)}
+          style={{
+            background: matiere.dette ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
+            border: matiere.dette ? '1px solid var(--danger-color, #ef4444)' : '1px solid var(--border-color)',
+            color: matiere.dette ? 'var(--danger-color, #ef4444)' : 'var(--text-secondary)',
+            padding: '0.2rem 0.5rem',
+            borderRadius: '12px',
+            fontSize: '0.8rem',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            display: matiere.dispense ? 'none' : 'block' // Cannot be both
+          }}
+          title="Marquer comme Dette (Priorité absolue AJAC)"
+        >
+          {matiere.dette ? '⚠️ En Dette' : 'Non validé'}
+        </button>
       </div>
 
       {/* CONFIG NOTEBOOK LM & SYNERGIES */}

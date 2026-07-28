@@ -165,6 +165,88 @@ export default function BulletinPage() {
 
   const globalAvg = globalSumECTS > 0 ? (globalSumNotes / globalSumECTS).toFixed(2) : '--';
 
+  // AXE AJAC : Calcul ECTS pour AJAC (Current Licence)
+  let ectsS1 = 0;
+  let ectsS2 = 0;
+  
+  if (licence && licence.semestres) {
+    licence.semestres.forEach((sem, semIdx) => {
+      // Determine if semester is compensated
+      let semSumECTSLocal = 0;
+      let semSumNotesLocal = 0;
+      sem.ues?.forEach(ue => {
+        let ueSumWeight = 0;
+        let ueSumNotes = 0;
+        let ueBonus = 0;
+        ue.matieres?.forEach(m => {
+          if (m.dispense) return;
+          const avg = getSubjectAverage(m.evaluations);
+          if (avg !== null) {
+            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+            if (coef === 0) {
+              ueBonus += avg;
+            } else {
+              ueSumWeight += coef;
+              ueSumNotes += avg * coef;
+            }
+          }
+        });
+        const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
+        if (ueAvg !== null) {
+            const ects = ue.ects || 0;
+            semSumNotesLocal += ueAvg * ects;
+            semSumECTSLocal += ects;
+        }
+      });
+      const semAverage = semSumECTSLocal > 0 ? (semSumNotesLocal / semSumECTSLocal) : 0;
+      const isSemCompensated = semAverage >= 10;
+
+      // Now add acquired ECTS
+      sem.ues?.forEach(ue => {
+        let ueSumWeight = 0;
+        let ueSumNotes = 0;
+        let ueBonus = 0;
+        ue.matieres?.forEach(m => {
+          if (m.dispense) return;
+          const avg = getSubjectAverage(m.evaluations);
+          if (avg !== null) {
+            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+            if (coef === 0) {
+              ueBonus += avg;
+            } else {
+              ueSumWeight += coef;
+              ueSumNotes += avg * coef;
+            }
+          }
+        });
+        const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
+        const isUeValidated = (ueAvg !== null && ueAvg >= 10);
+        
+        if (isSemCompensated || isUeValidated) {
+          if (semIdx % 2 === 0) { // S1, S3, S5
+             ectsS1 += (ue.ects || 0);
+          } else { // S2, S4, S6
+             ectsS2 += (ue.ects || 0);
+          }
+        }
+      });
+    });
+  }
+
+  const ectsTotal = ectsS1 + ectsS2;
+  let statusAJAC = "Ajourné (< 24 ECTS)";
+  let statusColor = "var(--danger)";
+  if (ectsTotal >= 60) {
+    statusAJAC = "Validé (60 ECTS)";
+    statusColor = "var(--success)";
+  } else if (ectsS1 >= 24 && ectsS2 >= 24) {
+    statusAJAC = "AJAC (Progression Autorisée)";
+    statusColor = "var(--warning)";
+  } else if (ectsTotal === 0) {
+     statusAJAC = "En attente d'évaluations";
+     statusColor = "var(--text-secondary)";
+  }
+
   const toggleUE = (idx) => {
     setExpandedUEs(prev => ({ ...prev, [idx]: prev[idx] !== undefined ? !prev[idx] : true }));
   };
@@ -239,6 +321,26 @@ export default function BulletinPage() {
           </div>
         </div>
       )}
+
+      {/* WIDGET AJAC / ECTS */}
+      <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>🎓 Progression ECTS (Année Courante)</span>
+            <InfoTooltip content="Validation: 60 ECTS. AJAC: Minimum 24 ECTS requis pour CHAQUE semestre afin de passer à l'année supérieure." width={300}>
+              <span style={{ fontSize: '0.9rem', cursor: 'help', color: 'var(--text-secondary)' }}>ℹ️</span>
+            </InfoTooltip>
+          </div>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+            Semestre Impair : <strong>{ectsS1} / 30 ECTS</strong> | Semestre Pair : <strong>{ectsS2} / 30 ECTS</strong>
+          </div>
+        </div>
+        
+        <div style={{ background: 'var(--bg-tertiary)', padding: '0.8rem 1.5rem', borderRadius: '8px', borderLeft: `4px solid ${statusColor}` }}>
+          <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Statut Prévisionnel</div>
+          <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: statusColor }}>{statusAJAC}</div>
+        </div>
+      </div>
 
       {/* RECAP GLOBAL PAR SEMESTRE */}
       <div style={{display:'flex', gap:'1rem', flexWrap:'wrap', justifyContent:'flex-end', marginBottom:'1.5rem'}}>

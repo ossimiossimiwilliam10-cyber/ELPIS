@@ -142,6 +142,11 @@ function getPrioScore(ex, examUrgencyMap, matiere, remainingWeightMap, compensat
     }
   }
 
+  // Priority boost for Debts (AJAC)
+  if (matiere && typeof matiere === 'object' && matiere.dette) {
+    base *= 10.0;
+  }
+
   // AXE 13: Synergies Inter-Matières (lookup normalisé)
   let synergyBoost = 1.0;
   if (matiere && typeof matiere === 'object' && matiereKey && velocityMap) {
