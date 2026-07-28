@@ -35,6 +35,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
         { id: 'prep_hebdo', label: 'Préparation Hebdo', icon: '📅' },
         { id: 'bulletin', label: 'Bulletin & Notes', icon: '📝' },
         { id: 'projets', label: 'Projets Personnels', icon: '💡' },
+        { id: 'stages', label: 'Stages & Pro', icon: '💼' },
         { id: 'absences', label: 'Assiduité', icon: '🚨' }
       ]
     },

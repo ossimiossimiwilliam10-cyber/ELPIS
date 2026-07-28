@@ -671,6 +671,23 @@ function genererRapportQuotidien(extraTimeMin = 0, fillGap = false, ankiStats = 
     appendFromPool(poolTP, subjectTPCount, 1);
   }
 
+  // --- 4.5. Injection Tâche Obligatoire : Stage Interrompu ---
+  if (cfg.stages && Array.isArray(cfg.stages)) {
+    for (const stage of cfg.stages) {
+      if (stage.interrompu && !stage.memoireRendu) {
+        taches.push({
+          matiere: "Stages & Apprentissage",
+          type: "PROJET",
+          titre: "Mémoire de substitution : " + stage.titre,
+          dureeMinutes: 120,
+          prio: 10000, // Priorité absolue
+          raisons: ["INTERRUPTION_STAGE", "OBLIGATOIRE"]
+        });
+        tempsRequisMin += 120;
+      }
+    }
+  }
+
   // --- 5. Chronobiologie v3 : Ordonnancement par charge cognitive + chronotype ---
   const heavyTasks = [];
   const mediumTasks = [];
