@@ -8,6 +8,7 @@ export default function BulletinPage() {
   const { coursConfig, setCoursConfig, intelligence } = useStore();
   const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
   const [expandedUEs, setExpandedUEs] = useState({});
+  const [unlockedUEs, setUnlockedUEs] = useState(new Set());
 
   // AXE 15: What-If Simulation Mode
   const [isSimulationMode, setIsSimulationMode] = useState(false);
@@ -173,6 +174,7 @@ export default function BulletinPage() {
   let isAjourne = false;
   let isEnCours = false;
   let hasEvaluations = false;
+  const capitalisedUEs = new Set();
 
   if (licence && licence.semestres) {
     for (let yearIdx = 0; yearIdx < Math.ceil(licence.semestres.length / 2); yearIdx++) {
@@ -223,7 +225,7 @@ export default function BulletinPage() {
               semSumECTS += ects;
           }
           
-          uesData.push({ ueAvg, isUeValidated, ects, isUeDispense });
+          uesData.push({ nom: ue.nom, ueAvg, isUeValidated, ects, isUeDispense });
         });
         
         const semAverage = semSumECTS > 0 ? (semSumNotes / semSumECTS) : null;
@@ -246,12 +248,14 @@ export default function BulletinPage() {
       if (annualAvg !== null && annualAvg >= 10) {
         s1AcquiredECTS = dataS1.ues.reduce((acc, u) => acc + u.ects, 0);
         s2AcquiredECTS = dataS2.ues.reduce((acc, u) => acc + u.ects, 0);
+        dataS1.ues.forEach(u => capitalisedUEs.add(u.nom));
+        dataS2.ues.forEach(u => capitalisedUEs.add(u.nom));
       } else {
         dataS1.ues.forEach(u => {
-          if (dataS1.isCompensated || u.isUeValidated) s1AcquiredECTS += u.ects;
+          if (dataS1.isCompensated || u.isUeValidated) { s1AcquiredECTS += u.ects; capitalisedUEs.add(u.nom); }
         });
         dataS2.ues.forEach(u => {
-          if (dataS2.isCompensated || u.isUeValidated) s2AcquiredECTS += u.ects;
+          if (dataS2.isCompensated || u.isUeValidated) { s2AcquiredECTS += u.ects; capitalisedUEs.add(u.nom); }
         });
       }
 
@@ -436,6 +440,8 @@ export default function BulletinPage() {
         });
         const ueAverage = ueSumWeight > 0 ? ((ueSumNotes / ueSumWeight) + ueBonus).toFixed(2) : '--';
         const isCollapsed = expandedUEs[idx];
+        const isUeCapitalised = capitalisedUEs.has(ue.nom);
+        const isLocked = isUeCapitalised && !unlockedUEs.has(ue.nom);
 
         return (
           <div key={idx} className="card glass-panel" style={{ marginBottom: '1.5rem', overflow: 'hidden', padding: 0 }}>
@@ -447,7 +453,7 @@ export default function BulletinPage() {
                 <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.2rem' }}>
                   {ue.semNom}
                 </div>
-                <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>{ue.nom}</h2>
+                <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>{ue.nom} {isUeCapitalised && (isLocked ? '🔒' : '🔓')}</h2>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                 {/* Compensation badge */}
@@ -498,6 +504,20 @@ export default function BulletinPage() {
 
             {!isCollapsed && (
               <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {isUeCapitalised && (
+                  <div style={{ background: 'rgba(52, 211, 153, 0.1)', border: '1px solid var(--success)', padding: '1rem', borderRadius: '8px', color: 'var(--text-primary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>{isLocked ? '🔒' : '🔓'}</span>
+                      <strong>UE Capitalisée (Acquise)</strong>
+                      <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Les notes de cette UE sont verrouillées car elle est définitivement acquise.</div>
+                    </div>
+                    {isLocked ? (
+                       <button className="btn btn-secondary" style={{ padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' }} onClick={() => setUnlockedUEs(prev => new Set(prev).add(ue.nom))}>Déverrouiller pour correction</button>
+                    ) : (
+                       <button className="btn btn-primary" style={{ padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem' }} onClick={() => { const s = new Set(unlockedUEs); s.delete(ue.nom); setUnlockedUEs(s); }}>Reverrouiller</button>
+                    )}
+                  </div>
+                )}
                 {ue.matieres?.map((matiere, matIndex) => {
                   const isDispense = matiere.dispense === true;
                   const avg = getSubjectAverage(matiere.evaluations);
@@ -524,29 +544,40 @@ export default function BulletinPage() {
 
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
                         {(matiere.evaluations || []).map((ev, evIndex) => (
-                          <div key={evIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', background: 'var(--bg-secondary)', padding: '0.8rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
-                            <button
-                              onClick={() => handleDeleteEval(ue.semIndex, ue.ueIndex, matIndex, evIndex)}
-                              style={{ position: 'absolute', top: '0.2rem', right: '0.2rem', background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: '1.2rem', opacity: 0.5 }}
-                              title="Supprimer l'évaluation"
-                            >×</button>
+                          <div key={evIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', background: 'var(--bg-secondary)', padding: '0.8rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative', opacity: isLocked ? 0.7 : 1 }}>
+                            {!isLocked && (
+                               <button
+                                 onClick={() => handleDeleteEval(ue.semIndex, ue.ueIndex, matIndex, evIndex)}
+                                 style={{ position: 'absolute', top: '0.2rem', right: '0.2rem', background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: '1.2rem', opacity: 0.5 }}
+                                 title="Supprimer l'évaluation"
+                               >×</button>
+                            )}
                             <div style={{ display: 'flex', flexDirection: 'column', fontSize: '0.85rem', color: 'var(--text-secondary)', paddingRight: '1rem', gap: '0.2rem' }}>
-                              <EditableLabel
-                                value={ev.nom}
-                                onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'nom', val)}
-                                placeholder="Nouvelle Éval"
-                                style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}
-                              />
+                              {isLocked ? (
+                                <span style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{ev.nom}</span>
+                              ) : (
+                                <EditableLabel
+                                  value={ev.nom}
+                                  onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'nom', val)}
+                                  placeholder="Nouvelle Éval"
+                                  style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}
+                                />
+                              )}
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                                 <span>Coef:</span>
-                                <EditableLabel
-                                  value={String(ev.coefficient)}
-                                  onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'coefficient', val)}
-                                />
+                                {isLocked ? (
+                                  <span>{ev.coefficient}</span>
+                                ) : (
+                                  <EditableLabel
+                                    value={String(ev.coefficient)}
+                                    onRename={(val) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'coefficient', val)}
+                                  />
+                                )}
                                 <select
+                                  disabled={isLocked}
                                   value={ev.type || 'SC'}
                                   onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'type', e.target.value)}
-                                  style={{ padding: '0.1rem 0.3rem', background: ev.type === 'AC' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.15)', color: ev.type === 'AC' ? '#ef4444' : '#34d399', border: 'none', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+                                  style={{ padding: '0.1rem 0.3rem', background: ev.type === 'AC' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.15)', color: ev.type === 'AC' ? '#ef4444' : '#34d399', border: 'none', borderRadius: '4px', fontSize: '0.75rem', cursor: isLocked ? 'default' : 'pointer', opacity: isLocked ? 0.7 : 1 }}
                                 >
                                   <option value="SC">SC</option>
                                   <option value="AC">AC</option>
@@ -554,27 +585,30 @@ export default function BulletinPage() {
                               </div>
                               <input
                                 type="date"
+                                disabled={isLocked}
                                 value={ev.date || ''}
                                 onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'date', e.target.value || null)}
-                                style={{ padding: '0.15rem 0.3rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px', fontSize: '0.75rem', width: '100%' }}
+                                style={{ padding: '0.15rem 0.3rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px', fontSize: '0.75rem', width: '100%', opacity: isLocked ? 0.7 : 1 }}
                               />
                             </div>
                             <input
                               type="number"
+                              disabled={isLocked}
                               step="0.1"
                               min="0" max="20"
                               placeholder="-- / 20"
                               defaultValue={ev.note !== null ? ev.note : ''}
                               onBlur={(e) => handleUpdateNote(ue.semIndex, ue.ueIndex, matIndex, evIndex, e.target.value)}
-                              style={{ width: '100%', padding: '0.5rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', marginTop: '0.5rem' }}
+                              style={{ width: '100%', padding: '0.5rem', background: isLocked ? 'rgba(0,0,0,0.1)' : 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', marginTop: '0.5rem', cursor: isLocked ? 'not-allowed' : 'text' }}
                             />
                           </div>
                         ))}
 
                         <button
+                          disabled={isLocked}
                           onClick={() => handleAddEval(ue.semIndex, ue.ueIndex, matIndex)}
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--border-color)', borderRadius: '6px', color: 'var(--text-secondary)', cursor: 'pointer', minHeight: '100px', transition: 'all 0.2s' }}
-                          className="hover-bright"
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', border: '1px dashed var(--border-color)', borderRadius: '6px', color: 'var(--text-secondary)', cursor: isLocked ? 'not-allowed' : 'pointer', minHeight: '100px', transition: 'all 0.2s', opacity: isLocked ? 0.3 : 1 }}
+                          className={isLocked ? '' : "hover-bright"}
                         >
                           + Épreuve
                         </button>

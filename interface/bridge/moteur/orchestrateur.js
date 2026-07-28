@@ -40,7 +40,7 @@ const {
   buildSynergyMap,
   buildWorkloadForecast
 } = require('./intelligence');
-const { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost } = require('./scoring');
+const { getDifficultyMultiplier, getPrioScore, getSubjectExamBoost, getCapitalisedUEs } = require('./scoring');
 const { loadRLState } = require('./rlEngine');
 
 const { normalizeDateStr, parseDateLocal } = require('./utils');
@@ -62,6 +62,9 @@ function buildTaskPools({
   let licenceIdx = 0;
   for (const l of (crs.licences || [])) {
     if (l.archived) { licenceIdx++; continue; }
+    
+    const capitalisedUEs = getCapitalisedUEs(l);
+
     let semestreIdx = 0;
     for (const s of (l.semestres || [])) {
       if (s.archived) { semestreIdx++; continue; }
@@ -71,6 +74,8 @@ function buildTaskPools({
       }
       let matiereIndexDansSemestre = 0;
       for (const ue of (s.ues || [])) {
+        if (capitalisedUEs.has(ue.nom)) continue;
+
         const ueMatiereNames = (ue.matieres || []).map(m => (m.nom || '').toLowerCase().trim()).filter(Boolean);
         for (const m of (ue.matieres || [])) {
           m._ueMatieres = ueMatiereNames;
