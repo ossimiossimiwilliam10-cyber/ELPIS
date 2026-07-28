@@ -165,86 +165,135 @@ export default function BulletinPage() {
 
   const globalAvg = globalSumECTS > 0 ? (globalSumNotes / globalSumECTS).toFixed(2) : '--';
 
-  // AXE AJAC : Calcul ECTS pour AJAC (Current Licence)
-  let ectsS1 = 0;
-  let ectsS2 = 0;
-  
-  if (licence && licence.semestres) {
-    licence.semestres.forEach((sem, semIdx) => {
-      // Determine if semester is compensated
-      let semSumECTSLocal = 0;
-      let semSumNotesLocal = 0;
-      sem.ues?.forEach(ue => {
-        let ueSumWeight = 0;
-        let ueSumNotes = 0;
-        let ueBonus = 0;
-        ue.matieres?.forEach(m => {
-          if (m.dispense) return;
-          const avg = getSubjectAverage(m.evaluations);
-          if (avg !== null) {
-            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            if (coef === 0) {
-              ueBonus += avg;
-            } else {
-              ueSumWeight += coef;
-              ueSumNotes += avg * coef;
-            }
-          }
-        });
-        const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
-        if (ueAvg !== null) {
-            const ects = ue.ects || 0;
-            semSumNotesLocal += ueAvg * ects;
-            semSumECTSLocal += ects;
-        }
-      });
-      const semAverage = semSumECTSLocal > 0 ? (semSumNotesLocal / semSumECTSLocal) : 0;
-      const isSemCompensated = semAverage >= 10;
+  // AXE AJAC & Compensation Annuelle
+  let totalAcquiredECTS = 0;
+  let statusAJAC = "En attente d'évaluations";
+  let statusColor = "var(--text-secondary)";
+  let isAJAC = false;
+  let isAjourne = false;
+  let isEnCours = false;
+  let hasEvaluations = false;
 
-      // Now add acquired ECTS
-      sem.ues?.forEach(ue => {
-        let ueSumWeight = 0;
-        let ueSumNotes = 0;
-        let ueBonus = 0;
-        ue.matieres?.forEach(m => {
-          if (m.dispense) return;
-          const avg = getSubjectAverage(m.evaluations);
-          if (avg !== null) {
-            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            if (coef === 0) {
-              ueBonus += avg;
-            } else {
-              ueSumWeight += coef;
-              ueSumNotes += avg * coef;
-            }
-          }
-        });
-        const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
-        const isUeValidated = (ueAvg !== null && ueAvg >= 10);
+  if (licence && licence.semestres) {
+    for (let yearIdx = 0; yearIdx < Math.ceil(licence.semestres.length / 2); yearIdx++) {
+      const s1Idx = yearIdx * 2;
+      const s2Idx = yearIdx * 2 + 1;
+      
+      const sem1 = licence.semestres[s1Idx];
+      const sem2 = licence.semestres[s2Idx];
+
+      const processSemester = (sem) => {
+        if (!sem) return { avg: null, acquiredECTS: 0, totalECTS: 0, isCompensated: false, ues: [] };
         
-        if (isSemCompensated || isUeValidated) {
-          if (semIdx % 2 === 0) { // S1, S3, S5
-             ectsS1 += (ue.ects || 0);
-          } else { // S2, S4, S6
-             ectsS2 += (ue.ects || 0);
+        let semSumECTS = 0;
+        let semSumNotes = 0;
+        let uesData = [];
+
+        sem.ues?.forEach(ue => {
+          let ueSumWeight = 0;
+          let ueSumNotes = 0;
+          let ueBonus = 0;
+          let isUeDispense = true;
+          let hasMatieres = false;
+          
+          ue.matieres?.forEach(m => {
+            hasMatieres = true;
+            if (!m.dispense) isUeDispense = false;
+            if (m.dispense) return;
+            const avg = getSubjectAverage(m.evaluations);
+            if (avg !== null) {
+              const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+              if (coef === 0) {
+                ueBonus += avg;
+              } else {
+                ueSumWeight += coef;
+                ueSumNotes += avg * coef;
+              }
+            }
+          });
+          
+          if (!hasMatieres) isUeDispense = false;
+          
+          const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
+          const isUeValidated = (ueAvg !== null && ueAvg >= 10) || isUeDispense;
+          const ects = ue.ects || 0;
+          
+          if (ueAvg !== null) {
+              semSumNotes += ueAvg * ects;
+              semSumECTS += ects;
           }
+          
+          uesData.push({ ueAvg, isUeValidated, ects, isUeDispense });
+        });
+        
+        const semAverage = semSumECTS > 0 ? (semSumNotes / semSumECTS) : null;
+        const isCompensated = semAverage !== null && semAverage >= 10;
+        
+        return { avg: semAverage, totalECTS: semSumECTS, isCompensated, ues: uesData };
+      };
+
+      const dataS1 = processSemester(sem1);
+      const dataS2 = processSemester(sem2);
+
+      let annualAvg = null;
+      if (dataS1.avg !== null && dataS2.avg !== null) {
+        annualAvg = (dataS1.avg + dataS2.avg) / 2;
+      }
+
+      let s1AcquiredECTS = 0;
+      let s2AcquiredECTS = 0;
+
+      if (annualAvg !== null && annualAvg >= 10) {
+        s1AcquiredECTS = dataS1.ues.reduce((acc, u) => acc + u.ects, 0);
+        s2AcquiredECTS = dataS2.ues.reduce((acc, u) => acc + u.ects, 0);
+      } else {
+        dataS1.ues.forEach(u => {
+          if (dataS1.isCompensated || u.isUeValidated) s1AcquiredECTS += u.ects;
+        });
+        dataS2.ues.forEach(u => {
+          if (dataS2.isCompensated || u.isUeValidated) s2AcquiredECTS += u.ects;
+        });
+      }
+
+      totalAcquiredECTS += s1AcquiredECTS + s2AcquiredECTS;
+
+      const yearMaxECTS = dataS1.ues.reduce((acc, u) => acc + u.ects, 0) + dataS2.ues.reduce((acc, u) => acc + u.ects, 0);
+      
+      if (dataS1.avg !== null || dataS2.avg !== null) hasEvaluations = true;
+
+      if (yearMaxECTS > 0 && (dataS1.avg !== null || dataS2.avg !== null)) {
+        if (annualAvg !== null && annualAvg >= 10) {
+           // Validated (no flag needed)
+        } else if ((s1AcquiredECTS + s2AcquiredECTS) >= yearMaxECTS) {
+           // Validated (no flag needed)
+        } else if (dataS1.avg !== null && dataS2.avg !== null) {
+           if (s1AcquiredECTS >= 24 && s2AcquiredECTS >= 24) {
+              isAJAC = true;
+           } else {
+              isAjourne = true;
+           }
+        } else {
+           isEnCours = true;
         }
-      });
-    });
+      }
+    }
   }
 
-  const ectsTotal = ectsS1 + ectsS2;
-  let statusAJAC = "Ajourné (< 24 ECTS)";
-  let statusColor = "var(--danger)";
-  if (ectsTotal >= 60) {
-    statusAJAC = "Validé (60 ECTS)";
-    statusColor = "var(--success)";
-  } else if (ectsS1 >= 24 && ectsS2 >= 24) {
-    statusAJAC = "AJAC (Progression Autorisée)";
-    statusColor = "var(--warning)";
-  } else if (ectsTotal === 0) {
+  if (!hasEvaluations) {
      statusAJAC = "En attente d'évaluations";
      statusColor = "var(--text-secondary)";
+  } else if (isAjourne) {
+     statusAJAC = `Ajourné (${totalAcquiredECTS} ECTS)`;
+     statusColor = "var(--danger)";
+  } else if (isAJAC) {
+     statusAJAC = `AJAC (${totalAcquiredECTS} ECTS)`;
+     statusColor = "var(--warning)";
+  } else if (isEnCours) {
+     statusAJAC = `En cours (${totalAcquiredECTS} ECTS)`;
+     statusColor = "var(--text-secondary)";
+  } else {
+     statusAJAC = `Validé (${totalAcquiredECTS} ECTS)`;
+     statusColor = "var(--success)";
   }
 
   const toggleUE = (idx) => {
