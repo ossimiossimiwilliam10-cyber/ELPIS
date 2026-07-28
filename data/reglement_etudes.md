@@ -1,4 +1,4 @@
-﻿# Règlement des études et de la scolarité (Licence 2 SPI)
+# Règlement des études et de la scolarité (Licence 2 SPI) - Année 2026-2027
 
 ## Inscriptions Administratives et Redoublement
 - **Limite totale** : 6 inscriptions annuelles maximum dans la même mention.
@@ -10,3 +10,8 @@
 - **Obligation** : L'inscription pédagogique est obligatoire pour tous les étudiants.
 - **Assiduité** : En dehors d'une situation de césure, un étudiant non inscrit pédagogiquement est considéré comme non assidu et ne peut pas se présenter aux épreuves d'évaluation.
 - **Principe** : Elle consiste à s'inscrire aux enseignements selon la maquette, ses souhaits et ses acquis, conformément au calendrier officiel.
+
+## Contrat Pédagogique
+- **Objectif** : Accompagner et soutenir la réussite de l'étudiant (parfois lié à un statut spécifique), en adaptant le cursus de façon détaillée, justifiée et proportionnée.
+- **Aménagements** : Peut aménager le rythme de suivi de la formation, les exigences d'assiduité, les exigences de présence aux évaluations (et exceptionnellement leurs caractéristiques), ou consolider des compétences par l'octroi de crédits ECTS.
+- **Validité** : L'accord est signé par l'étudiant et le responsable de formation. Il peut être pluriannuel et ses prévisions sont réexaminées et éventuellement adaptées selon l'évolution de la situation.
