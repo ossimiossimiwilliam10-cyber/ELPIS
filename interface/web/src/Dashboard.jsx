@@ -194,6 +194,17 @@ function Dashboard() {
   // ---- Render ----
   return (
     <motion.div className="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+      {config && !config.inscriptionPedagogiqueDone && (
+        <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={{ background: 'var(--danger-color)', color: 'white', padding: '1rem 1.5rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)' }}>
+          <div>
+            <strong>⚠️ Rappel Administratif :</strong> N'oublie pas de finaliser ton <strong>Inscription Pédagogique</strong> sur le site de l'Université. C'est obligatoire pour pouvoir te présenter aux examens !
+          </div>
+          <button onClick={() => setConfig({ ...config, inscriptionPedagogiqueDone: true })} style={{ background: 'white', color: 'var(--danger-color)', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={e => e.target.style.transform = 'scale(1.05)'} onMouseOut={e => e.target.style.transform = 'scale(1)'}>
+            C'est fait !
+          </button>
+        </motion.div>
+      )}
+
       <WelcomeCard greeting={greeting} orderedTaches={orderedTaches} recommendedDailyHours={recommendedDailyHours} tempsRequisMin={tempsRequisMin} globalPercent={globalPercent} config={config} />
 
       {/* Action buttons */}
