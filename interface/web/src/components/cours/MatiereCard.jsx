@@ -292,6 +292,11 @@ export default function MatiereCard({
                 placeholder="Titre du CM"
                 style={{fontSize:'0.85rem'}}
               />
+              {cm.dateCM && (
+                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic'}}>
+                  Prévu le : {new Date(cm.dateCM).toLocaleDateString('fr-FR')}
+                </span>
+              )}
               <EditableNote
                 value={cm.notes}
                 onClick={() => setModalConfig({
@@ -394,6 +399,11 @@ export default function MatiereCard({
                 placeholder="Nom de l'exercice"
                 style={{fontSize:'0.85rem'}}
               />
+              {td.datePrevue && (
+                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic'}}>
+                  Prévu le : {new Date(td.datePrevue).toLocaleDateString('fr-FR')}
+                </span>
+              )}
               <EditableNote
                 value={td.notes}
                 onClick={() => setModalConfig({
@@ -470,6 +480,11 @@ export default function MatiereCard({
                 placeholder="Nom de l'exercice"
                 style={{fontSize:'0.85rem'}}
               />
+              {tp.dateTP && (
+                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic'}}>
+                  Prévu le : {new Date(tp.dateTP).toLocaleDateString('fr-FR')}
+                </span>
+              )}
               <EditableNote
                 value={tp.notes}
                 onClick={() => setModalConfig({

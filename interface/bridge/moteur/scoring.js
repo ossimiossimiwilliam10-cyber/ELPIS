@@ -502,8 +502,9 @@ function getCapitalisedUEs(licence) {
           }
         });
         if (!hasMatieres) isUeDispense = false;
+        if (ue.acquise || ue.dispense) isUeDispense = true;
         const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
-        const isUeValidated = (ueAvg !== null && ueAvg >= 10) || isUeDispense;
+        const isUeValidated = (ueAvg !== null && ueAvg >= 10) || isUeDispense || ue.acquise;
         if (ueAvg !== null) { semSumNotes += ueAvg * (ue.ects || 0); semSumECTS += (ue.ects || 0); }
         uesData.push({ nom: ue.nom, ueAvg, isUeValidated });
       });

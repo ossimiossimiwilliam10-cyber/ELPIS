@@ -61,6 +61,7 @@ function initDb() {
     CREATE TABLE IF NOT EXISTS cours_cm (
       id TEXT PRIMARY KEY,
       titre TEXT NOT NULL,
+      dateCM TEXT,
       derniereRevision TEXT,
       prochaineRevisionDate TEXT,
       jActuel INTEGER,
@@ -82,6 +83,7 @@ function initDb() {
       titre TEXT NOT NULL,
       dernierePratique TEXT,
       dateTP TEXT,
+      datePrevue TEXT,
       nombrePratiques INTEGER,
       tempsMoyen REAL,
       tempsMoyenEtapes TEXT, -- JSON array

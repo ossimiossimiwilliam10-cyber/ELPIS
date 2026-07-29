@@ -395,3 +395,12 @@
 ---
 
 > **Mainteneurs** : Ce fichier est la source de vérité. Après chaque modification structurelle du projet, mettez-le à jour.
+
+## 📜 Règles Métier Spécifiques : Capitalisation
+- **ECTS par UE** : Le modèle ueSchema (moteur/schemas.js) porte l'attribut ects. Les crédits sont acquis au niveau de l'UE, non des matières.
+- **Blocage des UEs Acquises** : Le système de scoring (moteur/scoring.js) exclut automatiquement de la planification (orchestrateur.js) toute matière appartenant à une UE validée (ue.acquise = true ou ue.dispense = true).
+- **Mesures Transitoires** : Gérées via l'attribut dispense, permettant de conserver les ECTS sans perturber le calcul de la moyenne semestrielle.
+- Mise à jour de la logique de notation : Remplacement de la Super Moyenne pondérée par ECTS par des moyennes arithmétiques pour la Licence et le DEUG.
+- Ajout de la Mention globale avec points de jury interactifs dans le Bulletin.
+- Règles d'évaluation continue (BulletinPage) : Le poids de chaque note est calculé en temps réel. Un avertissement se déclenche si une évaluation pèse pour plus de 50% de la moyenne d'une UE, conformément au règlement de la CFVU. Les évaluations sont désormais définies dans le modèle Zod (schemas.js).
+- Gestion des Absences (BulletinPage) : Ajout d'un statut (Présent, EXC, DEF) pour les évaluations. Une absence justifiée (EXC) neutralise le coefficient de la note. Une défaillance (DEF) se propage mathématiquement à la matière, l'UE, et bloque la compensation du semestre.

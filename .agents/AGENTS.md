@@ -273,3 +273,29 @@ Cette routine garantit que l'application est toujours déployable et que le trav
   1. **Knowledge Base (IA)** : Mettre � jour data/reglement_etudes.md (ou similaire) pour que le Coach IA puisse conseiller l'�tudiant avec exactitude.
   2. **Features UI/Backend** : R�fl�chir de mani�re proactive � la mani�re dont cette r�gle peut �tre cod�e dans l'application (ex: un minuteur, un tracker, une case "Dispens�", un avertissement d'absence) et proposer l'impl�mentation � l'utilisateur.
 </RULE[elpis_school_regulations]>
+
+<RULE[systematic_documentation]>
+- **Documentation Systématique (Transfert de Connaissances)** : Lors de l'ajout de nouvelles fonctionnalités, de la modification des données métiers (ex: eglement_etudes.md), ou de toute évolution architecturale, l'agent DOIT systématiquement mettre à jour la documentation du projet.
+- Les fichiers cibles incluent prioritairement CARTOGRAPHIE.md (pour l'architecture et les flux), README.md (si impact global), et les fichiers pertinents dans le dossier docs/.
+- Objectif absolu : Garantir que tout nouveau développeur ou agent IA prenant le relais puisse comprendre instantanément le fonctionnement actuel sans être perdu.
+</RULE[systematic_documentation]>
+
+<RULE[pedagogy_cm_unit]>
+- **Unité d'apprentissage (CM vs Chapitre)** : Dans ELPIS (et dans toute discussion de planification universitaire), l'unité de base pour découper, réviser et planifier une matière n'est JAMAIS le "Chapitre" ni la "Leçon". L'unité de base est TOUJOURS le "CM" (Cours Magistral). L'agent doit employer ce vocabulaire (ex: "CM 1", "CM 2", "Nouveau CM") dans l'UI, dans le code (listeCM) et dans ses explications.
+</RULE[pedagogy_cm_unit]>
+
+<RULE[schedule_cross_validation]>
+- **Vérification croisée des volumes horaires** : Lors de la lecture d'un emploi du temps ou d'un planning, l'agent ne doit jamais se fier aveuglément aux chiffres lus sur l'image (risque d'erreur de lecture, ex: 5 confondu avec 6). L'agent DOIT toujours effectuer une vérification croisée : (Nombre de CM extraits) * (Durée standard d'un CM, ex: 2h) = Volume horaire total. Si le total dépasse ou contredit le volume horaire officiel (MECC/Règlement), l'agent doit corriger sa lecture visuelle ou demander confirmation à l'utilisateur avant d'injecter les données.
+</RULE[schedule_cross_validation]>
+
+<RULE[ade_timetable_strict_reading]>
+- **Lecture Infaillible des Emplois du Temps (Anti-Oubli)** : Lors de l'analyse d'images d'emplois du temps (ex: ADE), l'agent DOIT lire le contenu textuel de *chaque* bloc individuellement, sans exception. 
+  1. Ne **jamais** déduire le contenu d'un bloc en fonction des blocs adjacents.
+  2. Vérifier systématiquement le préfixe de chaque bloc (Ex:, CM:, TD:, TP:).
+  3. Prêter une attention critique au code couleur : tout bloc rouge/rose DOIT être traité comme un événement critique (Examen / CC) même s'il semble perdu au milieu d'autres cours.
+  4. L'agent doit extraire les données en listant explicitement chaque bloc lu pour s'assurer qu'aucun n'est ignoré.
+</RULE[ade_timetable_strict_reading]>
+
+<RULE[ade_ignore_sub_exams]>
+- **Exclusion des Examens de Substitution** : Lors de l'analyse des emplois du temps (ADE), l'agent DOIT ignorer systématiquement tout bloc commençant par ou contenant "SUB" ou "Sub:" (ex: "Sub: Architecture des systèmes d'exploitation"). Ces créneaux sont des examens de rattrapage (substitution) qui ne concernent pas l'utilisateur. Seuls les blocs marqués "Ex:" doivent être considérés comme des examens.
+</RULE[ade_ignore_sub_exams]>

@@ -402,6 +402,14 @@ function CoursPage() {
                                   style={{width:'50px', padding:'0.2rem', fontSize:'0.85rem'}} title="Crédits ECTS (0-60)"
                                 />
                               </div>
+                              <label style={{display:'flex', alignItems:'center', gap:'0.4rem', fontSize:'0.85rem', color: ue.acquise ? 'var(--success-color)' : 'var(--text-secondary)', cursor:'pointer'}}>
+                                <input type="checkbox" checked={ue.acquise || false} onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'acquise'], e.target.checked)} />
+                                🔒 Acquise
+                              </label>
+                              <label title="Mesures transitoires / Acquis antérieur" style={{display:'flex', alignItems:'center', gap:'0.4rem', fontSize:'0.85rem', color: ue.dispense ? '#F59E0B' : 'var(--text-secondary)', cursor:'pointer'}}>
+                                <input type="checkbox" checked={ue.dispense || false} onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'dispense'], e.target.checked)} />
+                                📜 Dispense
+                              </label>
                             </div>
                             <div style={{display:'flex', alignItems:'center', gap:'1rem'}}>
                               <button className="btn-secondary" onClick={() => addMatiere(lIndex, sIndex, uIndex)}>+ Matière</button>

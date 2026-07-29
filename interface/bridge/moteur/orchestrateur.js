@@ -138,6 +138,14 @@ function buildTaskPools({
             if (!cm.derniereRevision) {
               if (matieresSatureesToday.has(m.nom)) continue;
               if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject)) continue;
+              
+              // AXE DATE CM : Ne pas planifier un CM qui n'a pas encore eu lieu
+              if (cm.dateCM) {
+                const dateCM = parseDateLocal(cm.dateCM);
+                const nowDate = parseDateLocal(todayStr);
+                if (nowDate < dateCM) continue; 
+              }
+
               doitReviser = true;
               joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
               newCMCountPerMatiere++;
@@ -214,6 +222,14 @@ function buildTaskPools({
           if (cfg.enableTD) {
             for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
               if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
+              
+              // AXE DATE : Ne pas planifier un TD qui n'a pas encore eu lieu
+              if (ex.datePrevue) {
+                const datePr = parseDateLocal(ex.datePrevue);
+                const nowDate = parseDateLocal(todayStr);
+                if (nowDate < datePr) continue; 
+              }
+
               const dureeBase = cfg.defaultDurationTD || 20;
               const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
               poolTD.push({

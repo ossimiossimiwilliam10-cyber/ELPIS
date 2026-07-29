@@ -71,12 +71,21 @@ const exSchema = z.object({
   difficulte: z.string().optional()
 }).catchall(z.any());
 
+const evaluationSchema = z.object({
+  nom: z.string(),
+  coefficient: z.number().optional(),
+  note: z.number().nullable().optional(),
+  type: z.string().optional(),
+  statut: z.string().optional(),
+  date: z.string().nullable().optional()
+}).catchall(z.any());
+
 const matiereSchema = z.object({
   nom: z.string(),
   coef: z.number().optional(),
-  ects: z.number().optional(),
   dateExamen: z.string().optional(),
   ankiDeckName: z.string().optional(),
+  evaluations: z.array(evaluationSchema).optional(),
   listeCM: z.array(cmSchema).optional(),
   listeTD: z.array(exSchema).optional(),
   listeTP: z.array(exSchema).optional(),
@@ -85,6 +94,9 @@ const matiereSchema = z.object({
 
 const ueSchema = z.object({
   nom: z.string(),
+  ects: z.number().optional(),
+  acquise: z.boolean().optional(),
+  dispense: z.boolean().optional(),
   matieres: z.array(matiereSchema).optional()
 }).catchall(z.any());
 

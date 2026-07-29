@@ -9,10 +9,12 @@ export default function BulletinPage() {
   const [activeLicenceIndex, setActiveLicenceIndex] = useState(0);
   const [expandedUEs, setExpandedUEs] = useState({});
   const [unlockedUEs, setUnlockedUEs] = useState(new Set());
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   // AXE 15: What-If Simulation Mode
   const [isSimulationMode, setIsSimulationMode] = useState(false);
   const [simulationConfig, setSimulationConfig] = useState(null);
+  const [pointsJury, setPointsJury] = useState(0);
 
   const toggleSimulationMode = () => {
     if (isSimulationMode) {
@@ -84,15 +86,19 @@ export default function BulletinPage() {
 
   const getSubjectAverage = (evaluations) => {
     if (!evaluations || !Array.isArray(evaluations)) return null;
+    let isDefaillant = false;
     let totalScore = 0;
     let totalCoef = 0;
     evaluations.forEach(ev => {
-      if (ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
+      if (ev.statut === 'defaillant') {
+        isDefaillant = true;
+      } else if (ev.statut !== 'excuse' && ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
         const c = ev.coefficient !== undefined ? Number(ev.coefficient) : 1;
         totalScore += ev.note * c;
         totalCoef += c;
       }
     });
+    if (isDefaillant) return 'DEF';
     return totalCoef > 0 ? (totalScore / totalCoef) : null;
   };
 
@@ -103,68 +109,72 @@ export default function BulletinPage() {
 
     sem.ues?.forEach(ue => {
       let ueSumWeight = 0;
-        let ueSumNotes = 0;
-        let ueBonus = 0;
-        ue.matieres?.forEach(m => {
-          if (m.dispense) return;
-          const avg = getSubjectAverage(m.evaluations);
-          if (avg !== null) {
-            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            if (coef === 0) {
-              ueBonus += avg;
-            } else {
-              ueSumWeight += coef;
-              ueSumNotes += avg * coef;
-            }
+      let ueSumNotes = 0;
+      let ueBonus = 0;
+      let ueIsDefaillant = false;
+      
+      ue.matieres?.forEach(m => {
+        if (m.dispense) return;
+        const avg = getSubjectAverage(m.evaluations);
+        if (avg === 'DEF') {
+          ueIsDefaillant = true;
+        } else if (avg !== null) {
+          const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+          if (coef === 0) {
+            ueBonus += avg;
+          } else {
+            ueSumWeight += coef;
+            ueSumNotes += avg * coef;
           }
-        });
+        }
+      });
 
-      const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
-      if (ueAvg !== null) {
+      const ueAvg = ueIsDefaillant ? 'DEF' : (ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null);
+      if (ueAvg === 'DEF') {
+         semSumNotes = 'DEF'; // propagate DEF
+      } else if (ueAvg !== null && semSumNotes !== 'DEF') {
         const ects = ue.ects || 0; // Use ECTS for UE weighting
         semSumNotes += ueAvg * ects;
         semSumECTS += ects;
       }
     });
 
-    const semAvg = semSumECTS > 0 ? (semSumNotes / semSumECTS).toFixed(2) : '--';
+    const semAvg = semSumNotes === 'DEF' ? 'DEF' : (semSumECTS > 0 ? (semSumNotes / semSumECTS).toFixed(2) : '--');
     semesterAverages.push({ nom: sem.nom, avg: semAvg });
   });
 
-  // AXE 16: Super Moyenne Générale Universitaire (Pondérée par ECTS)
-  let globalSumNotes = 0;
-  let globalSumECTS = 0;
+  // AXE 16: Moyenne Générale au Diplôme (Arithmétique)
+  let globalSum = 0;
+  let globalCount = 0;
+  let deugSum = 0;
+  let deugCount = 0;
 
-  activeConfig.licences.forEach(lic => {
-    lic.semestres?.forEach(sem => {
-      sem.ues?.forEach(ue => {
-        let ueSumWeight = 0;
-        let ueSumNotes = 0;
-        let ueBonus = 0;
-        ue.matieres?.forEach(m => {
-          if (m.dispense) return;
-          const avg = getSubjectAverage(m.evaluations);
-          if (avg !== null) {
-            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            if (coef === 0) {
-              ueBonus += avg;
-            } else {
-              ueSumWeight += coef;
-              ueSumNotes += avg * coef;
-            }
-          }
-        });
-        const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
-        if (ueAvg !== null) {
-          const ects = ue.ects || 0;
-          globalSumNotes += ueAvg * ects;
-          globalSumECTS += ects;
-        }
-      });
-    });
+  semesterAverages.forEach((sem, idx) => {
+    if (sem.avg !== '--' && sem.avg !== 'DEF') {
+      const val = parseFloat(sem.avg);
+      globalSum += val;
+      globalCount++;
+      if (idx < 4) { // DEUG = 4 premiers semestres
+        deugSum += val;
+        deugCount++;
+      }
+    }
   });
 
-  const globalAvg = globalSumECTS > 0 ? (globalSumNotes / globalSumECTS).toFixed(2) : '--';
+  let baseGlobalAvg = globalCount > 0 ? (globalSum / globalCount) : null;
+  let globalAvgWithJury = baseGlobalAvg !== null ? (baseGlobalAvg + (parseFloat(pointsJury) || 0)).toFixed(2) : '--';
+  let globalAvg = baseGlobalAvg !== null ? baseGlobalAvg.toFixed(2) : '--';
+  let deugAvg = deugCount > 0 ? (deugSum / deugCount).toFixed(2) : '--';
+
+  let mention = "";
+  if (globalAvgWithJury !== '--') {
+    const score = parseFloat(globalAvgWithJury);
+    if (score >= 16) mention = "Très Bien";
+    else if (score >= 14) mention = "Bien";
+    else if (score >= 12) mention = "Assez Bien";
+    else if (score >= 10) mention = "Passable";
+    else mention = "Ajourné";
+  }
 
   // AXE AJAC & Compensation Annuelle
   let totalAcquiredECTS = 0;
@@ -317,14 +327,39 @@ export default function BulletinPage() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+        flexWrap: 'wrap',
+        gap: '1rem'
       }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-secondary)' }}>Moyenne Universitaire Globale</h2>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Pondérée sur l'ensemble de tes {globalSumECTS} crédits ECTS acquis</div>
+        <div style={{flex: 1, minWidth: '250px'}}>
+          <h2 style={{ margin: 0, fontSize: '1.3rem', color: 'var(--text-primary)' }}>Moyenne Générale (Licence)</h2>
+          <div style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+            Moyenne arithmétique globale sans pondération
+          </div>
+          {mention && (
+            <div style={{ marginTop: '0.8rem', display: 'inline-block', padding: '0.3rem 0.8rem', background: 'rgba(59, 130, 246, 0.2)', color: '#60a5fa', borderRadius: '8px', fontWeight: 'bold' }}>
+              Mention : {mention}
+            </div>
+          )}
+          <div style={{ marginTop: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Points de Jury :</span>
+            <input type="number" step="0.01" value={pointsJury} onChange={(e) => setPointsJury(e.target.value)} style={{ width: '70px', padding: '0.3rem', borderRadius: '6px', border: '1px solid var(--bg-tertiary)', background: 'var(--bg-secondary)', color: 'var(--text-primary)' }} title="Ajout manuel de points pour l'obtention d'une mention" />
+          </div>
         </div>
-        <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: globalAvg >= 10 ? '#4ade80' : '#f87171', textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
-          {globalAvg}<span style={{fontSize: '1.2rem', color:'var(--text-muted)'}}>/20</span>
+        
+        <div style={{ textAlign: 'right', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>DEUG (S1 à S4)</div>
+            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: deugAvg >= 10 ? '#4ade80' : 'var(--text-primary)' }}>
+              {deugAvg}<span style={{fontSize: '1rem', color:'var(--text-muted)'}}>/20</span>
+            </div>
+          </div>
+          <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '2rem' }}>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Diplôme (Licence)</div>
+            <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: globalAvgWithJury >= 10 ? '#4ade80' : '#f87171', textShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>
+              {globalAvgWithJury}<span style={{fontSize: '1.2rem', color:'var(--text-muted)'}}>/20</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -344,9 +379,29 @@ export default function BulletinPage() {
               </button>
             ))}
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '1rem' }}>(Pour ajouter une licence, rends-toi dans Bibliothèque)</span>
+          </div>
 
-          <button
-            onClick={toggleSimulationMode}
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setIsLegendOpen(true)}
+              style={{
+                padding: '0.6rem 1rem',
+                borderRadius: '8px',
+                border: '1px solid var(--border-color)',
+                background: 'var(--bg-tertiary)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              📚 Légende MCC
+            </button>
+
+            <button
+              onClick={toggleSimulationMode}
             style={{
               padding: '0.6rem 1rem',
               borderRadius: '8px',
@@ -465,34 +520,39 @@ export default function BulletinPage() {
                   let semSumNotes = 0;
                   (licence.semestres[ue.semIndex]?.ues || []).forEach(siblingUe => {
                      let ueSumWeight = 0;
-        let ueSumNotes = 0;
-        let ueBonus = 0;
-        siblingUe.matieres?.forEach(m => {
-          if (m.dispense) return;
-          const avg = getSubjectAverage(m.evaluations);
-          if (avg !== null) {
-            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            if (coef === 0) {
-              ueBonus += avg;
-            } else {
-              ueSumWeight += coef;
-              ueSumNotes += avg * coef;
-            }
-          }
-        });
-                     const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
-                     if (ueAvg !== null) {
+                     let ueSumNotes = 0;
+                     let ueBonus = 0;
+                     let ueIsDefaillant = false;
+                     siblingUe.matieres?.forEach(m => {
+                       if (m.dispense) return;
+                       const avg = getSubjectAverage(m.evaluations);
+                       if (avg === 'DEF') {
+                         ueIsDefaillant = true;
+                       } else if (avg !== null) {
+                         const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+                         if (coef === 0) {
+                           ueBonus += avg;
+                         } else {
+                           ueSumWeight += coef;
+                           ueSumNotes += avg * coef;
+                         }
+                       }
+                     });
+                     const ueAvg = ueIsDefaillant ? 'DEF' : (ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null);
+                     if (ueAvg === 'DEF') {
+                         semSumNotes = 'DEF';
+                     } else if (ueAvg !== null && semSumNotes !== 'DEF') {
                          const ects = siblingUe.ects || 0;
                          semSumNotes += ueAvg * ects;
                          semSumECTS += ects;
                      }
                   });
-                  const semAverage = semSumECTS > 0 ? (semSumNotes / semSumECTS) : 0;
-                  const isCompensable = semAverage >= 10;
+                  const semAverage = semSumNotes === 'DEF' ? 'DEF' : (semSumECTS > 0 ? (semSumNotes / semSumECTS) : 0);
+                  const isCompensable = semAverage !== 'DEF' && semAverage >= 10;
 
 
                   return isCompensable
-                      ? <span style={{ background: 'rgba(52, 211, 153, 0.2)', color: 'var(--success)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>✅ Compensable</span>
+                      ? <span title="Compensation inter-semestrielle annuelle. Vous pouvez renoncer à cette compensation (notamment S5-S6) après la tenue du jury." style={{ background: 'rgba(52, 211, 153, 0.2)', color: 'var(--success)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold', cursor: 'help' }}>✅ Compensable</span>
                       : <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>⚠️ Non compensable</span>;
                 })()}
                 <div style={{ fontWeight: 'bold', color: ueAverage !== '--' ? (ueAverage >= 10 ? 'var(--success)' : 'var(--danger)') : 'var(--text-secondary)' }}>
@@ -518,10 +578,13 @@ export default function BulletinPage() {
                     )}
                   </div>
                 )}
-                {ue.matieres?.map((matiere, matIndex) => {
+                {(() => {
+                  const ueSumMatiereCoefs = ue.matieres?.reduce((acc, m) => acc + (m.dispense ? 0 : (m.coefficient !== undefined ? Number(m.coefficient) : 1)), 0) || 1;
+                  return ue.matieres?.map((matiere, matIndex) => {
                   const isDispense = matiere.dispense === true;
                   const avg = getSubjectAverage(matiere.evaluations);
                   const coef = matiere.coefficient !== undefined ? Number(matiere.coefficient) : 1;
+                  const matSumEvalCoefs = matiere.evaluations?.reduce((acc, e) => acc + (Number(e.coefficient) || 0), 0) || 1;
                   const projected = intelligence?.projectedScoreMap?.[(matiere.nom || '').toLowerCase().trim()];
                   return (
                     <div key={matIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', background: 'var(--bg-tertiary)', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)', opacity: isDispense ? 0.6 : 1 }}>
@@ -543,8 +606,18 @@ export default function BulletinPage() {
                       </div>
 
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
-                        {(matiere.evaluations || []).map((ev, evIndex) => (
-                          <div key={evIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', background: 'var(--bg-secondary)', padding: '0.8rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative', opacity: isLocked ? 0.7 : 1 }}>
+                        {(matiere.evaluations || []).map((ev, evIndex) => {
+                          const evCoef = Number(ev.coefficient) || 0;
+                          const globalWeight = ueSumMatiereCoefs > 0 && matSumEvalCoefs > 0 && !isDispense ? (evCoef / matSumEvalCoefs) * (coef / ueSumMatiereCoefs) : 0;
+                          const isWeightIllegal = globalWeight > 0.5;
+
+                          return (
+                          <div key={evIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', background: 'var(--bg-secondary)', padding: '0.8rem', borderRadius: '6px', border: isWeightIllegal ? '1px solid var(--danger)' : '1px solid rgba(255,255,255,0.05)', position: 'relative', opacity: isLocked ? 0.7 : 1 }}>
+                            {isWeightIllegal && (
+                               <div title={`Le poids global de cette note dans l'UE est de ${(globalWeight*100).toFixed(1)}%. Le règlement interdit de dépasser 50%.`} style={{position: 'absolute', top: '-0.5rem', left: '0.5rem', background: 'var(--danger)', color: 'white', fontSize: '0.65rem', padding: '0.1rem 0.4rem', borderRadius: '4px', fontWeight: 'bold', zIndex: 2}}>
+                                 ⚠️ &gt; 50% UE
+                               </div>
+                            )}
                             {!isLocked && (
                                <button
                                  onClick={() => handleDeleteEval(ue.semIndex, ue.ueIndex, matIndex, evIndex)}
@@ -576,11 +649,12 @@ export default function BulletinPage() {
                                 <select
                                   disabled={isLocked}
                                   value={ev.type || 'SC'}
+                                  title="Type d'épreuve (AC: Avec Convocation, SC: Sans Convocation)"
                                   onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'type', e.target.value)}
                                   style={{ padding: '0.1rem 0.3rem', background: ev.type === 'AC' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(52, 211, 153, 0.15)', color: ev.type === 'AC' ? '#ef4444' : '#34d399', border: 'none', borderRadius: '4px', fontSize: '0.75rem', cursor: isLocked ? 'default' : 'pointer', opacity: isLocked ? 0.7 : 1 }}
                                 >
-                                  <option value="SC">SC</option>
-                                  <option value="AC">AC</option>
+                                  <option value="SC" title="Épreuve sans convocation">SC</option>
+                                  <option value="AC" title="Épreuve avec convocation">AC</option>
                                 </select>
                               </div>
                               <input
@@ -591,18 +665,40 @@ export default function BulletinPage() {
                                 style={{ padding: '0.15rem 0.3rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', borderRadius: '4px', fontSize: '0.75rem', width: '100%', opacity: isLocked ? 0.7 : 1 }}
                               />
                             </div>
-                            <input
-                              type="number"
-                              disabled={isLocked}
-                              step="0.1"
-                              min="0" max="20"
-                              placeholder="-- / 20"
-                              defaultValue={ev.note !== null ? ev.note : ''}
-                              onBlur={(e) => handleUpdateNote(ue.semIndex, ue.ueIndex, matIndex, evIndex, e.target.value)}
-                              style={{ width: '100%', padding: '0.5rem', background: isLocked ? 'rgba(0,0,0,0.1)' : 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', marginTop: '0.5rem', cursor: isLocked ? 'not-allowed' : 'text' }}
-                            />
+                            <div style={{marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem'}}>
+                              <select
+                                disabled={isLocked}
+                                value={ev.statut || 'present'}
+                                onChange={(e) => handleUpdateEvalField(ue.semIndex, ue.ueIndex, matIndex, evIndex, 'statut', e.target.value)}
+                                style={{ padding: '0.3rem', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px', fontSize: '0.8rem', cursor: isLocked ? 'default' : 'pointer', opacity: isLocked ? 0.7 : 1 }}
+                              >
+                                <option value="present">Présent (Noté)</option>
+                                <option value="excuse">Absence Justifiée (EXC)</option>
+                                <option value="defaillant">Défaillant (DEF)</option>
+                              </select>
+
+                              {(!ev.statut || ev.statut === 'present') && (
+                                <input
+                                  type="number"
+                                  disabled={isLocked}
+                                  step="0.1"
+                                  min="0" max="20"
+                                  placeholder="-- / 20"
+                                  defaultValue={ev.note !== null ? ev.note : ''}
+                                  onBlur={(e) => handleUpdateNote(ue.semIndex, ue.ueIndex, matIndex, evIndex, e.target.value)}
+                                  style={{ width: '100%', padding: '0.5rem', background: isLocked ? 'rgba(0,0,0,0.1)' : 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', textAlign: 'center', fontSize: '1rem', fontWeight: 'bold', cursor: isLocked ? 'not-allowed' : 'text' }}
+                                />
+                              )}
+                              {ev.statut === 'excuse' && (
+                                <div style={{ width: '100%', padding: '0.5rem', background: 'rgba(59, 130, 246, 0.1)', color: '#60a5fa', border: '1px dashed #60a5fa', borderRadius: '4px', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold' }}>EXC (Neutralisé)</div>
+                              )}
+                              {ev.statut === 'defaillant' && (
+                                <div style={{ width: '100%', padding: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', border: '1px dashed var(--danger)', borderRadius: '4px', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold' }}>DEF (Blocage)</div>
+                              )}
+                            </div>
                           </div>
-                        ))}
+                          );
+                        })}
 
                         <button
                           disabled={isLocked}
@@ -615,12 +711,59 @@ export default function BulletinPage() {
                       </div>
                     </div>
                   );
-                })}
+                });
+                })()}
               </div>
             )}
           </div>
         );
       })}
+
+      {/* MODAL LÉGENDE */}
+      {isLegendOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }} onClick={() => setIsLegendOpen(false)}>
+          <div style={{ background: 'var(--bg-primary)', padding: '2rem', borderRadius: '16px', maxWidth: '600px', width: '100%', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', overflowY: 'auto', maxHeight: '90vh' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+              <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>📚 Légende des MCC</h2>
+              <button onClick={() => setIsLegendOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+            </div>
+            
+            <div style={{ display: 'grid', gap: '1.5rem', color: 'var(--text-secondary)' }}>
+              <div>
+                <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Types d'évaluation (Session 1)</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.5rem' }}>
+                  <li><strong style={{ color: '#ef4444' }}>AC</strong> : Épreuve <strong>Avec</strong> Convocation</li>
+                  <li><strong style={{ color: '#34d399' }}>SC</strong> : Épreuve <strong>Sans</strong> Convocation</li>
+                  <li><strong>A</strong> : Autre</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Natures de l'évaluation</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.5rem' }}>
+                  <li><strong>ET</strong> : Écrit sur table</li>
+                  <li><strong>PE</strong> : Production écrite</li>
+                  <li><strong>PT</strong> : Évaluation des pratiques techniques</li>
+                  <li><strong>QC</strong> : Questionnaire à choix multiples</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Natures d'enseignement</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.5rem' }}>
+                  <li><strong>CM</strong> : Cours Magistral</li>
+                  <li><strong>TD</strong> : Travaux Dirigés</li>
+                  <li><strong>TP</strong> : Travaux Pratiques</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+              <button onClick={() => setIsLegendOpen(false)} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '8px' }}>Fermer</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
