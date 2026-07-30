@@ -86,7 +86,7 @@
 
 | Fichier | Rôle |
 |---------|------|
-| `components/cours/MatiereCard.jsx` | Carte matière complète — CM, TD, TP, Annales, NotebookLM, deck Anki, synergies |
+| `components/cours/MatiereCard.jsx` | Carte matière complète — CM, TD, TP, Annales, NotebookLM, deck Anki, synergies, **input dateDebut** pour CM (dateCM), TD/Annales (datePrevue), TP (dateTP) |
 | `components/cours/ExerciceCard.jsx` | Carte exercice — utilisée dans EntrainementPage, évaluation + chrono intégré |
 | `components/cours/ExerciceRow.jsx` | Ligne exercice éditable — utilisée dans PreparationHebdoPage et MatiereCard |
 | `components/cours/EditableLabel.jsx` | Texte éditable inline — renommage par `window.prompt` |
@@ -155,7 +155,7 @@
 | `moteur/cours.js` | Gestion arborescence cours — SQLite 5 tables | Transaction DELETE+INSERT, deepMerge |
 | `moteur/historique.js` | Gestion historique — sessions d'étude | Trim à 10 000 entrées |
 | `moteur/projets.js` | Gestion projets | Table `projets` |
-| `moteur/schemas.js` | Schémas Zod 4.x — validation | `configSchema`, `coursSchema`, `historiqueSchema` |
+| `moteur/schemas.js` | Schémas Zod 4.x — validation | `configSchema`, `coursSchema`, `historiqueSchema`. `cmSchema` inclut `dateCM`, `exSchema` inclut `datePrevue` et `dateTP` |
 | `moteur/ankiSync.js` | Synchronisation AnkiConnect | HTTP localhost:8765, cache 5min, batching 5, 5 étapes de matching |
 | `moteur/rlEngine.js` | **Reinforcement Learning** — UCB Bandits | UCB = Q + C×√(ln(N)/n), mise à jour incrémentale, lissage 0.8-2.5 |
 | `moteur/telemetry.js` | Télémétrie — log sessions et actions | Persistance JSON |

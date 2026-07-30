@@ -47,10 +47,11 @@ import { getDb, syncFromBackend } from './database';
 // API base URL
 import { getApiUrl } from './utils/apiConfig';
 import { fetchWithRetry, fetchFireAndForget } from './utils/fetchWithRetry';
+import logger from './utils/logger';
 
 // Fonction utilitaire pour gérer l'échec de la synchronisation (Mode Hors-Ligne)
 const handleOfflineError = (type, error) => {
-  console.error(`[Hors-Ligne] Failed to auto-save ${type}`, error);
+  logger.error(`[Hors-Ligne] Failed to auto-save ${type}`, error);
   localStorage.setItem('elpis_offline_pending_sync', 'true');
   // Dispatch a custom event to notify the UI
   window.dispatchEvent(new Event('elpis_offline_status_changed'));
@@ -58,7 +59,7 @@ const handleOfflineError = (type, error) => {
 
 // Auto-save functions using debounce
 const debouncedSaveConfig = debounce(async (config, get) => {
-  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
+  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('config', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
@@ -75,7 +76,7 @@ const debouncedSaveConfig = debounce(async (config, get) => {
 }, 500);
 
 const debouncedSaveCours = debounce(async (coursConfig, get) => {
-  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
+  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('cours', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
@@ -92,7 +93,7 @@ const debouncedSaveCours = debounce(async (coursConfig, get) => {
 }, 500);
 
 const debouncedSaveHistorique = debounce(async (historique, get) => {
-  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
+  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('historique', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
@@ -109,7 +110,7 @@ const debouncedSaveHistorique = debounce(async (historique, get) => {
 }, 500);
 
 const debouncedSaveProjets = debounce(async (projets, get) => {
-  if (get && get().error) return console.warn("Save aborted: Store initialization failed.");
+  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
   if (!navigator.onLine) return handleOfflineError('projets', new Error('Offline'));
   try {
     const apiBase = getApiUrl();
@@ -131,7 +132,7 @@ const writeToDb = async (collectionName, data) => {
     const db = await getDb();
     await db[collectionName].upsert({ id: 'main', data });
   } catch (e) {
-    console.error(`Erreur d'écriture locale (${collectionName}) :`, e);
+    logger.error(`Erreur d'écriture locale (${collectionName}) :`, e);
   }
 };
 
@@ -196,7 +197,7 @@ const useStore = create(immer((set, get) => ({
         });
       }
     } catch (e) {
-      console.error("Failed to fetch orchestrator", e);
+      logger.error("Failed to fetch orchestrator", e);
     }
   },
 
@@ -254,7 +255,7 @@ const useStore = create(immer((set, get) => ({
       // Fetch orchestrator data directly from API
       await get().fetchOrchestrator();
     } catch (error) {
-      console.error('Erreur lors du chargement des données RxDB:', error);
+      logger.error('Erreur lors du chargement des données RxDB:', error);
       set({ error: error.message, loading: false });
     }
   },
@@ -319,7 +320,7 @@ const useStore = create(immer((set, get) => ({
         // Now update pending tasks which will query the orchestrator
         get().fetchOrchestrator();
       } catch (e) {
-        console.error("Failed to save rest day", e);
+        logger.error("Failed to save rest day", e);
       }
     }
   },
@@ -357,7 +358,7 @@ const useStore = create(immer((set, get) => ({
         });
         get().fetchOrchestrator();
       } catch (e) {
-        console.error("Failed to save extended rest day", e);
+        logger.error("Failed to save extended rest day", e);
       }
     }
   },
@@ -382,7 +383,7 @@ const useStore = create(immer((set, get) => ({
         body: JSON.stringify(newConfig)
       });
     } catch (e) {
-      console.error("Failed to save decline flag", e);
+      logger.error("Failed to save decline flag", e);
     }
   },
 
@@ -536,7 +537,7 @@ const getPersistedChrono = () => {
       return parsed;
     }
   } catch (e) {
-    console.error("Erreur restauration chrono:", e);
+    logger.error("Erreur restauration chrono:", e);
   }
   return null;
 };
@@ -631,7 +632,7 @@ if (typeof window !== 'undefined') {
         ]);
         localStorage.removeItem('elpis_offline_pending_sync');
       } catch (e) {
-        console.error('Offline sync failed again', e);
+        logger.error('Offline sync failed again', e);
       }
     }
   });

@@ -28,16 +28,16 @@ jobs:
         run: npm ci
 
       - name: Lint
-        run: npm run lint || echo "Lint warnings — non-bloquant"
+        run: npm run lint
 
       - name: Unit tests with coverage (Vitest)
-        run: npx vitest run --coverage --reporter=verbose || echo "Tests completed"
+        run: npx vitest run --coverage --reporter=verbose
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
       - name: E2E tests (Playwright)
-        run: npx playwright test --reporter=html || echo "E2E warnings — vérifier le rapport"
+        run: npx playwright test --reporter=html
 
       - name: Upload Playwright report
         if: always()
@@ -77,7 +77,7 @@ jobs:
         run: npm ci
 
       - name: Bridge tests with coverage
-        run: npx vitest run --coverage --reporter=verbose || echo "Bridge tests completed"
+        run: npx vitest run --coverage --reporter=verbose
 
       - name: Upload Bridge Coverage
         if: always()

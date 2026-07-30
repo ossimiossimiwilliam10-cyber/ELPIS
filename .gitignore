@@ -65,3 +65,26 @@ build/
 
 # Fichiers de backup de l'application (sous-modules git)
 Sauvegarde*/
+
+# Scripts de debug/migration (historique)
+interface/bridge/set_week*.js
+interface/bridge/add_semestre*.js
+interface/bridge/check_*.js
+interface/bridge/scratch_*.js
+interface/bridge/debug_test.js
+interface/bridge/fix_sub.js
+interface/bridge/verify_encoding.js
+interface/bridge/clean_tp_dates.js
+interface/bridge/encode_semestre3.js
+interface/bridge/read_mcc.js
+interface/bridge/update_cms_semestre3.js
+interface/bridge/mcc_*.txt
+interface/bridge/temp_debug/
+
+# Fichiers temporaires/dump racine
+dump_db.js
+test_parse.js
+check_*.py
+extract_pdf.py
+ocr_*.py
+search_subjects.py

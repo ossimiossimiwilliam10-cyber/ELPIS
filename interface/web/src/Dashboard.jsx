@@ -58,16 +58,18 @@ function Dashboard() {
   }, [extraTime, dailyFillGap, fetchOrchestrator]);
 
   const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
-  if (orchestratorData !== prevOrchestratorData) {
-    setPrevOrchestratorData(orchestratorData);
-    if (orchestratorData?.tachesDuJour) {
-      const filtered = orchestratorData.tachesDuJour.filter(t => {
-        if (t.type === 'ANKI' && config?.dernierePratiqueAnki === todayStr) return false;
-        return true;
-      });
-      setOrderedTaches(filtered);
+  useEffect(() => {
+    if (orchestratorData && orchestratorData !== prevOrchestratorData) {
+      setPrevOrchestratorData(orchestratorData);
+      if (orchestratorData?.tachesDuJour) {
+        const filtered = orchestratorData.tachesDuJour.filter(t => {
+          if (t.type === 'ANKI' && config?.dernierePratiqueAnki === todayStr) return false;
+          return true;
+        });
+        setOrderedTaches(filtered);
+      }
     }
-  }
+  }, [orchestratorData, prevOrchestratorData, config?.dernierePratiqueAnki, todayStr]);
 
   // ---- Actions ----
   const handleAddExtraTime = () => setExtraTime(prev => prev + 30);

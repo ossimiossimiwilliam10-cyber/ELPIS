@@ -4,6 +4,18 @@ import EditableNote from './EditableNote';
 import StarRating from './StarRating';
 import InfoTooltip from '../InfoTooltip';
 
+/** Extrait "YYYY-MM-DD" d'une date ISO "YYYY-MM-DDTHH:MM:SS" pour <input type="date"> */
+const toDateInput = (val) => {
+  if (!val || typeof val !== 'string') return '';
+  if (val.includes('/')) {
+    const parts = val.split('/');
+    if (parts.length === 3) {
+      return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+  }
+  return val.substring(0, 10);
+};
+
 export default function MatiereCard({
   matiere,
   allMatiereNames,
@@ -292,11 +304,11 @@ export default function MatiereCard({
                 placeholder="Titre du CM"
                 style={{fontSize:'0.85rem'}}
               />
-              {cm.dateCM && (
-                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic'}}>
-                  Prévu le : {new Date(cm.dateCM).toLocaleDateString('fr-FR')}
-                </span>
-              )}
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.3rem', background: 'rgba(59,130,246,0.08)', padding: '0.3rem 0.5rem', borderRadius: '6px'}}>
+                <span style={{fontSize: '0.8rem'}}>📅</span>
+                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap'}}>Date de début :</span>
+                <input type="date" value={toDateInput(cm.dateCM)} onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeCM', cmIndex, 'dateCM'], e.target.value)} style={{background: 'var(--bg-primary)', border: '1px solid var(--accent-primary)', color: 'var(--text-primary)', borderRadius: '4px', padding: '0.2rem 0.4rem', fontSize: '0.8rem', flex: 1}} />
+              </div>
               <EditableNote
                 value={cm.notes}
                 onClick={() => setModalConfig({
@@ -399,11 +411,11 @@ export default function MatiereCard({
                 placeholder="Nom de l'exercice"
                 style={{fontSize:'0.85rem'}}
               />
-              {td.datePrevue && (
-                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic'}}>
-                  Prévu le : {new Date(td.datePrevue).toLocaleDateString('fr-FR')}
-                </span>
-              )}
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.3rem', background: 'rgba(52,211,153,0.08)', padding: '0.3rem 0.5rem', borderRadius: '6px'}}>
+                <span style={{fontSize: '0.8rem'}}>📅</span>
+                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap'}}>Date de début :</span>
+                <input type="date" value={toDateInput(td.datePrevue)} onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTD', tdIndex, 'datePrevue'], e.target.value)} style={{background: 'var(--bg-primary)', border: '1px solid var(--success-color)', color: 'var(--text-primary)', borderRadius: '4px', padding: '0.2rem 0.4rem', fontSize: '0.8rem', flex: 1}} />
+              </div>
               <EditableNote
                 value={td.notes}
                 onClick={() => setModalConfig({
@@ -480,11 +492,6 @@ export default function MatiereCard({
                 placeholder="Nom de l'exercice"
                 style={{fontSize:'0.85rem'}}
               />
-              {tp.dateTP && (
-                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic'}}>
-                  Prévu le : {new Date(tp.dateTP).toLocaleDateString('fr-FR')}
-                </span>
-              )}
               <EditableNote
                 value={tp.notes}
                 onClick={() => setModalConfig({
@@ -495,11 +502,11 @@ export default function MatiereCard({
                 })}
                 placeholder="+ Ajouter une note (markdown supporté)"
               />
-              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem'}}>
-                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>📅 Date du TP :</span>
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.3rem', background: 'rgba(251,191,36,0.08)', padding: '0.3rem 0.5rem', borderRadius: '6px'}}>
+                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>📅 Date de début :</span>
                 <input
                   type="date"
-                  value={tp.dateTP || ''}
+                  value={toDateInput(tp.dateTP)}
                   onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeTP', tpIndex, 'dateTP'], e.target.value)}
                   style={{
                     background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)',
@@ -583,6 +590,11 @@ export default function MatiereCard({
                 })}
                 placeholder="+ Ajouter une note (markdown supporté)"
               />
+              <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.3rem', background: 'rgba(239,68,68,0.08)', padding: '0.3rem 0.5rem', borderRadius: '6px'}}>
+                <span style={{fontSize: '0.8rem'}}>📅</span>
+                <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap'}}>Date de début :</span>
+                <input type="date" value={toDateInput(annale.datePrevue)} onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'listeAnnales', aIndex, 'datePrevue'], e.target.value)} style={{background: 'var(--bg-primary)', border: '1px solid var(--danger-color)', borderRadius: '4px', padding: '0.2rem 0.4rem', fontSize: '0.8rem', flex: 1}} />
+              </div>
             </div>
             <div style={{display:'flex', flexDirection:'column', alignItems:'flex-end', gap:'0.4rem'}}>
               <span style={{fontSize:'0.7rem', color:'var(--text-secondary)'}}>Difficulté</span>

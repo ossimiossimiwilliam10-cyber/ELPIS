@@ -3,6 +3,7 @@ import { getApiUrl, getServerUrl } from '../utils/apiConfig';
 import useStore, { useChronoStore } from '../store';
 import MusicSettingsModal from './MusicSettingsModal';
 
+import logger from '../utils/logger';
 function BackgroundMusicPlayer() {
   const [musicData, setMusicData] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -42,7 +43,7 @@ function BackgroundMusicPlayer() {
         }
       }
     } catch (err) {
-      console.error("Erreur fetch musique:", err);
+      logger.error("Erreur fetch musique:", err);
       setError("Erreur chargement");
       autoplayNextRef.current = false;
     }
@@ -55,7 +56,7 @@ function BackgroundMusicPlayer() {
       const tryPlay = () => {
         audio.play()
           .then(() => setIsPlaying(true))
-          .catch(e => console.log("Autoplay bloqué :", e));
+          .catch(e => logger.log("Autoplay bloqué :", e));
       };
       // Si l'audio est déjà prêt (readyState >= 2 = HAVE_CURRENT_DATA)
       if (audio.readyState >= 2) {
@@ -116,7 +117,7 @@ function BackgroundMusicPlayer() {
       if (audioRef.current && !isPlayingRef.current && musicData && musicData.url) {
         audioRef.current.play()
           .then(() => setIsPlaying(true))
-          .catch(e => console.log("Autoplay interactif bloqué:", e));
+          .catch(e => logger.log("Autoplay interactif bloqué:", e));
       }
       document.removeEventListener('click', handleFirstInteraction);
       document.removeEventListener('keydown', handleFirstInteraction);
@@ -140,7 +141,7 @@ function BackgroundMusicPlayer() {
     } else {
       audioRef.current.play()
         .then(() => setIsPlaying(true))
-        .catch(e => console.error("Play error:", e));
+        .catch(e => logger.error("Play error:", e));
     }
   };
 

@@ -49,6 +49,7 @@ const historiqueSchema = z.array(historiqueEntrySchema);
 // Schémas de validation pour les cours
 const cmSchema = z.object({
   titre: z.string(),
+  dateCM: z.string().optional(),
   derniereRevision: z.string().optional(),
   prochaineRevisionDate: z.string().optional(),
   jActuel: z.number().optional(),
@@ -61,6 +62,7 @@ const cmSchema = z.object({
 const exSchema = z.object({
   titre: z.string(),
   dernierePratique: z.string().optional(),
+  datePrevue: z.string().optional(),
   dateTP: z.string().optional(),
   nombrePratiques: z.number().optional(),
   tempsMoyen: z.number().optional(),

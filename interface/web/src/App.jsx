@@ -30,9 +30,8 @@ import useStore from './store';
 // Mini-fallback pour le chargement paresseux des pages
 const LoadingFallback = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px', color: 'var(--text-secondary)' }}>
-    <div className="spinner" style={{ width: '28px', height: '28px', border: '3px solid var(--bg-tertiary)', borderTop: '3px solid var(--accent-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginRight: '0.75rem' }}></div>
+    <div className="loading-spinner" style={{ marginRight: '0.75rem' }}></div>
     Chargement...
-    <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
   </div>
 );
 
@@ -96,7 +95,7 @@ function AppInner() {
 
   // Déclencher une notification Push si tâches en attente (1x par jour max)
   useEffect(() => {
-    if (pendingTasksCount > 0 && 'Notification' in window && Notification.permission === 'granted') {
+    if (pendingTasksCount > 0 && 'Notification' in window && Notification.permission === 'granted' && document.hidden) {
       const today = new Date().toISOString().split('T')[0];
       const lastNotified = localStorage.getItem('elpisLastNotified');
 

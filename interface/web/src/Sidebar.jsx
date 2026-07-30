@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount, isMobileMenuOpen }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [pendingSync, setPendingSync] = useState(localStorage.getItem('elpis_offline_pending_sync') === 'true');
+  const [isShuttingDown, setIsShuttingDown] = useState(false);
 
   useEffect(() => {
     const handleStatusChange = () => {
@@ -51,6 +52,17 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
     }
   ];
 
+  if (isShuttingDown) {
+    return (
+      <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh',background:'var(--bg-primary)',color:'var(--text-primary)',fontFamily:'inherit',position:'fixed',top:0,left:0,width:'100vw',zIndex:99999}}>
+        <div style={{textAlign:'center'}}>
+          <h1 style={{fontSize:'2rem',marginBottom:'1rem'}}>ELPIS est éteint.</h1>
+          <p style={{color:'var(--text-secondary)'}}>Vous pouvez fermer cet onglet.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`sidebar glass-panel ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
@@ -69,6 +81,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
                 key={tab.id}
                 className={`sidebar-link ${activeTab === tab.id ? 'active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}
+                aria-label={tab.label}
               >
                 <span className="sidebar-icon">{tab.icon}</span>
                 {tab.label}
@@ -92,6 +105,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
             className="btn-secondary"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             title={theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre'}
+            aria-label={theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre'}
             style={{padding: '0.5rem', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'}}
           >
             {theme === 'dark' ? '☀️' : '🌙'}
@@ -101,21 +115,17 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
             className="btn-secondary"
             onClick={async () => {
               if (window.confirm("Voulez-vous vraiment éteindre ELPIS ?")) {
-                // Tenter la requête shutdown (best effort)
-                try { await fetch('/api/shutdown', { method: 'POST' }); } catch {
-                  // Ignorer l'erreur si Chrome n'est pas trouvé
-                }
-                // Tenter window.close() (ne fonctionne que si la page a été ouverte par script)
+                try { await fetch('/api/shutdown', { method: 'POST' }); } catch { /* best effort */ }
                 window.close();
-                // Si après 500ms la page est toujours ouverte, afficher un message propre
                 setTimeout(() => {
                   if (!document.hidden && document.body) {
-                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;background:#0f172a;color:white;font-family:sans-serif'><h1>ELPIS est éteint. Vous pouvez fermer cet onglet.</h1></div>";
+                    setIsShuttingDown(true);
                   }
                 }, 500);
               }
             }}
             title="Éteindre l'application"
+            aria-label="Éteindre l'application"
             style={{padding: '0.5rem', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', border: '1px solid #ef4444'}}
           >
             🛑

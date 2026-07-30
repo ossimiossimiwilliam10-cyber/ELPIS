@@ -1,21 +1,22 @@
 {
-  "name": "ELPIS - Etude IA",
+  "name": "ELPIS - Assistant d'Étude",
   "short_name": "ELPIS",
-  "start_url": ".",
-  "display": "standalone",
+  "description": "Compagnon IA pour la réussite universitaire",
+  "theme_color": "#0f172a",
   "background_color": "#0f172a",
-  "theme_color": "#3b82f6",
-  "description": "Assistant d'étude intelligent avec répétition espacée et orchestration IA",
+  "display": "standalone",
+  "start_url": "/",
   "icons": [
     {
-      "src": "/vite.svg",
+      "src": "pwa-192x192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "/vite.svg",
+      "src": "pwa-512x512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

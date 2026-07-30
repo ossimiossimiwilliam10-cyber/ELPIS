@@ -22,6 +22,22 @@ export default function ExerciceRow({
   onUploadPdf,
   onEditNotes,
 }) {
+  const allPdfs = [...(exercice.pdfPaths || [])];
+  if (exercice.pdfPath && !allPdfs.includes(exercice.pdfPath)) {
+    allPdfs.unshift(exercice.pdfPath);
+  }
+
+  const toDateInput = (val) => {
+    if (!val || typeof val !== 'string') return '';
+    if (val.includes('/')) {
+      const parts = val.split('/');
+      if (parts.length === 3) {
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+      }
+    }
+    return val.substring(0, 10);
+  };
+
   const palette = {
     TD:     { border: 'rgba(52,211,153,0.3)',  bg: 'rgba(52,211,153,0.05)' },
     TP:     { border: 'rgba(251,191,36,0.3)',  bg: 'rgba(251,191,36,0.05)' },
@@ -68,14 +84,28 @@ export default function ExerciceRow({
         />
         {type === 'TP' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.1rem' }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>📅 Date du TP :</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>📅 Date de début :</span>
             <input
               type="date"
-              value={exercice.dateTP || ''}
+              value={toDateInput(exercice.dateTP)}
               onChange={(e) => onUpdate('dateTP', e.target.value)}
               style={{
                 background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)',
                 color: 'var(--text-primary)', borderRadius: '4px', padding: '0.1rem 0.3rem', fontSize: '0.7rem'
+              }}
+            />
+          </div>
+        )}
+        {(type === 'TD' || type === 'Annale') && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.1rem' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>📅 Date de début :</span>
+            <input
+              type="date"
+              value={toDateInput(exercice.datePrevue)}
+              onChange={(e) => onUpdate('datePrevue', e.target.value)}
+              style={{
+                background: 'rgba(255,255,255,0.08)', border: '1px solid var(--accent-primary)',
+                color: 'var(--text-primary)', borderRadius: '4px', padding: '0.2rem 0.4rem', fontSize: '0.8rem'
               }}
             />
           </div>

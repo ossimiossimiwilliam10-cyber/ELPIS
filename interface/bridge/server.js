@@ -138,15 +138,23 @@ app.use('/api/chat', require('./routes/chat'));
 app.use('/api', require('./routes/system'));
 
 // --- Healthcheck ---
+// Require db at module level to avoid lazy-load failures
+let healthDb;
+try {
+  healthDb = require('./db/setup');
+} catch (e) {
+  logger.error('Module db/setup non disponible au démarrage:', e.message);
+}
 app.get('/api/health', (req, res) => {
   logger.info('Healthcheck demandé');
   try {
-    const { db } = require('./db/setup');
-    db.prepare('SELECT 1').get();
+    if (healthDb?.db) {
+      healthDb.db.prepare('SELECT 1').get();
+    }
     res.json({
       status: 'ok',
       uptime: process.uptime(),
-      db: 'connected',
+      db: healthDb?.db ? 'connected' : 'unavailable',
       timestamp: new Date().toISOString(),
       version: '2.0.0'
     });
@@ -154,7 +162,8 @@ app.get('/api/health', (req, res) => {
     logger.error('Healthcheck échec DB:', err.message);
     res.status(503).json({
       status: 'error',
-      db: 'disconnected'
+      db: 'disconnected',
+      error: err.message
     });
   }
 });

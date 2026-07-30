@@ -8,5 +8,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20
-      - key: MONGODB_URI
+      - key: DEEPSEEK_API_KEY
         sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PYTHON_PATH
+        value: python3

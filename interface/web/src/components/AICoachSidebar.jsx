@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../ToastProvider';
 import { fetchWithRetry } from '../utils/fetchWithRetry';
 
+import logger from '../utils/logger';
 export default function AICoachSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -17,7 +18,7 @@ export default function AICoachSidebar() {
       const data = await res.json();
       setMessages(data);
     } catch (err) {
-      console.error('Failed to fetch chat history', err);
+      logger.error('Failed to fetch chat history', err);
     }
   };
 
@@ -52,7 +53,7 @@ export default function AICoachSidebar() {
       setMessages([...updatedMessages, { role: 'assistant', content: data.content }]);
     } catch (err) {
       toast.error('Erreur de communication avec le coach IA.');
-      console.error(err);
+      logger.error(err);
       // Remove user message if failed
       setMessages(messages);
     } finally {

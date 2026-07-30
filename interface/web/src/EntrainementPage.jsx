@@ -3,6 +3,7 @@ import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore, { useChronoStore } from './store';
+import logger from './utils/logger';
 import { useToast } from './ToastProvider';
 import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import ExerciceCard from './components/cours/ExerciceCard';
@@ -79,25 +80,27 @@ function EntrainementPage() {
   }, [dailyFillGap]);
 
   const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
-  if (orchestratorData !== prevOrchestratorData) {
-    setPrevOrchestratorData(orchestratorData);
-    if (orchestratorData) {
+  useEffect(() => {
+    if (orchestratorData && orchestratorData !== prevOrchestratorData) {
+      setPrevOrchestratorData(orchestratorData);
       if (orchestratorData.tachesDuJour) {
         setTachesOrchestrateur(orchestratorData.tachesDuJour);
       }
       setTempsDejaTravaille(orchestratorData.tempsDejaTravailleMin || 0);
       setTempsDispoMin(orchestratorData.tempsDispoMin || 0);
     }
-  }
+  }, [orchestratorData, prevOrchestratorData]);
 
   // Resynchroniser le state local quand le parent change
   const [prevCoursConfig, setPrevCoursConfig] = useState(null);
-  if (coursConfig !== prevCoursConfig) {
-    setPrevCoursConfig(coursConfig);
-    if (coursConfig && coursConfig.licences) {
-      setConfigLocal(coursConfig);
+  useEffect(() => {
+    if (coursConfig && coursConfig !== prevCoursConfig) {
+      setPrevCoursConfig(coursConfig);
+      if (coursConfig.licences) {
+        setConfigLocal(coursConfig);
+      }
     }
-  }
+  }, [coursConfig, prevCoursConfig]);
 
   // Filtered exercises directly matching the orchestrator
   const strategicExercices = useMemo(() => {
@@ -554,7 +557,7 @@ function EntrainementPage() {
                       actionType: 'ignored_fatigue_alert',
                       taskContext: { fatigueCounter }
                     })
-                  }).catch(e => console.error("Erreur télémétrie:", e));
+                  }).catch(e => logger.error("Erreur télémétrie:", e));
                 }}
                 style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid #f59e0b', color: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
               >

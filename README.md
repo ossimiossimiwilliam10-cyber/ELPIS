@@ -118,9 +118,34 @@ ELPIS intègre un **agent d'audit de code** écrit en Python qui tourne en arri�
 
 ---
 
-## 📚 Pour aller plus loin (Documentation détaillée)
+## 📚 Documentation complète
 
-Si vous souhaitez plonger dans les entrailles du projet, lisez dans cet ordre :
-1. [docs/backend.md](docs/backend.md) : Compréhension de l’API, de la logique d'intelligence et de l'orchestrateur.
-2. [docs/frontend.md](docs/frontend.md) : Compréhension de l’interface React, de Zustand et du cache de la PWA.
-3. [agent_audit/README.md](agent_audit/README.md) : Fonctionnement de l’outil d’audit automatique et de l'architecture "Système Immunitaire".
+ELPIS dispose d'une documentation exhaustive, conçue pour les débutants comme les experts.
+
+### Pour les débutants (à lire en premier)
+| Document | Contenu | Temps de lecture |
+|----------|---------|-----------------|
+| **[docs/guide_debutant.md](docs/guide_debutant.md)** | Premier contact — installation, démarrage, concepts de base | 10 min |
+| **[docs/FAQ.md](docs/FAQ.md)** | 40 questions/réponses : utilisation, dépannage, installation, concepts | 15 min |
+| **[docs/GLOSSAIRE.md](docs/GLOSSAIRE.md)** | 60+ termes techniques expliqués en langage simple | 20 min |
+
+### Pour les développeurs
+| Document | Contenu |
+|----------|---------|
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Architecture détaillée — 5 couches, flux de données, sécurité, résilience |
+| **[CARTOGRAPHIE.md](CARTOGRAPHIE.md)** | Atlas complet — chaque fichier du projet expliqué en détail |
+| **[docs/INDEX.md](docs/INDEX.md)** | Index alphabétique — trouve n'importe quel fichier en un clin d'œil |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)** | Guide de contribution pas à pas — setup, tests, conventions, PR |
+| **[docs/backend.md](docs/backend.md)** | API, orchestrateur, intelligence, écritures atomiques |
+| **[docs/frontend.md](docs/frontend.md)** | React, Zustand, RxDB, PWA, conventions composants |
+| **[docs/devops.md](docs/devops.md)** | CI/CD, agent autonome, backups, Docker, Render |
+| **[docs/immune_system.md](docs/immune_system.md)** | Système Immunitaire — 57 règles, 10 phases, auto-fix |
+| **[agent_audit/README.md](agent_audit/README.md)** | Documentation technique de l'agent d'audit Python |
+
+### Liens rapides
+- **"Je veux comprendre le projet"** → [docs/guide_debutant.md](docs/guide_debutant.md)
+- **"J'ai une erreur"** → [docs/FAQ.md](docs/FAQ.md) (section Dépannage)
+- **"C'est quoi ce mot ?"** → [docs/GLOSSAIRE.md](docs/GLOSSAIRE.md)
+- **"Où est le fichier X ?"** → [docs/INDEX.md](docs/INDEX.md)
+- **"Je veux contribuer"** → [CONTRIBUTING.md](CONTRIBUTING.md)
+- **"Comment ça marche ?"** → [ARCHITECTURE.md](ARCHITECTURE.md)

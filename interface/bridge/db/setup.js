@@ -13,6 +13,8 @@ function initDb() {
   const db = new Database(DB_PATH, { verbose: null });
 
   db.pragma('journal_mode = WAL'); // Better performance and concurrency
+  db.pragma('busy_timeout = 5000'); // Retry on lock for 5s (prevents SQLITE_BUSY)
+  db.pragma('foreign_keys = ON'); // Enforce referential integrity
 
   // Create tables
   db.exec(`

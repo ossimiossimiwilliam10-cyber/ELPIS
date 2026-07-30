@@ -6,8 +6,6 @@ const crypto = require('crypto');
 const os = require('os');
 const multer = require('multer');
 const { genererRapportQuotidien } = require('../moteur/orchestrateur');
-const { CONFIG_PATH } = require('../moteur/config');
-const { COURS_PATH } = require('../moteur/cours');
 
 const ROOT_DIR = path.resolve(__dirname, '..', '..', '..');
 
@@ -39,7 +37,7 @@ const uploadMusic = multer({
 
 router.get('/recommendation', (req, res, next) => {
   try {
-    const rapport = genererRapportQuotidien(CONFIG_PATH, COURS_PATH, 0, false);
+    const rapport = genererRapportQuotidien(0, false);
     const now = new Date();
     const hour = now.getHours();
 

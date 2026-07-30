@@ -204,12 +204,12 @@ function saveCours(coursConfig) {
   const insUe = db.prepare('INSERT INTO ues (id, nom, ects, semestre_id) VALUES (?, ?, ?, ?)');
   const insMatiere = db.prepare('INSERT INTO matieres (id, nom, coef, ects, dateExamen, ankiDeckName, evaluations, notebookLMLink, cm_h, td_h, tp_h, synergies, ue_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   const insCm = db.prepare(`
-    INSERT INTO cours_cm (id, titre, derniereRevision, prochaineRevisionDate, jActuel, tempsMoyen, fichePdfPath, pdfPath, pdfPaths, fsrsCard, easeFactor, repetitions, nombreRevisionsTemps, matiere_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO cours_cm (id, titre, dateCM, derniereRevision, prochaineRevisionDate, jActuel, tempsMoyen, fichePdfPath, pdfPath, pdfPaths, fsrsCard, easeFactor, repetitions, nombreRevisionsTemps, matiere_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const insEx = db.prepare(`
-    INSERT INTO exercices (id, type, titre, dernierePratique, dateTP, nombrePratiques, tempsMoyen, tempsMoyenEtapes, pdfPath, pdfPaths, page, difficulte, difficulteInitiale, derniereNote, notes, nombreRevisionsTemps, matiere_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO exercices (id, type, titre, dernierePratique, datePrevue, dateTP, nombrePratiques, tempsMoyen, tempsMoyenEtapes, pdfPath, pdfPaths, page, difficulte, difficulteInitiale, derniereNote, notes, nombreRevisionsTemps, matiere_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   try {
@@ -251,6 +251,7 @@ function saveCours(coursConfig) {
                 insCm.run(
                   cm.id || crypto.randomUUID(),
                   cm.titre,
+                  cm.dateCM || null,
                   cm.derniereRevision || null,
                   cm.prochaineRevisionDate || null,
                   cm.jActuel !== undefined && cm.jActuel !== null ? cm.jActuel : null,
@@ -273,6 +274,7 @@ function saveCours(coursConfig) {
                   'TD',
                   td.titre,
                   td.dernierePratique || null,
+                  td.datePrevue || null,
                   td.dateTP || null,
                   td.nombrePratiques || null,
                   td.tempsMoyen || null,
@@ -296,6 +298,7 @@ function saveCours(coursConfig) {
                   'TP',
                   tp.titre,
                   tp.dernierePratique || null,
+                  tp.datePrevue || null,
                   tp.dateTP || null,
                   tp.nombrePratiques || null,
                   tp.tempsMoyen || null,
@@ -319,6 +322,7 @@ function saveCours(coursConfig) {
                   'ANNALE',
                   annale.titre,
                   annale.dernierePratique || null,
+                  annale.datePrevue || null,
                   annale.dateTP || null,
                   annale.nombrePratiques || null,
                   annale.tempsMoyen || null,

@@ -3,6 +3,7 @@ import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import useStore from './store';
 import MarkdownModal from './MarkdownModal';
+import logger from './utils/logger';
 import EditableLabel from './components/cours/EditableLabel';
 import MatiereCard from './components/cours/MatiereCard';
 
@@ -24,7 +25,7 @@ function CoursPage() {
           setAnkiDecks(data.decks);
         }
       })
-      .catch(err => console.error("Erreur chargement decks Anki:", err));
+      .catch(err => logger.error("Erreur chargement decks Anki:", err));
   }, []);
 
   // Helper : applique une mutation Immer, sauvegarde dans le store, et retourne le nouvel état

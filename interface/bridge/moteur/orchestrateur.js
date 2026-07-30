@@ -325,6 +325,13 @@ function buildTaskPools({
               if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
               if ((ex.nombrePratiques || 0) >= 3 && !isUrgent) continue;
 
+              // AXE DATE : Ne pas planifier une Annale qui n'a pas encore eu lieu
+              if (ex.datePrevue) {
+                const datePr = parseDateLocal(ex.datePrevue);
+                const nowDate = parseDateLocal(todayStr);
+                if (nowDate < datePr) continue;
+              }
+
               // Cooldown de 7 jours (Espacement)
               if (ex.dernierePratique && !isUrgent) {
                 const lastDate = parseDateLocal(normalizeDateStr(ex.dernierePratique));
