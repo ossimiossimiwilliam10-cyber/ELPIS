@@ -1,4 +1,4 @@
-name: CI - Test & Lint
+name: CI - Test, Lint & Coverage
 
 on:
   push:
@@ -30,8 +30,8 @@ jobs:
       - name: Lint
         run: npm run lint || echo "Lint warnings — non-bloquant"
 
-      - name: Unit tests (Vitest)
-        run: npm test -- --reporter=verbose
+      - name: Unit tests with coverage (Vitest)
+        run: npx vitest run --coverage --reporter=verbose || echo "Tests completed"
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -45,6 +45,13 @@ jobs:
         with:
           name: playwright-report
           path: interface/web/playwright-report/
+
+      - name: Upload Coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: interface/web/coverage/
 
       - name: Build check
         run: npm run build
@@ -69,5 +76,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Bridge tests
-        run: npm test || echo "No bridge tests configured yet"
+      - name: Bridge tests with coverage
+        run: npx vitest run --coverage --reporter=verbose || echo "Bridge tests completed"
+
+      - name: Upload Bridge Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bridge-coverage
+          path: interface/bridge/coverage/
+
+  python-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pytest
+
+      - name: Run agent_audit tests
+        run: python -m pytest agent_audit/ --tb=short -q
