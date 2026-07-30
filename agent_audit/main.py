@@ -163,8 +163,20 @@ def reporter_fn(report, rules=None):
 def auto_commit_and_push(files_corrected):
     """
     S'il y a eu des corrections, on commite et on pousse uniquement ces fichiers.
+
+    Sécurité : désactivé en CI (GitHub Actions, etc.) pour éviter les boucles.
+    Limité à 10 fichiers max par commit.
     """
     if not files_corrected:
+        return
+
+    # Ne pas auto-commit en CI
+    if os.environ.get('CI') or os.environ.get('GITHUB_ACTIONS'):
+        log.info("CI détecté — auto-commit désactivé.")
+        return
+
+    if len(files_corrected) > 10:
+        log.warning(f"Trop de fichiers corrigés ({len(files_corrected)}) — limite de 10. Auto-commit annulé.")
         return
 
     try:

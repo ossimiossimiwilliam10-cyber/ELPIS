@@ -72,6 +72,16 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
+// Middleware: Rate Limiting strict pour l'API chat (coûteuse en tokens IA)
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,       // 1 minute
+  max: 10,                    // 10 requêtes par minute
+  message: { error: "Trop de requêtes sur /api/chat. Attendez avant de réessayer." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/chat', chatLimiter);
+
 // Middleware: Désactiver le cache API (Safari iOS PWA fix)
 app.use('/api/', (req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
