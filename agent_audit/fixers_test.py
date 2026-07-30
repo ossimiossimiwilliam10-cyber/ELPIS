@@ -4,8 +4,6 @@ Tests réels avec assertions — plus de squelettes vides.
 """
 import os
 import sys
-import tempfile
-import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
@@ -16,8 +14,7 @@ from fixers import (
     cleanup_old_backups,
     set_rule_cache,
     apply_fixes,
-    _find_rule_for_anomaly,
-    _get_project_root
+    _find_rule_for_anomaly
 )
 
 

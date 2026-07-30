@@ -5,13 +5,10 @@ Tests réels — remplace les squelettes vides.
 import os
 import sys
 import json
-import time
-import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from health import (
-    run_health_check,
     _check_rules_health,
     _check_performance,
     _analyze_false_positives,

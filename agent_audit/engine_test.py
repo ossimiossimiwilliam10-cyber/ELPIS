@@ -5,7 +5,6 @@ Remplace les tests squelettes par de vrais tests avec assertions.
 import os
 import sys
 import json
-import tempfile
 import hashlib
 import pytest
 
@@ -16,7 +15,6 @@ from engine import (
     file_hash,
     load_last_hashes,
     save_hashes,
-    severity_sort_key,
     prioritize_anomalies,
     should_auto_fix,
     is_emergency,
