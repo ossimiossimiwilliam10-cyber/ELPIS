@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["interface/web/src/*"]
+    },
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "interface/web/src/**/*.js",
+    "interface/web/src/**/*.jsx",
+    "interface/bridge/**/*.js",
+    "interface/web/tests/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "agent_audit",
+    "backups",
+    "documents",
+    "ELPIS_APPRENTISSAGE",
+    "Sauvegarde Elpîs"
+  ]
+}
