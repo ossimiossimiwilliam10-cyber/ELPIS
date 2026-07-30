@@ -5,6 +5,7 @@ const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
+const { logger } = require('./utils/logger');
 // Initialisations & Adapters
 const { startPythonAuditAgent } = require('./services/auditAgent');
 const globalErrorHandler = require('./middleware/errorHandler');
@@ -17,10 +18,10 @@ const BACKUPS_DIR = path.join(ROOT_DIR, 'backups');
 const DOCUMENTS_DIR = path.join(ROOT_DIR, 'documents');
 
 process.on('uncaughtException', (err) => {
-  console.error('UNCAUGHT EXCEPTION:', err);
+  logger.error('UNCAUGHT EXCEPTION:', err);
 });
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('UNHANDLED REJECTION:', reason);
+  logger.error('UNHANDLED REJECTION:', reason);
 });
 
 // Middleware: Proxy (for Render or similar)
@@ -94,7 +95,7 @@ function performStartupBackup() {
       const dest = path.join(BACKUPS_DIR, `elpis_sqlite_${today}.db`);
       if (!fs.existsSync(dest)) {
         fs.copyFileSync(DB_PATH, dest);
-        console.log(`Backup créé : ${dest}`);
+        logger.info(`Backup créé : ${dest}`);
       }
     }
 
@@ -105,7 +106,7 @@ function performStartupBackup() {
       fs.unlinkSync(path.join(BACKUPS_DIR, old));
     }
   } catch (err) {
-    console.error("Erreur backup automatique:", err.message);
+    logger.error("Erreur backup automatique:", err.message);
   }
 }
 performStartupBackup();
@@ -126,6 +127,28 @@ app.use('/api/music', require('./routes/music'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api', require('./routes/system'));
 
+// --- Healthcheck ---
+app.get('/api/health', (req, res) => {
+  logger.info('Healthcheck demandé');
+  try {
+    const { db } = require('./db/setup');
+    db.prepare('SELECT 1').get();
+    res.json({
+      status: 'ok',
+      uptime: process.uptime(),
+      db: 'connected',
+      timestamp: new Date().toISOString(),
+      version: '2.0.0'
+    });
+  } catch (err) {
+    logger.error('Healthcheck échec DB:', err.message);
+    res.status(503).json({
+      status: 'error',
+      db: 'disconnected'
+    });
+  }
+});
+
 // --- Serve React Build ---
 const REACT_BUILD_DIR = path.join(ROOT_DIR, 'interface', 'web', 'dist');
 app.use(express.static(REACT_BUILD_DIR));
@@ -141,12 +164,12 @@ app.use(globalErrorHandler);
 // ===================== SERVER START =====================
 async function startServer() {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`ELPIS Bridge démarré sur http://localhost:${PORT}`);
-    console.log(`Moteur Node.js 100% local (SQLite) — zéro dépendance cloud.`);
+    logger.info(`ELPIS Bridge démarré sur http://localhost:${PORT}`);
+    logger.info(`Moteur Node.js 100% local (SQLite) — zéro dépendance cloud.`);
     startPythonAuditAgent(ROOT_DIR);
   });
 }
 
 startServer().catch(err => {
-  console.error("Erreur critique au démarrage:", err);
+  logger.error("Erreur critique au démarrage:", err);
 });

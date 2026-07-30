@@ -81,7 +81,7 @@ Le backend (Express.js) expose les routes suivantes sur le port `3001`.
 | GET     | `/api/historique` | Récupère l'historique d'étude complet. |
 | POST    | `/api/historique` | Sauvegarde l'historique. |
 | GET     | `/api/orchestrateur` | Génère ou renvoie le rapport quotidien mis en cache. |
-| POST    | `/api/orchestrateur/specific-task`| Génère une tâche forcée pour un CM/TD spécifique. |
+| POST    | `/api/orchestrateur/force-task`| Génère une tâche forcée pour un CM/TD spécifique. |
 | POST    | `/api/chat` | Discute avec l'IA (DeepSeek). |
 | GET     | `/api/audit` | Récupère le dernier rapport de l'Agent d'Audit Python. |
 

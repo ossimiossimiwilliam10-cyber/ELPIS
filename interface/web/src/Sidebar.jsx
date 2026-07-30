@@ -60,8 +60,8 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
 
       <nav className="sidebar-nav">
         {navGroups.map((group, gIndex) => (
-          <div key={gIndex} style={{marginBottom: '1rem'}}>
-            <div style={{fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', paddingLeft: '0.5rem'}}>
+          <div key={gIndex} className="sidebar-nav-group">
+            <div className="sidebar-nav-group-title">
               {group.title}
             </div>
             {group.tabs.map(tab => (
@@ -83,8 +83,8 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
 
       <div className="sidebar-footer">
         <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center'}}>
-          <div style={{background: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', padding: '0.5rem 1rem', borderRadius: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-            🔥 Streak : {streak} {streak > 1 ? 'Jours' : 'Jour'}
+          <div className="streak-badge">
+            🔥 {streak} {streak > 1 ? 'Jours' : 'Jour'}
           </div>
         </div>
         <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem'}} className="theme-toggle">

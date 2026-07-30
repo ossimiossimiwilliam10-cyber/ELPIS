@@ -151,8 +151,18 @@ function Dashboard() {
   // ---- Loading state ----
   if (loading) {
     return (
-      <div style={{textAlign:'center', marginTop:'5rem'}}>
-        Analyse des données en cours...
+      <div style={{padding: '2rem 0'}}>
+        <div className="skeleton skeleton-text" style={{height:'28px', width:'40%', marginBottom:'1.5rem'}}></div>
+        <div style={{display:'flex', gap:'1.5rem', marginBottom:'2rem', flexWrap:'wrap'}}>
+          {[...Array(4)].map((_, i) => (
+            <div key={i} style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'0.4rem'}}>
+              <div className="skeleton skeleton-circle" style={{width:'36px', height:'36px'}}></div>
+              <div className="skeleton skeleton-text" style={{width:'48px', height:'12px'}}></div>
+            </div>
+          ))}
+        </div>
+        <div className="skeleton skeleton-card" style={{height:'200px', marginBottom:'1.5rem'}}></div>
+        <div className="skeleton skeleton-card" style={{height:'140px', width:'65%'}}></div>
       </div>
     );
   }

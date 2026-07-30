@@ -29,7 +29,7 @@ export default function RevisionsAvanceesPage() {
   const handleCustomTargetRequest = async () => {
     setIsGeneratingCustom(true);
     try {
-      const res = await fetch('/api/orchestrator/force-task', {
+      const res = await fetch('/api/orchestrateur/force-task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
