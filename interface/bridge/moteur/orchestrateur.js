@@ -133,18 +133,18 @@ function buildTaskPools({
           // --- CM ---
           let newCMCountPerMatiere = 0;
           for (const cm of (m.listeCM || [])) {
+            // AXE DATE CM : Ne pas planifier un CM qui n'a pas encore eu lieu
+            if (cm.dateCM) {
+              const dateCM = parseDateLocal(cm.dateCM);
+              const nowDate = parseDateLocal(todayStr);
+              if (nowDate < dateCM) continue; 
+            }
+
             let doitReviser = false;
             let joursEnRetard = 0;
             if (!cm.derniereRevision) {
               if (matieresSatureesToday.has(m.nom)) continue;
               if (!fillGap && (newCMCountPerMatiere >= maxNewCMPerSubject)) continue;
-              
-              // AXE DATE CM : Ne pas planifier un CM qui n'a pas encore eu lieu
-              if (cm.dateCM) {
-                const dateCM = parseDateLocal(cm.dateCM);
-                const nowDate = parseDateLocal(todayStr);
-                if (nowDate < dateCM) continue; 
-              }
 
               doitReviser = true;
               joursEnRetard = MAGIC_CONSTANTS.PRIO_MAX_RETARD;
@@ -221,14 +221,14 @@ function buildTaskPools({
           // --- TD ---
           if (cfg.enableTD) {
             for (const ex of (m.listeTD || []).filter(e => e.dernierePratique !== todayStr)) {
-              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
-              
               // AXE DATE : Ne pas planifier un TD qui n'a pas encore eu lieu
               if (ex.datePrevue) {
                 const datePr = parseDateLocal(ex.datePrevue);
                 const nowDate = parseDateLocal(todayStr);
                 if (nowDate < datePr) continue; 
               }
+
+              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
 
               const dureeBase = cfg.defaultDurationTD || 20;
               const dureeEstimee = (ex.tempsMoyen != null && ex.tempsMoyen > 0) ? ex.tempsMoyen : (dureeBase * getDifficultyMultiplier(ex.difficulte));
@@ -256,6 +256,13 @@ function buildTaskPools({
             }
             return true;
           })) {
+            // AXE DATE : Ne pas planifier un TP qui n'a pas encore eu lieu
+            if (ex.dateTP) {
+              const datePr = parseDateLocal(ex.dateTP);
+              const nowDate = parseDateLocal(todayStr);
+              if (nowDate < datePr) continue; 
+            }
+
             if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
             const currentStep = ex.nombrePratiques || 0;
             if (currentStep >= 4) continue;
@@ -322,15 +329,15 @@ function buildTaskPools({
 
           if ((isMastered || isUrgent || hasStartedAnnales) && cfg.enableAnnales) {
             for (const ex of (m.listeAnnales || []).filter(e => e.dernierePratique !== todayStr)) {
-              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
-              if ((ex.nombrePratiques || 0) >= 3 && !isUrgent) continue;
-
               // AXE DATE : Ne pas planifier une Annale qui n'a pas encore eu lieu
               if (ex.datePrevue) {
                 const datePr = parseDateLocal(ex.datePrevue);
                 const nowDate = parseDateLocal(todayStr);
                 if (nowDate < datePr) continue;
               }
+
+              if (!ex.dernierePratique && matieresSatureesToday.has(m.nom)) continue;
+              if ((ex.nombrePratiques || 0) >= 3 && !isUrgent) continue;
 
               // Cooldown de 7 jours (Espacement)
               if (ex.dernierePratique && !isUrgent) {

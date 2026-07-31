@@ -299,3 +299,8 @@ Cette routine garantit que l'application est toujours déployable et que le trav
 <RULE[ade_ignore_sub_exams]>
 - **Exclusion des Examens de Substitution** : Lors de l'analyse des emplois du temps (ADE), l'agent DOIT ignorer systématiquement tout bloc commençant par ou contenant "SUB" ou "Sub:" (ex: "Sub: Architecture des systèmes d'exploitation"). Ces créneaux sont des examens de rattrapage (substitution) qui ne concernent pas l'utilisateur. Seuls les blocs marqués "Ex:" doivent être considérés comme des examens.
 </RULE[ade_ignore_sub_exams]>
+
+
+<RULE[orchestrator_strict_start_dates]>
+- **Respect strict des dates de début (Orchestrateur)** : Lors de la modification de orchestrateur.js ou des algorithmes de planification, tout exercice ou cours (CM, TD, TP, Annale) possédant une date de début prévue (dateCM, datePrevue, dateTP) DOIT être ignoré si cette date est strictement supérieure à la date du jour (future). Cette vérification nowDate < datePr doit être la **toute première condition** évaluée dans les boucles de traitement de chaque type d'exercice, avant même de vérifier la derniereRevision ou les priorités. Un cours non commencé ne doit jamais générer de tâche.
+</RULE[orchestrator_strict_start_dates]>

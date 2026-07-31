@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-30T23:26:14.977148",
+  "timestamp": "2026-07-31T11:39:20.351927",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,18 +8,18 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 92.2,
-    "files_scanned": 836,
-    "files_per_second": 9.1,
-    "lines_per_second": 34855.0
+    "elapsed_seconds": 184.84,
+    "files_scanned": 839,
+    "files_per_second": 4.5,
+    "lines_per_second": 17388.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 3,
     "false_positive_escalations": 0,
     "rule_hit_distribution": {
-      "DEAD-ORPHAN-001": 339,
-      "MISSING_TEST_FILE": 142,
-      "DEAD-EXPORT-001": 19
+      "DEAD-ORPHAN-001": 341,
+      "MISSING_TEST_FILE": 143,
+      "DEAD-EXPORT-001": 16
     }
   },
   "escalation_health": {
@@ -32,26 +32,26 @@
     "total_rules": 60,
     "active_rules": 3,
     "inactive_rules": [
-      "NO_CONSOLE_LOG_IN_PROD",
-      "NO_HARDCODED_SECRETS",
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "UNGUARDED_JSON_PARSE",
-      "NO_SQL_INJECTION_PATTERNS",
-      "EMPTY_PROMISE_CATCH",
-      "NO_INDEX_AS_KEY",
-      "FIX_CONFIDENCE_DECIMAL",
-      "MAGIC_NUMBERS",
-      "MISSING_JSDOC_ON_EXPORT",
-      "SEC-001",
       "MISSING_REACT_MEMO",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_HARDCODED_SECRETS",
       "TEST_WITH_ONLY",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
+      "MISSING_TYPE_HINTS",
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "TOAST_DIRECT_CALL",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT",
+      "EXCESSIVE_FILE_SIZE",
+      "NO_POSITIVE_TABINDEX",
+      "NO_EMPTY_CATCH",
+      "JSON_DEEP_CLONE",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "NO_INDEX_AS_KEY",
       "EXCESSIVE_NESTING_DEPTH",
-      "NO_IMPORTANT_IN_CSS",
-      "FETCH_WITHOUT_ABORT"
+      "LARGE_IMPORT_SIDE_EFFECT",
+      "NO_TRAILING_WHITESPACE",
+      "MISSING_JSDOC_ON_EXPORT"
     ],
     "inactive_count": 59
   },
@@ -61,7 +61,7 @@
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 9.1 fichiers/s"
+    "Performance degradee: 4.5 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."

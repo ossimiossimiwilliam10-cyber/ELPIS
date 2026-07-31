@@ -207,6 +207,16 @@ export default function MatiereCard({
       {/* CONFIG NOTEBOOK LM & SYNERGIES */}
       <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
         <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
+          <span style={{fontSize:'1rem'}} title="Date du premier examen">🚨</span>
+          <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>Date du 1er examen :</span>
+          <input
+            type="date"
+            value={toDateInput(matiere.examDates?.[0] || '')}
+            onChange={(e) => updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'examDates'], e.target.value ? [e.target.value] : [])}
+            style={{flex:1, padding:'0.4rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--danger-color)', borderRadius:'4px', color:'var(--text-primary)'}}
+          />
+        </div>
+        <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
           <span style={{fontSize:'1rem'}} title="Lien NotebookLM">📖</span>
           <input
             type="text"
