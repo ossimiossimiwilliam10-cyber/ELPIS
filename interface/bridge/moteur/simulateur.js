@@ -1,82 +1,113 @@
 const { parseDateLocal, normalizeDateStr } = require('./utils');
 const { getCapitalisedUEs } = require('./scoring');
+const { loadConfig } = require('./config');
 
 /**
- * Calcule une simulation des 52 prochaines semaines pour estimer les matières dominantes
- * et la charge de travail basée sur les examens (evaluations) de l'utilisateur.
+ * Calcule une simulation déterministe (Forward-Scheduling) sur 52 semaines.
+ * Remplit une grille horaire en plaçant les tâches restantes.
  * 
  * @param {Object} crs L'objet cours (cours.json)
- * @returns {Array} Un tableau de 52 objets représentant chaque semaine
+ * @returns {Array} Un tableau de 52 objets représentant chaque semaine avec ses créneaux
  */
 function genererSimulationAnnuelle(crs) {
+  const cfg = loadConfig();
   const weeks = [];
   const now = new Date();
-  now.setHours(0, 0, 0, 0);
+  // On commence demain pour éviter les conflits avec la journée en cours
+  const startSimulationDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  
+  // 1. Extraire toutes les tâches en attente
+  let pendingTasks = [];
+  
+  if (crs && crs.licences) {
+    for (const l of crs.licences) {
+      if (l.archived) continue;
+      const capitalisedUEs = getCapitalisedUEs(l);
 
-  // Pour chaque semaine sur 52 semaines (1 an)
-  for (let w = 0; w < 52; w++) {
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() + (w * 7) - now.getDay() + 1); // Début = Lundi
-    
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6); // Fin = Dimanche
-
-    const weekExams = [];
-    const subjectPressures = {};
-
-    let totalCMsDansSemestre = 0;
-
-    if (crs && crs.licences) {
-      for (const l of crs.licences) {
-        if (l.archived) continue;
-        const capitalisedUEs = getCapitalisedUEs(l);
-
-        for (const s of (l.semestres || [])) {
-          if (s.archived) continue;
-          
-          for (const ue of (s.ues || [])) {
-            if (capitalisedUEs.has(ue.nom)) continue;
+      for (const s of (l.semestres || [])) {
+        if (s.archived) continue;
+        for (const ue of (s.ues || [])) {
+          if (capitalisedUEs.has(ue.nom)) continue;
+          for (const m of (ue.matieres || [])) {
+            if (m.dispense) continue;
             
-            for (const m of (ue.matieres || [])) {
-              if (m.dispense) continue;
-              
-              const matiereNom = m.nom.toLowerCase().trim();
-              if (!subjectPressures[matiereNom]) {
-                subjectPressures[matiereNom] = { nom: m.nom, score: 0 };
+            const coeff = m.coefficient || 1;
+            
+            // Map des examens pour la matière
+            const examDates = [];
+            if (m.evaluations) {
+              for (const ev of m.evaluations) {
+                if (ev.date) {
+                  const d = parseDateLocal(normalizeDateStr(ev.date));
+                  if (!isNaN(d.getTime())) examDates.push(d);
+                }
               }
+            }
 
-              // Pression de base: le poids de la matière (coef) + nombre de CM (volume estimé)
-              const coeff = m.coefficient || 1;
-              const nbCM = m.listeCM ? m.listeCM.length : 0;
-              subjectPressures[matiereNom].score += (coeff * 0.5) + (nbCM * 0.1);
-              totalCMsDansSemestre += nbCM;
+            // CMs
+            if (m.listeCM) {
+              for (const cm of m.listeCM) {
+                if (!cm.derniereRevision) { // Uniquement les nouveaux CMs pour le scheduler forward
+                  pendingTasks.push({
+                    id: `CM_${m.nom}_${cm.titre}`,
+                    matiere: m.nom,
+                    titre: cm.titre,
+                    type: 'CM',
+                    duree: cfg.defaultDurationNewCM || 120,
+                    coeff,
+                    examDates
+                  });
+                }
+              }
+            }
+            
+            // TDs
+            if (m.listeTD && cfg.enableTD) {
+              for (const td of m.listeTD) {
+                if (!td.dernierePratique) {
+                  pendingTasks.push({
+                    id: `TD_${m.nom}_${td.titre}`,
+                    matiere: m.nom,
+                    titre: td.titre,
+                    type: 'TD',
+                    duree: cfg.defaultDurationTD || 20,
+                    coeff,
+                    examDates
+                  });
+                }
+              }
+            }
 
-              // Analyser les évaluations (examens)
-              if (m.evaluations) {
-                for (const evalObj of m.evaluations) {
-                  if (evalObj.date) {
-                    const evalDate = parseDateLocal(normalizeDateStr(evalObj.date));
-                    if (!isNaN(evalDate.getTime())) {
-                      // Est-ce que l'examen tombe cette semaine ?
-                      if (evalDate >= weekStart && evalDate <= weekEnd) {
-                        weekExams.push({
-                          matiere: m.nom,
-                          titre: evalObj.titre || "Évaluation",
-                          date: evalDate.toISOString().split('T')[0]
-                        });
-                        subjectPressures[matiereNom].score += 50; // Pression critique la semaine de l'exam
-                      } 
-                      // Est-ce que l'examen approche ? (ex: dans les 3 semaines suivantes)
-                      else if (evalDate > weekEnd) {
-                        const daysUntilExam = (evalDate - weekEnd) / (1000 * 3600 * 24);
-                        if (daysUntilExam <= 21) {
-                          // Plus on s'approche de l'examen, plus la pression monte (x3 à J-7, x1.5 à J-21)
-                          const urgenceScore = 100 / Math.max(1, daysUntilExam);
-                          subjectPressures[matiereNom].score += urgenceScore;
-                        }
-                      }
-                    }
-                  }
+            // TPs
+            if (m.listeTP) {
+              for (const tp of m.listeTP) {
+                if (!tp.dernierePratique) {
+                  pendingTasks.push({
+                    id: `TP_${m.nom}_${tp.titre}`,
+                    matiere: m.nom,
+                    titre: tp.titre,
+                    type: 'TP',
+                    duree: cfg.defaultDurationTP || 30,
+                    coeff,
+                    examDates
+                  });
+                }
+              }
+            }
+
+            // Annales
+            if (m.listeAnnales && cfg.enableAnnales) {
+              for (const an of m.listeAnnales) {
+                if (!an.dernierePratique) {
+                  pendingTasks.push({
+                    id: `ANNALE_${m.nom}_${an.titre}`,
+                    matiere: m.nom,
+                    titre: an.titre,
+                    type: 'ANNALE',
+                    duree: cfg.defaultDurationAnnales || 60,
+                    coeff,
+                    examDates
+                  });
                 }
               }
             }
@@ -84,44 +115,118 @@ function genererSimulationAnnuelle(crs) {
         }
       }
     }
+  }
 
-    // Trier les matières par pression
-    const sortedSubjects = Object.values(subjectPressures)
-      .sort((a, b) => b.score - a.score)
-      .filter(s => s.score > 2) // Garder seulement les matières significatives
-      .slice(0, 3) // Top 3 des matières
-      .map(s => s.nom);
+  // 2. Paramètres de temps
+  const wakeUpStr = cfg.wakeUpTime || "07:00";
+  const [wakeHour, wakeMin] = wakeUpStr.split(':').map(Number);
+  const maxMinsPerDay = (cfg.maxStudyHoursPerDay || 8) * 60;
+  const breakMin = cfg.pomoBreak || 5;
 
-    // Estimation de la charge de travail (Workload)
-    // Basée empiriquement sur les examens + un fond de roulement
-    let workloadScore = 0;
-    if (weekExams.length > 0) {
-      workloadScore += weekExams.length * 30; // 30 points par examen cette semaine-là
-    }
-    // Les matières avec de hauts scores d'approche d'examen (urgence) rajoutent de la charge
-    const topPressures = Object.values(subjectPressures).sort((a, b) => b.score - a.score).slice(0, 3);
-    const sumTopPressures = topPressures.reduce((acc, p) => acc + p.score, 0);
-    workloadScore += sumTopPressures;
-
-    let workloadIntensity = "Légère";
-    if (workloadScore > 80) workloadIntensity = "Critique";
-    else if (workloadScore > 40) workloadIntensity = "Intense";
-    else if (workloadScore > 15) workloadIntensity = "Modérée";
-    else if (totalCMsDansSemestre === 0) workloadIntensity = "Repos";
-
-    // Si pas de matières ni d'exams, c'est sûrement les vacances ou semestre fini
-    if (sortedSubjects.length === 0 && weekExams.length === 0) {
-      workloadIntensity = "Repos";
+  // Initialisation des semaines
+  for (let w = 0; w < 52; w++) {
+    const weekStart = new Date(startSimulationDate);
+    weekStart.setDate(startSimulationDate.getDate() + (w * 7) - (startSimulationDate.getDay() || 7) + 1); // Lundi
+    
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + i);
+      weekDays.push({
+        date: d,
+        slots: []
+      });
     }
 
     weeks.push({
       weekIndex: w,
       startDate: weekStart.toISOString().split('T')[0],
-      endDate: weekEnd.toISOString().split('T')[0],
-      workloadIntensity,
-      dominantSubjects: sortedSubjects,
-      exams: weekExams
+      days: weekDays
     });
+  }
+
+  // 3. Boucle de Simulation (Forward Scheduling)
+  const totalDays = 52 * 7;
+  for (let d = 0; d < totalDays; d++) {
+    if (pendingTasks.length === 0) break; // Tout est planifié !
+
+    // Trouver la date courante de la simulation
+    const wIndex = Math.floor(d / 7);
+    const dayIndex = d % 7;
+    const currentSimDate = weeks[wIndex].days[dayIndex].date;
+
+    // Recalculer la priorité dynamiquement
+    for (const t of pendingTasks) {
+      t.prio = t.coeff;
+      // Boost d'urgence si examen proche
+      let nearestExamDays = 999;
+      for (const exDate of t.examDates) {
+        const diff = (exDate - currentSimDate) / (1000 * 3600 * 24);
+        if (diff > 0 && diff < nearestExamDays) nearestExamDays = diff;
+      }
+      if (nearestExamDays <= 14) {
+        t.prio *= (100 / Math.max(1, nearestExamDays));
+      } else if (nearestExamDays <= 30) {
+        t.prio *= (10 / Math.max(1, nearestExamDays));
+      }
+      // Règle: Théorie (CM) passe avant Pratique (TD/TP)
+      if (t.type === 'CM') t.prio *= 1.2;
+    }
+
+    // Trier les tâches par priorité décroissante
+    pendingTasks.sort((a, b) => b.prio - a.prio);
+
+    // Allouer le temps de la journée
+    let currentMins = wakeHour * 60 + wakeMin + 60; // On commence 1h après le réveil
+    let remainingDailyTime = maxMinsPerDay;
+
+    // Ajouter un bloc statique de révision (Anki / Active Recall) tous les jours
+    if (remainingDailyTime > 0) {
+      const revTime = cfg.activeRecallMinutesPerDay || 30;
+      weeks[wIndex].days[dayIndex].slots.push({
+        id: `rev_${d}`,
+        matiere: "Général",
+        titre: "Révisions (Anki / Active Recall)",
+        type: "REVISION",
+        startMin: currentMins,
+        duree: revTime
+      });
+      currentMins += revTime + breakMin;
+      remainingDailyTime -= revTime;
+    }
+
+    // Remplir avec les tâches de la pile
+    let i = 0;
+    while (i < pendingTasks.length && remainingDailyTime > 0) {
+      const task = pendingTasks[i];
+      if (task.duree <= remainingDailyTime) {
+        // La tâche rentre complètement
+        weeks[wIndex].days[dayIndex].slots.push({
+          id: task.id,
+          matiere: task.matiere,
+          titre: task.titre,
+          type: task.type,
+          startMin: currentMins,
+          duree: task.duree
+        });
+        currentMins += task.duree + breakMin;
+        remainingDailyTime -= task.duree;
+        pendingTasks.splice(i, 1); // Retirer la tâche
+      } else {
+        // La tâche est trop longue, on la coupe
+        weeks[wIndex].days[dayIndex].slots.push({
+          id: `${task.id}_part`,
+          matiere: task.matiere,
+          titre: task.titre + " (Part 1)",
+          type: task.type,
+          startMin: currentMins,
+          duree: remainingDailyTime
+        });
+        currentMins += remainingDailyTime + breakMin;
+        task.duree -= remainingDailyTime; // Réduire la durée pour les jours suivants
+        remainingDailyTime = 0;
+      }
+    }
   }
 
   return weeks;
