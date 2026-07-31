@@ -43,6 +43,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
     {
       title: "Système",
       tabs: [
+        { id: 'planning', label: 'Planning Annuel', icon: '🔭' },
         { id: 'statistiques', label: 'Statistiques', icon: '📈' },
         { id: 'classement', label: 'Classement', icon: '🏆' },
         { id: 'graph', label: 'Graphe de Connaissances', icon: '🌌' },

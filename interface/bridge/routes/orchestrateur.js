@@ -3,6 +3,7 @@ const router = express.Router();
 const { z } = require('zod');
 const { loadCours } = require('../moteur/cours');
 const { genererRapportQuotidien, genererTacheSpecifique } = require('../moteur/orchestrateur');
+const { genererSimulationAnnuelle } = require('../moteur/simulateur');
 
 /** @type {Map<string, {rapport: object, timestamp: number}>} */
 const orchestratorCache = new Map();
@@ -102,6 +103,19 @@ router.post('/force-task', (req, res, next) => {
     }
 
     res.json({ task });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * GET /api/orchestrateur/simulation — Génère une projection macro sur 52 semaines.
+ */
+router.get('/simulation', async (req, res, next) => {
+  try {
+    const coursData = loadCours();
+    const weeks = genererSimulationAnnuelle(coursData);
+    res.json({ weeks });
   } catch (err) {
     next(err);
   }

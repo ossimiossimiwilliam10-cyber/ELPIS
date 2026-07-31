@@ -25,6 +25,7 @@ const GraphPage = lazy(() => import('./GraphPage'));
 const AbsencesPage = lazy(() => import('./AbsencesPage'));
 const StagesPage = lazy(() => import('./StagesPage'));
 const ConfigPage = lazy(() => import('./ConfigPage'));
+const PlanningPage = lazy(() => import('./PlanningPage'));
 import useStore from './store';
 
 // Mini-fallback pour le chargement paresseux des pages
@@ -235,6 +236,20 @@ function AppInner() {
             >
               <Suspense fallback={<LoadingFallback />}>
                 <ClassementPage />
+              </Suspense>
+            </motion.div>
+          )}
+
+          {activeTab === 'planning' && (
+            <motion.div
+              key="planning"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Suspense fallback={<LoadingFallback />}>
+                <PlanningPage />
               </Suspense>
             </motion.div>
           )}
