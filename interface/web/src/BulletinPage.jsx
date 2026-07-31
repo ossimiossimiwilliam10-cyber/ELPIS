@@ -185,6 +185,8 @@ export default function BulletinPage() {
   let isEnCours = false;
   let hasEvaluations = false;
   const capitalisedUEs = new Set();
+  let ectsS1 = 0;
+  let ectsS2 = 0;
 
   if (licence && licence.semestres) {
     for (let yearIdx = 0; yearIdx < Math.ceil(licence.semestres.length / 2); yearIdx++) {
@@ -270,6 +272,8 @@ export default function BulletinPage() {
       }
 
       totalAcquiredECTS += s1AcquiredECTS + s2AcquiredECTS;
+      ectsS1 = s1AcquiredECTS;
+      ectsS2 = s2AcquiredECTS;
 
       const yearMaxECTS = dataS1.ues.reduce((acc, u) => acc + u.ects, 0) + dataS2.ues.reduce((acc, u) => acc + u.ects, 0);
       

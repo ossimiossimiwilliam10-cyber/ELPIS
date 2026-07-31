@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-31T11:39:20.351927",
+  "timestamp": "2026-07-31T11:55:11.481861",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 184.84,
+    "elapsed_seconds": 122.71,
     "files_scanned": 839,
-    "files_per_second": 4.5,
-    "lines_per_second": 17388.0
+    "files_per_second": 6.8,
+    "lines_per_second": 26192.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 3,
@@ -32,36 +32,36 @@
     "total_rules": 60,
     "active_rules": 3,
     "inactive_rules": [
-      "MISSING_REACT_MEMO",
-      "NO_HARDCODED_SECRETS",
-      "TEST_WITH_ONLY",
-      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
-      "MISSING_TYPE_HINTS",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "TOAST_DIRECT_CALL",
-      "EXCESSIVE_FUNCTION_LENGTH",
-      "UNCONTROLLED_TO_CONTROLLED_INPUT",
-      "EXCESSIVE_FILE_SIZE",
-      "NO_POSITIVE_TABINDEX",
-      "NO_EMPTY_CATCH",
-      "JSON_DEEP_CLONE",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "NO_INDEX_AS_KEY",
+      "NO_CIRCULAR_IMPORTS",
       "EXCESSIVE_NESTING_DEPTH",
+      "SCORING_NEW_PARAM_SIGNATURE",
       "LARGE_IMPORT_SIDE_EFFECT",
-      "NO_TRAILING_WHITESPACE",
-      "MISSING_JSDOC_ON_EXPORT"
+      "FIX_CONFIDENCE_DECIMAL",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
+      "MISSING_KEY_IN_MAP",
+      "NO_BARREL_IMPORT_CYCLES",
+      "NO_EMPTY_CATCH",
+      "NO_HARDCODED_SECRETS",
+      "SEC-001",
+      "PROP_SPREADING_WARNING",
+      "NO_POSITIVE_TABINDEX",
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "TEST-HEAL-002",
+      "UNGUARDED_JSON_PARSE",
+      "ZUSTAND_FULL_STORE_DESTRUCTURE",
+      "FETCH_WITHOUT_ABORT"
     ],
     "inactive_count": 59
   },
   "output_health": {
     "status": "HEALTHY",
-    "size_kb": 275.8
+    "size_kb": 276.0
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 4.5 fichiers/s"
+    "Performance degradee: 6.8 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."
