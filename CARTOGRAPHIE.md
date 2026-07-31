@@ -404,4 +404,7 @@
 - Mise à jour de la logique de notation : Remplacement de la Super Moyenne pondérée par ECTS par des moyennes arithmétiques pour la Licence et le DEUG.
 - Ajout de la Mention globale avec points de jury interactifs dans le Bulletin.
 - Règles d'évaluation continue (BulletinPage) : Le poids de chaque note est calculé en temps réel. Un avertissement se déclenche si une évaluation pèse pour plus de 50% de la moyenne d'une UE, conformément au règlement de la CFVU. Les évaluations sont désormais définies dans le modèle Zod (schemas.js).
-- Gestion des Absences (BulletinPage) : Ajout d'un statut (Présent, EXC, DEF) pour les évaluations. Une absence justifiée (EXC) neutralise le coefficient de la note. Une défaillance (DEF) se propage mathématiquement à la matière, l'UE, et bloque la compensation du semestre.
+- **BulletinPage.jsx** : Vue consolidée des moyennes (Licence, DEUG, semestre).
+  - Affichage détaillé de la progression ECTS de l'année courante (ECTS acquis au Semestre 1 et Semestre 2).
+  - Outil "What-If" pour la simulation de scénarios d'examen.
+  - Calcul dynamique AJAC et mention du jury. Une défaillance (DEF) se propage mathématiquement à la matière, l'UE, et bloque la compensation du semestre.

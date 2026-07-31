@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-31T11:55:11.481861",
+  "timestamp": "2026-07-31T12:01:04.710180",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 122.71,
+    "elapsed_seconds": 117.2,
     "files_scanned": 839,
-    "files_per_second": 6.8,
-    "lines_per_second": 26192.0
+    "files_per_second": 7.2,
+    "lines_per_second": 27423.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 3,
@@ -32,26 +32,26 @@
     "total_rules": 60,
     "active_rules": 3,
     "inactive_rules": [
-      "NO_CIRCULAR_IMPORTS",
-      "EXCESSIVE_NESTING_DEPTH",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "FIX_CONFIDENCE_DECIMAL",
-      "IMPORT_BOUNDARY_VIOLATION",
-      "NO_ASYNC_TEST_WITHOUT_AWAIT",
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "MISSING_KEY_IN_MAP",
-      "NO_BARREL_IMPORT_CYCLES",
-      "NO_EMPTY_CATCH",
-      "NO_HARDCODED_SECRETS",
-      "SEC-001",
-      "PROP_SPREADING_WARNING",
       "NO_POSITIVE_TABINDEX",
-      "AVOID_ARRAY_CONSTRUCTOR",
-      "TEST-HEAL-002",
-      "UNGUARDED_JSON_PARSE",
+      "NO_WILDCARD_CORS",
+      "NO_VAR_KEYWORD",
+      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "NO_WINDOW_PROMPT",
+      "NO_EVAL_OR_FUNCTION_CONSTRUCTOR",
+      "NO_BARE_EXCEPT",
+      "NO_HTTP_IN_PRODUCTION_URLS",
+      "NO_SQL_INJECTION_PATTERNS",
+      "NO_CIRCULAR_IMPORTS",
+      "NO_ASYNC_TEST_WITHOUT_AWAIT",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+      "IMPORT_BOUNDARY_VIOLATION",
+      "USE_OPTIONAL_CHAINING",
       "ZUSTAND_FULL_STORE_DESTRUCTURE",
-      "FETCH_WITHOUT_ABORT"
+      "MAGIC_NUMBERS",
+      "NO_PRINT_IN_PRODUCTION",
+      "TEST-HEAL-001",
+      "SCORING_NEW_PARAM_SIGNATURE",
+      "NO_TODO_WITHOUT_TICKET"
     ],
     "inactive_count": 59
   },
@@ -61,7 +61,7 @@
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 6.8 fichiers/s"
+    "Performance degradee: 7.2 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."
