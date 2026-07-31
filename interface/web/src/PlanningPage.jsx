@@ -26,9 +26,9 @@ export default function PlanningPage() {
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-[var(--text-secondary)]">Génération du calendrier...</div>;
-  if (error) return <div className="p-8 text-[var(--accent-red)]">Erreur: {error}</div>;
-  if (!weeks || weeks.length === 0) return <div className="p-8 text-[var(--text-secondary)]">Aucune donnée de simulation.</div>;
+  if (loading) return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Génération du calendrier...</div>;
+  if (error) return <div style={{ padding: '2rem', color: 'var(--accent-red)' }}>Erreur: {error}</div>;
+  if (!weeks || weeks.length === 0) return <div style={{ padding: '2rem', color: 'var(--text-secondary)' }}>Aucune donnée de simulation.</div>;
 
   const currentWeek = weeks[currentWeekIndex];
 
@@ -57,27 +57,29 @@ export default function PlanningPage() {
   const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col h-[calc(100vh-2rem)] animate-fade-in">
+    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 4rem)' }}>
       {/* Header & Navigation */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">Calendrier (ADE) 🗓️</h1>
-          <p className="text-[var(--text-secondary)]">Emploi du temps déterministe (Forward-Scheduling)</p>
+          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 0.5rem 0' }}>Calendrier (ADE) 🗓️</h1>
+          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Emploi du temps déterministe (Forward-Scheduling)</p>
         </div>
         
-        <div className="flex items-center gap-4 bg-[var(--bg-secondary)] p-2 rounded-lg border border-[var(--border-color)]">
+        <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem 1rem', borderRadius: '8px' }}>
           <button 
-            className="btn-secondary px-3 py-1 text-sm"
+            className="btn-secondary"
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.9rem' }}
             onClick={() => setCurrentWeekIndex(Math.max(0, currentWeekIndex - 1))}
             disabled={currentWeekIndex === 0}
           >
             ◀ Préc
           </button>
-          <div className="font-semibold text-[var(--text-primary)] w-32 text-center">
+          <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', width: '100px', textAlign: 'center' }}>
             Semaine {currentWeek.weekIndex + 1}
           </div>
           <button 
-            className="btn-secondary px-3 py-1 text-sm"
+            className="btn-secondary"
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.9rem' }}
             onClick={() => setCurrentWeekIndex(Math.min(weeks.length - 1, currentWeekIndex + 1))}
             disabled={currentWeekIndex === weeks.length - 1}
           >
@@ -87,27 +89,27 @@ export default function PlanningPage() {
       </div>
 
       {/* Calendar Grid Container */}
-      <div className="flex-1 glass-panel overflow-hidden flex flex-col">
+      <div className="glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '12px' }}>
         
         {/* Header des Jours */}
-        <div className="flex border-b border-[var(--border-color)] bg-[var(--bg-primary)]/50">
-          <div className="w-16 shrink-0 border-r border-[var(--border-color)]"></div>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+          <div style={{ width: '60px', flexShrink: 0, borderRight: '1px solid var(--border-color)' }}></div>
           {currentWeek.days.map((day, i) => (
-            <div key={i} className="flex-1 text-center py-3 border-r border-[var(--border-color)] last:border-r-0">
-              <div className="font-bold text-[var(--text-primary)]">{jours[i]}</div>
-              <div className="text-xs text-[var(--text-secondary)]">{new Date(day.date).toLocaleDateString('fr-FR')}</div>
+            <div key={i} style={{ flex: 1, textAlign: 'center', padding: '0.75rem 0', borderRight: i < 6 ? '1px solid var(--border-color)' : 'none' }}>
+              <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{jours[i]}</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{new Date(day.date).toLocaleDateString('fr-FR')}</div>
             </div>
           ))}
         </div>
 
         {/* Body du Calendrier avec défilement vertical */}
-        <div className="flex-1 overflow-y-auto relative bg-[var(--bg-primary)]/20 custom-scrollbar">
-          <div className="flex" style={{ height: `${(END_HOUR - START_HOUR) * HOUR_HEIGHT}px` }}>
+        <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', position: 'relative', backgroundColor: 'rgba(0,0,0,0.1)' }}>
+          <div style={{ display: 'flex', height: `${(END_HOUR - START_HOUR) * HOUR_HEIGHT}px`, position: 'relative' }}>
             
             {/* Colonne des heures (Axe Y) */}
-            <div className="w-16 shrink-0 border-r border-[var(--border-color)] relative bg-[var(--bg-primary)]/50">
+            <div style={{ width: '60px', flexShrink: 0, borderRight: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.2)', position: 'relative' }}>
               {Array.from({ length: END_HOUR - START_HOUR + 1 }).map((_, i) => (
-                <div key={i} className="absolute w-full text-right pr-2 text-xs text-[var(--text-secondary)] -translate-y-2" style={{ top: `${i * HOUR_HEIGHT}px` }}>
+                <div key={i} style={{ position: 'absolute', width: '100%', textAlign: 'right', paddingRight: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', top: `${i * HOUR_HEIGHT - 8}px` }}>
                   {START_HOUR + i}:00
                 </div>
               ))}
@@ -115,10 +117,10 @@ export default function PlanningPage() {
 
             {/* Grille des Jours (Axe X) */}
             {currentWeek.days.map((day, dIndex) => (
-              <div key={dIndex} className="flex-1 border-r border-[var(--border-color)] last:border-r-0 relative">
+              <div key={dIndex} style={{ flex: 1, borderRight: dIndex < 6 ? '1px solid var(--border-color)' : 'none', position: 'relative' }}>
                 {/* Lignes horizontales de la grille */}
                 {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
-                  <div key={i} className="absolute w-full border-b border-[var(--border-color)] opacity-20" style={{ top: `${(i + 1) * HOUR_HEIGHT}px` }}></div>
+                  <div key={i} style={{ position: 'absolute', width: '100%', borderBottom: '1px solid var(--border-color)', opacity: 0.2, top: `${(i + 1) * HOUR_HEIGHT}px` }}></div>
                 ))}
 
                 {/* Tâches (Créneaux) */}
@@ -127,25 +129,38 @@ export default function PlanningPage() {
                   const height = slot.duree * (HOUR_HEIGHT / 60);
                   const color = getTaskColor(slot.type);
 
-                  // Ne pas afficher si c'est hors de la grille (ex: tâche à 6h du matin ou après 23h)
                   if (top < 0 || top > (END_HOUR - START_HOUR) * HOUR_HEIGHT) return null;
 
                   return (
                     <div 
                       key={sIndex} 
-                      className="absolute left-1 right-1 rounded p-1.5 text-xs overflow-hidden transition-transform hover:scale-[1.02] hover:z-10 shadow-sm border border-white/10"
+                      className="calendar-slot"
                       style={{
+                        position: 'absolute',
+                        left: '4px',
+                        right: '4px',
+                        borderRadius: '4px',
+                        padding: '4px',
+                        fontSize: '0.75rem',
+                        overflow: 'hidden',
                         top: `${top}px`,
-                        height: `${Math.max(20, height)}px`, // Minimum 20px pour visibilité
-                        backgroundColor: `color-mix(in srgb, ${color} 20%, var(--bg-primary))`,
-                        borderLeft: `3px solid ${color}`
+                        height: `${Math.max(20, height)}px`,
+                        backgroundColor: `color-mix(in srgb, ${color} 20%, transparent)`,
+                        borderLeft: `3px solid ${color}`,
+                        borderTop: '1px solid rgba(255,255,255,0.1)',
+                        borderRight: '1px solid rgba(255,255,255,0.1)',
+                        borderBottom: '1px solid rgba(255,255,255,0.1)',
+                        cursor: 'pointer',
+                        transition: 'transform 0.1s ease-out, box-shadow 0.1s ease-out'
                       }}
                       title={`${formatMinToTime(slot.startMin)} - ${formatMinToTime(slot.startMin + slot.duree)} | ${slot.titre}`}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.zIndex = 10; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = 1; e.currentTarget.style.boxShadow = 'none'; }}
                     >
-                      <div className="font-bold text-[var(--text-primary)] truncate" style={{ color }}>{slot.matiere}</div>
-                      <div className="truncate text-[var(--text-secondary)]">{slot.type} - {slot.titre}</div>
-                      {height > 30 && (
-                        <div className="mt-1 opacity-75">{formatMinToTime(slot.startMin)} - {formatMinToTime(slot.startMin + slot.duree)}</div>
+                      <div style={{ fontWeight: 'bold', color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.matiere}</div>
+                      <div style={{ color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.type} - {slot.titre}</div>
+                      {height > 35 && (
+                        <div style={{ marginTop: '2px', opacity: 0.7, fontSize: '0.7rem' }}>{formatMinToTime(slot.startMin)} - {formatMinToTime(slot.startMin + slot.duree)}</div>
                       )}
                     </div>
                   );
