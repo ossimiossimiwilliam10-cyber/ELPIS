@@ -238,7 +238,7 @@ describe('Intelligence Engine - buildExamUrgencyMap Night Owl (Regression)', () 
         semestres: [{
           ues: [{
             matieres: [
-              { nom: 'TestNightOwl', examDates: [futureDateStr] },
+              { nom: 'TestNightOwl', evaluations: [{ date: futureDateStr }] },
             ]
           }]
         }]

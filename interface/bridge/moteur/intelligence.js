@@ -32,6 +32,7 @@ function isSemesterArchived(s) {
   if (s.dateFin) {
     const df = parseDateLocal(normalizeDateStr(s.dateFin));
     const now = new Date();
+    now.setHours(now.getHours() - 4); // Night Owl shift (cohérent avec l'orchestrateur)
     if (df && df < now) return true;
   }
   return false;
@@ -145,6 +146,8 @@ function buildCompensationMap(crs) {
         for (const m of (ud.ue.matieres || [])) {
           if (ud.ueAvg !== null && semAvg !== null) {
             map[m.nom.toLowerCase().trim()] = {
+              // NOTE: Compensation vérifiée au niveau semestriel (UE < 10 compensée si sem >= 10).
+              // La compensation annuelle (S1+S2)/2 est gérée par getCapitalisedUEs dans scoring.js.
               compensable: ud.ueAvg < 10 && semAvg >= 10,
               ueAvg: ud.ueAvg,
               semestreAvg: semAvg,

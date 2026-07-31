@@ -86,8 +86,7 @@
 
 | Fichier | Rôle |
 |---------|------|
-| `components/cours/MatiereCard.jsx` | Carte matière complète — CM, TD, TP, Annales, NotebookLM, deck Anki, synergies, **input dateDebut** pour CM (dateCM), TD/Annales (datePrevue), TP (dateTP) |
-  - Added UI field for exams dates
+| `components/cours/MatiereCard.jsx` | Carte matière complète — CM, TD, TP, Annales, NotebookLM, deck Anki, synergies, **input dateDebut** pour CM (dateCM), TD/Annales (datePrevue), TP (dateTP). Les dates d'examens sont gérées uniquement via le Bulletin (evaluations). |
 | `components/cours/ExerciceCard.jsx` | Carte exercice — utilisée dans EntrainementPage, évaluation + chrono intégré |
 | `components/cours/ExerciceRow.jsx` | Ligne exercice éditable — utilisée dans PreparationHebdoPage et MatiereCard |
 | `components/cours/EditableLabel.jsx` | Texte éditable inline — renommage par `window.prompt` |

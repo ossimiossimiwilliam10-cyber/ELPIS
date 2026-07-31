@@ -70,7 +70,7 @@ function buildTaskPools({
       if (s.archived) { semestreIdx++; continue; }
       if (s.dateFin) {
         const df = parseDateLocal(normalizeDateStr(s.dateFin));
-        if (df && df < now) continue;
+        if (df && df < now) { semestreIdx++; continue; }
       }
       let matiereIndexDansSemestre = 0;
       for (const ue of (s.ues || [])) {
@@ -213,8 +213,9 @@ function buildTaskPools({
           // --- Vérification Prérequis (Théorie avant Pratique) ---
           const totalCM = m.listeCM?.length || 0;
           const cmRevises = (m.listeCM || []).filter(cm => cm.derniereRevision).length;
-          if (totalCM > 0 && cmRevises < totalCM) {
-            // Règle: pas de pratique tant que tous les CM ne sont pas vus
+          const cmCompletionRatio = totalCM > 0 ? cmRevises / totalCM : 1;
+          if (totalCM > 0 && cmCompletionRatio < 0.70) {
+            // Règle: pas de pratique tant que 70% des CM ne sont pas vus
             continue;
           }
 
@@ -310,7 +311,7 @@ function buildTaskPools({
           }
 
           // --- Annales ---
-          const cmCompletion = totalCM > 0 ? (cmRevises / totalCM) : 1;
+          const cmCompletion = cmCompletionRatio;
 
           const totalTD = m.listeTD?.length || 0;
           const tdFaits = (m.listeTD || []).filter(td => td.dernierePratique).length;
@@ -363,7 +364,7 @@ function buildTaskPools({
                 page: ex.page || 1,
                 difficulte: ex.difficulte || "",
                 prio: basePrio * annaleBoost * intraDayPenalty,
-                raisons: annalesRaisons
+                raisons: [...annalesRaisons]
               });
             }
           }
