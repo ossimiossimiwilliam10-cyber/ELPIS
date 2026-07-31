@@ -206,42 +206,7 @@ export default function MatiereCard({
 
       {/* CONFIG NOTEBOOK LM & SYNERGIES */}
       <div style={{display:'flex', flexDirection:'column', gap:'0.5rem', marginBottom:'1rem', background:'rgba(0,0,0,0.2)', padding:'0.5rem', borderRadius:'6px'}}>
-        <div style={{display:'flex', flexDirection:'column', gap:'0.5rem'}}>
-          <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
-            <span style={{fontSize:'1rem'}} title="Dates des examens">🚨</span>
-            <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>Dates des examens :</span>
-            <button
-              onClick={() => {
-                const currentDates = [...(matiere.examDates || [])];
-                currentDates.push("");
-                updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'examDates'], currentDates);
-              }}
-              style={{background:'rgba(239, 68, 68, 0.2)', color:'#ef4444', border:'1px solid #ef4444', borderRadius:'4px', padding:'0.2rem 0.5rem', fontSize:'0.75rem', cursor:'pointer'}}
-            >+ Ajouter</button>
-          </div>
-          {(matiere.examDates || []).map((dateStr, dIdx) => (
-            <div key={dIdx} style={{display:'flex', gap:'0.5rem', alignItems:'center', paddingLeft: '1.5rem'}}>
-              <input
-                type="date"
-                value={toDateInput(dateStr)}
-                onChange={(e) => {
-                  const currentDates = [...matiere.examDates];
-                  currentDates[dIdx] = e.target.value;
-                  updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'examDates'], currentDates);
-                }}
-                style={{flex:1, padding:'0.3rem', fontSize:'0.8rem', background:'var(--bg-secondary)', border:'1px solid var(--danger-color)', borderRadius:'4px', color:'var(--text-primary)'}}
-              />
-              <button
-                onClick={() => {
-                  const currentDates = matiere.examDates.filter((_, i) => i !== dIdx);
-                  updateField(['licences', lIndex, 'semestres', sIndex, 'ues', uIndex, 'matieres', mIndex, 'examDates'], currentDates);
-                }}
-                style={{background:'transparent', border:'none', color:'var(--danger-color)', cursor:'pointer', fontSize:'0.8rem', padding: '0 0.2rem'}}
-                title="Supprimer cette date"
-              >❌</button>
-            </div>
-          ))}
-        </div>
+
         <div style={{display:'flex', gap:'0.5rem', alignItems: 'center'}}>
           <span style={{fontSize:'1rem'}} title="Lien NotebookLM">📖</span>
           <input

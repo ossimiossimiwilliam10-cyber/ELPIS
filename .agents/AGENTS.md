@@ -304,3 +304,7 @@ Cette routine garantit que l'application est toujours déployable et que le trav
 <RULE[orchestrator_strict_start_dates]>
 - **Respect strict des dates de début (Orchestrateur)** : Lors de la modification de orchestrateur.js ou des algorithmes de planification, tout exercice ou cours (CM, TD, TP, Annale) possédant une date de début prévue (dateCM, datePrevue, dateTP) DOIT être ignoré si cette date est strictement supérieure à la date du jour (future). Cette vérification nowDate < datePr doit être la **toute première condition** évaluée dans les boucles de traitement de chaque type d'exercice, avant même de vérifier la derniereRevision ou les priorités. Un cours non commencé ne doit jamais générer de tâche.
 </RULE[orchestrator_strict_start_dates]>
+
+<RULE[ui_single_source_of_truth]>
+- **Unicité des saisies (Single Source of Truth) / Anti-Doublon** : Ne jamais créer ou maintenir des champs de saisie redondants dans l'interface utilisateur. Si une information (ex: les dates d'examens/évaluations) est déjà gérée de manière structurée à un endroit de l'application (ex: dans BulletinPage.jsx), l'agent ne doit pas recréer de champs similaires ailleurs (ex: dans MatiereCard.jsx). Il doit plutôt supprimer les doublons et s'assurer que le moteur (orchestrateur) se base sur l'unique source de vérité.
+</RULE[ui_single_source_of_truth]>

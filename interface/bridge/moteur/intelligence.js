@@ -687,21 +687,7 @@ function buildExamUrgencyMap(crs) {
 
           let minDays = Infinity;
 
-          if (subj.examDates && subj.examDates.length > 0) {
-            for (const raw of subj.examDates) {
-              if (!raw) continue;
-              let y, m, d;
-              const parts = raw.split('-');
-              if (parts.length === 3) {
-                if (parts[0].length === 4) { y = parts[0]; m = parts[1]; d = parts[2]; }
-                else { d = parts[0]; m = parts[1]; y = parts[2]; }
-              } else { continue; }
-              const examDate = new Date(y, m - 1, d);
-              if (isNaN(examDate.getTime())) continue;
-              const diffDays = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-              if (diffDays >= 0 && diffDays < minDays) minDays = diffDays;
-            }
-          }
+
 
           if (subj.evaluations && Array.isArray(subj.evaluations)) {
             for (const ev of subj.evaluations) {

@@ -423,6 +423,7 @@ export default function BulletinPage() {
           </button>
         </div>
       </div>
+      </div>
 
       {isSimulationMode && (
         <div style={{ background: 'rgba(168, 85, 247, 0.15)', border: '1px solid #a855f7', color: '#d8b4fe', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -467,7 +468,6 @@ export default function BulletinPage() {
             <div style={{ fontSize: '2rem', fontWeight: 'bold', textAlign: 'center' }}>{sem.avg} <span style={{fontSize:'1.2rem', opacity:0.8}}>/ 20</span></div>
           </div>
         ))}
-      </div>
       </div>
 
       <div style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>

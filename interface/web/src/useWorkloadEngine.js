@@ -84,10 +84,18 @@ export function useWorkloadEngine() {
             let remainingEffortHours = Math.max(0, requiredEffortHours - hoursDone);
 
             // D. Calculate days left
-            let examDateStr = (m.examDates && m.examDates.length > 0 && m.examDates[0])
-              ? m.examDates[0]
-              : (s.dateFin || "2027-01-15");
-            const examDate = parseDateLocal(examDateStr);
+            let minEvalDate = null;
+            if (m.evaluations && Array.isArray(m.evaluations)) {
+              for (const ev of m.evaluations) {
+                if (!ev.date) continue;
+                const d = parseDateLocal(ev.date);
+                if (!isNaN(d.getTime()) && d >= today) {
+                  if (!minEvalDate || d < minEvalDate) minEvalDate = d;
+                }
+              }
+            }
+            
+            const examDate = minEvalDate || parseDateLocal(s.dateFin || "2027-01-15");
 
             // If date is invalid or exam is passed, remaining effort for this subject is 0
             if (!examDate || examDate < today) {

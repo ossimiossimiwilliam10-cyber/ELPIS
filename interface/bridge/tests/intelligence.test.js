@@ -26,11 +26,11 @@ describe('Intelligence Engine - buildExamUrgencyMap (Axe 1)', () => {
         semestres: [{
           ues: [{
             matieres: [
-              { nom: 'Maths', examDates: [generateDate(1)] },     // 1 day left -> multiplier 3.0
-              { nom: 'Physique', examDates: [generateDate(7)] },  // 7 days left -> multiplier 2.0
-              { nom: 'Chimie', examDates: [generateDate(14)] },   // 14 days left -> multiplier 1.5
-              { nom: 'Bio', examDates: [generateDate(21)] },      // 21 days left -> multiplier 1.0 (no boost)
-              { nom: 'Histoire', examDates: [generateDate(-5)] }, // past exam -> no multiplier
+              { nom: 'Maths', evaluations: [{ date: generateDate(1) }] },     // 1 day left -> multiplier 3.0
+              { nom: 'Physique', evaluations: [{ date: generateDate(7) }] },  // 7 days left -> multiplier 2.0
+              { nom: 'Chimie', evaluations: [{ date: generateDate(14) }] },   // 14 days left -> multiplier 1.5
+              { nom: 'Bio', evaluations: [{ date: generateDate(21) }] },      // 21 days left -> multiplier 1.0 (no boost)
+              { nom: 'Histoire', evaluations: [{ date: generateDate(-5) }] }, // past exam -> no multiplier
             ]
           }]
         }]
