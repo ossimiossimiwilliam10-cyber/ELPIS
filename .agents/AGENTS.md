@@ -308,3 +308,10 @@ Cette routine garantit que l'application est toujours déployable et que le trav
 <RULE[ui_single_source_of_truth]>
 - **Unicité des saisies (Single Source of Truth) / Anti-Doublon** : Ne jamais créer ou maintenir des champs de saisie redondants dans l'interface utilisateur. Si une information (ex: les dates d'examens/évaluations) est déjà gérée de manière structurée à un endroit de l'application (ex: dans BulletinPage.jsx), l'agent ne doit pas recréer de champs similaires ailleurs (ex: dans MatiereCard.jsx). Il doit plutôt supprimer les doublons et s'assurer que le moteur (orchestrateur) se base sur l'unique source de vérité.
 </RULE[ui_single_source_of_truth]>
+
+<RULE[elpis_task_date_constraint]>
+- **Contrainte Temporelle des Taches (Anti-Anticipation)** : Lors de la construction de bassins de taches, l'agent DOIT toujours s'assurer qu'une tache n'est pas planifiee avant sa datePrevue ou dateCM.
+- **Implementation obligatoire** :
+  - Pour les CM : Toujours verifier cm.dateCM.
+  - Pour les TD/TP : Toujours verifier td.datePrevue.
+</RULE[elpis_task_date_constraint]>

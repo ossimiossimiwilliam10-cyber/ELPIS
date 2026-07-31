@@ -55,7 +55,8 @@ function genererSimulationAnnuelle(crs) {
                     type: 'CM',
                     duree: cfg.defaultDurationNewCM || 120,
                     coeff,
-                    examDates
+                    examDates,
+                    datePrevue: cm.dateCM ? parseDateLocal(normalizeDateStr(cm.dateCM)) : null
                   });
                 }
               }
@@ -72,7 +73,8 @@ function genererSimulationAnnuelle(crs) {
                     type: 'TD',
                     duree: cfg.defaultDurationTD || 20,
                     coeff,
-                    examDates
+                    examDates,
+                    datePrevue: td.datePrevue ? parseDateLocal(normalizeDateStr(td.datePrevue)) : null
                   });
                 }
               }
@@ -89,7 +91,8 @@ function genererSimulationAnnuelle(crs) {
                     type: 'TP',
                     duree: cfg.defaultDurationTP || 30,
                     coeff,
-                    examDates
+                    examDates,
+                    datePrevue: tp.datePrevue ? parseDateLocal(normalizeDateStr(tp.datePrevue)) : null
                   });
                 }
               }
@@ -106,7 +109,8 @@ function genererSimulationAnnuelle(crs) {
                     type: 'ANNALE',
                     duree: cfg.defaultDurationAnnales || 60,
                     coeff,
-                    examDates
+                    examDates,
+                    datePrevue: an.datePrevue ? parseDateLocal(normalizeDateStr(an.datePrevue)) : null
                   });
                 }
               }
@@ -199,6 +203,12 @@ function genererSimulationAnnuelle(crs) {
     let i = 0;
     while (i < pendingTasks.length && remainingDailyTime > 0) {
       const task = pendingTasks[i];
+      if (task.datePrevue && currentSimDate < task.datePrevue) {
+        // Tâche prévue plus tard, on l'ignore pour cette journée
+        i++;
+        continue;
+      }
+
       if (task.duree <= remainingDailyTime) {
         // La tâche rentre complètement
         weeks[wIndex].days[dayIndex].slots.push({
