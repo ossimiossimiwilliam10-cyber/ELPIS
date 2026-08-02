@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-31T13:14:05.277401",
+  "timestamp": "2026-08-02T20:32:08.148092",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 94.15,
+    "elapsed_seconds": 114.04,
     "files_scanned": 841,
-    "files_per_second": 8.9,
-    "lines_per_second": 34143.0
+    "files_per_second": 7.4,
+    "lines_per_second": 28186.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 3,
@@ -32,26 +32,26 @@
     "total_rules": 60,
     "active_rules": 3,
     "inactive_rules": [
-      "FETCH_WITHOUT_ABORT",
-      "NO_HTTP_IN_PRODUCTION_URLS",
-      "EXPRESS_ASYNC_NO_TRY_CATCH",
-      "SEC-001",
-      "PWA_STATIC_ROUTE_EXCLUSION",
-      "NO_SYNCHRONOUS_FILE_IO_IN_SERVER",
-      "FIX_CONFIDENCE_DECIMAL",
-      "NO_WINDOW_PROMPT",
-      "EMPTY_PROMISE_CATCH",
-      "NO_WILDCARD_CORS",
-      "EXCESSIVE_FILE_SIZE",
-      "PROP_SPREADING_WARNING",
-      "EXCESSIVE_NESTING_DEPTH",
-      "USEEFFECT_MISSING_CLEANUP_LISTENER",
-      "NO_TODO_WITHOUT_TICKET",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "UNGUARDED_JSON_PARSE",
-      "NO_TRAILING_WHITESPACE",
+      "JSON_DEEP_CLONE",
+      "MISSING_TYPE_HINTS",
+      "MISSING_ARIA_LABEL_ON_INTERACTIVE",
       "INTELLIGENCE_EXPORT_COVERAGE",
-      "NO_INDEX_AS_KEY"
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "MISSING_ALT_ATTRIBUTE",
+      "NO_VAR_KEYWORD",
+      "PROP_SPREADING_WARNING",
+      "NO_BARREL_IMPORT_CYCLES",
+      "NO_CONSOLE_LOG_IN_PROD",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "LARGE_IMPORT_SIDE_EFFECT",
+      "NO_BARE_EXCEPT",
+      "EMPTY_PROMISE_CATCH",
+      "EXCESSIVE_NESTING_DEPTH",
+      "EXCESSIVE_FUNCTION_LENGTH",
+      "NO_TODO_WITHOUT_TICKET",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+      "NO_UNSAFE_INNERHTML"
     ],
     "inactive_count": 59
   },
@@ -61,7 +61,7 @@
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 8.9 fichiers/s"
+    "Performance degradee: 7.4 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."
