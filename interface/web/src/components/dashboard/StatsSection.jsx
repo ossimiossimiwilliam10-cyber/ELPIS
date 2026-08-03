@@ -27,9 +27,9 @@ export default function StatsSection({ stats, globalPercent }) {
           <div className="stats-carousel" style={{display:'flex', gap:'1rem', overflowX:'auto', paddingBottom:'1rem', paddingLeft: '5%', paddingRight: '5%'}}>
             {stats.perMatiere?.map(m => (
               <div key={m.nom} style={{minWidth:'250px', flexShrink:0, background:'rgba(255,255,255,0.02)', padding:'1rem', borderRadius:'8px', border:'1px solid var(--bg-tertiary)'}}>
-                <div style={{display:'flex', justifyContent:'space-between', marginBottom:'0.5rem'}}>
-                  <strong style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}} title={m.nom}>{m.nom}</strong>
-                  <span style={{color:'var(--success-color)', fontWeight:'bold'}}>{m.percent}%</span>
+                <div style={{display:'flex', justifyContent:'space-between', marginBottom:'0.5rem', gap: '0.5rem'}}>
+                  <strong style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', flex: '1 1 0', minWidth: 0}} title={m.nom}>{m.nom}</strong>
+                  <span style={{color:'var(--success-color)', fontWeight:'bold', flexShrink: 0}}>{m.percent}%</span>
                 </div>
                 <div className="progress-bar-container" style={{height:'6px', marginTop:0}}>
                   <div className="progress-bar-fill" style={{width:`${m.percent}%`, background:'var(--success-color)'}}></div>

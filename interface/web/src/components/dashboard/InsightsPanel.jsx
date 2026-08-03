@@ -71,10 +71,10 @@ export default function InsightsPanel({ intelligence }) {
 
           return (
             <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1rem', borderRadius: '8px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#818cf8' }}>🧬 Chronobiologie Activ\u00e9e</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#818cf8' }}>🧬 Chronobiologie Activée</div>
               <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                {heavy.length > 0 && <div style={{ marginBottom: '0.5rem' }}>🌅 <strong>Matin</strong> (charge cognitive \u00e9lev\u00e9e) : {renderList(heavy)}</div>}
-                {light.length > 0 && <div>🌙 <strong>Soir</strong> (charge cognitive l\u00e9g\u00e8re) : {renderList(light)}</div>}
+                {heavy.length > 0 && <div style={{ marginBottom: '0.5rem' }}>🌅 <strong>Matin</strong> (charge cognitive élevée) : {renderList(heavy)}</div>}
+                {light.length > 0 && <div>🌙 <strong>Soir</strong> (charge cognitive légère) : {renderList(light)}</div>}
               </div>
             </div>
           );

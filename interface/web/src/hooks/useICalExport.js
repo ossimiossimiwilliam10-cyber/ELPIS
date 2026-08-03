@@ -4,7 +4,7 @@ export function useICalExport(orchestratorData) {
   const { toast } = useToast();
 
   const exportToICal = () => {
-    if (!orchestratorData?.tachesDuJour?.length) { toast.info("Aucune t\u00e2che \u00e0 exporter."); return; }
+    if (!orchestratorData?.tachesDuJour?.length) { toast.info("Aucune tâche à exporter."); return; }
     const formatLocalICSDate = (date) => {
       const y = date.getFullYear();
       const mo = String(date.getMonth() + 1).padStart(2, '0');
@@ -19,7 +19,7 @@ export function useICalExport(orchestratorData) {
     orchestratorData.tachesDuJour.forEach((tache, index) => {
       const durationMin = typeof tache.dureeEstimee === 'number' ? tache.dureeEstimee : parseInt(tache.dureeEstimee) || 30;
       const endBlock = new Date(currentBlockStart.getTime() + durationMin * 60000);
-      const title = tache.type === 'ANKI' ? 'R\u00e9visions (Anki)' : `[${tache.type}] ${tache.titre || 'T\u00e2che'}`;
+      const title = tache.type === 'ANKI' ? 'Révisions (Anki)' : `[${tache.type}] ${tache.titre || 'Tâche'}`;
       icsContent += `BEGIN:VEVENT\r\nUID:${Date.now()}-${index}@elpis.app\r\nDTSTAMP:${formatLocalICSDate(new Date())}\r\nDTSTART;TZID=Europe/Paris:${formatLocalICSDate(currentBlockStart)}\r\nDTEND;TZID=Europe/Paris:${formatLocalICSDate(endBlock)}\r\nSUMMARY:${title}\r\nEND:VEVENT\r\n`;
       currentBlockStart = new Date(endBlock.getTime() + 5 * 60000);
     });

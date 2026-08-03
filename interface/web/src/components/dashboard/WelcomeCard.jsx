@@ -12,8 +12,8 @@ export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyH
         <h2>{greeting} ! 👋</h2>
         <p>
           {orderedTaches.length > 0
-            ? `Tu as encore ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} \u00e0 accomplir aujourd'hui.`
-            : "Tu as tout termin\u00e9 pour aujourd'hui. Bravo ! Pourquoi ne pas avancer sur tes projets persos ou lancer une Activit\u00e9 Libre ?"}
+            ? `Tu as encore ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} à accomplir aujourd'hui.`
+            : "Tu as tout terminé pour aujourd'hui. Bravo ! Pourquoi ne pas avancer sur tes projets persos ou lancer une Activité Libre ?"}
         </p>
       </div>
       <div className="welcome-stats">
@@ -27,13 +27,13 @@ export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyH
         </div>
         <div className="welcome-stat">
           <div className="welcome-stat-value">{orderedTaches.length}</div>
-          <div className="welcome-stat-label">T\u00e2ches</div>
+          <div className="welcome-stat-label">Tâches</div>
         </div>
         <div className="welcome-stat">
           <div className="welcome-stat-value" style={{color: 'var(--primary-color)'}}>{Math.round((tempsTravailleToday || 0) / 60 * 10) / 10}h</div>
           <div className="welcome-stat-label">
-            <InfoTooltip content="Temps d\u00e9j\u00e0 travaill\u00e9 aujourd'hui.">
-              Travaill\u00e9 <span style={{fontSize:'0.8rem'}}>ℹ️</span>
+            <InfoTooltip content="Temps déjà travaillé aujourd'hui.">
+              Travaillé <span style={{fontSize:'0.8rem'}}>ℹ️</span>
             </InfoTooltip>
           </div>
         </div>

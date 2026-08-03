@@ -231,8 +231,8 @@ function Dashboard() {
       {/* Action buttons */}
       <div className="dashboard-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <button className="btn-primary" onClick={() => { setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' }); setCustomTaskModalOpen(true); }}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', background: 'var(--success-color)'}} title="Ajouter une activit\u00e9 libre">
-          ✨ Activit\u00e9 Libre
+          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', background: 'var(--success-color)'}} title="Ajouter une activité libre">
+          ✨ Activité Libre
         </button>
 
         {statut !== "REPOS" && !isRestDayToday && (
@@ -346,7 +346,7 @@ function Dashboard() {
           style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', opacity: 0.7, transition: 'opacity 0.2s' }}
           onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
           title="Voir le rapport d'audit du code">
-          🛡️ M\u00e9triques Code Health
+          🛡️ Métriques Code Health
         </button>
       </div>
 

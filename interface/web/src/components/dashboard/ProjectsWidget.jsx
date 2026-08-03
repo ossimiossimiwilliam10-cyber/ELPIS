@@ -28,7 +28,7 @@ export default function ProjectsWidget({ projets, pendingTasksCount }) {
             <div key={p.id} style={{ minWidth: '200px', background: 'var(--bg-secondary)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--bg-tertiary)' }}>
               <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--text-primary)' }}>{p.titre}</h4>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                {p.phases?.filter(ph => ph.complete).length || 0} / {p.phases?.length || 0} phases compl\u00e9t\u00e9es
+                {p.phases?.filter(ph => ph.complete).length || 0} / {p.phases?.length || 0} phases complétées
               </div>
             </div>
           )) : (
@@ -41,7 +41,7 @@ export default function ProjectsWidget({ projets, pendingTasksCount }) {
                   padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' 
                 }}
               >
-                + Cr\u00e9er un projet
+                + Créer un projet
               </button>
             </div>
           )}
