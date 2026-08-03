@@ -1,18 +1,15 @@
 import { useMemo } from 'react';
 import useStore from '../store';
+import { getTodayStr } from '../utils/dateUtils';
 
 /**
  * Hook pour les statistiques du Dashboard.
  * Calcule la progression globale, par matière, et les jours de repos.
  */
 export function useDashboardStats() {
-  const { coursConfig, config } = useStore();
+  const { coursConfig, config, historique } = useStore();
 
-  const getTodayStr = () => {
-    const d = new Date();
-    d.setHours(d.getHours() - 4);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  };
+
 
   const getRestDaysUsed = () => {
     if (!config?.restDays) return 0;
@@ -71,5 +68,12 @@ export function useDashboardStats() {
   const restDaysUsed = getRestDaysUsed();
   const isRestDayToday = config?.restDays?.includes(todayStr);
 
-  return { stats, globalPercent, allMatieres, restDaysUsed, todayStr, isRestDayToday, getTodayStr };
+  const tempsTravailleToday = useMemo(() => {
+    if (!historique) return 0;
+    return historique
+      .filter(h => h.date === todayStr && h.dureeMinutes)
+      .reduce((sum, h) => sum + h.dureeMinutes, 0);
+  }, [historique, todayStr]);
+
+  return { stats, globalPercent, allMatieres, restDaysUsed, todayStr, isRestDayToday, getTodayStr, tempsTravailleToday };
 }

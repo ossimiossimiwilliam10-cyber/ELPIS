@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../ToastProvider';
+import { getApiUrl } from '../utils/apiConfig';
 
 export default function MusicSettingsModal({ onClose }) {
   const [musics, setMusics] = useState({ calm: [], motivational: [] });
@@ -8,7 +9,7 @@ export default function MusicSettingsModal({ onClose }) {
 
   const fetchMusics = async () => {
     try {
-      const res = await fetch('/api/music/list');
+      const res = await fetch(`${getApiUrl()}/music/list`);
       if (res.ok) {
         const data = await res.json();
         setMusics(data);
@@ -37,7 +38,7 @@ export default function MusicSettingsModal({ onClose }) {
 
     try {
       addToast("Upload en cours...", "info");
-      const res = await fetch('/api/music/upload', {
+      const res = await fetch(`${getApiUrl()}/music/upload`, {
         method: 'POST',
         body: formData,
       });
@@ -67,7 +68,7 @@ export default function MusicSettingsModal({ onClose }) {
     if (!window.confirm(`Supprimer définitivement "${filename}" ?`)) return;
 
     try {
-      const res = await fetch(`/api/music/${category}/${encodeURIComponent(filename)}`, {
+      const res = await fetch(`${getApiUrl()}/music/${category}/${encodeURIComponent(filename)}`, {
         method: 'DELETE'
       });
       if (res.ok) {

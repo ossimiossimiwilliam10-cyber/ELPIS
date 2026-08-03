@@ -3,6 +3,7 @@ import { produce } from 'immer';
 import confetti from 'canvas-confetti';
 import useStore from '../store';
 import { evaluateFSRS, migrateToFSRSCard, Rating } from '../fsrsEngine';
+import { getTodayStr } from '../utils/dateUtils';
 
 /**
  * Hook partagé entre Dashboard et EntrainementPage pour la complétion de tâches.
@@ -22,11 +23,6 @@ export function useTaskCompletion() {
     const { coursConfig, config, intelligence, addHistoriqueEntry, setConfig, setCoursConfig } = state;
     if (!coursConfig) return false;
 
-    const getTodayStr = () => {
-      const d = new Date();
-      d.setHours(d.getHours() - 4);
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-    };
     const today = getTodayStr();
     let taskFound = false;
 

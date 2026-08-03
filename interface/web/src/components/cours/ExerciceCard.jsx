@@ -7,6 +7,7 @@ import { DIFFICULTY_LEVELS } from '../../constants';
 import { parseTimeInput } from '../../utils/timeParser';
 import useInputModal from '../../hooks/useInputModal';
 import InputModal from '../InputModal';
+import { getApiUrl } from '../../utils/apiConfig';
 
 function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
@@ -54,7 +55,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
       setManualTime(null);
       if (exo.type === 'ANKI') {
         try {
-          const res = await fetch('/api/open/anki', { method: 'POST' });
+          const res = await fetch(`${getApiUrl()}/open/anki`, { method: 'POST' });
           const data = await res.json();
           if (!res.ok || !data.success) {
             toast.error(data.error || "Échec du lancement d'Anki.");

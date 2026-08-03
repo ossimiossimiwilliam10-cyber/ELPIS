@@ -6,6 +6,7 @@ import MarkdownModal from './MarkdownModal';
 import logger from './utils/logger';
 import EditableLabel from './components/cours/EditableLabel';
 import MatiereCard from './components/cours/MatiereCard';
+import { getApiUrl } from './utils/apiConfig';
 
 function CoursPage() {
   const { coursConfig, setCoursConfig } = useStore();
@@ -18,7 +19,7 @@ function CoursPage() {
   const [ankiDecks, setAnkiDecks] = useState([]);
 
   useEffect(() => {
-    fetch('/api/anki/decks')
+    fetch(`${getApiUrl()}/anki/decks`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.decks) {

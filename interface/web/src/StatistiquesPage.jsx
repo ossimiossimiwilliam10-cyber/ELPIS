@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, LineChart, Line } from 'recharts';
 import useStore from './store';
+import { getApiUrl } from './utils/apiConfig';
 
 function StatistiquesPage() {
   const { historique, coursConfig, intelligence, loadCours } = useStore();
@@ -235,7 +236,7 @@ function StatistiquesPage() {
 
   const handleAnkiSync = async () => {
     try {
-      const res = await fetch('/api/anki/sync', { method: 'POST' });
+      const res = await fetch(`${getApiUrl()}/anki/sync`, { method: 'POST' });
       const data = await res.json();
       if (data.success) {
         alert(data.message);

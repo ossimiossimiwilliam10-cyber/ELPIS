@@ -12,7 +12,7 @@ export default function InsightsPanel({ intelligence }) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3, delay: 0.15 }}
-      style={{ marginTop: '2rem', borderLeft: '4px solid #a78bfa', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(167, 139, 250, 0.05))' }}
+      style={{ marginTop: '2rem', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--bg-tertiary)', borderLeft: '4px solid #a78bfa', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(167, 139, 250, 0.05))' }}
     >
       <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a78bfa', marginBottom: '1.5rem' }}>
         🧠 Insights IA
@@ -53,15 +53,28 @@ export default function InsightsPanel({ intelligence }) {
 
         {/* Cognitive Load */}
         {intelligence?.cognitiveLoadMap && (() => {
-          const heavy = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'heavy');
-          const light = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'light');
+          const heavy = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'heavy').map(([n]) => n);
+          const light = Object.entries(intelligence.cognitiveLoadMap).filter(([, v]) => v.cognitiveLoad === 'light').map(([n]) => n);
           if (heavy.length === 0 && light.length === 0) return null;
+          
+          const renderList = (list) => {
+            const limit = 5;
+            const visible = list.slice(0, limit);
+            const remaining = list.length - limit;
+            return (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.3rem' }}>
+                {visible.map(n => <span key={n} style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>{n}</span>)}
+                {remaining > 0 && <span style={{ background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontStyle: 'italic' }}>+{remaining} autres</span>}
+              </div>
+            );
+          };
+
           return (
             <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '1rem', borderRadius: '8px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#818cf8' }}>🧬 Chronobiologie Activée</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#818cf8' }}>🧬 Chronobiologie Activ\u00e9e</div>
               <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                {heavy.length > 0 && <div>🌅 <strong>Matin</strong> (charge cognitive élevée) : {heavy.map(([n]) => n).join(', ')}</div>}
-                {light.length > 0 && <div>🌙 <strong>Soir</strong> (charge cognitive légère) : {light.map(([n]) => n).join(', ')}</div>}
+                {heavy.length > 0 && <div style={{ marginBottom: '0.5rem' }}>🌅 <strong>Matin</strong> (charge cognitive \u00e9lev\u00e9e) : {renderList(heavy)}</div>}
+                {light.length > 0 && <div>🌙 <strong>Soir</strong> (charge cognitive l\u00e9g\u00e8re) : {renderList(light)}</div>}
               </div>
             </div>
           );

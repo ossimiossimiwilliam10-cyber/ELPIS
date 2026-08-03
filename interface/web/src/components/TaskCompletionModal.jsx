@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { parseTimeInput } from '../utils/timeParser';
@@ -26,16 +26,24 @@ export default function TaskCompletionModal({ isOpen, onClose, onSubmit, taskTit
   const [difficulte, setDifficulte] = useState(null); // Used for TD/TP/ANNALE
   const overlayRef = useRef(null);
 
-  const [prevIsOpen, setPrevIsOpen] = useState(false);
-
-  if (isOpen !== prevIsOpen) {
-    setPrevIsOpen(isOpen);
+  useEffect(() => {
     if (isOpen) {
       setMinutes(defaultMinutes || 30);
       setScore(null);
       setDifficulte(null);
     }
-  }
+  }, [isOpen, defaultMinutes]);
+
+  const handleSubmit = useCallback(() => {
+    if (taskType === 'CM' && score === null) return; // Validation require for CM
+    
+    onSubmit({
+      minutes: parseTimeInput(minutes) || 1,
+      sm2Score: score, // Only for CM
+      difficulte: difficulte,
+    });
+    onClose();
+  }, [taskType, score, minutes, difficulte, onSubmit, onClose]);
 
   // Handle Enter to submit, Escape to close
   useEffect(() => {
@@ -50,18 +58,7 @@ export default function TaskCompletionModal({ isOpen, onClose, onSubmit, taskTit
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, onSubmit, minutes, score, difficulte, taskType]);
-
-  const handleSubmit = () => {
-    if (taskType === 'CM' && score === null) return; // Validation require for CM
-    
-    onSubmit({
-      minutes: parseTimeInput(minutes) || 1,
-      sm2Score: score, // Only for CM
-      difficulte: difficulte, // Only for TD/TP/ANNALE
-    });
-    onClose();
-  };
+  }, [isOpen, onClose, taskType, score, handleSubmit]);
 
   const isCM = taskType === 'CM';
   const isPractice = taskType === 'TD' || taskType === 'TP' || taskType === 'ANNALE';

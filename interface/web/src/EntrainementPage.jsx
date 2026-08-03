@@ -7,6 +7,7 @@ import logger from './utils/logger';
 import { useToast } from './ToastProvider';
 import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import ExerciceCard from './components/cours/ExerciceCard';
+import { getTodayStr } from './utils/dateUtils';
 
 const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
   const radius = (size - strokeWidth) / 2;
@@ -54,11 +55,7 @@ function EntrainementPage() {
   const { toast } = useToast();
   const [fatigueCounter, setFatigueCounter] = useState(0);
 
-  const getTodayStr = () => {
-    const d = new Date();
-    d.setHours(d.getHours() - 4);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  };
+
   const [configLocal, setConfigLocal] = useState(() => {
     if (coursConfig && coursConfig.licences) return JSON.parse(JSON.stringify(coursConfig));
     return { licences: [] };
@@ -550,7 +547,7 @@ function EntrainementPage() {
                 onClick={() => {
                   setFatigueCounter(0);
                   // Envoi Télémétrie (Fire and forget)
-                  fetch('/api/telemetry/action', {
+                  fetch(`${getApiUrl()}/telemetry/action`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

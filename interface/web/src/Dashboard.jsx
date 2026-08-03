@@ -11,11 +11,14 @@ import TaskCompletionModal from './components/TaskCompletionModal';
 import AuditDashboard from './components/AuditDashboard';
 import WelcomeCard from './components/dashboard/WelcomeCard';
 import TaskList from './components/dashboard/TaskList';
+import CustomTaskModal from './components/dashboard/CustomTaskModal';
 import InsightsPanel from './components/dashboard/InsightsPanel';
 import ProjectsWidget from './components/dashboard/ProjectsWidget';
 import StatsSection from './components/dashboard/StatsSection';
 import { DIFFICULTY_LEVELS } from './constants';
 import { getApiUrl } from './utils/apiConfig';
+import { getTodayStr } from './utils/dateUtils';
+import { useICalExport } from './hooks/useICalExport';
 
 function Dashboard() {
   const {
@@ -26,10 +29,11 @@ function Dashboard() {
   } = useStore();
 
   const { completeTask, suspendCM } = useTaskCompletion();
-  const { stats, globalPercent, allMatieres, restDaysUsed, todayStr, isRestDayToday } = useDashboardStats();
+  const { stats, globalPercent, allMatieres, restDaysUsed, todayStr, isRestDayToday, tempsTravailleToday } = useDashboardStats();
   const recommendedDailyHours = useWorkloadEngine();
   const { toast } = useToast();
   const { playTaskComplete } = useSoundEffects();
+  const { exportToICal } = useICalExport(orchestratorData);
 
   const [orderedTaches, setOrderedTaches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +45,8 @@ function Dashboard() {
   const [customTaskParams, setCustomTaskParams] = useState({ titre: '', type: 'PERSO', matiere: '' });
   const [auditModalOpen, setAuditModalOpen] = useState(false);
   const [acceptedRest, setAcceptedRest] = useState(false);
+  const [restDayConfirmOpen, setRestDayConfirmOpen] = useState(false);
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
   // ---- Orchestrator fetch ----
   useEffect(() => {
@@ -62,21 +68,41 @@ function Dashboard() {
     if (orchestratorData && orchestratorData !== prevOrchestratorData) {
       setPrevOrchestratorData(orchestratorData);
       if (orchestratorData?.tachesDuJour) {
+        const alreadyDoneIds = new Set(historique?.filter(h => h.date === todayStr).map(h => h.tacheId) || []);
+        
         const filtered = orchestratorData.tachesDuJour.filter(t => {
           if (t.type === 'ANKI' && config?.dernierePratiqueAnki === todayStr) return false;
+          if (alreadyDoneIds.has(t.id)) return false;
           return true;
         });
+
+        const savedOrderStr = sessionStorage.getItem(`elpis_task_order_${todayStr}`);
+        if (savedOrderStr) {
+          try {
+            const savedOrder = JSON.parse(savedOrderStr);
+            filtered.sort((a, b) => {
+              const idxA = savedOrder.indexOf(a.id);
+              const idxB = savedOrder.indexOf(b.id);
+              if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+              if (idxA !== -1) return -1;
+              if (idxB !== -1) return 1;
+              return 0;
+            });
+          } catch(e) {}
+        }
+
         setOrderedTaches(filtered);
       }
     }
-  }, [orchestratorData, prevOrchestratorData, config?.dernierePratiqueAnki, todayStr]);
+  }, [orchestratorData, prevOrchestratorData, config?.dernierePratiqueAnki, todayStr, historique]);
 
   // ---- Actions ----
   const handleAddExtraTime = () => setExtraTime(prev => prev + 30);
 
   const handleSkipRest = async () => {
     try {
-      const res = await fetch('/api/skip-rest', { method: 'POST' });
+      const apiBase = getApiUrl();
+      const res = await fetch(`${apiBase}/config/skip-rest`, { method: 'POST' });
       if (res.ok) {
         toast.success("Jour de repos ignoré ! Reprise du travail.");
         await fetchOrchestrator({ fillGap: dailyFillGap, extraTime });
@@ -92,6 +118,16 @@ function Dashboard() {
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
     setOrderedTaches(items);
+    sessionStorage.setItem(`elpis_task_order_${todayStr}`, JSON.stringify(items.map(t => t.id)));
+  };
+
+  const handleCustomTaskSubmit = () => {
+    if (!customTaskParams.titre.trim()) { toast.error("Veuillez entrer un titre."); return; }
+    if (!customTaskParams.matiere) { toast.error("Veuillez sélectionner une matière."); return; }
+    const newTask = { id: 'custom-' + Date.now(), titre: customTaskParams.titre, type: customTaskParams.type, matiereNom: customTaskParams.matiere, isCustom: true, dureeMinutes: 30 };
+    useChronoStore.getState().startGlobalChrono(newTask);
+    setCustomTaskModalOpen(false);
+    toast.info("Chronomètre lancé pour l'activité libre !");
   };
 
   // ---- Task completion flow ----
@@ -113,12 +149,6 @@ function Dashboard() {
     taskModalLockRef.current = true;
     setPendingTask({ ...tache, difficulteKey });
     setTaskModalOpen(true);
-  };
-
-  const getTodayStr = () => {
-    const d = new Date();
-    d.setHours(d.getHours() - 4);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   };
 
   const handleTaskSubmit = useCallback(({ minutes, sm2Score, difficulte }) => {
@@ -182,27 +212,6 @@ function Dashboard() {
   const surcharge = statut === "SURCHARGE";
   const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
 
-  // ---- iCal export ----
-  const exportToICal = () => {
-    if (!orchestratorData?.tachesDuJour?.length) { alert("Aucune tâche à exporter."); return; }
-    let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//ELPIS//Planning//FR\n";
-    let currentBlockStart = new Date(); currentBlockStart.setHours(8, 0, 0, 0);
-    orchestratorData.tachesDuJour.forEach((tache, index) => {
-      const durationStr = typeof tache.dureeEstimee === 'number' ? tache.dureeEstimee : parseInt(tache.dureeEstimee) || 30;
-      const endBlock = new Date(currentBlockStart.getTime() + durationStr * 60000);
-      const formatICSDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
-      const title = tache.type === 'ANKI' ? 'Révisions (Anki)' : `[${tache.type}] ${tache.titre || 'Tâche'}`;
-      icsContent += "BEGIN:VEVENT\n";
-      icsContent += `UID:${Date.now()}-${index}@elpis.app\nDTSTAMP:${formatICSDate(new Date())}\nDTSTART:${formatICSDate(currentBlockStart)}\nDTEND:${formatICSDate(endBlock)}\nSUMMARY:${title}\nEND:VEVENT\n`;
-      currentBlockStart = new Date(endBlock.getTime() + 5 * 60000);
-    });
-    icsContent += "END:VCALENDAR";
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a'); link.href = url; link.download = `elpis_planning_${new Date().toISOString().split('T')[0]}.ics`;
-    document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
-  };
-
   // ---- Render ----
   return (
     <motion.div className="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -217,28 +226,35 @@ function Dashboard() {
         </motion.div>
       )}
 
-      <WelcomeCard greeting={greeting} orderedTaches={orderedTaches} recommendedDailyHours={recommendedDailyHours} tempsRequisMin={tempsRequisMin} globalPercent={globalPercent} config={config} />
+      <WelcomeCard greeting={greeting} orderedTaches={orderedTaches} recommendedDailyHours={recommendedDailyHours} tempsRequisMin={tempsRequisMin} globalPercent={globalPercent} config={config} tempsTravailleToday={tempsTravailleToday} />
 
       {/* Action buttons */}
-      <div className="dashboard-actions">
+      <div className="dashboard-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <button className="btn-primary" onClick={() => { setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' }); setCustomTaskModalOpen(true); }}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', background: 'var(--success-color)'}} title="Ajouter une activité libre">
-          ✨ Activité Libre
+          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', background: 'var(--success-color)'}} title="Ajouter une activit\u00e9 libre">
+          ✨ Activit\u00e9 Libre
         </button>
-        <button className="btn-secondary" onClick={() => setAuditModalOpen(true)}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}} title="Voir le rapport d'audit du code">
-          🛡️ Code Health
-        </button>
+
         {statut !== "REPOS" && !isRestDayToday && (
-          <button className="btn-secondary" onClick={() => { if (window.confirm(`Activer un jour de repos ? Il te reste ${1 - restDaysUsed} repos pour cette semaine.`)) activateRestDay(); }}
+          <button className="btn-secondary" onClick={() => setRestDayConfirmOpen(true)}
             disabled={restDaysUsed >= 1}
             style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', opacity: restDaysUsed >= 1 ? 0.5 : 1}}
             title={restDaysUsed >= 1 ? "Quota de repos (1/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}>
             ☕ Activer Jour de Repos ({restDaysUsed}/1)
           </button>
         )}
-        <button className="btn-secondary" onClick={() => window.print()} style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}>Exporter PDF</button>
-        <button className="btn-secondary" onClick={exportToICal} style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#60a5fa', borderColor: 'rgba(96, 165, 250, 0.4)'}}>📅 Exporter iCal</button>
+
+        <div style={{ position: 'relative' }}>
+          <button className="btn-secondary" onClick={() => setExportMenuOpen(!exportMenuOpen)} style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}>
+            ⬇️ Exporter
+          </button>
+          {exportMenuOpen && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', zIndex: 10, boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+              <button className="btn-secondary" onClick={() => { window.print(); setExportMenuOpen(false); }} style={{padding: '0.4rem 1rem', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-primary)'}}>📄 Format PDF</button>
+              <button className="btn-secondary" onClick={() => { exportToICal(); setExportMenuOpen(false); }} style={{padding: '0.4rem 1rem', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', color: '#60a5fa'}}>📅 Format iCal</button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="dashboard-grid">
@@ -324,50 +340,51 @@ function Dashboard() {
       <ProjectsWidget projets={projets} pendingTasksCount={pendingTasksCount} />
       <StatsSection stats={stats} globalPercent={globalPercent} />
 
+      {/* Code Health Footer */}
+      <div style={{ marginTop: '3rem', textAlign: 'center', borderTop: '1px solid var(--bg-tertiary)', paddingTop: '1.5rem', paddingBottom: '1rem' }}>
+        <button onClick={() => setAuditModalOpen(true)}
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', opacity: 0.7, transition: 'opacity 0.2s' }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+          title="Voir le rapport d'audit du code">
+          🛡️ M\u00e9triques Code Health
+        </button>
+      </div>
+
       {/* Modals */}
       <TaskCompletionModal isOpen={taskModalOpen} onClose={() => { setTaskModalOpen(false); setPendingTask(null); taskModalLockRef.current = false; }}
         onSubmit={handleTaskSubmit} taskTitle={pendingTask?.titre || ''}
         defaultMinutes={pendingTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)} taskType={pendingTask?.type || 'CM'} />
 
+      <CustomTaskModal 
+        isOpen={customTaskModalOpen} 
+        onClose={() => setCustomTaskModalOpen(false)} 
+        params={customTaskParams} 
+        setParams={setCustomTaskParams} 
+        onSubmit={handleCustomTaskSubmit} 
+        allMatieres={allMatieres} 
+      />
+
+      <AuditDashboard isOpen={auditModalOpen} onClose={() => setAuditModalOpen(false)} />
+
+      {/* Confirmation modale pour jour de repos (remplace window.confirm) */}
       <AnimatePresence>
-        {customTaskModalOpen && (
+        {restDayConfirmOpen && (
           <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div className="modal-content glass-panel" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} style={{ maxWidth: '400px', width: '90%' }}>
-              <h2 style={{ marginBottom: '1.5rem', color: 'var(--success-color)' }}>✨ Nouvelle Activité Libre</h2>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Titre de l'activité</label>
-                <input type="text" value={customTaskParams.titre} onChange={(e) => setCustomTaskParams({...customTaskParams, titre: e.target.value})} placeholder="ex: Vidéo YouTube, Projet Perso..." style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }} autoFocus />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Catégorie</label>
-                <select value={customTaskParams.type} onChange={(e) => setCustomTaskParams({...customTaskParams, type: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}>
-                  <option value="PERSO">Perso / Projet</option><option value="LECTURE">Lecture / Veille</option><option value="ANKI">Anki (Flashcards)</option><option value="CM">CM (Cours)</option><option value="TD">TD (Exercices)</option><option value="TP">TP (Pratique)</option><option value="ANNALE">Annale (Examen)</option>
-                </select>
-              </div>
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Matière rattachée</label>
-                <select value={customTaskParams.matiere} onChange={(e) => setCustomTaskParams({...customTaskParams, matiere: e.target.value})} style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }}>
-                  {allMatieres.length === 0 && <option value="">Aucune matière disponible</option>}
-                  {allMatieres.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-                <button className="btn-secondary" onClick={() => setCustomTaskModalOpen(false)}>Annuler</button>
-                <button className="btn-primary" onClick={() => {
-                  if (!customTaskParams.titre.trim()) { toast.error("Veuillez entrer un titre."); return; }
-                  if (!customTaskParams.matiere) { toast.error("Veuillez sélectionner une matière."); return; }
-                  const newTask = { id: 'custom-' + Date.now(), titre: customTaskParams.titre, type: customTaskParams.type, matiereNom: customTaskParams.matiere, isCustom: true, dureeMinutes: 30 };
-                  useChronoStore.getState().startGlobalChrono(newTask);
-                  setCustomTaskModalOpen(false);
-                  toast.info("Chronomètre lancé pour l'activité libre !");
-                }} style={{ background: 'var(--success-color)' }}>▶ Lancer le Chrono</button>
+            <motion.div className="modal-content glass-panel" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>☕</div>
+              <h2 style={{ marginBottom: '0.5rem' }}>Activer un jour de repos ?</h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+                Il te reste <strong>{1 - restDaysUsed}</strong> jour{1 - restDaysUsed > 1 ? 's' : ''} de repos pour cette semaine.
+                Ton streak ne sera pas brisé.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <button className="btn-secondary" onClick={() => setRestDayConfirmOpen(false)}>Annuler</button>
+                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-primary" style={{ background: 'var(--accent-primary)' }} onClick={() => { activateRestDay(); setRestDayConfirmOpen(false); toast.success('Jour de repos activé. Bon repos !'); }}>Confirmer</motion.button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <AuditDashboard isOpen={auditModalOpen} onClose={() => setAuditModalOpen(false)} />
     </motion.div>
   );
 }

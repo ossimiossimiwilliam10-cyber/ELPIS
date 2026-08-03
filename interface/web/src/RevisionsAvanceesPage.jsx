@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import useStore from './store';
 import { useToast } from './ToastProvider';
+import { getApiUrl } from './utils/apiConfig';
 
 export default function RevisionsAvanceesPage() {
   const { coursConfig, pendingTasksCount, setForcedTask, setActiveTab } = useStore();
@@ -29,7 +30,7 @@ export default function RevisionsAvanceesPage() {
   const handleCustomTargetRequest = async () => {
     setIsGeneratingCustom(true);
     try {
-      const res = await fetch('/api/orchestrateur/force-task', {
+      const res = await fetch(`${getApiUrl()}/orchestrateur/force-task`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

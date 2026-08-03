@@ -1,18 +1,19 @@
 import { motion } from 'framer-motion';
 import InfoTooltip from '../InfoTooltip';
+import CircularProgress from '../CircularProgress';
 
 /**
  * Carte d'accueil du Dashboard — salutation, KPIs, progression.
  */
-export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyHours, tempsRequisMin, globalPercent, config }) {
+export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyHours, tempsRequisMin, globalPercent, config, tempsTravailleToday }) {
   return (
     <div className="welcome-card">
       <div>
         <h2>{greeting} ! 👋</h2>
         <p>
           {orderedTaches.length > 0
-            ? `Tu as ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} à accomplir aujourd'hui.`
-            : "Tu as tout terminé pour aujourd'hui. Bravo !"}
+            ? `Tu as encore ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} \u00e0 accomplir aujourd'hui.`
+            : "Tu as tout termin\u00e9 pour aujourd'hui. Bravo ! Pourquoi ne pas avancer sur tes projets persos ou lancer une Activit\u00e9 Libre ?"}
         </p>
       </div>
       <div className="welcome-stats">
@@ -26,7 +27,15 @@ export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyH
         </div>
         <div className="welcome-stat">
           <div className="welcome-stat-value">{orderedTaches.length}</div>
-          <div className="welcome-stat-label">Tâches</div>
+          <div className="welcome-stat-label">T\u00e2ches</div>
+        </div>
+        <div className="welcome-stat">
+          <div className="welcome-stat-value" style={{color: 'var(--primary-color)'}}>{Math.round((tempsTravailleToday || 0) / 60 * 10) / 10}h</div>
+          <div className="welcome-stat-label">
+            <InfoTooltip content="Temps d\u00e9j\u00e0 travaill\u00e9 aujourd'hui.">
+              Travaill\u00e9 <span style={{fontSize:'0.8rem'}}>ℹ️</span>
+            </InfoTooltip>
+          </div>
         </div>
         <div className="welcome-stat">
           <div className="welcome-stat-value">{Math.round(tempsRequisMin/60 * 10)/10}h</div>
@@ -60,29 +69,4 @@ export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyH
   );
 }
 
-const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percent / 100) * circumference;
 
-  return (
-    <div className="circular-progress" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="circular-progress-circle">
-        <circle className="circular-progress-bg" cx={size / 2} cy={size / 2} r={radius} strokeWidth={strokeWidth} />
-        <motion.circle
-          className="circular-progress-fill"
-          cx={size / 2} cy={size / 2} r={radius} strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-        />
-      </svg>
-      <div className="circular-progress-text" style={{ fontSize: size * 0.25 }}>
-        <motion.span initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.3 }}>
-          {percent}%
-        </motion.span>
-      </div>
-    </div>
-  );
-};

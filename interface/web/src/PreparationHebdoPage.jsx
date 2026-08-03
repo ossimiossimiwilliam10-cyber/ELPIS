@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useStore from './store';
 import MarkdownModal from './MarkdownModal';
 import ExerciceRow from './components/cours/ExerciceRow';
+import { getApiUrl } from './utils/apiConfig';
 
 export default function PreparationHebdoPage() {
   const { config, setConfig, coursConfig, setCoursConfig } = useStore();
@@ -103,7 +104,7 @@ export default function PreparationHebdoPage() {
       const formData = new FormData();
       formData.append('pdf', file);
       try {
-        const res = await fetch('/api/upload/pdf', { method: 'POST', body: formData });
+        const res = await fetch(`${getApiUrl()}/upload/pdf`, { method: 'POST', body: formData });
         const data = await res.json();
         if (data.success) {
           mutateAndSave(draft => {

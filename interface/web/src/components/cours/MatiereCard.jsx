@@ -3,6 +3,7 @@ import EditableLabel from './EditableLabel';
 import EditableNote from './EditableNote';
 import StarRating from './StarRating';
 import InfoTooltip from '../InfoTooltip';
+import { getApiUrl } from '../../utils/apiConfig';
 
 /** Extrait "YYYY-MM-DD" d'une date ISO "YYYY-MM-DDTHH:MM:SS" pour <input type="date"> */
 const toDateInput = (val) => {
@@ -59,7 +60,7 @@ export default function MatiereCard({
       formData.append('pdf', file);
 
       try {
-        const res = await fetch('/api/upload/pdf', {
+        const res = await fetch(`${getApiUrl()}/upload/pdf`, {
           method: 'POST',
           body: formData
         });
@@ -98,7 +99,7 @@ export default function MatiereCard({
         const formData = new FormData();
         formData.append('pdf', file);
         try {
-          const res = await fetch('/api/upload/pdf', { method: 'POST', body: formData });
+          const res = await fetch(`${getApiUrl()}/upload/pdf`, { method: 'POST', body: formData });
           const data = await res.json();
           if (data.success) newUrls.push(data.url);
           else alert(`Erreur lors de l'upload de ${file.name}: ` + data.error);
@@ -129,7 +130,7 @@ export default function MatiereCard({
       formData.append('pdf', file);
 
       try {
-        const res = await fetch('/api/upload/pdf', {
+        const res = await fetch(`${getApiUrl()}/upload/pdf`, {
           method: 'POST',
           body: formData
         });

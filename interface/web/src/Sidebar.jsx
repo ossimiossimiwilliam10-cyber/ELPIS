@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApiUrl } from './utils/apiConfig';
 
 function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount, isMobileMenuOpen }) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -116,7 +117,7 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
             className="btn-secondary"
             onClick={async () => {
               if (window.confirm("Voulez-vous vraiment éteindre ELPIS ?")) {
-                try { await fetch('/api/shutdown', { method: 'POST' }); } catch { /* best effort */ }
+                try { await fetch(`${getApiUrl()}/shutdown`, { method: 'POST' }); } catch { /* best effort */ }
                 window.close();
                 setTimeout(() => {
                   if (!document.hidden && document.body) {

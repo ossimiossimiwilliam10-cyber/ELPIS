@@ -70,13 +70,6 @@ export default function TaskList({ orderedTaches, onDragEnd, onTaskComplete, onS
                           >
                             Fait
                           </button>
-                          {t.type !== 'CM' && DIFFICULTY_LEVELS?.map(dl => (
-                            <button key={dl.key} onClick={() => onTaskComplete(t, dl.key)}
-                              title={dl.title}
-                              style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '0.85rem', padding: '0.1rem', flexShrink: 0, opacity: 0.7, transition: 'opacity 0.2s' }}
-                              onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
-                            >{dl.label}</button>
-                          ))}
                           {t.type === 'CM' && (
                             <button onClick={() => onSuspendCM(t)}
                               style={{
