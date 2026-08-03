@@ -99,50 +99,57 @@ function EntrainementPage() {
     }
   }, [coursConfig, prevCoursConfig]);
 
-  // Filtered exercises directly matching the orchestrator
+  // Filtered exercises directly matching the orchestrator (respecting orchestrator order)
   const strategicExercices = useMemo(() => {
-    if (!tachesOrchestrateur) return [];
+    if (!tachesOrchestrateur || !configLocal.licences) return [];
 
     let exosToReview = [];
 
-    const ankiTask = tachesOrchestrateur.find(t => t.type === 'ANKI');
-    if (ankiTask) {
-       exosToReview.push({
-           type: 'ANKI',
-           titre: ankiTask.titre,
-           matiereNom: 'Routine',
-           dureeMinutes: ankiTask.dureeMinutes,
-           id: 'anki_task'
-       });
-    }
-
-    const matchedTasks = new Set();
-    configLocal.licences?.forEach((l, lIndex) => {
+    // Pre-calculate a lookup map for faster access and to avoid nested loops per task
+    const exoMap = new Map();
+    configLocal.licences.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
         s.ues?.forEach((u, uIndex) => {
           u.matieres?.forEach((m, mIndex) => {
-            const extractAndFilter = (listeExos, type) => {
+            const addToMap = (listeExos, type) => {
                if (!listeExos) return;
                listeExos.forEach((ex, exIndex) => {
-                 const orchTaskIndex = tachesOrchestrateur.findIndex((t, idx) => 
-                   !matchedTasks.has(idx) && t.matiere === m.nom && t.type === type && t.titre === ex.titre
-                 );
-                 if (orchTaskIndex !== -1) {
-                   matchedTasks.add(orchTaskIndex);
-                   exosToReview.push({
-                     ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
-                   });
-                 }
+                 const key = `${m.nom}-${type}-${ex.titre}`;
+                 if (!exoMap.has(key)) exoMap.set(key, []);
+                 exoMap.get(key).push({
+                   ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
+                 });
                });
             };
-            extractAndFilter(m.listeTD, 'TD');
-            extractAndFilter(m.listeTP, 'TP');
-            extractAndFilter(m.listeCM, 'CM');
-            extractAndFilter(m.listeAnnales, 'ANNALE');
+            addToMap(m.listeTD, 'TD');
+            addToMap(m.listeTP, 'TP');
+            addToMap(m.listeCM, 'CM');
+            addToMap(m.listeAnnales, 'ANNALE');
           });
         });
       });
     });
+
+    tachesOrchestrateur.forEach((t) => {
+      if (t.type === 'ANKI') {
+        exosToReview.push({
+           type: 'ANKI',
+           titre: t.titre,
+           matiereNom: 'Routine',
+           dureeMinutes: t.dureeMinutes,
+           id: 'anki_task'
+        });
+      } else {
+        const key = `${t.matiere}-${t.type}-${t.titre}`;
+        const candidates = exoMap.get(key);
+        if (candidates && candidates.length > 0) {
+           // Prendre le premier candidat correspondant et le retirer de la map pour ne pas le dupliquer
+           const match = candidates.shift(); 
+           exosToReview.push(match);
+        }
+      }
+    });
+
     return exosToReview;
   }, [configLocal, tachesOrchestrateur]);
 

@@ -197,13 +197,13 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
             {formatTime(elapsedSeconds)}
           </span>
         </div>
-        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-          <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>ou</span>
+        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.03)', padding: '0.3rem 0.6rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)'}}>
+          <span style={{fontSize: '1.1rem'}} title="Saisie manuelle du temps">⏱️</span>
           <input
             type="number"
             min="0"
             max="999"
-            placeholder={exo.tempsMoyen ? `${Math.round(exo.tempsMoyen)}` : "min"}
+            placeholder={exo.tempsMoyen ? `${Math.round(exo.tempsMoyen)}` : "0"}
             value={manualTime !== null ? manualTime : ''}
             onChange={e => {
               const val = e.target.value;
@@ -215,20 +215,22 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
               }
             }}
             style={{
-              width: '52px',
-              background: 'var(--bg-primary)',
-              color: manualTime !== null ? 'var(--accent-primary)' : 'var(--text-secondary)',
-              border: manualTime !== null ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.15)',
+              width: '60px',
+              background: manualTime !== null ? 'rgba(59, 130, 246, 0.1)' : 'var(--bg-primary)',
+              color: manualTime !== null ? 'var(--accent-primary)' : 'var(--text-primary)',
+              border: manualTime !== null ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.1)',
               borderRadius: '6px',
               textAlign: 'center',
               fontFamily: 'monospace',
-              fontSize: '1rem',
-              padding: '0.3rem 0.2rem',
-              transition: 'border-color 0.2s'
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              padding: '0.4rem 0.2rem',
+              transition: 'all 0.2s',
+              outline: 'none'
             }}
             title="Entrez le temps manuellement (en minutes)"
           />
-          <span style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>min</span>
+          <span style={{fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 'bold'}}>min</span>
         </div>
       </div>
 
@@ -268,13 +270,13 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
             </div>
           );
         })()}
-        <div style={{display:'flex', gap:'0.5rem'}}>
+        <div style={{display:'flex', gap:'0.5rem', flexWrap: 'wrap'}}>
           {exo.type === 'CM' ? (
              <>
-               <button onClick={() => handleValidation(onEvaluateCM, 1)} style={{flex:1, background:'#ef4444', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Échec">À revoir (1)</button>
-               <button onClick={() => handleValidation(onEvaluateCM, 2)} style={{flex:1, background:'#f97316', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Difficile">Difficile (2)</button>
-               <button onClick={() => handleValidation(onEvaluateCM, 3)} style={{flex:1, background:'#3b82f6', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Bien">Bien (3)</button>
-               <button onClick={() => handleValidation(onEvaluateCM, 4)} style={{flex:1, background:'#22c55e', color:'white', border:'none', borderRadius:'6px', padding:'0.6rem'}} title="Parfait">Parfait (4)</button>
+               <button className="btn-secondary" onClick={() => handleValidation(onEvaluateCM, 1)} style={{flex:1, minWidth: '80px', background:'rgba(239, 68, 68, 0.1)', color:'#ef4444', border:'1px solid #ef4444', borderRadius:'8px', padding:'0.8rem 0.5rem', fontWeight:'bold'}} title="Échec complet">À revoir (1)</button>
+               <button className="btn-secondary" onClick={() => handleValidation(onEvaluateCM, 2)} style={{flex:1.5, minWidth: '90px', background:'rgba(249, 115, 22, 0.1)', color:'#f97316', border:'1px solid #f97316', borderRadius:'8px', padding:'0.8rem 0.5rem', fontWeight:'bold'}} title="J'ai eu du mal">Difficile (2)</button>
+               <button className="btn-secondary" onClick={() => handleValidation(onEvaluateCM, 3)} style={{flex:1.5, minWidth: '90px', background:'rgba(59, 130, 246, 0.1)', color:'#3b82f6', border:'1px solid #3b82f6', borderRadius:'8px', padding:'0.8rem 0.5rem', fontWeight:'bold'}} title="Retenu avec un peu d'effort">Bien (3)</button>
+               <button className="btn-secondary" onClick={() => handleValidation(onEvaluateCM, 4)} style={{flex:1, minWidth: '80px', background:'rgba(34, 197, 94, 0.1)', color:'#22c55e', border:'1px solid #22c55e', borderRadius:'8px', padding:'0.8rem 0.5rem', fontWeight:'bold'}} title="Facile et évident">Parfait (4)</button>
                {onSuspendCM && (
                  <button
                    onClick={() => {
@@ -288,7 +290,7 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
                      setManualTime(null);
                    }}
                    style={{
-                     flex: 4,
+                     flex: '1 1 100%',
                      background: 'rgba(245, 158, 11, 0.15)',
                      color: '#f59e0b',
                      border: '1px solid rgba(245, 158, 11, 0.4)',
@@ -335,37 +337,39 @@ function ExerciceCard({ exo, onEvaluateCM, onMarkAsDone, onSuspendCM }) {
                </button>
              </div>
           ) : (
-           <div style={{display:'flex', width:'100%', gap:'0.5rem'}}>
-             <button
-               onClick={() => handleValidation(onMarkAsDone, "")}
-               className="btn-secondary"
-               style={{background:'#10B981', color:'white', border:'none', flex: 2}}
-             >
-               {exo.type === 'TP' && exo.etape ? getTPButtonText(exo.etape) : "Fait"}
-             </button>
-             <div style={{display:'flex', flexWrap:'wrap', gap:'2px', justifyContent:'center', alignItems:'center'}}>
-               {DIFFICULTY_LEVELS?.map(dl => (
-                 <button
-                   key={dl.key}
-                   onClick={() => handleValidation(onMarkAsDone, dl.key)}
-                   title={dl.title}
-                   style={{
-                     background: 'transparent',
-                     border: 'none',
-                     cursor: 'pointer',
-                     fontSize: '0.8rem',
-                     padding: '0.2rem',
-                     opacity: 0.7,
-                     transition: 'opacity 0.2s',
-                   }}
-                   onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                   onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
-                 >
-                   {dl.label}
-                 </button>
-               ))}
-             </div>
-           </div>
+            <div style={{display:'flex', width:'100%', gap:'0.5rem'}}>
+              <button
+                onClick={() => handleValidation(onMarkAsDone, "")}
+                className="btn-secondary"
+                style={{background:'#10B981', color:'white', border:'none', flex: exo.type === 'ANKI' ? 1 : 2, padding: '0.8rem', fontSize: '1.1rem', fontWeight: 'bold'}}
+              >
+                {exo.type === 'TP' && exo.etape ? getTPButtonText(exo.etape) : "Fait"}
+              </button>
+              {exo.type !== 'ANKI' && (
+                <div style={{display:'flex', flexWrap:'wrap', gap:'2px', justifyContent:'center', alignItems:'center'}}>
+                  {DIFFICULTY_LEVELS?.map(dl => (
+                    <button
+                      key={dl.key}
+                      onClick={() => handleValidation(onMarkAsDone, dl.key)}
+                      title={dl.title}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        padding: '0.2rem',
+                        opacity: 0.7,
+                        transition: 'opacity 0.2s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+                    >
+                      {dl.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>

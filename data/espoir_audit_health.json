@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-03T09:16:10.685576",
+  "timestamp": "2026-08-03T09:38:07.926851",
   "agent_version": "3.0.0",
   "rules_health": {
     "status": "HEALTHY",
@@ -8,10 +8,10 @@
   },
   "scan_performance": {
     "status": "WARNING",
-    "elapsed_seconds": 128.61,
+    "elapsed_seconds": 111.59,
     "files_scanned": 846,
-    "files_per_second": 6.6,
-    "lines_per_second": 24996.0
+    "files_per_second": 7.6,
+    "lines_per_second": 28809.0
   },
   "false_positive_analysis": {
     "total_rules_with_hits": 3,
@@ -32,26 +32,26 @@
     "total_rules": 60,
     "active_rules": 3,
     "inactive_rules": [
-      "NO_DOUBLE_SEMICOLONS",
-      "NO_BARREL_IMPORT_CYCLES",
-      "TEST-HEAL-002",
-      "FIX_CONFIDENCE_DECIMAL",
-      "PWA_STATIC_ROUTE_EXCLUSION",
-      "EXCESSIVE_FUNCTION_LENGTH",
-      "NO_PRINT_IN_PRODUCTION",
-      "JSON_DEEP_CLONE",
-      "NO_VAR_KEYWORD",
-      "LARGE_IMPORT_SIDE_EFFECT",
-      "SCORING_NEW_PARAM_SIGNATURE",
-      "NO_HTTP_IN_PRODUCTION_URLS",
       "NO_HARDCODED_LOCALHOST",
-      "MISSING_TYPE_HINTS",
+      "SEC-001",
+      "NO_BARREL_IMPORT_CYCLES",
+      "NO_EMPTY_CATCH",
+      "RAPPORT_INTELLIGENCE_V3_KEYS",
+      "JSON_DEEP_CLONE",
+      "USEEFFECT_MISSING_CLEANUP_LISTENER",
+      "USEEFFECT_MISSING_CLEANUP_INTERVAL",
+      "MISSING_USEEFFECT_DEPS",
       "USE_OPTIONAL_CHAINING",
-      "TOAST_DIRECT_CALL",
-      "NO_CIRCULAR_IMPORTS",
-      "NO_IMPORTANT_IN_CSS",
-      "NO_POSITIVE_TABINDEX",
-      "PROP_SPREADING_WARNING"
+      "AVOID_ARRAY_CONSTRUCTOR",
+      "LARGE_IMPORT_SIDE_EFFECT",
+      "TEST_WITH_SKIP",
+      "NO_BARE_EXCEPT",
+      "EXPRESS_ASYNC_NO_TRY_CATCH",
+      "NO_INDEX_AS_KEY",
+      "NO_DOUBLE_SEMICOLONS",
+      "NO_PRINT_IN_PRODUCTION",
+      "NO_HARDCODED_SECRETS",
+      "UNCONTROLLED_TO_CONTROLLED_INPUT"
     ],
     "inactive_count": 59
   },
@@ -61,7 +61,7 @@
   },
   "overall_status": "WARNING",
   "warnings": [
-    "Performance degradee: 6.6 fichiers/s"
+    "Performance degradee: 7.6 fichiers/s"
   ],
   "recommendations": [
     "59 regles inactives. Verifier si elles sont encore pertinentes."
