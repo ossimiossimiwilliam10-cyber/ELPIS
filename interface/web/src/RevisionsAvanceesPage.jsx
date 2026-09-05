@@ -1,53 +1,86 @@
-import { useState } from 'react';
+import { useState, useMemo, useId } from 'react';
 import { motion } from 'framer-motion';
 import useStore from './store';
 import { useToast } from './ToastProvider';
 import { getApiUrl } from './utils/apiConfig';
+import {
+  Bouton, Carte, Champ, EtatVide, Pile, Selection, TitreCarte, TitrePage, Texte,
+} from './components/ui';
+
+const DUREE_MIN = 5;
+const DUREE_MAX = 480;
 
 export default function RevisionsAvanceesPage() {
   const { coursConfig, pendingTasksCount, setForcedTask, setActiveTab } = useStore();
   const { toast } = useToast();
+  const champId = useId();
 
   const [customMatiere, setCustomMatiere] = useState('all');
   const [customType, setCustomType] = useState('all');
   const [customDuration, setCustomDuration] = useState(30);
   const [isGeneratingCustom, setIsGeneratingCustom] = useState(false);
 
-  // Extraire les matières depuis coursConfig pour les afficher dans le dropdown
-  const allMatieres = [];
-  if (coursConfig?.licences) {
-    coursConfig.licences.forEach(l => {
+  // Matières proposées dans la liste déroulante. Le dédoublonnage est indispensable :
+  // une matière suivie sur plusieurs semestres apparaissait plusieurs fois, avec la
+  // même clé React à chaque occurrence.
+  const allMatieres = useMemo(() => {
+    const noms = new Set();
+    coursConfig?.licences?.forEach(l => {
       l.semestres?.forEach(s => {
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {
-            if (m.nom) allMatieres.push(m.nom);
+            if (m.nom) noms.add(m.nom);
           });
         });
       });
     });
-  }
+    return Array.from(noms).sort((a, b) => a.localeCompare(b, 'fr'));
+  }, [coursConfig]);
+
+  // Les attributs min/max d'un champ nombre ne contraignent que la saisie assistée :
+  // rien n'empêchait une durée aberrante de partir au serveur.
+  const dureeBornee = () => {
+    const valeur = parseInt(customDuration, 10);
+    if (!Number.isFinite(valeur)) return 30;
+    return Math.min(DUREE_MAX, Math.max(DUREE_MIN, valeur));
+  };
 
   const handleCustomTargetRequest = async () => {
     setIsGeneratingCustom(true);
     try {
+      // Une révision Anki n'appartient à aucune matière : demander « Anki en Algèbre »
+      // ne pouvait donner aucun résultat.
+      const cibleAnki = customMatiere === 'ANKI' || customType === 'ANKI';
+
       const res = await fetch(`${getApiUrl()}/orchestrateur/force-task`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          matiere: customMatiere === 'ANKI' ? 'Routine' : customMatiere,
-          type: customMatiere === 'ANKI' ? 'ANKI' : customType,
-          dureeMin: customDuration
+          matiere: cibleAnki ? 'Routine' : customMatiere,
+          type: cibleAnki ? 'ANKI' : customType,
+          dureeMin: dureeBornee()
         })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 404) {
+        toast.info("Aucun exercice ne correspond à ces critères. Essaie une autre matière ou « Peu importe ».");
+        return;
+      }
       if (!res.ok) {
         toast.error(data.error || "Erreur de génération");
-      } else if (data.task) {
-        setForcedTask(data.task);
-        setActiveTab('entrainement');
-        toast.success("Cible acquise ! L'entraînement est configuré.");
+        return;
       }
-    } catch (err) {
+      if (!data.task) {
+        // Réponse 200 sans tâche : auparavant, le clic ne produisait rien du tout.
+        toast.info("Aucune cible n'a pu être déterminée. Élargis tes critères.");
+        return;
+      }
+
+      setForcedTask(data.task);
+      setActiveTab('entrainement');
+      toast.success("Cible acquise ! L'entraînement est configuré.");
+    } catch {
       toast.error("Impossible de joindre l'orchestrateur.");
     } finally {
       setIsGeneratingCustom(false);
@@ -56,98 +89,115 @@ export default function RevisionsAvanceesPage() {
 
   if (pendingTasksCount > 0) {
     return (
-      <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '4rem', paddingTop: '4rem', textAlign: 'center' }}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="card glass-panel"
-          style={{ padding: '3rem', border: '1px solid var(--accent-primary)' }}
-        >
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
-          <h2 style={{ color: 'var(--text-primary)', marginBottom: '1rem' }}>Section Verrouillée</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
-            Tu as encore <strong>{pendingTasksCount} tâche{pendingTasksCount > 1 ? 's' : ''}</strong> à terminer dans ta Session du Jour.
-          </p>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            L'algorithme requiert que tu atteignes ta cible quotidienne avant de pouvoir t'avancer sur d'autres matières.
-          </p>
-        </motion.div>
-      </div>
+      <Carte>
+        <EtatVide
+          icone="🔒"
+          titre="Section verrouillée"
+          texte={`Il te reste ${pendingTasksCount} tâche${pendingTasksCount > 1 ? 's' : ''} dans ta session du jour. Le travail d'avance s'ouvre une fois la cible quotidienne atteinte.`}
+          actions={
+            // Sans issue, cet écran était un cul-de-sac : il fallait passer par le menu.
+            <Bouton variante="primaire" grand onClick={() => setActiveTab('entrainement')}>
+              Aller à ma Session du Jour
+            </Bouton>
+          }
+        />
+      </Carte>
     );
   }
 
+  // Premier lancement : sans matière enregistrée, le ciblage ne peut rien trouver.
+  if (allMatieres.length === 0) {
+    return (
+      <Carte>
+        <EtatVide
+          icone="📚"
+          titre="Rien à cibler pour l'instant"
+          texte="Le ciblage manuel puise dans tes matières. Ajoute-les dans la Bibliothèque et cette page saura te trouver un exercice à travailler."
+          actions={
+            <Bouton variante="primaire" grand onClick={() => setActiveTab('cours')}>
+              Ouvrir la Bibliothèque
+            </Bouton>
+          }
+        />
+      </Carte>
+    );
+  }
+
+  const ankiCible = customMatiere === 'ANKI';
+
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '4rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ margin: 0, fontSize: '2rem' }}>🚀 Avance & Bonus</h1>
+    <div className="avance-page">
+      <div>
+        <TitrePage>Avance & bonus</TitrePage>
+        <Texte doux petit>
+          Tes tâches du jour sont faites. Choisis ce que tu veux travailler en plus.
+        </Texte>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="card glass-panel"
-        style={{ marginBottom: '2rem', padding: '2rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '16px' }}
-      >
-        <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>🎯 Ciblage manuel</h3>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-          Sélectionne la matière, le type et la durée. L'IA ciblera l'exercice le plus pertinent et t'emmènera dans l'arène d'entraînement !
-        </p>
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+        <Carte>
+          <TitreCarte>Ciblage manuel</TitreCarte>
+          <Texte doux petit>
+            Indique une matière, un type et une durée : le planificateur retient
+            l'exercice le plus utile parmi ceux qui correspondent.
+          </Texte>
 
-        <div style={{ marginBottom: '1.2rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 500 }}>Matière</label>
-          <select
-            value={customMatiere}
-            onChange={e => setCustomMatiere(e.target.value)}
-            style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem', cursor: 'pointer' }}
-          >
-            <option value="all">Toutes les matières</option>
-            <option value="ANKI">Routine Anki (Flashcards)</option>
-            {allMatieres.map(m => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
-        </div>
+          <Pile style={{ marginTop: 'var(--esp-5)' }}>
+            <Selection
+              id={`${champId}-matiere`}
+              label="Matière"
+              value={customMatiere}
+              onChange={e => setCustomMatiere(e.target.value)}
+            >
+              <option value="all">Toutes les matières</option>
+              <option value="ANKI">Routine Anki (flashcards)</option>
+              {allMatieres.map(m => <option key={m} value={m}>{m}</option>)}
+            </Selection>
 
-        <div style={{ marginBottom: '1.2rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 500 }}>Type d'exercice</label>
-          <select
-            value={customType}
-            onChange={e => setCustomType(e.target.value)}
-            style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem', cursor: 'pointer' }}
-          >
-            <option value="all">Peu importe</option>
-            <option value="ANKI">Anki (Flashcards)</option>
-            <option value="CM">Cours (CM)</option>
-            <option value="TD">Exercices (TD)</option>
-            <option value="TP">Projet (TP)</option>
-            <option value="ANNALE">Annales</option>
-          </select>
-        </div>
+            <Selection
+              id={`${champId}-type`}
+              label="Type d'exercice"
+              value={customType}
+              onChange={e => setCustomType(e.target.value)}
+              disabled={ankiCible}
+              aide={ankiCible ? "Une révision Anki n'appartient à aucune matière." : undefined}
+            >
+              <option value="all">Peu importe</option>
+              <option value="ANKI">Anki (flashcards)</option>
+              <option value="CM">Cours magistral</option>
+              <option value="TD">Travaux dirigés</option>
+              <option value="TP">Travaux pratiques</option>
+              <option value="ANNALE">Annale</option>
+            </Selection>
 
-        <div style={{ marginBottom: '2rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.95rem', color: 'var(--text-primary)', fontWeight: 500 }}>Durée souhaitée (minutes)</label>
-          <input
-            type="number"
-            min="5"
-            step="5"
-            value={customDuration}
-            onChange={e => setCustomDuration(parseInt(e.target.value) || 30)}
-            style={{ width: '100%', padding: '0.9rem', borderRadius: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--accent-primary)', fontSize: '1rem' }}
-          />
-        </div>
+            <Champ
+              id={`${champId}-duree`}
+              label="Durée souhaitée (minutes)"
+              type="number"
+              min={DUREE_MIN}
+              max={DUREE_MAX}
+              step="5"
+              value={customDuration}
+              // La saisie reste libre pendant la frappe — borner ici empêcherait de
+              // taper « 45 », le premier caractère étant aussitôt corrigé. La valeur
+              // envoyée passe par `dureeBornee()`.
+              onChange={e => setCustomDuration(e.target.value)}
+              onBlur={() => setCustomDuration(dureeBornee())}
+              aide={`Entre ${DUREE_MIN} et ${DUREE_MAX} minutes.`}
+            />
 
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <motion.button
-            whileHover={!isGeneratingCustom ? { scale: 1.02 } : {}}
-            whileTap={!isGeneratingCustom ? { scale: 0.98 } : {}}
-            onClick={handleCustomTargetRequest}
-            disabled={isGeneratingCustom}
-            className="btn-primary"
-            style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', background: 'var(--accent-primary)', color: 'white', borderRadius: '8px', cursor: isGeneratingCustom ? 'wait' : 'pointer' }}
-          >
-            {isGeneratingCustom ? 'Recherche en cours...' : 'Rechercher ma cible et commencer'}
-          </motion.button>
-        </div>
+            <Bouton
+              variante="primaire"
+              grand
+              pleineLargeur
+              onClick={handleCustomTargetRequest}
+              disabled={isGeneratingCustom}
+              aria-busy={isGeneratingCustom}
+            >
+              {isGeneratingCustom ? 'Recherche en cours…' : 'Trouver un exercice et commencer'}
+            </Bouton>
+          </Pile>
+        </Carte>
       </motion.div>
     </div>
   );

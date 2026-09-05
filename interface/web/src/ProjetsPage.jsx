@@ -2,29 +2,53 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import useStore, { useChronoStore } from './store';
 
-import { getApiUrl } from './utils/apiConfig';
 import useInputModal from './hooks/useInputModal';
 import InputModal from './components/InputModal';
+import ConfirmModal from './components/ConfirmModal';
+import { useToast } from './ToastProvider';
+import {
+  Bouton, BoutonIcone, Carte, EtatVide, Jauge, TitreCarte, TitrePage, Texte,
+} from './components/ui';
+
+/** Identifiant robuste, y compris pour deux créations dans la même milliseconde. */
+const nouvelId = () =>
+  (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.round(Math.random() * 1e6)}`);
 
 function ProjetsPage() {
-  const { projets, setProjets, pendingTasksCount, historique } = useStore();
+  const { projets, setProjets, pendingTasksCount, historique, addHistoriqueEntry, setActiveTab } = useStore();
+  const { toast } = useToast();
   const { globalChrono, startGlobalChrono, toggleGlobalChrono, resetGlobalChrono } = useChronoStore();
   const { prompt, isOpen, config, handleConfirm, handleCancel } = useInputModal();
   const [newProjectTitle, setNewProjectTitle] = useState('');
   const [newProjectDateFin, setNewProjectDateFin] = useState('');
   const [newPhaseName, setNewPhaseName] = useState('');
   const [activeProjectForPhase, setActiveProjectForPhase] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-  // Verrouillage de la page
+  // --- Stats des projets ---
+  const projectTimeTotal = useMemo(() => {
+    // `h.duree` couvre les entrées créées avant l'alignement des formats.
+    return (historique || [])
+      .filter(h => h.type === 'PROJET')
+      .reduce((sum, h) => sum + (h.dureeMinutes || h.duree || 0), 0);
+  }, [historique]);
+
+  // Verrouillage de la page : les études passent avant les projets personnels.
   if (pendingTasksCount > 0) {
     return (
-      <div className="page-transition glass-panel" style={{ textAlign: 'center', padding: '4rem 2rem', marginTop: '2rem' }}>
-        <h1 style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</h1>
-        <h2 style={{ color: 'var(--danger-color)', marginBottom: '1rem' }}>Espace Verrouillé</h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>
-          Mes études avant tout ! Termine toutes tes tâches universitaires du jour ({pendingTasksCount} restante{pendingTasksCount > 1 ? 's' : ''}) pour débloquer l'accès à tes projets personnels.
-        </p>
-      </div>
+      <Carte>
+        <EtatVide
+          icone="🔒"
+          titre="Espace verrouillé"
+          texte={`Il te reste ${pendingTasksCount} tâche${pendingTasksCount > 1 ? 's' : ''} universitaire${pendingTasksCount > 1 ? 's' : ''} aujourd'hui. Termine-les pour ouvrir tes projets personnels.`}
+          actions={
+            // Sans issue, cet écran obligeait à repasser par le menu.
+            <Bouton variante="primaire" grand onClick={() => setActiveTab('entrainement')}>
+              Aller à ma Session du Jour
+            </Bouton>
+          }
+        />
+      </Carte>
     );
   }
 
@@ -32,7 +56,7 @@ function ProjetsPage() {
   const handleAddProject = () => {
     if (!newProjectTitle.trim()) return;
     const newProject = {
-      id: Date.now().toString(),
+      id: nouvelId(),
       titre: newProjectTitle.trim(),
       dateFin: newProjectDateFin || null,
       phases: []
@@ -42,64 +66,95 @@ function ProjetsPage() {
     setNewProjectDateFin('');
   };
 
-  const handleLogTime = async (projetId) => {
+  const handleLogTime = async (projet) => {
     let finalMinutes = 0;
-    if (globalChrono.exoId === projetId && globalChrono.elapsedSeconds > 0) {
+    if (globalChrono.exoId === projet.id && globalChrono.elapsedSeconds > 0) {
       finalMinutes = Math.max(1, Math.ceil(globalChrono.elapsedSeconds / 60));
     }
 
     const defaultInput = finalMinutes > 0 ? finalMinutes.toString() : "";
     const minStr = await prompt("Combien de minutes as-tu travaillé sur ce projet ?", defaultInput);
-    if (!minStr) return;
+    if (minStr === null) return;
 
     const min = parseInt(minStr, 10);
-    if (isNaN(min) || min <= 0) return;
+    if (isNaN(min) || min <= 0) {
+      toast.error("Indique une durée en minutes.");
+      return;
+    }
 
-    if (globalChrono.exoId === projetId) {
+    if (globalChrono.exoId === projet.id) {
       resetGlobalChrono();
     }
 
-    const newHistoryEntry = {
-      date: new Date().toISOString(),
-      type: "PROJET",
-      duree: min,
-      projetId: projetId
-    };
-
-    const updatedHistory = [...historique, newHistoryEntry];
-    try {
-      await fetch(`${getApiUrl()}/historique`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedHistory)
-      });
-      // Mettre à jour le store
-      useStore.setState({ historique: updatedHistory });
-    } catch (e) {
-      console.error("Failed to save history", e);
-    }
+    // Le temps passait par un POST direct puis un `setState` brut : l'entrée
+    // n'atteignait pas la base locale, ne mettait pas la série à jour, et son
+    // format (`date`/`duree`) différait de celui du reste de l'application
+    // (`timestamp`/`dureeMinutes`) — ce temps n'apparaissait donc dans aucune
+    // statistique.
+    addHistoriqueEntry({
+      type: 'PROJET',
+      titre: projet.titre,
+      matiere: 'Projets personnels',
+      action: 'Temps investi',
+      dureeMinutes: min,
+      projetId: projet.id,
+    });
+    toast.success(`${min} min ajoutées à « ${projet.titre} ».`);
   };
 
-  const handleDeleteProject = (id) => {
-    if (window.confirm("Supprimer ce projet ?")) {
-      setProjets(projets.filter(p => p.id !== id));
-      if (globalChrono.exoId === id) resetGlobalChrono();
-    }
+  const handleDeleteProject = (projet) => {
+    setDeleteConfirm({ type: 'project', id: projet.id, nom: projet.titre, nbPhases: (projet.phases || []).length });
+  };
+
+  /**
+   * Renomme un projet.
+   *
+   * Seule l'échéance pouvait être corrigée après coup : un titre mal saisi
+   * obligeait à supprimer le projet — donc ses phases et son avancement —
+   * pour le recréer.
+   */
+  const renommerProjet = async (projet) => {
+    const saisi = await prompt('Nom du projet :', projet.titre || '');
+    if (saisi === null) return;
+    const nom = saisi.trim();
+    if (!nom) return toast.error('Le nom ne peut pas être vide.');
+    setProjets(projets.map(p => (p.id === projet.id ? { ...p, titre: nom } : p)),
+      { libelle: 'Renommage d’un projet' });
+  };
+
+  const renommerPhase = async (projectId, phase) => {
+    const saisi = await prompt('Nom de l’étape :', phase.nom || '');
+    if (saisi === null) return;
+    const nom = saisi.trim();
+    if (!nom) return toast.error('Le nom ne peut pas être vide.');
+    setProjets(projets.map(p => (p.id !== projectId ? p : {
+      ...p,
+      phases: (p.phases || []).map(ph => (ph.id === phase.id ? { ...ph, nom } : ph)),
+    })), { libelle: 'Renommage d’une étape' });
   };
 
   const handleUpdateDateFin = (id, newDate) => {
     setProjets(projets.map(p => p.id === id ? { ...p, dateFin: newDate } : p));
   };
 
-  const handleDeletePhase = (projectId, phaseId) => {
-    if (window.confirm("Supprimer cette phase ?")) {
+  const handleDeletePhase = (projectId, phase) => {
+    setDeleteConfirm({ type: 'phase', id: projectId, phaseId: phase.id, nom: phase.nom });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteConfirm) return;
+    if (deleteConfirm.type === 'project') {
+      setProjets(projets.filter(p => p.id !== deleteConfirm.id));
+      if (globalChrono.exoId === deleteConfirm.id) resetGlobalChrono();
+    } else if (deleteConfirm.type === 'phase') {
       setProjets(projets.map(p => {
-        if (p.id === projectId) {
-          return { ...p, phases: p.phases.filter(ph => ph.id !== phaseId) };
+        if (p.id === deleteConfirm.id) {
+          return { ...p, phases: p.phases.filter(ph => ph.id !== deleteConfirm.phaseId) };
         }
         return p;
       }));
     }
+    setDeleteConfirm(null);
   };
 
   const handleAddPhase = (projectId) => {
@@ -108,7 +163,7 @@ function ProjetsPage() {
       if (p.id === projectId) {
         return {
           ...p,
-          phases: [...(p.phases || []), { id: Date.now().toString(), nom: newPhaseName.trim(), complete: false }]
+          phases: [...(p.phases || []), { id: nouvelId(), nom: newPhaseName.trim(), complete: false }]
         };
       }
       return p;
@@ -118,205 +173,218 @@ function ProjetsPage() {
     setActiveProjectForPhase(null);
   };
 
+  /**
+   * Coche ou décoche une phase, en préservant l'ordre des étapes.
+   *
+   * Cocher exige que la précédente le soit ; décocher entraîne les suivantes,
+   * faute de quoi on obtenait une phase 2 terminée alors que la phase 1 ne
+   * l'était plus — un état que la règle séquentielle interdit pourtant.
+   */
   const handleTogglePhase = (projectId, phaseId) => {
-    const updated = projets.map(p => {
-      if (p.id === projectId) {
-        // Find if this phase can be completed (previous must be complete if sequential)
-        let canToggle = true;
-        const newPhases = p.phases.map((ph, idx) => {
-          if (ph.id === phaseId) {
-            if (!ph.complete && idx > 0 && !p.phases[idx-1].complete) {
-              canToggle = false;
-            }
-            if (canToggle) {
-              return { ...ph, complete: !ph.complete };
-            }
-          }
-          return ph;
-        });
-        if (!canToggle) {
-          alert("Vous devez d'abord terminer la phase précédente.");
-          return p;
-        }
-        return { ...p, phases: newPhases };
-      }
-      return p;
-    });
-    setProjets(updated);
-  };
+    const projet = projets.find(p => p.id === projectId);
+    const phases = projet?.phases || [];
+    const index = phases.findIndex(ph => ph.id === phaseId);
+    if (index === -1) return;
 
-  // --- Stats des projets ---
-  const projectTimeTotal = useMemo(() => {
-    return historique
-      .filter(h => h.type === 'PROJET')
-      .reduce((sum, h) => sum + (h.duree || 0), 0);
-  }, [historique]);
+    const phase = phases[index];
+
+    if (!phase.complete && index > 0 && !phases[index - 1].complete) {
+      toast.error("Termine d'abord la phase précédente.");
+      return;
+    }
+
+    const nouvellesPhases = phases.map((ph, idx) => {
+      if (idx === index) return { ...ph, complete: !ph.complete };
+      // On décoche : les phases suivantes ne peuvent rester terminées.
+      if (phase.complete && idx > index) return { ...ph, complete: false };
+      return ph;
+    });
+
+    setProjets(projets.map(p => (p.id === projectId ? { ...p, phases: nouvellesPhases } : p)));
+  };
 
   return (
     <motion.div
-      className="page-transition"
-      initial={{ opacity: 0, y: 20 }}
+      className="proj-page page-transition"
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+      <div className="proj-entete">
         <div>
-          <h1 className="page-title">💡 Projets Personnels</h1>
-          <p className="page-subtitle">Développe tes propres idées maintenant que les cours sont gérés.</p>
+          <TitrePage>Projets personnels</TitrePage>
+          <Texte doux petit>Tes propres idées, maintenant que les cours du jour sont réglés.</Texte>
         </div>
-        <div className="stat-card" style={{ padding: '0.8rem 1.2rem', minWidth: '150px', background: 'rgba(59, 130, 246, 0.1)' }}>
-          <div className="stat-value" style={{ color: '#3b82f6' }}>{Math.round(projectTimeTotal)} min</div>
-          <div className="stat-label">Temps Total Investi</div>
+        <div className="proj-total">
+          <div className="proj-total__valeur">{Math.round(projectTimeTotal)} min</div>
+          <div className="proj-total__libelle">temps investi au total</div>
         </div>
       </div>
 
-      <div className="glass-panel" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>Nouveau Projet</h3>
-        <div style={{ display: 'flex', gap: '1rem' }}>
+      <Carte>
+        <TitreCarte>Nouveau projet</TitreCarte>
+        <div className="proj-creation">
           <input
             type="text"
-            className="search-input"
-            placeholder="Nom du projet..."
+            className="el-champ proj-creation__nom"
+            placeholder="Nom du projet…"
+            aria-label="Nom du projet"
             value={newProjectTitle}
             onChange={e => setNewProjectTitle(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAddProject()}
-            style={{ flex: 2 }}
           />
           <input
             type="date"
-            className="search-input"
+            className="el-champ proj-creation__date"
+            aria-label="Échéance du projet"
             value={newProjectDateFin}
             onChange={e => setNewProjectDateFin(e.target.value)}
-            style={{ flex: 1 }}
           />
-          <button className="primary-button" onClick={handleAddProject}>+ Créer</button>
+          <Bouton variante="primaire" onClick={handleAddProject}>Créer</Bouton>
         </div>
-      </div>
+      </Carte>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '1.5rem' }}>
-        {projets && projets.map(projet => {
-          const phases = projet.phases || [];
-          const completedCount = phases.filter(p => p.complete).length;
-          const progress = phases.length > 0 ? Math.round((completedCount / phases.length) * 100) : 0;
+      {(!projets || projets.length === 0) ? (
+        <Carte>
+          <EtatVide
+            icone="💡"
+            titre="Aucun projet pour le moment"
+            texte="Découpe une idée en phases : chacune se coche dans l'ordre, et le temps que tu y passes rejoint tes statistiques."
+          />
+        </Carte>
+      ) : (
+        <div className="proj-grille">
+          {projets.map(projet => {
+            const phases = projet.phases || [];
+            const faites = phases.filter(p => p.complete).length;
+            const progression = phases.length > 0 ? Math.round((faites / phases.length) * 100) : 0;
+            const chronoActif = globalChrono.exoId === projet.id && globalChrono.isRunning;
 
-          return (
-            <motion.div key={projet.id} className="glass-panel" style={{ padding: '1.5rem', position: 'relative' }} layout>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                <h2 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', maxWidth: '75%', wordBreak: 'break-word', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  {projet.titre}
-                  <input
-                    type="date"
-                    value={projet.dateFin || ''}
-                    onChange={(e) => handleUpdateDateFin(projet.id, e.target.value)}
-                    style={{ background: 'transparent', border: 'none', color: 'var(--warning-color)', fontSize: '0.9rem', cursor: 'pointer', outline: 'none', fontFamily: 'inherit' }}
-                    title="Date de fin"
-                  />
-                </h2>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    onClick={() => {
-                      if (globalChrono.exoId === projet.id) {
-                        toggleGlobalChrono();
-                      } else {
-                        startGlobalChrono({ id: projet.id, titre: projet.titre, matiereNom: "Projet" });
-                      }
-                    }}
-                    style={{
-                      background: (globalChrono.exoId === projet.id && globalChrono.isRunning) ? '#ef4444' : '#10B981',
-                      color: 'white', border: 'none', borderRadius: '50%', width: '32px', height: '32px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                      transition: 'background 0.2s', fontSize: '0.9rem'
-                    }}
-                    title={(globalChrono.exoId === projet.id && globalChrono.isRunning) ? "Mettre en pause" : "Démarrer chrono"}
-                  >
-                    {(globalChrono.exoId === projet.id && globalChrono.isRunning) ? '⏸' : '▶'}
-                  </button>
-                  <button
-                    className="primary-button"
-                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                    onClick={() => handleLogTime(projet.id)}
-                    title="Ajouter du temps de travail"
-                  >
-                    + Temps
-                  </button>
-                </div>
-              </div>
+            return (
+              <motion.div key={projet.id} layout>
+                <Carte>
+                  <div className="proj-carte__entete">
+                    <div className="proj-carte__identite">
+                      <div className="proj-carte__ligne-titre">
+                        <h2 className="proj-carte__titre">{projet.titre}</h2>
+                        <BoutonIcone
+                          libelle={`Renommer « ${projet.titre} »`}
+                          onClick={() => renommerProjet(projet)}
+                        >
+                          ✏️
+                        </BoutonIcone>
+                      </div>
+                      <label className="proj-carte__echeance">
+                        <span>Échéance</span>
+                        <input
+                          type="date"
+                          className="el-champ"
+                          value={projet.dateFin || ''}
+                          onChange={(e) => handleUpdateDateFin(projet.id, e.target.value)}
+                          aria-label={`Échéance de « ${projet.titre} »`}
+                        />
+                      </label>
+                    </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{ flex: 1, height: '6px', background: 'var(--bg-tertiary)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: `${progress}%`, height: '100%', background: progress === 100 ? 'var(--success-color)' : 'var(--accent-primary)', transition: 'width 0.3s' }}></div>
-                </div>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{progress}%</span>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-                {phases.map((phase, idx) => (
-                  <div key={phase.id} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.5rem', background: phase.complete ? 'rgba(16, 185, 129, 0.05)' : 'rgba(255,255,255,0.02)', borderRadius: '6px', opacity: (idx > 0 && !phases[idx-1].complete && !phase.complete) ? 0.5 : 1 }}>
-                    <input
-                      type="checkbox"
-                      checked={phase.complete}
-                      onChange={() => handleTogglePhase(projet.id, phase.id)}
-                      style={{ cursor: 'pointer', transform: 'scale(1.2)' }}
-                    />
-                    <span style={{ textDecoration: phase.complete ? 'line-through' : 'none', color: phase.complete ? 'var(--text-secondary)' : 'var(--text-primary)', flex: 1 }}>
-                      {idx + 1}. {phase.nom}
-                    </span>
-                    <button
-                      onClick={() => handleDeletePhase(projet.id, phase.id)}
-                      style={{ background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', padding: '0 0.5rem', opacity: 0.6 }}
-                      title="Supprimer la phase"
-                      onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                      onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}
-                    >
-                      ×
-                    </button>
+                    <div className="el-rang el-rang--serre">
+                      <BoutonIcone
+                        libelle={chronoActif ? 'Mettre le chronomètre en pause' : 'Démarrer le chronomètre'}
+                        onClick={() => {
+                          if (globalChrono.exoId === projet.id) {
+                            toggleGlobalChrono();
+                          } else {
+                            startGlobalChrono({ id: projet.id, titre: projet.titre, matiereNom: 'Projet' });
+                          }
+                        }}
+                      >
+                        {chronoActif ? '⏸' : '▶'}
+                      </BoutonIcone>
+                      <Bouton onClick={() => handleLogTime(projet)} title="Enregistrer du temps de travail">
+                        + Temps
+                      </Bouton>
+                    </div>
                   </div>
-                ))}
-              </div>
 
-              {activeProjectForPhase === projet.id ? (
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                  <input
-                    type="text"
-                    className="search-input"
-                    placeholder="Nom de la phase..."
-                    value={newPhaseName}
-                    onChange={e => setNewPhaseName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleAddPhase(projet.id)}
-                    autoFocus
-                  />
-                  <button className="primary-button" onClick={() => handleAddPhase(projet.id)}>✓</button>
-                  <button className="secondary-button" onClick={() => setActiveProjectForPhase(null)}>✕</button>
-                </div>
-              ) : (
-                <button
-                  className="secondary-button"
-                  style={{ width: '100%', marginBottom: '1rem', borderStyle: 'dashed' }}
-                  onClick={() => {
-                    setActiveProjectForPhase(projet.id);
-                    setNewPhaseName('');
-                  }}
-                >
-                  + Ajouter une phase
-                </button>
-              )}
+                  <div className="proj-carte__avancement">
+                    <Jauge
+                      valeur={progression}
+                      ton={progression === 100 ? 'succes' : undefined}
+                      libelle={`Avancement de « ${projet.titre} »`}
+                    />
+                    <span className="proj-carte__pourcent">{progression} %</span>
+                  </div>
 
-              <button
-                className="secondary-button"
-                style={{ width: '100%', color: 'var(--danger-color)', borderColor: 'var(--danger-color)', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center' }}
-                onClick={() => handleDeleteProject(projet.id)}
-                title="Supprimer ce projet"
-              >
-                🗑️ Supprimer le projet
-              </button>
-            </motion.div>
-          );
-        })}
-      </div>
-      {(!projets || projets.length === 0) && (
-        <div style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '3rem' }}>
-          Aucun projet pour le moment. C'est le moment d'être créatif !
+                  <div className="proj-phases">
+                    {phases.map((phase, idx) => {
+                      const bloquee = idx > 0 && !phases[idx - 1].complete && !phase.complete;
+                      return (
+                        <div
+                          key={phase.id}
+                          className={`proj-phase${phase.complete ? ' est-faite' : ''}${bloquee ? ' est-bloquee' : ''}`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={phase.complete}
+                            onChange={() => handleTogglePhase(projet.id, phase.id)}
+                            aria-label={`Phase ${idx + 1} : ${phase.nom}`}
+                          />
+                          <span className="proj-phase__nom">{idx + 1}. {phase.nom}</span>
+                          <BoutonIcone
+                            libelle={`Renommer la phase « ${phase.nom} »`}
+                            onClick={() => renommerPhase(projet.id, phase)}
+                          >
+                            ✏️
+                          </BoutonIcone>
+                          <BoutonIcone
+                            danger
+                            libelle={`Supprimer la phase « ${phase.nom} »`}
+                            onClick={() => handleDeletePhase(projet.id, phase)}
+                          >
+                            ×
+                          </BoutonIcone>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="proj-carte__actions">
+                    {activeProjectForPhase === projet.id ? (
+                      <div className="proj-ajout-phase">
+                        <input
+                          type="text"
+                          className="el-champ"
+                          placeholder="Nom de la phase…"
+                          aria-label="Nom de la nouvelle phase"
+                          value={newPhaseName}
+                          onChange={e => setNewPhaseName(e.target.value)}
+                          onKeyDown={e => e.key === 'Enter' && handleAddPhase(projet.id)}
+                          autoFocus
+                        />
+                        <Bouton variante="primaire" onClick={() => handleAddPhase(projet.id)}>Ajouter</Bouton>
+                        <Bouton variante="fantome" onClick={() => setActiveProjectForPhase(null)}>Annuler</Bouton>
+                      </div>
+                    ) : (
+                      <Bouton
+                        pleineLargeur
+                        onClick={() => {
+                          setActiveProjectForPhase(projet.id);
+                          setNewPhaseName('');
+                        }}
+                      >
+                        + Ajouter une phase
+                      </Bouton>
+                    )}
+
+                    <Bouton variante="danger" pleineLargeur onClick={() => handleDeleteProject(projet)}>
+                      Supprimer le projet
+                    </Bouton>
+                  </div>
+                </Carte>
+              </motion.div>
+            );
+          })}
         </div>
       )}
+
       <InputModal
         isOpen={isOpen}
         onConfirm={handleConfirm}
@@ -324,6 +392,20 @@ function ProjetsPage() {
         title={config.title}
         defaultValue={config.defaultValue}
         placeholder={config.placeholder}
+      />
+      <ConfirmModal
+        isOpen={deleteConfirm !== null}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirm(null)}
+        title="Confirmer la suppression"
+        message={
+          deleteConfirm?.type === 'project'
+            ? `Supprimer le projet « ${deleteConfirm.nom} »${deleteConfirm.nbPhases > 0 ? ` et ses ${deleteConfirm.nbPhases} phase${deleteConfirm.nbPhases > 1 ? 's' : ''}` : ''} ?`
+            : `Supprimer la phase « ${deleteConfirm?.nom} » ?`
+        }
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
+        danger
       />
     </motion.div>
   );

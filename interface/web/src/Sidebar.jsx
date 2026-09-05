@@ -1,10 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { getApiUrl } from './utils/apiConfig';
+import { useState, useEffect } from 'react';
+import { NAV_GROUPS } from './navigation';
 
-function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTasksCount, isMobileMenuOpen }) {
+/**
+ * Barre latérale de navigation.
+ *
+ * Les entrées de menu viennent de `navigation.js`, partagé avec la table de routage :
+ * une page ne peut plus exister dans le menu sans être rendue, ni l'inverse.
+ */
+function Sidebar({
+  activeTab,
+  setActiveTab,
+  theme,
+  setTheme,
+  streak,
+  pendingTasksCount,
+  isMobileMenuOpen,
+  onCloseMobileMenu,
+  onRequestShutdown,
+}) {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [pendingSync, setPendingSync] = useState(localStorage.getItem('elpis_offline_pending_sync') === 'true');
-  const [isShuttingDown, setIsShuttingDown] = useState(false);
+  const [notifPermission, setNotifPermission] = useState(
+    'Notification' in window ? Notification.permission : 'unsupported'
+  );
 
   useEffect(() => {
     const handleStatusChange = () => {
@@ -20,50 +38,33 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
       window.removeEventListener('elpis_offline_status_changed', handleStatusChange);
     };
   }, []);
-  const navGroups = [
-    {
-      title: "Quotidien",
-      tabs: [
-        { id: 'dashboard', label: 'Accueil', icon: '🏠', badge: pendingTasksCount },
-        { id: 'entrainement', label: 'Session du Jour', icon: '🎯' },
-        { id: 'revisions_avancees', label: 'Avance & Bonus', icon: pendingTasksCount > 0 ? '🔒' : '🚀' },
-      ]
-    },
-    {
-      title: "Scolarité",
-      tabs: [
-        { id: 'cours', label: 'Bibliothèque', icon: '📚' },
-        { id: 'mes_videos', label: 'Mes Vidéos', icon: '🎥' },
-        { id: 'prep_hebdo', label: 'Préparation Hebdo', icon: '📅' },
-        { id: 'bulletin', label: 'Bulletin & Notes', icon: '📝' },
-        { id: 'projets', label: 'Projets Personnels', icon: '💡' },
-        { id: 'stages', label: 'Stages & Pro', icon: '💼' },
-        { id: 'absences', label: 'Assiduité', icon: '🚨' }
-      ]
-    },
-    {
-      title: "Système",
-      tabs: [
-        { id: 'planning', label: 'Planning Annuel', icon: '🔭' },
-        { id: 'statistiques', label: 'Statistiques', icon: '📈' },
-        { id: 'classement', label: 'Classement', icon: '🏆' },
-        { id: 'graph', label: 'Graphe de Connaissances', icon: '🌌' },
-        { id: 'config', label: 'Configuration', icon: '⚙️' },
-        { id: 'musique', label: 'Musique', icon: '🎵' },
-      ]
-    }
-  ];
 
-  if (isShuttingDown) {
-    return (
-      <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'100vh',background:'var(--bg-primary)',color:'var(--text-primary)',fontFamily:'inherit',position:'fixed',top:0,left:0,width:'100vw',zIndex:99999}}>
-        <div style={{textAlign:'center'}}>
-          <h1 style={{fontSize:'2rem',marginBottom:'1rem'}}>ELPIS est éteint.</h1>
-          <p style={{color:'var(--text-secondary)'}}>Vous pouvez fermer cet onglet.</p>
-        </div>
-      </div>
-    );
-  }
+  // Fermeture du menu mobile au clavier.
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onCloseMobileMenu?.();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isMobileMenuOpen, onCloseMobileMenu]);
+
+  /**
+   * La permission de notification n'est demandée que sur geste explicite : la demander
+   * au chargement fait fuir l'utilisateur et les navigateurs pénalisent le domaine.
+   */
+  const handleEnableNotifications = async () => {
+    if (!('Notification' in window)) return;
+    try {
+      const result = await Notification.requestPermission();
+      setNotifPermission(result);
+    } catch {
+      // Permission refusée ou API indisponible : l'app fonctionne sans.
+    }
+  };
+
+  const navContext = { pendingTasksCount };
+  const resolve = (value) => (typeof value === 'function' ? value(navContext) : value);
 
   return (
     <div className={`sidebar glass-panel ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
@@ -72,34 +73,38 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
         <p className="subtitle">Compagnon Intelligent</p>
       </div>
 
-      <nav className="sidebar-nav">
-        {navGroups.map((group, gIndex) => (
-          <div key={gIndex} className="sidebar-nav-group">
+      <nav className="sidebar-nav" aria-label="Navigation principale">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.title} className="sidebar-nav-group">
             <div className="sidebar-nav-group-title">
               {group.title}
             </div>
-            {group.tabs.map(tab => (
-              <button
-                key={tab.id}
-                className={`sidebar-link ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-                aria-label={tab.label}
-              >
-                <span className="sidebar-icon">{tab.icon}</span>
-                {tab.label}
-                {tab.badge > 0 && (
-                  <span className="sidebar-badge">{tab.badge}</span>
-                )}
-              </button>
-            ))}
+            {group.tabs.map(tab => {
+              const isActive = activeTab === tab.id;
+              const badge = resolve(tab.badge);
+              return (
+                <button
+                  key={tab.id}
+                  className={`sidebar-link ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <span className="sidebar-icon" aria-hidden="true">{resolve(tab.icon)}</span>
+                  {tab.label}
+                  {badge > 0 && (
+                    <span className="sidebar-badge" aria-label={`${badge} tâche(s) en attente`}>{badge}</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         ))}
       </nav>
 
       <div className="sidebar-footer">
         <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center'}}>
-          <div className="streak-badge">
-            🔥 {streak} {streak > 1 ? 'Jours' : 'Jour'}
+          <div className="streak-badge" aria-label={`Série en cours : ${streak} jour${streak > 1 ? 's' : ''}`}>
+            🔥 {streak} {streak > 1 ? 'jours' : 'jour'}
           </div>
         </div>
         <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem'}} className="theme-toggle">
@@ -113,19 +118,21 @@ function Sidebar({ activeTab, setActiveTab, theme, setTheme, streak, pendingTask
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
 
+          {notifPermission === 'default' && (
+            <button
+              className="btn-secondary"
+              onClick={handleEnableNotifications}
+              title="Activer les rappels de tâches"
+              aria-label="Activer les rappels de tâches"
+              style={{padding: '0.5rem', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem'}}
+            >
+              🔔
+            </button>
+          )}
+
           <button
             className="btn-secondary"
-            onClick={async () => {
-              if (window.confirm("Voulez-vous vraiment éteindre ELPIS ?")) {
-                try { await fetch(`${getApiUrl()}/shutdown`, { method: 'POST' }); } catch { /* best effort */ }
-                window.close();
-                setTimeout(() => {
-                  if (!document.hidden && document.body) {
-                    setIsShuttingDown(true);
-                  }
-                }, 500);
-              }
-            }}
+            onClick={onRequestShutdown}
             title="Éteindre l'application"
             aria-label="Éteindre l'application"
             style={{padding: '0.5rem', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', border: '1px solid #ef4444'}}

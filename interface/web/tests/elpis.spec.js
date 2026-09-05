@@ -10,7 +10,7 @@ test.describe('ELPIS E2E Tests', () => {
     await page.route('/api/**', async route => {
       const url = route.request().url();
       if (url.includes('/config')) {
-        await route.fulfill({ json: { targetGrade: 15, currentStreak: 5, fixedCommitments: [] } });
+        await route.fulfill({ json: { maxStudyHoursPerDay: 5, currentStreak: 5, fixedCommitments: [] } });
       } else if (url.includes('/orchestrateur')) {
         await route.fulfill({ json: { statistiques: { percent: 50, total: 10, done: 5 }, tachesDuJour: [] } });
       } else {
@@ -126,7 +126,6 @@ test.describe('ELPIS E2E Tests', () => {
   test('devrait simuler un engagement fixe et vérifier la stabilité', async ({ page }) => {
     await page.route('/api/config', async route => {
       await route.fulfill({ json: {
-        targetGrade: 15,
         currentStreak: 5,
         fixedCommitments: [{ day: 'Tous les jours', start: '08:00', end: '12:00' }]
       }});

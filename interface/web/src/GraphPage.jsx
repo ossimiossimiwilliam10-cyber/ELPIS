@@ -2,17 +2,26 @@ import { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import useStore from './store';
 import { motion } from 'framer-motion';
+import { moyenneMatiere } from './utils/bulletin';
+
+/** Couleur d'un nœud selon sa maîtrise : rouge → jaune → vert, gris si inconnue. */
+const couleurMaitrise = (maitrise) => {
+  if (maitrise === null) return 'hsl(220, 10%, 45%)';
+  const teinte = Math.max(0, Math.min(120, (maitrise / 100) * 120));
+  return `hsl(${teinte}, 80%, 60%)`;
+};
 
 export default function GraphPage() {
   const { coursConfig } = useStore();
+  const setActiveTab = useStore(s => s.setActiveTab);
   const graphRef = useRef();
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight - 80 });
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      // Sidebar is typically 280px or 80px wide on desktop. We can just use window dimensions and flexbox.
-      // We will let flex grow handle it, but ForceGraph3D needs explicit width/height in px.
+      // ForceGraph3D exige des dimensions explicites en pixels : on les prend
+      // sur le conteneur plutôt que sur la fenêtre, à cause de la barre latérale.
       const container = document.getElementById('graph-container');
       if (container) {
         setDimensions({
@@ -22,8 +31,13 @@ export default function GraphPage() {
       }
     };
     window.addEventListener('resize', handleResize);
-    setTimeout(handleResize, 100); // Initial calculation
-    return () => window.removeEventListener('resize', handleResize);
+    // Le délai laissait s'exécuter une écriture d'état sur un composant démonté
+    // si l'utilisateur changeait d'onglet aussitôt.
+    const premierCalcul = setTimeout(handleResize, 100);
+    return () => {
+      clearTimeout(premierCalcul);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Build Graph Data
@@ -34,70 +48,67 @@ export default function GraphPage() {
 
     if (!coursConfig || !coursConfig.licences) return { nodes, links };
 
-    let idCounter = 1;
-
     // First pass: create nodes
     coursConfig.licences.forEach(lic => {
       (lic.semestres || []).forEach(sem => {
         (sem.ues || []).forEach(ue => {
           (ue.matieres || []).forEach(mat => {
             const nodeId = mat.nom;
-            if (!subjectMap.has(nodeId)) {
-              
-              // Calculate a simple "mastery" score based on FSRS stats or evaluations
-              let masteryScore = 50; // default 50%
-              if (mat.evaluations && mat.evaluations.length > 0) {
-                const avg = mat.evaluations.reduce((acc, ev) => acc + ((ev.note || 10)/(ev.sur || 20))*20, 0) / mat.evaluations.length;
-                masteryScore = (avg / 20) * 100;
-              }
-              
-              // Map score to color (Red -> Yellow -> Green)
-              const hue = Math.max(0, Math.min(120, (masteryScore / 100) * 120)); // 0=red, 120=green
-              const color = `hsl(${hue}, 80%, 60%)`;
+            if (!nodeId) return;
 
-              // Node size based on coefficient
-              const val = Math.max(1, (mat.coefficient || 1) * 2);
+            if (!subjectMap.has(nodeId)) {
+              // Même moyenne que le bulletin. L'ancien calcul comptait une
+              // évaluation sans note pour 10/20 : une matière jamais évaluée
+              // s'affichait « maîtrise 50 % », en jaune, comme si elle l'était
+              // à moitié.
+              const moyenne = moyenneMatiere(mat.evaluations);
+              const masteryScore = typeof moyenne === 'number' ? (moyenne / 20) * 100 : null;
 
               const node = {
                 id: nodeId,
                 name: mat.nom,
                 group: ue.nom,
-                val,
-                color,
+                // Taille selon le coefficient
+                val: Math.max(1, (mat.coefficient || 1) * 2),
+                color: couleurMaitrise(masteryScore),
                 mastery: masteryScore
               };
               nodes.push(node);
               subjectMap.set(nodeId, node);
             }
-            
-            // Connect subjects in the same UE
-            if (ue.matieres.length > 1) {
-              ue.matieres.forEach(sibling => {
-                if (sibling.nom !== mat.nom) {
-                  const linkId = [mat.nom, sibling.nom].sort().join('-');
-                  links.push({
-                    id: linkId,
-                    source: mat.nom,
-                    target: sibling.nom,
-                    value: 1 // thin line for UE connection
-                  });
-                }
-              });
-            }
+
+            const ajouterLien = (autre, type) => {
+              if (!autre || autre === mat.nom) return;
+              const linkId = [mat.nom, autre].sort().join('-') + `::${type}`;
+              links.push({ id: linkId, source: mat.nom, target: autre, type, value: type === 'synergie' ? 3 : 1 });
+            };
+
+            // Voisinage d'UE
+            (ue.matieres || []).forEach(sibling => ajouterLien(sibling.nom, 'ue'));
+
+            // Synergies déclarées dans la Bibliothèque. La page annonçait
+            // « leurs synergies » mais ne traçait que les liens d'UE : les
+            // ponts inter-matières configurés par l'utilisateur n'apparaissaient
+            // nulle part.
+            (mat.synergies || []).forEach(nom => ajouterLien(nom, 'synergie'));
           });
         });
       });
     });
 
-    // Remove duplicate links
-    const uniqueLinks = [];
-    const linkSet = new Set();
+    // Une synergie prime sur un simple voisinage d'UE entre les deux mêmes matières.
+    const parPaire = new Map();
     links.forEach(l => {
-      if (!linkSet.has(l.id)) {
-        linkSet.add(l.id);
-        uniqueLinks.push(l);
+      const paire = [l.source, l.target].sort().join('-');
+      const existant = parPaire.get(paire);
+      if (!existant || (existant.type === 'ue' && l.type === 'synergie')) {
+        parPaire.set(paire, l);
       }
     });
+
+    // Un lien vers une matière absente du cursus ferait planter le moteur de rendu.
+    const uniqueLinks = Array.from(parPaire.values())
+      .filter(l => subjectMap.has(l.source) && subjectMap.has(l.target));
 
     return { nodes, links: uniqueLinks };
   }, [coursConfig]);
@@ -135,17 +146,33 @@ export default function GraphPage() {
             width={dimensions.width}
             height={dimensions.height}
             graphData={graphData}
-            nodeLabel={node => `${node.name}<br>Maîtrise: ${Math.round(node.mastery)}%`}
+            nodeLabel={node => (
+              // `Math.round(null)` valait 0 : une matière sans note affichait
+              // « Maîtrise: 0% » au lieu de reconnaître l'absence de données.
+              node.mastery === null
+                ? `${node.name}<br>Pas encore de note`
+                : `${node.name}<br>Maîtrise: ${Math.round(node.mastery)}%`
+            )}
             nodeColor="color"
             nodeRelSize={4}
             linkOpacity={0.3}
-            linkColor={() => 'rgba(255,255,255,0.2)'}
+            // Les synergies déclarées se distinguent du simple voisinage d'UE.
+            linkColor={link => (link.type === 'synergie' ? 'rgba(96, 165, 250, 0.65)' : 'rgba(255,255,255,0.2)')}
+            linkWidth={link => (link.type === 'synergie' ? 2 : 0.5)}
             onNodeClick={handleNodeClick}
             backgroundColor="transparent"
           />
         ) : (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <p>Aucune donnée disponible pour le graphe.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', textAlign: 'center', padding: '2rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }} aria-hidden="true">🌌</div>
+            <h3 style={{ marginBottom: '0.5rem' }}>Le graphe est encore vide</h3>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '44ch', marginBottom: '2rem' }}>
+              Chaque matière devient une étoile, reliée à celles de son UE et à celles
+              que tu déclares en synergie. Ajoute tes matières pour voir la carte apparaître.
+            </p>
+            <button className="btn-primary" onClick={() => setActiveTab('cours')} style={{ padding: '0.9rem 1.8rem' }}>
+              📚 Ouvrir la Bibliothèque
+            </button>
           </div>
         )}
       </div>

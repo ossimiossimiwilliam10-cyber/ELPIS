@@ -6,10 +6,6 @@ const configSchema = z.object({
     fatigueChronique: z.boolean().optional(),
     chronobiologie: z.enum(["morning_lark", "night_owl", "neutral"]).optional()
   }).optional(),
-  deepseek: z.object({
-    model: z.string().optional()
-  }).optional(),
-  targetGrade: z.number().optional(),
   restDays: z.array(z.string()).optional(),
   maxStudyHoursPerDay: z.number().optional(),
   maxSubjectsPerDay: z.number().optional(),

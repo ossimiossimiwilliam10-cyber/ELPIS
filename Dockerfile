@@ -36,7 +36,6 @@ COPY --from=build /app/interface/bridge/services ./interface/bridge/services
 COPY --from=build /app/interface/bridge/db ./interface/bridge/db
 COPY --from=build /app/interface/bridge/moteur ./interface/bridge/moteur
 COPY --from=build /app/interface/bridge/utils ./interface/bridge/utils
-COPY --from=build /app/interface/bridge/aiAdapter.js ./interface/bridge/
 COPY --from=build /app/interface/bridge/migrate.js ./interface/bridge/
 
 # Built frontend (served by bridge)

@@ -1,17 +1,39 @@
-Set WshShell = CreateObject("WScript.Shell")
+' ============================================================================
+'  Lancer ELPIS
+' ============================================================================
+'
+'  Ce fichier ne fait qu'une chose : démarrer le vrai lanceur sans qu'aucune
+'  fenêtre de console n'apparaisse, fût-ce un instant.
+'
+'  C'est le seul rôle qui lui reste. Toute la logique — attendre que le moteur
+'  réponde vraiment, expliquer ce qui bloque, ouvrir l'application en fenêtre
+'  propre, rester dans la zone de notification — vit dans
+'  `outils\lanceur\ELPIS.ps1`, où elle est lisible et modifiable.
+'
+'  Le « 0 » du deuxième argument de Run est ce qui garantit l'absence de
+'  terminal : PowerShell démarre sans hôte de console visible.
+' ============================================================================
 
-' 1. Fermer toute instance precedente
-WshShell.Run "cmd /c for /f ""tokens=5"" %a in ('netstat -aon ^| findstr "":3001"" ^| find ""LISTENING""') do taskkill /F /PID %a", 0, True
-WScript.Sleep 1000
+Option Explicit
 
-' 2. Lancer le serveur Node en arriere-plan (invisible)
-Set objFSO = CreateObject("Scripting.FileSystemObject")
-strPath = objFSO.GetParentFolderName(WScript.ScriptFullName)
-WshShell.CurrentDirectory = strPath & "\interface\bridge"
-WshShell.Run "cmd /c node server.js", 0, False
+Dim shell, fso, racine, lanceur, commande
+Set shell = CreateObject("WScript.Shell")
+Set fso = CreateObject("Scripting.FileSystemObject")
 
-' 3. Attendre 2 secondes que le serveur demarre
-WScript.Sleep 2000
+racine = fso.GetParentFolderName(WScript.ScriptFullName)
+lanceur = racine & "\outils\lanceur\ELPIS.ps1"
 
-' 4. Ouvrir le navigateur
-WshShell.Run "http://localhost:3001"
+If Not fso.FileExists(lanceur) Then
+    MsgBox "Le lanceur est introuvable :" & vbCrLf & lanceur & vbCrLf & vbCrLf & _
+           "Le dossier outils\lanceur a-t-il été déplacé ?", _
+           vbExclamation, "ELPIS"
+    WScript.Quit 1
+End If
+
+' -NoProfile : le profil PowerShell de l'utilisateur n'a rien à voir ici, et
+' peut coûter une seconde de démarrage.
+' -ExecutionPolicy Bypass : la stratégie par défaut de Windows refuse les
+' scripts non signés, y compris ceux qu'on a écrits soi-même.
+commande = "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & lanceur & """"
+
+shell.Run commande, 0, False

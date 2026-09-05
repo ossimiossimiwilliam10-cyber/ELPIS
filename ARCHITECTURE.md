@@ -123,7 +123,7 @@ App.jsx (Racine — routing, thème, initData)
 ├── ToastProvider (notifications globales)
 ├── Sidebar.jsx (navigation)
 ├── GlobalSearchModal.jsx (Ctrl+K)
-├── AICoachSidebar.jsx (chat DeepSeek)
+├── Repetiteur.jsx (Le Répétiteur — questions/réponses calculées sur les tables)
 ├── BackgroundMusicPlayer.jsx
 ├── GlobalChrono.jsx (chronomètre flottant PiP)
 ├── Dashboard.jsx (accueil) ── utilise ──┬── useTaskCompletion
@@ -209,7 +209,7 @@ server.js (Express, port 3001)
 │   ├── /api/orchestrateur   → orchestrateur.js (CACHE 60s LRU)
 │   ├── /api/projets         → projets.js
 │   ├── /api/anki            → anki.js (AnkiConnect localhost:8765)
-│   ├── /api/chat            → chat.js (DeepSeek)
+│   ├── /api/chat            → chat.js (moteur/repetiteur — local)
 │   ├── /api/music           → music.js
 │   ├── /api/system          → system.js (audit, upload, shutdown)
 │   └── /api/telemetry       → telemetry.js
@@ -494,7 +494,7 @@ sequenceDiagram
 | API | Validation Zod | Toutes les routes (schemas.js) |
 | Fichiers | Path Traversal Protection | `/api/open/file` verrouillé |
 | Base de données | Écritures atomiques | `fileUtils.js` atomicWriteFileSync |
-| CI/CD | Secrets GitHub | `DEEPSEEK_API_KEY`, `ADMIN_PASSWORD` |
+| CI/CD | Secrets GitHub | `ADMIN_PASSWORD` — seul secret du projet |
 | Audit | Scan continu | 57 règles, dont 8 de sécurité |
 
 ---

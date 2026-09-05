@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function InputModal({ isOpen, onConfirm, onCancel, title, defaultValue = '', placeholder }) {
   const [value, setValue] = useState(defaultValue);
   const inputRef = useRef(null);
+  const titreId = useId();
 
   // Reset value when modal opens
   useEffect(() => {
@@ -66,6 +67,9 @@ export default function InputModal({ isOpen, onConfirm, onCancel, title, default
           }}
         >
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titreId : undefined}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -80,7 +84,7 @@ export default function InputModal({ isOpen, onConfirm, onCancel, title, default
             }}
           >
             {title && (
-              <h3 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>
+              <h3 id={titreId} style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>
                 {title}
               </h3>
             )}
@@ -89,6 +93,7 @@ export default function InputModal({ isOpen, onConfirm, onCancel, title, default
               ref={inputRef}
               type="text"
               value={value}
+              aria-label={title || placeholder || 'Saisie'}
               placeholder={placeholder}
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={(e) => {
@@ -129,14 +134,15 @@ export default function InputModal({ isOpen, onConfirm, onCancel, title, default
                 onClick={() => onConfirm(value.trim())}
                 style={{
                   padding: '0.6rem 1.5rem',
-                  background: 'var(--accent-primary)',
+                  background: 'var(--accent-fort)', // blanc sur --accent : 3,68 de contraste seulement
                   border: 'none',
                   borderRadius: '8px',
                   color: '#fff',
                   cursor: 'pointer',
-                  fontWeight: 600,
-                  opacity: value.trim() ? 1 : 0.5,
-                  transition: 'opacity 0.15s'
+                  fontWeight: 600
+                  // Pas d'opacité conditionnelle : une valeur vide est parfois
+                  // légitime (« laisser vide pour utiliser le temps moyen »), et
+                  // le bouton grisé laissait croire qu'il était désactivé.
                 }}
               >
                 OK

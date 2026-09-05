@@ -14,16 +14,19 @@ describe('Projets Module', () => {
   });
 
   test('saveProjets > saves valid array and loadProjets reads it', () => {
+    // La page produit `titre`, `dateFin` et `phases` ; ce test attendait `nom`,
+    // vocabulaire d'un modèle abandonné dont la table avait gardé la trace — et
+    // sur lequel tout enregistrement échouait.
     const fakeProjets = [
-      { id: "p1", nom: "Projet Alpha", matiere: "Maths", progress: 0 }
+      { id: "p1", titre: "Projet Alpha", matiere: "Maths", phases: [] }
     ];
-    
+
     const result = saveProjets(fakeProjets);
     expect(result).toBe(true);
 
     const data = loadProjets();
     expect(data.length).toBe(1);
-    expect(data[0].nom).toBe("Projet Alpha");
+    expect(data[0].titre).toBe("Projet Alpha");
   });
 
   test('saveProjets > rejects invalid (non-array) data', () => {

@@ -22,7 +22,7 @@ class ErrorBoundary extends React.Component {
           <p style={{ color: 'var(--text-secondary)' }}>{this.state.error && this.state.error.toString()}</p>
           <button
             onClick={() => window.location.reload()}
-            style={{ marginTop: '1rem', padding: '0.8rem 1.5rem', background: 'var(--accent-primary)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+            style={{ marginTop: '1rem', padding: '0.8rem 1.5rem', background: 'var(--accent-fort)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
           >
             Recharger la page
           </button>

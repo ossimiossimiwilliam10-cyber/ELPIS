@@ -8,9 +8,18 @@ ELPIS est un assistant personnel intelligent conçu pour optimiser l'apprentissa
 
 Si tu veux simplement utiliser le projet :
 
-1. Ouvre le dossier du projet sur Windows.
-2. Double-clique sur [start_elpis.bat](start_elpis.bat) pour lancer ELPIS.
-3. Ouvre ton navigateur sur `http://localhost:3001`.
+1. Double-clique sur le raccourci **ELPIS** du bureau, ou sur
+   [Lancer ELPIS.vbs](Lancer%20ELPIS.vbs) à la racine du projet.
+2. C'est tout. Un écran de démarrage s'affiche le temps que le moteur ouvre sa
+   base, puis l'application s'ouvre dans sa propre fenêtre.
+
+Aucun terminal n'apparaît. Une fois lancé, ELPIS reste dans la zone de
+notification : clic droit sur son icône pour l'ouvrir à nouveau ou l'arrêter
+proprement. Si quelque chose empêche le démarrage — Node absent, port occupé,
+base illisible — le lanceur le dit dans une fenêtre plutôt que d'échouer en
+silence.
+
+*Le lanceur vit dans [outils/lanceur](outils/lanceur).*
 
 **Si tu veux comprendre le projet sans te perdre, commence par [docs/guide_debutant.md](docs/guide_debutant.md).**
 
@@ -82,8 +91,20 @@ Le backend (Express.js) expose les routes suivantes sur le port `3001`.
 | POST    | `/api/historique` | Sauvegarde l'historique. |
 | GET     | `/api/orchestrateur` | Génère ou renvoie le rapport quotidien mis en cache. |
 | POST    | `/api/orchestrateur/force-task`| Génère une tâche forcée pour un CM/TD spécifique. |
-| POST    | `/api/chat` | Discute avec l'IA (DeepSeek). |
+| POST    | `/api/chat` | Interroge Le Répétiteur (réponses calculées sur tes données, sans appel distant). |
 | GET     | `/api/audit` | Récupère le dernier rapport de l'Agent d'Audit Python. |
+| GET     | `/api/langues/etat` | Dette de régularité, volet proposé, régularité tenue et niveau estimé, par langue. |
+| GET     | `/api/langues/referentiel` | Paliers du CECR et catégories de difficulté servant à estimer le niveau. |
+| GET     | `/api/langues/livres` | Livres numériques déposés dans `documents/`. |
+| POST    | `/api/langues/livre/ouvrir` | Ouvre un livre de `documents/` dans le lecteur du système. |
+| POST    | `/api/langues/anki/reviser` | Ouvre Anki sur le deck de vocabulaire d'une langue. |
+| POST    | `/api/langues/anki/ajouter` | Ajoute des cartes — rédigées à la main ou collées depuis une conversation. |
+| POST    | `/api/langues/vocabulaire/prompt` | Renvoie la consigne adaptée au niveau et au deck, à coller ailleurs. |
+| POST    | `/api/langues/vocabulaire/generer` | Génère du vocabulaire et l'envoie dans le deck Anki de la langue. |
+
+*Les langues elles-mêmes vivent dans la configuration (`config.langues`) : elles s'enregistrent par `POST /api/config`, comme le reste des réglages.*
+
+*Le niveau n'est pas une évaluation : il est extrapolé du temps de pratique, à partir des heures guidées du CECR et des catégories de difficulté du FSI. Voir l'en-tête de [interface/bridge/moteur/niveauLangue.js](interface/bridge/moteur/niveauLangue.js).*
 
 ---
 
@@ -101,7 +122,6 @@ Le projet est configuré pour être déployé sur des plateformes PaaS comme [Re
 
 Variables d'environnement nécessaires en production (fichier `.env`) :
 - `MONGODB_URI` : URI de connexion MongoDB Atlas (Ex: `mongodb+srv://...`). Optionnel si l'on veut rester 100% en local.
-- `DEEPSEEK_API_KEY` : Clé API pour le coach IA.
 - `ADMIN_PASSWORD` : Mot de passe pour bloquer l'accès à l'interface (sécurité production).
 
 ---

@@ -1,0 +1,129 @@
+/* ============================================================
+   Performances — score global et comparaisons
+   ============================================================ */
+
+.rang-page { display: flex; flex-direction: column; gap: var(--esp-6); max-width: 1000px; }
+
+/* ---------- Score global ---------- */
+
+.rang-global { text-align: center; padding: var(--esp-4) 0; }
+
+.rang-global__valeur {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-3xl);
+  font-weight: var(--graisse-lourde);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--accent-clair);
+}
+.rang-global__valeur small {
+  font-family: var(--police);
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-normale);
+  color: var(--texte-doux);
+}
+.rang-global__libelle {
+  margin-top: var(--esp-2);
+  font-size: var(--texte-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: var(--graisse-forte);
+  color: var(--texte-doux);
+}
+.rang-global__position {
+  max-width: 52ch;
+  margin: var(--esp-4) auto 0;
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}
+.rang-global__position strong { color: var(--texte-fort); }
+.rang-global__position.est-indisponible { color: var(--texte-doux); font-style: italic; }
+
+/* ---------- Composantes ---------- */
+
+.rang-composantes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: var(--esp-4);
+}
+
+.rang-composante__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  margin-bottom: var(--esp-2);
+}
+.rang-composante__titre { font-size: var(--texte-sm); font-weight: var(--graisse-forte); color: var(--texte-fort); }
+
+.rang-composante__valeur {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-lourde);
+  color: var(--texte-fort);
+  margin-bottom: var(--esp-3);
+}
+.rang-composante__valeur small {
+  font-family: var(--police);
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-normale);
+  color: var(--texte-doux);
+}
+.rang-composante__valeur.est-vide {
+  font-family: var(--police);
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-normale);
+  font-style: italic;
+  color: var(--texte-doux);
+}
+
+.rang-composante__aide { margin-top: var(--esp-3); font-size: var(--texte-xs); color: var(--texte-doux); }
+
+/* ---------- Détail par matière ---------- */
+
+.rang-section { display: flex; flex-direction: column; gap: var(--esp-4); }
+.rang-matieres { display: flex; flex-direction: column; gap: var(--esp-3); }
+
+.rang-matiere {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-4);
+  flex-wrap: wrap;
+}
+.rang-matiere__identite { flex: 1; min-width: 0; }
+.rang-matiere__nom {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.rang-matiere__detail {
+  margin-top: var(--esp-1);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+}
+
+.rang-matiere__position {
+  text-align: right;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-lourde);
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+.rang-matiere__position.est-haute { color: var(--succes); }
+.rang-matiere__position small {
+  display: block;
+  font-family: var(--police);
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-normale);
+  color: var(--texte-doux);
+}

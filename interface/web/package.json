@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node node_modules/vite/bin/vite.js",
-    "build": "node node_modules/vite/bin/vite.js build",
+    "dev": "node ../../node_modules/vite/bin/vite.js",
+    "build": "node ../../node_modules/vite/bin/vite.js build",
     "lint": "eslint .",
-    "preview": "node node_modules/vite/bin/vite.js preview",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "cap:sync": "node node_modules/vite/bin/vite.js build && node node_modules/@capacitor/cli/bin/capacitor sync",
-    "cap:open": "node node_modules/@capacitor/cli/bin/capacitor open android"
+    "preview": "node ../../node_modules/vite/bin/vite.js preview",
+    "test": "node ../../node_modules/vitest/vitest.mjs run",
+    "test:watch": "node ../../node_modules/vitest/vitest.mjs",
+    "cap:sync": "node ../../node_modules/vite/bin/vite.js build && node ../../node_modules/@capacitor/cli/bin/capacitor sync",
+    "cap:open": "node ../../node_modules/@capacitor/cli/bin/capacitor open android"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.2",
@@ -21,6 +21,7 @@
     "framer-motion": "^12.40.0",
     "immer": "^11.1.8",
     "lodash": "^4.18.1",
+    "pdfjs-dist": "^4.10.38",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-force-graph-3d": "^1.29.1",

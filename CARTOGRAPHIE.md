@@ -72,7 +72,7 @@
 
 | Fichier | Rôle | Spécificités |
 |---------|------|-------------|
-| `components/AICoachSidebar.jsx` | Coach IA — panneau chat DeepSeek | Bouton 🤖 flottant, historique, isTyping |
+| `components/Repetiteur.jsx` | **Le Répétiteur** — panneau de questions/réponses, calcul local | Bouton 🤖 flottant, historique, isTyping |
 | `components/AuditDashboard.jsx` | Dashboard d'audit — anomalies détectées par l'agent Python | Fetch `/api/audit`, sévérité critical/warning/info |
 | `components/BackgroundMusicPlayer.jsx` | Lecteur musique de fond — adaptatif au contexte | calm/motivational, auto-play |
 | `components/DisclaimerModal.jsx` | Modal conditions d'utilisation — premier lancement | Protocole FSRS |
@@ -139,7 +139,7 @@
 | `routes/orchestrateur.js` | `GET /api/orchestrateur`, `POST /api/orchestrateur/force-task` | **Rapport quotidien** (cache LRU 60s) + tâche forcée |
 | `routes/projets.js` | `GET/POST /api/projets` | CRUD projets |
 | `routes/anki.js` | `GET /api/anki/decks`, `POST /api/anki/sync`, `GET /api/anki/today-stats` | Synchronisation AnkiConnect |
-| `routes/chat.js` | `GET/POST/DELETE /api/chat` | Chat DeepSeek (Coach IA) |
+| `routes/chat.js` | `GET/POST/DELETE /api/chat` | Le Répétiteur (`moteur/repetiteur/`), sans appel distant |
 | `routes/music.js` | `GET /api/music/recommendation`, `POST /api/music/upload`, `DELETE /api/music/:category/:filename` | Recommandation + upload musique |
 | `routes/system.js` | `POST /api/open/anki`, `POST /api/upload/pdf`, `POST /api/shutdown`, `GET /api/audit` | Ouverture Anki, upload PDF, shutdown, rapport audit |
 | `routes/telemetry.js` | `POST /api/telemetry/session`, `POST /api/telemetry/action` | Télémétrie sessions |
@@ -171,7 +171,8 @@
 | `db/migrate.js` | Migration JSON legacy → SQLite — config, historique, arbre cours complet |
 | `utils/fileUtils.js` | Écriture atomique — `.tmp` + `rename` (fallback `copyFileSync`) |
 | `mongoAdapter.js` | **Stub MongoDB** — désactivé, retourne null/false (ELPIS 100% local) |
-| `aiAdapter.js` | **Adaptateur DeepSeek** — `callDeepSeek()`, `buildAIContext()`, system prompt avec règles strictes |
+| `moteur/stockage.js` | **Registre de source** — `definirSource()`, `sourceCourante()`. Un seul moteur, deux stockages : SQLite sur le PC, documents RxDB sur le téléphone. L'état vit sur `globalThis` (un module CommonJS chargé par `require` et par `import` donne deux instances) |
+| `moteur/repetiteur/` | **Le Répétiteur** — `connaissances.js` (faits lus en base), `intentions.js` (37 intentions ; `null` si incompris), `reponses.js` (formulation), `reglement.js` (citation du règlement) |
 
 #### 🔷 TESTS BACKEND (11 fichiers)
 
@@ -187,7 +188,8 @@
 | `tests/config.test.js` | Config | Validation, sanitize (clamping), load/save |
 | `tests/cours.test.js` | Cours | Validation, load/save (DB vide, multiple licences) |
 | `tests/projets.test.js` | Projets | Load/save (vide, valide, non-array rejeté) |
-| `tests/aiAdapter.test.js` | AI Adapter | buildAIContext (fichiers manquants → fallback) |
+| `tests/repetiteur.test.js` | Le Répétiteur | Reconnaissance des intentions, chiffres tirés des tables, aveu d'incompréhension |
+| `tests/repetiteurEtendu.test.js` | Le Répétiteur (étendu) | Absences et délais, dates d'épreuve, matière ambiguë, garde « demain », citation du règlement |
 
 ---
 
@@ -281,7 +283,7 @@
 | `interface/web/playwright.config.js` | Tests E2E Playwright | |
 | `interface/web/public/manifest.json` | Manifest PWA | `name: ELPIS`, `display: standalone`, icônes 192/512 |
 | `interface/web/public/sw.js` | Service Worker | |
-| `interface/bridge/.env` | Variables environnement | `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, `ADMIN_PASSWORD` |
+| `interface/bridge/.env` | Variables environnement | `ADMIN_PASSWORD` uniquement — aucune clé d'API |
 
 #### 🔷 SCRIPTS
 
@@ -367,7 +369,8 @@
 | La base de données locale ? | `interface/web/src/database.js` (RxDB/IndexedDB) + `data/elpis.sqlite` (SQLite) |
 | Le thème CSS ? | `interface/web/src/index.css` → variables CSS, 4 thèmes horaires |
 | Le Service Worker PWA ? | `interface/web/vite.config.js` → `VitePWA` + `interface/web/public/sw.js` |
-| L'adaptateur DeepSeek ? | `interface/bridge/aiAdapter.js` → `callDeepSeek()` |
+| Le Répétiteur ? | `interface/bridge/moteur/repetiteur/` → `consulter()` |
+| La consigne de vocabulaire ? | `interface/bridge/moteur/vocabulaire.js` → `promptVocabulaire()` |
 | Les schémas de validation ? | `interface/bridge/moteur/schemas.js` → Zod 4.x |
 | Les règles d'audit ? | `agent_audit/rules.json` → 57 règles, 13 catégories |
 | Le déploiement Render ? | `render.yaml` |

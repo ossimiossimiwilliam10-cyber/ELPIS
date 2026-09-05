@@ -31,11 +31,17 @@ Le chronomètre flottant (bouton en bas à droite) suit ton temps d'étude. Cliq
 
 *Fichier clé : `interface/web/src/components/GlobalChrono.jsx`*
 
-## Comment fonctionne le Coach IA ?
+## Comment fonctionne Le Répétiteur ?
 
-Le Coach IA (bouton robot en bas à gauche) utilise DeepSeek. Il connaît ton profil, tes cours et ton historique pour te donner des conseils personnalisés. Nécessite la variable `DEEPSEEK_API_KEY` dans le fichier `.env`.
+Le Répétiteur (bouton robot) répond par calcul, pas par génération : il lit tes tables — cursus, notes, historique, absences, réglages, rapport du jour — et formule la réponse à partir de ce qu'il y trouve. Aucune connexion n'est nécessaire, et aucun chiffre n'est inventé.
 
-*Fichier clé : `interface/bridge/aiAdapter.js`*
+Son nom n'est pas un habillage : dans l'enseignement supérieur français, un répétiteur est celui qui fait réciter la leçon et constate ce qui est réellement su. C'est exactement sa fonction.
+
+Il reconnaît trente-sept familles de questions : programme du jour, retards, moyennes, coefficients, épreuves, avancement, temps travaillé, régularité, structure du cursus, réglages, emploi du temps, langues, absences et délais de justification, projets, méthode — et le règlement des études, qu'il cite sans le commenter. Hors de cette liste, il le dit plutôt que de broder.
+
+Trois règles le tiennent : un zéro qui vient d'une absence de mesure n'est pas un zéro constaté ; quand plusieurs matières peuvent correspondre à ta question, il demande laquelle au lieu d'en choisir une ; et il ne prétend pas savoir ce qui t'attend demain, puisque le programme se recalcule chaque matin.
+
+*Fichiers clés : `interface/bridge/moteur/repetiteur/` (`connaissances.js`, `intentions.js`, `reponses.js`, `reglement.js`)*
 
 ## Comment synchroniser avec Anki ?
 
@@ -214,9 +220,11 @@ Puis redémarre le serveur. Pense à sauvegarder `data/` avant toute mise à jou
 
 Vérifie que des CM/TD/TP sont bien définis dans tes cours, qu'aucune UE n'est cochée "acquise" par erreur, et que l'anti-burnout n'a pas tout filtré.
 
-## Le Coach IA ne répond pas
+## Le Répétiteur ne répond pas
 
-Vérifie que `DEEPSEEK_API_KEY` est bien définie dans le fichier `.env` à la racine, que la clé est valide, et que ta connexion Internet fonctionne.
+Il ne dépend d'aucun service extérieur : s'il reste muet, c'est que le serveur local (`npm run dev:bridge`) n'est pas lancé. Sur téléphone, vérifie aussi que l'adresse du PC est renseignée dans les réglages.
+
+S'il répond « Je n'ai pas compris », c'est autre chose — la question sort de ce qu'il sait traiter, et il préfère le dire.
 
 ## Puis-je utiliser ELPIS sur mon téléphone ?
 

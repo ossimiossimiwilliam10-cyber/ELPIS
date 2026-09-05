@@ -1,0 +1,108 @@
+/* ============================================================
+   Absences — suivi des justificatifs et de l'assiduité
+   ============================================================ */
+
+.abs-page { display: flex; flex-direction: column; gap: var(--esp-6); max-width: 1000px; }
+
+/* ---------- Synthèse ---------- */
+
+/* L'information la plus utile de la page était absente : il fallait parcourir
+   toutes les cartes pour savoir ce qui restait à faire. */
+.abs-bilan {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
+  gap: var(--esp-3);
+}
+
+.abs-compteur {
+  padding: var(--esp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-lg);
+  text-align: center;
+}
+.abs-compteur__valeur {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-lourde);
+  color: var(--texte-fort);
+  line-height: 1.1;
+}
+.abs-compteur__valeur.est-attention { color: var(--attention); }
+.abs-compteur__valeur.est-danger { color: var(--danger); }
+.abs-compteur__valeur.est-info { color: var(--accent-clair); }
+.abs-compteur__valeur.est-succes { color: var(--succes); }
+.abs-compteur__libelle { margin-top: var(--esp-1); font-size: var(--texte-xs); color: var(--texte-doux); }
+
+/* ---------- Liste ---------- */
+
+.abs-liste { display: flex; flex-direction: column; gap: var(--esp-3); }
+
+.abs-carte {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--esp-4);
+  flex-wrap: wrap;
+  border-left: 3px solid var(--liseré, var(--attention));
+}
+.abs-carte.est-regularisee { --liseré: var(--succes); }
+.abs-carte.est-hors-delai { --liseré: var(--danger); }
+
+.abs-carte__identite { flex: 1 1 260px; min-width: 0; }
+.abs-carte__matiere {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.abs-carte__date { margin-top: var(--esp-1); font-size: var(--texte-sm); color: var(--texte-doux); }
+
+.abs-carte__regle { margin-top: var(--esp-2); font-size: var(--texte-xs); color: var(--ton, var(--texte-doux)); }
+.abs-carte__regle.est-forte { font-weight: var(--graisse-forte); }
+
+/* Le motif était saisi puis jamais affiché nulle part. */
+.abs-carte__motif {
+  margin-top: var(--esp-3);
+  padding-left: var(--esp-3);
+  border-left: 2px solid var(--bord-normal);
+  font-size: var(--texte-sm);
+  font-style: italic;
+  color: var(--texte-doux);
+}
+
+.abs-carte__suivi {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--esp-2);
+}
+.abs-carte__suivi select { min-width: 190px; font-weight: var(--graisse-forte); }
+.abs-carte__suivi select.est-regularisee { color: var(--succes); }
+
+.abs-carte__delai { font-size: var(--texte-xs); font-weight: var(--graisse-forte); color: var(--attention); }
+.abs-carte__delai.est-depasse { color: var(--danger); }
+
+/* ---------- Déclaration ---------- */
+
+.abs-formulaire { display: flex; flex-direction: column; gap: var(--esp-4); }
+.abs-formulaire textarea { resize: vertical; min-height: 72px; }
+.abs-formulaire__consequence { margin-top: var(--esp-2); font-size: var(--texte-xs); color: var(--ton, var(--texte-doux)); }
+.abs-formulaire__actions { display: flex; gap: var(--esp-3); margin-top: var(--esp-2); }
+.abs-formulaire__actions > * { flex: 1; }
+
+/* ---------- Dérogation propre à la licence de physique ---------- */
+
+.abs-derogation {
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--danger-voile);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--rayon-md);
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}
+.abs-derogation strong { color: var(--texte-fort); }

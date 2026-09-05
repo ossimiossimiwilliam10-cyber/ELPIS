@@ -209,7 +209,6 @@ describe('Error Response Format Standardization', () => {
     expect(errorHandler.ERROR_STATUS.VALIDATION_ERROR).toBe(400);
     expect(errorHandler.ERROR_STATUS.NOT_FOUND).toBe(404);
     expect(errorHandler.ERROR_STATUS.RATE_LIMITED).toBe(429);
-    expect(errorHandler.ERROR_STATUS.AI_SERVICE_ERROR).toBe(502);
     expect(errorHandler.ERROR_STATUS.INTERNAL_ERROR).toBe(500);
   });
 

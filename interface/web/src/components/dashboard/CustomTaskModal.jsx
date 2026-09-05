@@ -9,7 +9,7 @@ export default function CustomTaskModal({ isOpen, onClose, params, setParams, on
         <h2 style={{ marginBottom: '1.5rem', color: 'var(--success-color)' }}>✨ Nouvelle Activité Libre</h2>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Titre de l'activité</label>
-          <input type="text" value={params.titre} onChange={(e) => setParams({...params, titre: e.target.value})} placeholder="ex: Vidéo YouTube, Projet Perso..." style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }} autoFocus />
+          <input type="text" value={params.titre} onChange={(e) => setParams({...params, titre: e.target.value})} placeholder="Lecture, projet personnel, révision libre…" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', color: 'var(--text-primary)' }} autoFocus />
         </div>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Catégorie</label>

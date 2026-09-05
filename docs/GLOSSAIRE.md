@@ -140,12 +140,13 @@
 
 ## D
 
-### DeepSeek
-*L'intelligence artificielle derrière le Coach*
+### Répétiteur (Le)
+*Celui qui répond à tes questions*
 
-- **Explication simple** : Le modèle d'IA qui répond à tes questions dans le Coach IA d'ELPIS. C'est un LLM (Large Language Model) comme ChatGPT, développé par DeepSeek.
-- **Dans ELPIS** : Appelé via `aiAdapter.js` qui construit un contexte (tes cours, ton profil) et envoie le prompt à l'API DeepSeek. La clé API est dans `.env`.
-- **Fichier clé** : `interface/bridge/aiAdapter.js`
+- **Explication simple** : Il ne devine pas, il calcule. Chaque chiffre qu'il avance — ta moyenne, tes retards, tes heures, tes délais de justification — est lu dans la base, pas produit par un modèle. Et quand une question sort de ce qu'il sait traiter, il le dit.
+- **D'où vient le nom** : dans l'enseignement supérieur français, un répétiteur fait réciter la leçon et constate ce qui est su. Le terme est ancien, précis, et ne doit rien au vocabulaire de l'IA — ce qui convient à un programme qui ne fait que rendre compte.
+- **Dans ELPIS** : `connaissances.js` rassemble les faits, `intentions.js` reconnaît la question (et rend `null` si rien ne correspond), `reponses.js` formule, `reglement.js` cite le règlement des études.
+- **Fichier clé** : `interface/bridge/moteur/repetiteur/index.js` → `consulter()`
 
 ### DEF (Défaillance)
 - **Explication simple** : Une absence non justifiée à un examen. Dans le bulletin, une DEF se propage : elle bloque la matière → bloque l'UE → bloque la compensation du semestre. C'est la pire note possible.
@@ -323,9 +324,9 @@
 ### LLM (Large Language Model)
 *Grand modèle de langage*
 
-- **Explication simple** : Le type d'intelligence artificielle qui comprend et génère du texte. C'est ce qui alimente le Coach IA d'ELPIS.
-- **Dans ELPIS** : DeepSeek est le LLM utilisé. Appelé via `aiAdapter.js`.
-- **Fichier clé** : `interface/bridge/aiAdapter.js`
+- **Explication simple** : Le type d'intelligence artificielle qui comprend et génère du texte.
+- **Dans ELPIS** : aucun. Le projet n'en appelle plus aucun, et n'en embarque aucun. Le Répétiteur a été écrit en calcul local, et le module Langues se contente de préparer une consigne que tu portes toi-même dans la fenêtre de conversation de ton choix.
+- **Fichier clé** : `interface/bridge/moteur/vocabulaire.js` → `promptVocabulaire()`
 
 ---
 

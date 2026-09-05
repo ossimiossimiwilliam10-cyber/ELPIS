@@ -1,0 +1,446 @@
+/* ============================================================
+   ELPIS — Primitives d'interface
+   ============================================================
+   Classes destinées à remplacer les styles écrits à la main dans les
+   composants. Chaque règle n'utilise que des jetons : un changement de
+   thème traverse ainsi toute l'application d'un seul coup.
+   ============================================================ */
+
+/* ---------- Surfaces ---------- */
+
+.el-carte {
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-lg);
+  padding: var(--esp-5);
+  box-shadow: var(--ombre-1);
+}
+
+/* Carte réagissant au survol : réservée aux éléments cliquables. */
+.el-carte--interactive {
+  cursor: pointer;
+  transition: border-color var(--duree-vive) var(--courbe),
+              transform var(--duree-vive) var(--courbe),
+              box-shadow var(--duree-vive) var(--courbe);
+}
+.el-carte--interactive:hover {
+  border-color: var(--bord-net);
+  transform: translateY(-2px);
+  box-shadow: var(--ombre-2);
+}
+.el-carte--interactive:active { transform: translateY(0); }
+
+.el-carte--compacte { padding: var(--esp-4); }
+.el-carte--plate { box-shadow: none; background: var(--surface-2); }
+
+/* Liseré de couleur signalant le type d'activité. */
+.el-carte--liseree { border-left: 3px solid var(--liseré, var(--accent)); }
+
+/* ---------- Dispositions ---------- */
+
+.el-pile { display: flex; flex-direction: column; gap: var(--esp-4); }
+.el-pile--serree { gap: var(--esp-2); }
+.el-pile--large { gap: var(--esp-6); }
+
+.el-rang {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+}
+.el-rang--entre { justify-content: space-between; }
+.el-rang--serre { gap: var(--esp-2); }
+.el-rang--haut { align-items: flex-start; }
+
+.el-grille {
+  display: grid;
+  gap: var(--esp-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+}
+.el-grille--etroite { grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
+.el-grille--large { grid-template-columns: repeat(auto-fill, minmax(min(400px, 100%), 1fr)); }
+
+.el-espace { flex: 1; }
+
+/* ---------- Typographie ---------- */
+
+.el-titre-page {
+  font-size: var(--texte-2xl);
+  font-weight: var(--graisse-lourde);
+  line-height: var(--interligne-serre);
+  letter-spacing: -0.02em;
+  color: var(--texte-fort);
+  margin: 0;
+}
+
+.el-titre-section {
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-forte);
+  line-height: var(--interligne-serre);
+  letter-spacing: -0.01em;
+  color: var(--texte-fort);
+  margin: 0;
+}
+
+.el-titre-carte {
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  line-height: var(--interligne-serre);
+  color: var(--texte-fort);
+  margin: 0;
+}
+
+.el-texte { font-size: var(--texte-md); color: var(--texte-normal); line-height: var(--interligne-normal); }
+.el-texte--doux { color: var(--texte-doux); }
+.el-texte--petit { font-size: var(--texte-sm); }
+.el-texte--mention { font-size: var(--texte-xs); color: var(--texte-doux); }
+
+/* Étiquette de section : courte, espacée, discrète. */
+.el-surtitre {
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texte-doux);
+}
+
+.el-chiffre {
+  font-size: var(--texte-3xl);
+  font-weight: var(--graisse-lourde);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--texte-fort);
+  /* Chiffres de même largeur : les compteurs ne tressautent plus en changeant. */
+  font-variant-numeric: tabular-nums;
+}
+
+.el-mono { font-family: var(--police-mono); font-variant-numeric: tabular-nums; }
+
+/* ---------- Boutons ---------- */
+
+.el-bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  padding: 0.625rem var(--esp-4);
+  border-radius: var(--rayon-md);
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--duree-vive) var(--courbe),
+              border-color var(--duree-vive) var(--courbe),
+              color var(--duree-vive) var(--courbe),
+              transform var(--duree-vive) var(--courbe);
+  /* Cible tactile confortable au doigt. */
+  min-height: 40px;
+}
+.el-bouton:active:not(:disabled) { transform: scale(0.97); }
+.el-bouton:focus-visible { outline: none; box-shadow: var(--ombre-focus); }
+.el-bouton:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.el-bouton--primaire {
+  /* Le blanc sur --accent (#3B82F6) ne donnait que 3,68 de contraste. Le bleu
+     600 le porte à 5,1 sans changer la couleur d'accent du reste — qui, elle,
+     se pose sur des fonds sombres où elle est parfaitement lisible. */
+  background: var(--bleu-600);
+  color: #FFFFFF;
+}
+
+/* Le survol doit rester distinguable du repos : `--accent-fort` valait déjà
+   le bleu 600, désormais celui du bouton au repos — le survol ne se voyait
+   donc plus du tout. */
+.el-bouton--primaire:hover:not(:disabled) { background: var(--bleu-700); }
+
+.el-bouton--secondaire {
+  background: transparent;
+  border-color: var(--bord-normal);
+  color: var(--texte-normal);
+}
+.el-bouton--secondaire:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--bord-net);
+  color: var(--texte-fort);
+}
+
+.el-bouton--fantome {
+  background: transparent;
+  color: var(--texte-doux);
+  padding: var(--esp-2);
+  min-height: 36px;
+}
+.el-bouton--fantome:hover:not(:disabled) { background: var(--surface-2); color: var(--texte-fort); }
+
+.el-bouton--danger {
+  background: var(--danger-voile);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.el-bouton--danger:hover:not(:disabled) { background: var(--danger); color: #FFFFFF; }
+
+.el-bouton--grand { padding: 0.875rem var(--esp-5); font-size: var(--texte-md); min-height: 48px; }
+.el-bouton--pleine-largeur { width: 100%; }
+
+/* Bouton réduit à une icône : la surface reste atteignable au doigt. */
+.el-bouton-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: var(--rayon-sm);
+  background: transparent;
+  color: var(--texte-doux);
+  cursor: pointer;
+  font-size: var(--texte-md);
+  transition: background var(--duree-vive) var(--courbe), color var(--duree-vive) var(--courbe);
+}
+.el-bouton-icone:hover { background: var(--surface-2); color: var(--texte-fort); }
+.el-bouton-icone:focus-visible { outline: none; box-shadow: var(--ombre-focus); }
+.el-bouton-icone--danger:hover { background: var(--danger-voile); color: var(--danger); }
+
+/* ---------- Pastilles ---------- */
+
+.el-pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-1);
+  padding: 0.2rem var(--esp-2);
+  border-radius: var(--rayon-full);
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  line-height: 1.4;
+  background: var(--surface-2);
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+.el-pastille--accent    { background: var(--accent-voile);    color: var(--accent-clair); }
+.el-pastille--succes    { background: var(--succes-voile);    color: var(--succes); }
+.el-pastille--attention { background: var(--attention-voile); color: var(--attention); }
+.el-pastille--danger    { background: var(--danger-voile);    color: var(--danger); }
+
+.el-pastille--cm     { background: var(--type-cm-voile);     color: var(--type-cm); }
+.el-pastille--td     { background: var(--type-td-voile);     color: var(--type-td); }
+.el-pastille--tp     { background: var(--type-tp-voile);     color: var(--type-tp); }
+.el-pastille--annale { background: var(--type-annale-voile); color: var(--type-annale); }
+.el-pastille--anki   { background: var(--type-anki-voile);   color: var(--type-anki); }
+.el-pastille--projet { background: var(--type-projet-voile); color: var(--type-projet); }
+.el-pastille--langue { background: var(--type-langue-voile); color: var(--type-langue); }
+
+/* ---------- Champs ---------- */
+
+.el-champ {
+  width: 100%;
+  padding: 0.625rem var(--esp-3);
+  background: var(--surface-0);
+  border: 1px solid var(--bord-normal);
+  border-radius: var(--rayon-md);
+  color: var(--texte-fort);
+  font-family: inherit;
+  font-size: var(--texte-md);
+  transition: border-color var(--duree-vive) var(--courbe), box-shadow var(--duree-vive) var(--courbe);
+  min-height: 40px;
+}
+.el-champ:focus { outline: none; border-color: var(--accent); box-shadow: var(--ombre-focus); }
+.el-champ::placeholder { color: var(--texte-doux); }
+.el-champ:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.el-etiquette {
+  display: block;
+  margin-bottom: var(--esp-2);
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-moyenne);
+  color: var(--texte-normal);
+}
+
+.el-aide { margin-top: var(--esp-1); font-size: var(--texte-xs); color: var(--texte-doux); }
+
+/* ---------- Barre de progression ---------- */
+
+.el-jauge {
+  width: 100%;
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: var(--rayon-full);
+  overflow: hidden;
+}
+.el-jauge__remplissage {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width var(--duree-ample) var(--courbe);
+}
+.el-jauge__remplissage--succes { background: var(--succes); }
+.el-jauge__remplissage--attention { background: var(--attention); }
+.el-jauge__remplissage--langue { background: var(--type-langue); }
+
+/* ---------- État vide ---------- */
+
+.el-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--esp-8) var(--esp-5);
+  gap: var(--esp-3);
+}
+.el-vide__icone { font-size: 3rem; line-height: 1; opacity: 0.85; }
+.el-vide__titre { font-size: var(--texte-xl); font-weight: var(--graisse-forte); color: var(--texte-fort); margin: 0; }
+.el-vide__texte { color: var(--texte-doux); max-width: 46ch; margin: 0; line-height: var(--interligne-normal); }
+.el-vide__actions { display: flex; gap: var(--esp-3); flex-wrap: wrap; justify-content: center; margin-top: var(--esp-3); }
+
+/* ---------- Séparateurs ---------- */
+
+.el-trait { height: 1px; background: var(--bord-discret); border: none; margin: var(--esp-4) 0; }
+
+/* ---------- Lien d'action ---------- */
+
+/* Un bouton qui se lit comme un lien : pour les bascules d'affichage placées
+   au fil du texte, où un vrai bouton casserait la phrase. */
+.el-lien {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent-clair);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.el-lien:hover { color: var(--accent); }
+
+/* ---------- Accessibilité ---------- */
+
+/* Visible uniquement pour les lecteurs d'écran. */
+.el-lecteur-seul {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Contour de focus homogène partout où le navigateur en dessine un. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Fenêtre modale ---------- */
+
+.el-modale__fond {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--esp-4);
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.el-modale {
+  width: 100%;
+  max-height: calc(100vh - 2 * var(--esp-6));
+  overflow-y: auto;
+  padding: var(--esp-6);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-normal);
+  border-radius: var(--rayon-lg);
+  box-shadow: var(--ombre-3);
+}
+
+.el-modale__titre {
+  margin: 0 0 var(--esp-5);
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+
+/* ---------- Anneau de progression ---------- */
+
+.el-anneau {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.el-anneau__trace { position: absolute; transform: rotate(-90deg); }
+.el-anneau__valeur {
+  z-index: 1;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--graisse-lourde);
+  color: var(--texte-fort);
+}
+
+/* ---------- Boutons flottants ---------- */
+
+/*
+ * Le lecteur de musique et le coach étaient positionnés par styles en ligne,
+ * donc insensibles à la largeur de l'écran. Sur un téléphone, la pastille
+ * « 🎵 Ajouter de la musique » occupait les trois quarts de la largeur et
+ * recouvrait le contenu du bas de page — ta ligne de record sur l'accueil, un
+ * champ de durée dans les Réglages. Le coach, lui, monte à 160 px du bas, au-delà
+ * des 5 rem que la page réservait.
+ *
+ * Ils forment désormais une pile en bas à droite, et la page réserve la hauteur
+ * qu'ils occupent réellement.
+ */
+.el-flottant {
+  position: fixed;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+  font-family: inherit;
+}
+
+.el-flottant:hover { transform: scale(1.05); }
+
+.el-flottant--musique {
+  bottom: 20px;
+  padding: 0.8rem 1.2rem;
+  background: var(--surface-2);
+  color: var(--texte-fort);
+  border: 1px solid var(--bord-discret);
+}
+
+.el-flottant--coach {
+  bottom: 92px;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: none;
+  background: var(--accent-fort);
+  color: #FFFFFF;
+  font-size: 1.8rem;
+  z-index: 1001;
+}
+
+@media (max-width: 768px) {
+  /* Sur un écran étroit, la pastille se réduit à son icône. */
+  .el-flottant--musique {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+  }
+  .el-flottant--musique .el-flottant__libelle { display: none; }
+}

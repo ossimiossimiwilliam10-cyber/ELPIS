@@ -109,12 +109,10 @@ cp .env.example .env
 Contenu typique :
 
 ```env
-DEEPSEEK_API_KEY=sk-xxxxxxxx
-DEEPSEEK_MODEL=deepseek-chat
 ADMIN_PASSWORD=mon_mot_de_passe
 ```
 
-**Sans ces variables, ELPIS fonctionne quand même** — mais le Coach IA sera désactivé et l'accès sera public.
+C'est la seule variable. **Sans elle, ELPIS fonctionne quand même** — l'accès sera simplement public. Aucune clé d'API n'existe dans le projet : rien n'appelle de service extérieur.
 
 ### Étape 4 : Vérifier que tout est prêt
 
@@ -164,9 +162,15 @@ docker-compose up --build
 # → Tout est lancé automatiquement sur http://localhost:3000
 ```
 
-### Alternative Windows : script batch
+### Alternative Windows : le lanceur
 
-Double-clique sur `start_elpis.bat` à la racine.
+Double-clique sur `Lancer ELPIS.vbs` à la racine, ou sur le raccourci ELPIS du
+bureau. Le lanceur démarre le moteur sans terminal, attend que `/api/health`
+réponde — donc que la base soit réellement ouverte — puis ouvre l'application en
+fenêtre autonome et se range dans la zone de notification.
+
+Son journal de démarrage est dans `outils/lanceur/journal.log` : c'est là qu'il
+faut regarder quand ELPIS ne s'ouvre pas.
 
 ---
 
@@ -369,7 +373,6 @@ node server.js     # → sert le frontend buildé + API sur le port 3000
 
 ```env
 MONGODB_URI=mongodb+srv://...    # Optionnel (ELPIS fonctionne 100% en local)
-DEEPSEEK_API_KEY=sk-...          # Pour le Coach IA
 ADMIN_PASSWORD=...               # Pour protéger l'accès (recommandé)
 ```
 

@@ -34,6 +34,7 @@ __pycache__/
 # Fichiers temporaires et debug
 *.sqlite-shm
 *.sqlite-wal
+data/elpis.test*.sqlite
 mcc_output.txt
 ocr_output.txt
 *.log
@@ -88,3 +89,12 @@ check_*.py
 extract_pdf.py
 ocr_*.py
 search_subjects.py
+
+# Sorties de compilation (le dossier android/ a déjà son propre .gitignore)
+interface/web/dist/
+
+# Archives locales (documents mis de côté)
+archives/
+
+# Journal du lanceur : trace locale de démarrage, propre à chaque machine.
+outils/lanceur/journal.log

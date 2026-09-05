@@ -39,4 +39,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Sans cette permission, la WebView renseigne mal navigator.onLine : le
+         retour du Wi-Fi ne déclenche pas la réconciliation, et le travail fait
+         hors ligne attend le prochain démarrage. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 </manifest>

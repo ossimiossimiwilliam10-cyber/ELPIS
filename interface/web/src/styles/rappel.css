@@ -1,0 +1,233 @@
+/* ============================================================
+   Récupération active — se tester plutôt que relire
+   ============================================================ */
+
+.rappel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  padding: var(--esp-5);
+  background: var(--surface-2);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-lg);
+}
+
+.rappel__entete { display: flex; flex-direction: column; gap: var(--esp-2); }
+.rappel__compteur {
+  font-size: var(--texte-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: var(--graisse-forte);
+  color: var(--texte-doux);
+}
+
+/* La question porte le poids de l'écran : c'est le seul moment où l'attention
+   doit être entière, avant que la réponse ne soit visible. */
+.rappel__question {
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  line-height: var(--interligne-normal);
+  color: var(--texte-fort);
+}
+
+.rappel__consigne {
+  margin: 0 0 var(--esp-3);
+  font-size: var(--texte-sm);
+  color: var(--texte-doux);
+}
+
+.rappel__reponse {
+  padding: var(--esp-4);
+  margin-bottom: var(--esp-4);
+  background: var(--surface-1);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--rayon-md);
+  font-size: var(--texte-md);
+  line-height: var(--interligne-normal);
+  color: var(--texte-normal);
+  white-space: pre-wrap;
+}
+
+/* ---------- Verdicts ---------- */
+
+.rappel__verdicts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: var(--esp-2);
+}
+
+.rappel__verdict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+  padding: var(--esp-3);
+  min-height: 64px;
+  background: var(--voile);
+  border: 1px solid var(--teinte);
+  border-radius: var(--rayon-md);
+  color: var(--texte-normal);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duree-vive) var(--courbe), transform var(--duree-vive) var(--courbe);
+}
+.rappel__verdict:hover { background: var(--surface-3); transform: translateY(-1px); }
+.rappel__verdict:active { transform: translateY(0); }
+.rappel__verdict:focus-visible { outline: none; box-shadow: var(--ombre-focus); }
+
+.rappel__verdict--danger    { --teinte: var(--danger);    --voile: var(--danger-voile); }
+.rappel__verdict--attention { --teinte: var(--attention); --voile: var(--attention-voile); }
+.rappel__verdict--accent    { --teinte: var(--accent);    --voile: var(--accent-voile); }
+.rappel__verdict--succes    { --teinte: var(--succes);    --voile: var(--succes-voile); }
+
+.rappel__verdict-libelle {
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--teinte);
+}
+.rappel__verdict-aide { font-size: var(--texte-xs); color: var(--texte-doux); }
+
+.rappel__bilan { display: flex; flex-direction: column; gap: var(--esp-2); }
+.rappel__sortie { align-self: center; font-size: var(--texte-xs); }
+
+/* ---------- Rédaction des questions ---------- */
+
+.rappel-edition { display: flex; flex-direction: column; gap: var(--esp-3); }
+
+.rappel-edition__ligne {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  background: var(--surface-2);
+  border-radius: var(--rayon-md);
+  border-left: 3px solid var(--accent);
+}
+.rappel-edition__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+}
+.rappel-edition__numero {
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-doux);
+}
+.rappel-edition textarea { resize: vertical; min-height: 54px; }
+
+/* ---------- Épreuve de validation par Anki ---------- */
+
+.epreuve {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  background: var(--type-anki-voile);
+  border: 1px solid var(--type-anki);
+  border-radius: var(--rayon-md);
+}
+
+.epreuve__titre {
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--type-anki);
+}
+
+.epreuve__erreur {
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--danger-voile);
+  border-radius: var(--rayon-sm);
+  font-size: var(--texte-xs);
+  color: var(--danger);
+}
+
+.epreuve__verdict {
+  display: flex;
+  align-items: baseline;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  padding: var(--esp-3) var(--esp-4);
+  margin-bottom: var(--esp-3);
+  background: var(--surface-1);
+  border-left: 3px solid var(--bord-net);
+  border-radius: var(--rayon-sm);
+}
+.epreuve__verdict.est-reussie { border-left-color: var(--succes); }
+.epreuve__verdict.est-echouee { border-left-color: var(--danger); }
+
+.epreuve__taux {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-lourde);
+  color: var(--texte-fort);
+}
+.epreuve__detail { font-size: var(--texte-sm); color: var(--texte-doux); }
+
+/* ---------- Rattachement d'un cours à un deck Anki ---------- */
+
+.deck-lien {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.deck-lien--absent { font-style: italic; }
+
+.deck-lien__etiquette { white-space: nowrap; }
+.deck-lien__filtre { width: 110px; min-height: 26px; padding: 2px var(--esp-2); font-size: var(--texte-xs); }
+.deck-lien__choix {
+  min-height: 26px;
+  padding: 2px var(--esp-2);
+  font-size: var(--texte-xs);
+  max-width: 260px;
+  font-family: var(--police-mono);
+}
+.deck-lien__alerte { color: var(--attention); font-weight: var(--graisse-forte); }
+
+/* ---------- Notions non retrouvées ---------- */
+
+.epreuve__lacunes {
+  padding: var(--esp-3) var(--esp-4);
+  margin-bottom: var(--esp-3);
+  background: var(--danger-voile);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--rayon-sm);
+}
+.epreuve__lacunes-titre {
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--danger);
+  margin-bottom: var(--esp-2);
+}
+.epreuve__lacunes-liste {
+  margin: 0;
+  padding-left: var(--esp-4);
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}
+.epreuve__lacunes-liste li { margin-bottom: var(--esp-1); }
+
+/* Une carte déjà oubliée plusieurs fois signale une lacune installée, pas un
+   simple trou de mémoire. */
+.epreuve__recurrente {
+  display: inline-block;
+  margin-left: var(--esp-2);
+  padding: 1px var(--esp-2);
+  background: var(--attention-voile);
+  border-radius: var(--rayon-full);
+  font-size: var(--texte-xs);
+  color: var(--attention);
+}
+
+/* La précision accompagne le taux : un chiffre nu se lit comme une certitude. */
+.epreuve__taux small {
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-normale);
+  color: var(--texte-doux);
+}

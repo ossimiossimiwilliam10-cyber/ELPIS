@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import useStore, { useChronoStore } from './store';
 import { useWorkloadEngine } from './useWorkloadEngine';
@@ -8,29 +8,37 @@ import { useSoundEffects } from './hooks/useSoundEffects';
 import { useTaskCompletion } from './hooks/useTaskCompletion';
 import { useDashboardStats } from './hooks/useDashboardStats';
 import TaskCompletionModal from './components/TaskCompletionModal';
+import ConfirmModal from './components/ConfirmModal';
 import AuditDashboard from './components/AuditDashboard';
 import WelcomeCard from './components/dashboard/WelcomeCard';
 import TaskList from './components/dashboard/TaskList';
 import CustomTaskModal from './components/dashboard/CustomTaskModal';
+import { resumerCursus } from './utils/cursus';
 import InsightsPanel from './components/dashboard/InsightsPanel';
 import ProjectsWidget from './components/dashboard/ProjectsWidget';
 import StatsSection from './components/dashboard/StatsSection';
-import { DIFFICULTY_LEVELS } from './constants';
+import BarreActions from './components/dashboard/BarreActions';
+import ChargeDuJour from './components/dashboard/ChargeDuJour';
+import Progression from './components/dashboard/Progression';
+import VitesseExamen from './components/dashboard/VitesseExamen';
+import Couverture from './components/dashboard/Couverture';
 import { getApiUrl } from './utils/apiConfig';
-import { getTodayStr } from './utils/dateUtils';
+import { getTodayStr, isFromToday } from './utils/dateUtils';
+import { buildTaskKey, isSameTask } from './utils/taskKey';
 import { useICalExport } from './hooks/useICalExport';
+import { Bouton, Carte, EtatVide, Jauge, Rang, TitreCarte } from './components/ui';
 
 function Dashboard() {
   const {
     config, coursConfig, loading: storeLoading, historique, projets,
     orchestratorData, fetchOrchestrator, intelligence, pendingTasksCount,
     dailyFillGap, setDailyFillGap, setConfig, addHistoriqueEntry,
-    activateRestDay, activateExtendedRestDay, declineExtendedRestDay
+    activateRestDay, activateExtendedRestDay, declineExtendedRestDay, setActiveTab
   } = useStore();
 
   const { completeTask, suspendCM } = useTaskCompletion();
   const { stats, globalPercent, allMatieres, restDaysUsed, todayStr, isRestDayToday, tempsTravailleToday } = useDashboardStats();
-  const recommendedDailyHours = useWorkloadEngine();
+  const charge = useWorkloadEngine();
   const { toast } = useToast();
   const { playTaskComplete } = useSoundEffects();
   const { exportToICal } = useICalExport(orchestratorData);
@@ -46,7 +54,6 @@ function Dashboard() {
   const [auditModalOpen, setAuditModalOpen] = useState(false);
   const [acceptedRest, setAcceptedRest] = useState(false);
   const [restDayConfirmOpen, setRestDayConfirmOpen] = useState(false);
-  const [exportMenuOpen, setExportMenuOpen] = useState(false);
 
   // ---- Orchestrator fetch ----
   useEffect(() => {
@@ -63,16 +70,25 @@ function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extraTime, dailyFillGap, fetchOrchestrator]);
 
-  const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
+  // Mémorisé dans une ref plutôt que dans un state : ce marqueur sert à détecter un
+  // nouveau rapport, il n'a pas à provoquer de rendu supplémentaire.
+  const prevOrchestratorData = useRef(null);
   useEffect(() => {
-    if (orchestratorData && orchestratorData !== prevOrchestratorData) {
-      setPrevOrchestratorData(orchestratorData);
+    if (orchestratorData && orchestratorData !== prevOrchestratorData.current) {
+      prevOrchestratorData.current = orchestratorData;
       if (orchestratorData?.tachesDuJour) {
-        const alreadyDoneIds = new Set(historique?.filter(h => h.date === todayStr).map(h => h.tacheId) || []);
-        
+        // L'historique ne porte pas d'identifiant de tâche : on reconstruit la même
+        // clé stable que l'orchestrateur (type::matiere::titre) pour écarter ce qui
+        // a déjà été validé aujourd'hui.
+        const alreadyDoneIds = new Set(
+          (historique || [])
+            .filter(h => isFromToday(h, todayStr))
+            .map(h => buildTaskKey(h))
+        );
+
         const filtered = orchestratorData.tachesDuJour.filter(t => {
           if (t.type === 'ANKI' && config?.dernierePratiqueAnki === todayStr) return false;
-          if (alreadyDoneIds.has(t.id)) return false;
+          if (alreadyDoneIds.has(t.id || buildTaskKey(t))) return false;
           return true;
         });
 
@@ -81,20 +97,22 @@ function Dashboard() {
           try {
             const savedOrder = JSON.parse(savedOrderStr);
             filtered.sort((a, b) => {
-              const idxA = savedOrder.indexOf(a.id);
-              const idxB = savedOrder.indexOf(b.id);
+              const idxA = savedOrder.indexOf(a.id || buildTaskKey(a));
+              const idxB = savedOrder.indexOf(b.id || buildTaskKey(b));
               if (idxA !== -1 && idxB !== -1) return idxA - idxB;
               if (idxA !== -1) return -1;
               if (idxB !== -1) return 1;
               return 0;
             });
-          } catch(e) {}
+          } catch {
+            // Ordre sauvegardé illisible : on garde celui calculé par l'orchestrateur.
+          }
         }
 
         setOrderedTaches(filtered);
       }
     }
-  }, [orchestratorData, prevOrchestratorData, config?.dernierePratiqueAnki, todayStr, historique]);
+  }, [orchestratorData, config?.dernierePratiqueAnki, todayStr, historique]);
 
   // ---- Actions ----
   const handleAddExtraTime = () => setExtraTime(prev => prev + 30);
@@ -118,7 +136,10 @@ function Dashboard() {
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
     setOrderedTaches(items);
-    sessionStorage.setItem(`elpis_task_order_${todayStr}`, JSON.stringify(items.map(t => t.id)));
+    sessionStorage.setItem(
+      `elpis_task_order_${todayStr}`,
+      JSON.stringify(items.map(t => t.id || buildTaskKey(t)))
+    );
   };
 
   const handleCustomTaskSubmit = () => {
@@ -135,10 +156,11 @@ function Dashboard() {
     if (tache.type === 'ANKI') {
       const today = getTodayStr();
       setConfig({ ...config, dernierePratiqueAnki: today });
-      setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
+      setOrderedTaches(prev => prev.filter(t => !isSameTask(t, tache)));
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#818CF8', '#34D399', '#FBBF24'] });
       playTaskComplete();
-      addHistoriqueEntry({ type: 'ANKI', titre: tache.titre, matiere: tache.matiere, action: 'Terminé', dureeMinutes: tache.dureeMinutes || 0 });
+      addHistoriqueEntry({ type: 'ANKI', titre: tache.titre, matiere: tache.matiere, action: 'Terminé', dureeMinutes: tache.dureeMinutes || config?.defaultDurationAnki || 30 });
+      useStore.getState().notifyTaskCompleted?.();
       return;
     }
 
@@ -151,13 +173,13 @@ function Dashboard() {
     setTaskModalOpen(true);
   };
 
-  const handleTaskSubmit = useCallback(({ minutes, sm2Score, difficulte }) => {
+  const handleTaskSubmit = useCallback(({ minutes, sm2Score, difficulte, note }) => {
     if (!pendingTask) return;
     const tache = pendingTask;
     const finalDifficulte = difficulte || tache.difficulteKey;
 
-    const success = completeTask(tache, { minutes, sm2Score, difficulte: finalDifficulte }, () => {
-      setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
+    const success = completeTask(tache, { minutes, sm2Score, difficulte: finalDifficulte, note }, () => {
+      setOrderedTaches(prev => prev.filter(t => !isSameTask(t, tache)));
       playTaskComplete();
     });
 
@@ -170,8 +192,8 @@ function Dashboard() {
 
   const handleSuspendCM = useCallback((tache) => {
     suspendCM(tache, config?.defaultDurationRevCM || 30);
-    setOrderedTaches(prev => prev.filter(t => t.id !== tache.id && t.titre !== tache.titre));
-    toast.success(`⏸️ Séance suspendue — "${tache.titre}" reviendra demain.`);
+    setOrderedTaches(prev => prev.filter(t => !isSameTask(t, tache)));
+    toast.success(`Séance suspendue — « ${tache.titre} » reviendra demain.`);
   }, [suspendCM, config, toast]);
 
   // ---- Dynamic greeting ----
@@ -183,170 +205,240 @@ function Dashboard() {
   // ---- Loading state ----
   if (loading) {
     return (
-      <div style={{padding: '2rem 0'}}>
-        <div className="skeleton skeleton-text" style={{height:'28px', width:'40%', marginBottom:'1.5rem'}}></div>
-        <div style={{display:'flex', gap:'1.5rem', marginBottom:'2rem', flexWrap:'wrap'}}>
+      <div className="tdb-squelette" role="status" aria-label="Chargement de ta journée">
+        <div className="skeleton skeleton-text" style={{ height: '28px', width: '40%' }} />
+        <div className="tdb-squelette__ligne">
           {[...Array(4)].map((_, i) => (
-            <div key={i} style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'0.4rem'}}>
-              <div className="skeleton skeleton-circle" style={{width:'36px', height:'36px'}}></div>
-              <div className="skeleton skeleton-text" style={{width:'48px', height:'12px'}}></div>
+            <div key={i} className="tdb-squelette__mesure">
+              <div className="skeleton skeleton-circle" style={{ width: '36px', height: '36px' }} />
+              <div className="skeleton skeleton-text" style={{ width: '48px', height: '12px' }} />
             </div>
           ))}
         </div>
-        <div className="skeleton skeleton-card" style={{height:'200px', marginBottom:'1.5rem'}}></div>
-        <div className="skeleton skeleton-card" style={{height:'140px', width:'65%'}}></div>
+        <div className="skeleton skeleton-card" style={{ height: '200px' }} />
+        <div className="skeleton skeleton-card" style={{ height: '140px', width: '65%' }} />
       </div>
     );
   }
 
   if (!orchestratorData || orchestratorData.error) {
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="card glass-panel" style={{textAlign:'center', marginTop:'3rem'}}>
-        <h2>{greeting} ! Bienvenue sur ELPIS</h2>
-        <p style={{color:'var(--text-secondary)'}}>Configure tes objectifs et tes cours pour activer le Planificateur.</p>
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+        <Carte>
+          <EtatVide
+            icone="🌱"
+            titre={`${greeting} ! Bienvenue sur ELPIS`}
+            texte="Configure tes objectifs et tes cours pour activer le Planificateur : il construira ensuite ta session de travail chaque matin."
+            actions={
+              <Bouton variante="primaire" grand onClick={() => useStore.getState().setActiveTab('cours')}>
+                Ouvrir la Bibliothèque
+              </Bouton>
+            }
+          />
+        </Carte>
       </motion.div>
     );
   }
 
-  const { statut, tempsDispoMin, tempsRequisMin } = orchestratorData;
+  const { statut, tempsDispoMin, tempsRequisMin, tempsEnSouffranceMin, nbEnSouffrance, retardMaxJours } = orchestratorData;
   const surcharge = statut === "SURCHARGE";
-  const pourcentageCharge = Math.min(100, Math.round((tempsRequisMin / (tempsDispoMin || 1)) * 100));
+  const enRepos = statut === "REPOS" || statut === "REPOS_OPTIONNEL";
+  /*
+   * Deux chiffres pour la même journée coexistaient sur cet écran : la tuile
+   * « Travaillé » de la carte d'accueil sommait les seules durées enregistrées,
+   * quand cette barre lisait un total où le moteur avait glissé des replis par
+   * type. Une journée de cinq séances dont quatre sans durée affichait 0,8 h à
+   * quelques centimètres de 3 h 05. Les deux se lisent désormais sur la mesure ;
+   * l'estimation est dite à part, pour ce qu'elle est.
+   */
+  const travailleMin = orchestratorData.tempsDejaTravailleMin || 0;
+  const estimeMin = orchestratorData.tempsEstimeSansDureeMin || 0;
+  const seancesSansDuree = orchestratorData.seancesSansDuree || 0;
+
+  /*
+   * « Tout est terminé » et « rien n'a encore été saisi » se ressemblent à
+   * l'écran — zéro tâche dans les deux cas — et se confondaient. Le jour de la
+   * rentrée, l'application félicitait donc d'avoir accompli une journée qui
+   * n'avait jamais existé.
+   */
+  const { nbCours, nbExercices } = resumerCursus(coursConfig);
+  const cursusSansContenu = (nbCours + nbExercices) === 0;
 
   // ---- Render ----
   return (
     <motion.div className="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       {config && !config.inscriptionPedagogiqueDone && (
-        <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={{ background: 'var(--danger-color)', color: 'white', padding: '1rem 1.5rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)' }}>
-          <div>
-            <strong>⚠️ Rappel Administratif :</strong> N'oublie pas de finaliser ton <strong>Inscription Pédagogique</strong> sur le site de l'Université. C'est obligatoire pour pouvoir te présenter aux examens !
+        <motion.div className="tdb-rappel" initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+          <div className="tdb-rappel__texte">
+            <strong>Inscription pédagogique à finaliser.</strong> Elle se fait sur le site de l'université
+            et conditionne l'accès aux examens.
           </div>
-          <button onClick={() => setConfig({ ...config, inscriptionPedagogiqueDone: true })} style={{ background: 'white', color: 'var(--danger-color)', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={e => e.target.style.transform = 'scale(1.05)'} onMouseOut={e => e.target.style.transform = 'scale(1)'}>
-            C'est fait !
-          </button>
+          <Bouton onClick={() => setConfig({ ...config, inscriptionPedagogiqueDone: true })}>
+            C'est fait
+          </Bouton>
         </motion.div>
       )}
 
-      <WelcomeCard greeting={greeting} orderedTaches={orderedTaches} recommendedDailyHours={recommendedDailyHours} tempsRequisMin={tempsRequisMin} globalPercent={globalPercent} config={config} tempsTravailleToday={tempsTravailleToday} />
+      <WelcomeCard
+        greeting={greeting}
+        orderedTaches={orderedTaches}
+        recommendedDailyHours={charge.capacite}
+        tempsRequisMin={tempsRequisMin}
+        globalPercent={globalPercent}
+        config={config}
+        tempsTravailleToday={tempsTravailleToday}
+        cursusSansContenu={cursusSansContenu}
+      />
 
-      {/* Action buttons */}
-      <div className="dashboard-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <button className="btn-primary" onClick={() => { setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' }); setCustomTaskModalOpen(true); }}
-          style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', background: 'var(--success-color)'}} title="Ajouter une activité libre">
-          ✨ Activité Libre
-        </button>
-
-        {statut !== "REPOS" && !isRestDayToday && (
-          <button className="btn-secondary" onClick={() => setRestDayConfirmOpen(true)}
-            disabled={restDaysUsed >= 1}
-            style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', opacity: restDaysUsed >= 1 ? 0.5 : 1}}
-            title={restDaysUsed >= 1 ? "Quota de repos (1/semaine) atteint" : "Suspendre le programme pour aujourd'hui"}>
-            ☕ Activer Jour de Repos ({restDaysUsed}/1)
-          </button>
-        )}
-
-        <div style={{ position: 'relative' }}>
-          <button className="btn-secondary" onClick={() => setExportMenuOpen(!exportMenuOpen)} style={{padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem'}}>
-            ⬇️ Exporter
-          </button>
-          {exportMenuOpen && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: '0.5rem', background: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)', borderRadius: '8px', padding: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', zIndex: 10, boxShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
-              <button className="btn-secondary" onClick={() => { window.print(); setExportMenuOpen(false); }} style={{padding: '0.4rem 1rem', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--text-primary)'}}>📄 Format PDF</button>
-              <button className="btn-secondary" onClick={() => { exportToICal(); setExportMenuOpen(false); }} style={{padding: '0.4rem 1rem', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', color: '#60a5fa'}}>📅 Format iCal</button>
-            </div>
-          )}
+      {/* Un programme qui déborde ne doit pas allonger les journées : c'est le
+          périmètre qu'il faut revoir, et c'est une décision, pas un automatisme. */}
+      {!charge.tientDansLeTemps && (
+        <div className="tdb-rappel">
+          <div className="tdb-rappel__texte">
+            <strong>Le programme ne tient pas dans le temps que tu t'es donné.</strong>{' '}
+            Il resterait environ {Math.round(charge.restantes)} h à couvrir en{' '}
+            {charge.joursRestants} jours, soit {charge.parJourNecessaire.toFixed(1)} h par jour
+            contre {charge.capacite} h déclarées. Augmente ta capacité dans les Réglages,
+            ou accepte de resserrer le périmètre.
+          </div>
+          <Bouton onClick={() => setActiveTab('config')}>Ajuster</Bouton>
         </div>
-      </div>
+      )}
+
+      <BarreActions
+        onActiviteLibre={() => {
+          setCustomTaskParams({ titre: '', type: 'PERSO', matiere: allMatieres[0] || '' });
+          setCustomTaskModalOpen(true);
+        }}
+        onJourRepos={() => setRestDayConfirmOpen(true)}
+        reposDisponible={statut !== 'REPOS' && !isRestDayToday}
+        reposUtilises={restDaysUsed}
+        onExportPdf={() => window.print()}
+        onExportIcal={exportToICal}
+      />
 
       <div className="dashboard-grid">
-        {/* Objectives */}
-        <motion.div className="card glass-panel" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
-          <h2>🎯 Objectifs du Jour</h2>
-          {orchestratorData?.tempsDispoMin > 0 && statut !== "REPOS" && (
-            <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--bg-tertiary)' }}>
-              <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>Progression de la Journée</h3>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                <span>{Math.floor((orchestratorData.tempsDejaTravailleMin || 0) / 60)}h{String((orchestratorData.tempsDejaTravailleMin || 0) % 60).padStart(2, '0')} travaillées</span>
-                <span>Objectif IA : {Math.floor(orchestratorData.tempsDispoMin / 60)}h{String(orchestratorData.tempsDispoMin % 60).padStart(2, '0')}</span>
-              </div>
-              <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: (orchestratorData.tempsDejaTravailleMin || 0) >= orchestratorData.tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)', width: `${Math.min(100, ((orchestratorData.tempsDejaTravailleMin || 0) / orchestratorData.tempsDispoMin) * 100)}%`, transition: 'width 1s ease-out' }} />
-              </div>
-            </div>
-          )}
+        {/* Programme de la journée */}
+        <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
+          <Carte>
+            <TitreCarte>Objectifs du jour</TitreCarte>
 
-          {(statut === "REPOS" || statut === "REPOS_OPTIONNEL") ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="empty-state-container">
-              <div className="empty-state-icon" style={{ filter: 'drop-shadow(0 10px 20px rgba(59, 130, 246, 0.3))' }}>☕</div>
-              <h3 style={{color:'var(--accent-primary)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Mode Repos Activé</h3>
-              <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>{orchestratorData.message}</p>
-              <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
-                {surcharge && statut === "REPOS" && (
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleAddExtraTime} className="btn-primary" style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}>🔥 J'ai encore de l'énergie (+30 min)</motion.button>
-                )}
-                {statut === "REPOS_OPTIONNEL" && !acceptedRest && (
-                  <>
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSkipRest} className="btn-primary" style={{background: 'var(--success-color)', padding: '0.8rem 1.5rem', fontWeight: 'bold', color: '#000'}}>🚀 Non, je suis en forme ! (Travailler)</motion.button>
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-secondary" style={{padding: '0.8rem 1.5rem', fontWeight: 'bold', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)'}} onClick={() => { setAcceptedRest(true); toast.success("Bon repos !"); }}>😌 Oui, me reposer</motion.button>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          ) : orderedTaches.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="empty-state-container">
-              <div className="empty-state-icon">✨</div>
-              <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
-              <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes tes tâches pour aujourd'hui. Profite de ton temps libre, tu l'as bien mérité !</p>
-              <div style={{display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem'}}>
-                {surcharge && <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleAddExtraTime} className="btn-primary" style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}>🔥 J'ai encore de l'énergie (+30 min)</motion.button>}
-                {orchestratorData && !dailyFillGap && (
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setDailyFillGap(true); toast.info("Recherche de tâches supplémentaires en cours..."); }} className="btn-primary" style={{background: 'var(--accent-primary)', padding: '0.8rem 1.5rem', fontWeight: 'bold'}}>🚀 Demander plus de tâches</motion.button>
+            {tempsDispoMin > 0 && !enRepos && (
+              <div className="tdb-progression">
+                <div className="tdb-progression__chiffres">
+                  <span>
+                    <strong>{Math.floor(travailleMin / 60)}h{String(travailleMin % 60).padStart(2, '0')}</strong> travaillées
+                  </span>
+                  <span>
+                    objectif <strong>{Math.floor(tempsDispoMin / 60)}h{String(tempsDispoMin % 60).padStart(2, '0')}</strong>
+                  </span>
+                </div>
+                <Jauge
+                  valeur={travailleMin}
+                  max={tempsDispoMin}
+                  ton={travailleMin >= tempsDispoMin ? 'succes' : undefined}
+                  libelle="Progression de la journée"
+                />
+                {seancesSansDuree > 0 && (
+                  <p className="tdb-progression__note">
+                    {seancesSansDuree} séance{seancesSansDuree > 1 ? 's' : ''} sans durée enregistrée,
+                    estimée{seancesSansDuree > 1 ? 's' : ''} à {Math.floor(estimeMin / 60)}h{String(estimeMin % 60).padStart(2, '0')}
+                    {' '}d’après tes réglages — comptées dans le budget, pas dans la mesure.
+                  </p>
                 )}
               </div>
-            </motion.div>
-          ) : (
-            <TaskList orderedTaches={orderedTaches} onDragEnd={onDragEnd} onTaskComplete={handleTaskComplete} onSuspendCM={handleSuspendCM} />
-          )}
+            )}
+
+            {enRepos ? (
+              <EtatVide
+                icone="☕"
+                titre="Journée de repos"
+                texte={orchestratorData.message}
+                actions={
+                  <Rang serre>
+                    {/* La condition exigeait `surcharge && statut === 'REPOS'`,
+                        soit le statut égal à deux valeurs à la fois : elle était
+                        toujours fausse et ce bouton n'apparaissait jamais. */}
+                    {statut === 'REPOS' && (
+                      <Bouton variante="primaire" onClick={handleAddExtraTime}>
+                        J'ai encore de l'énergie (+30 min)
+                      </Bouton>
+                    )}
+                    {statut === 'REPOS_OPTIONNEL' && !acceptedRest && (
+                      <>
+                        <Bouton variante="primaire" onClick={handleSkipRest}>
+                          Je préfère travailler
+                        </Bouton>
+                        <Bouton onClick={() => { setAcceptedRest(true); toast.success('Bon repos !'); }}>
+                          Me reposer
+                        </Bouton>
+                      </>
+                    )}
+                  </Rang>
+                }
+              />
+            ) : orderedTaches.length === 0 && cursusSansContenu ? (
+              <EtatVide
+                icone="📚"
+                titre="Ton programme attend son contenu"
+                texte="Tes matières sont en place, mais aucun cours ni exercice n'y figure encore. Ajoute tes premiers chapitres dans la Bibliothèque : le planificateur construira ta journée dès qu'il aura de quoi travailler."
+                actions={
+                  <Rang serre>
+                    <Bouton variante="primaire" onClick={() => setActiveTab('cours')}>
+                      Ouvrir la Bibliothèque
+                    </Bouton>
+                  </Rang>
+                }
+              />
+            ) : orderedTaches.length === 0 ? (
+              <EtatVide
+                icone="✨"
+                titre="Tout est terminé !"
+                texte="Tu as accompli toutes tes tâches pour aujourd'hui. Le temps qui reste t'appartient."
+                actions={
+                  <Rang serre>
+                    {surcharge && (
+                      <Bouton variante="primaire" onClick={handleAddExtraTime}>
+                        J'ai encore de l'énergie (+30 min)
+                      </Bouton>
+                    )}
+                    {!dailyFillGap && (
+                      <Bouton
+                        variante={surcharge ? 'secondaire' : 'primaire'}
+                        onClick={() => { setDailyFillGap(true); toast.info('Recherche de tâches supplémentaires…'); }}
+                      >
+                        Demander plus de tâches
+                      </Bouton>
+                    )}
+                  </Rang>
+                }
+              />
+            ) : (
+              <TaskList orderedTaches={orderedTaches} onDragEnd={onDragEnd} onTaskComplete={handleTaskComplete} onSuspendCM={handleSuspendCM} />
+            )}
+          </Carte>
         </motion.div>
 
-        {/* Charge du Jour */}
-        <motion.div className="card glass-panel" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.05 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ fontSize: '1.2rem', color: 'var(--accent-primary)' }}>⚡</div>
-            <h2 style={{ margin: 0 }}>Charge du Jour</h2>
-            {surcharge && <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--danger-color)', padding: '0.2rem 0.6rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>RETARD ACCUMULÉ</span>}
-          </div>
-          <div style={{marginTop:'2rem', marginBottom:'1rem'}}>
-            <div style={{display:'flex', justifyContent:'space-between', fontSize:'0.9rem'}}>
-              <span style={{color:'var(--text-secondary)'}}>Prévu : <strong>{Math.round(tempsRequisMin/60 * 10)/10}h</strong></span>
-              <span style={{color:'var(--text-secondary)'}}>Cible IA : <strong>{Math.round(tempsDispoMin/60 * 10)/10}h</strong></span>
-            </div>
-            <div className="progress-bar-container">
-              <motion.div className={`progress-bar-fill ${surcharge ? 'surcharge' : ''}`} initial={{ width: 0 }} animate={{ width: `${pourcentageCharge}%` }} transition={{ duration: 1, ease: "easeOut" }} style={{ backgroundColor: surcharge ? 'var(--danger-color)' : 'var(--success-color)' }} />
-            </div>
-          </div>
-          {surcharge ? (
-            <div style={{background: 'rgba(239, 68, 68, 0.1)', padding: '1rem', borderRadius: '8px', marginTop: '1rem', border: '1px solid rgba(239, 68, 68, 0.2)'}}>
-              <p style={{color: 'var(--danger-color)', margin: 0}}><strong>⚠️ Attention :</strong> Tu as accumulé du retard. L'IA a étalé la charge, mais reste concentré !</p>
-            </div>
-          ) : (
-            <div style={{background:'rgba(16, 185, 129, 0.1)', padding:'1rem', borderRadius:'8px', borderLeft:'4px solid var(--success-color)'}}>
-              <strong>Équilibre parfait :</strong> Ta charge de travail est compatible avec tes objectifs de santé.
-            </div>
-          )}
-        </motion.div>
+        <ChargeDuJour
+          tempsRequisMin={tempsRequisMin}
+          tempsDispoMin={tempsDispoMin}
+          surcharge={surcharge}
+          arriereMin={tempsEnSouffranceMin}
+          nbEnSouffrance={nbEnSouffrance}
+          retardMaxJours={retardMaxJours}
+        />
       </div>
 
+      <Progression objectifs={orchestratorData.objectifs} />
+      <Couverture couverture={orchestratorData.couverture} />
+      <VitesseExamen vitesse={orchestratorData.vitesse} />
       <InsightsPanel intelligence={intelligence} />
       <ProjectsWidget projets={projets} pendingTasksCount={pendingTasksCount} />
       <StatsSection stats={stats} globalPercent={globalPercent} />
 
-      {/* Code Health Footer */}
-      <div style={{ marginTop: '3rem', textAlign: 'center', borderTop: '1px solid var(--bg-tertiary)', paddingTop: '1.5rem', paddingBottom: '1rem' }}>
-        <button onClick={() => setAuditModalOpen(true)}
-          style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', opacity: 0.7, transition: 'opacity 0.2s' }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
-          title="Voir le rapport d'audit du code">
-          🛡️ Métriques Code Health
+      <div className="tdb-pied">
+        <button type="button" onClick={() => setAuditModalOpen(true)} title="Voir le rapport de santé du code">
+          Santé du code
         </button>
       </div>
 
@@ -355,36 +447,30 @@ function Dashboard() {
         onSubmit={handleTaskSubmit} taskTitle={pendingTask?.titre || ''}
         defaultMinutes={pendingTask?.dureeMinutes || (config?.defaultDurationRevCM || 30)} taskType={pendingTask?.type || 'CM'} />
 
-      <CustomTaskModal 
-        isOpen={customTaskModalOpen} 
-        onClose={() => setCustomTaskModalOpen(false)} 
-        params={customTaskParams} 
-        setParams={setCustomTaskParams} 
-        onSubmit={handleCustomTaskSubmit} 
-        allMatieres={allMatieres} 
+      <CustomTaskModal
+        isOpen={customTaskModalOpen}
+        onClose={() => setCustomTaskModalOpen(false)}
+        params={customTaskParams}
+        setParams={setCustomTaskParams}
+        onSubmit={handleCustomTaskSubmit}
+        allMatieres={allMatieres}
       />
 
       <AuditDashboard isOpen={auditModalOpen} onClose={() => setAuditModalOpen(false)} />
 
-      {/* Confirmation modale pour jour de repos (remplace window.confirm) */}
-      <AnimatePresence>
-        {restDayConfirmOpen && (
-          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div className="modal-content glass-panel" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} style={{ maxWidth: '420px', width: '90%', textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>☕</div>
-              <h2 style={{ marginBottom: '0.5rem' }}>Activer un jour de repos ?</h2>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-                Il te reste <strong>{1 - restDaysUsed}</strong> jour{1 - restDaysUsed > 1 ? 's' : ''} de repos pour cette semaine.
-                Ton streak ne sera pas brisé.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <button className="btn-secondary" onClick={() => setRestDayConfirmOpen(false)}>Annuler</button>
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="btn-primary" style={{ background: 'var(--accent-primary)' }} onClick={() => { activateRestDay(); setRestDayConfirmOpen(false); toast.success('Jour de repos activé. Bon repos !'); }}>Confirmer</motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Jour de repos : même modale accessible que partout ailleurs (Échap, focus piégé) */}
+      <ConfirmModal
+        isOpen={restDayConfirmOpen}
+        onConfirm={() => {
+          activateRestDay();
+          setRestDayConfirmOpen(false);
+          toast.success('Jour de repos activé. Bon repos !');
+        }}
+        onCancel={() => setRestDayConfirmOpen(false)}
+        title="Activer un jour de repos ?"
+        message={`Il te reste ${1 - restDaysUsed} jour${1 - restDaysUsed > 1 ? 's' : ''} de repos pour cette semaine.\nTa série ne sera pas brisée.`}
+        confirmLabel="Confirmer"
+      />
     </motion.div>
   );
 }

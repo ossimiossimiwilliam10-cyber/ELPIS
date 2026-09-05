@@ -3,7 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { z } = require('zod');
-const { callDeepSeek } = require('../aiAdapter');
+const { consulter } = require('../moteur/repetiteur');
 const { atomicWriteFileSync } = require('../utils/fileUtils');
 const { createApiError } = require('../middleware/errorHandler');
 
@@ -64,20 +64,30 @@ router.post('/', async (req, res, next) => {
 
     const { messages } = parseResult.data;
 
-    // Call DeepSeek
-    const aiResponseContent = await callDeepSeek(messages, ROOT_DIR);
+    /*
+     * Réponse calculée localement, sur les vraies tables.
+     *
+     * L'appel distant joignait un contexte lu dans `data/espoir_cours.json` et
+     * `data/espoir_historique.json` — deux fichiers disparus lors du passage à
+     * SQLite. Il transmettait donc un cursus vide et un historique vide : le
+     * modèle ne connaissait que le règlement de la licence, et rien de
+     * l'étudiant. Chaque réponse était une conversation générique, facturée à
+     * l’appel, sur des données inexistantes.
+     *
+     * Le Répétiteur lit les tables réelles. Sur les questions qui portent sur
+     * les données — programme du jour, retards, moyennes, avancement, épreuves,
+     * absences — il ne peut pas inventer un chiffre, et il dispose toujours de
+     * l'état courant. Sur le règlement, il cite le texte sans le commenter. Sur
+     * le reste, il dit qu'il ne sait pas.
+     */
+    const derniere = [...messages].reverse().find(m => m.role === 'user');
+    const reponse = consulter(derniere?.content || '');
 
-    // Append the AI response to the history
-    const finalMessages = [...messages, { role: 'assistant', content: aiResponseContent }];
-
-    // Save to disk
+    const finalMessages = [...messages, { role: 'assistant', content: reponse.texte }];
     atomicWriteFileSync(CHAT_FILE, JSON.stringify(finalMessages, null, 2));
 
-    res.json({ content: aiResponseContent });
+    res.json({ content: reponse.texte, intention: reponse.intention, compris: reponse.compris });
   } catch (err) {
-    if (err.message?.includes('DeepSeek') || err.message?.includes('API')) {
-      err.code = 'AI_SERVICE_ERROR';
-    }
     next(err);
   }
 });

@@ -1,0 +1,188 @@
+/* ============================================================
+   Préparation hebdomadaire — l'état de la réserve d'exercices
+   ============================================================ */
+
+.hebdo-page { display: flex; flex-direction: column; gap: var(--esp-6); }
+
+/* ---------- Avis ---------- */
+
+.hebdo-avis {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--attention-voile);
+  border: 1px solid var(--attention);
+  border-radius: var(--rayon-md);
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}
+.hebdo-avis strong { color: var(--texte-fort); }
+
+/* ---------- Engagements ---------- */
+
+.hebdo-engagement {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: var(--rayon-md);
+}
+/* Une fin antérieure au début se lit comme un passage à minuit : l'inversion
+   accidentelle devenait un engagement de 22 h, sans un mot. */
+.hebdo-engagement.est-suspecte { border-color: var(--attention); }
+
+.hebdo-engagement select,
+.hebdo-engagement input {
+  min-height: 34px;
+  padding: var(--esp-1) var(--esp-2);
+  font-size: var(--texte-sm);
+}
+.hebdo-engagement__matiere { flex: 1; min-width: 160px; }
+
+.hebdo-engagement__duree {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-doux);
+  white-space: nowrap;
+}
+.hebdo-engagement__duree.est-suspecte { color: var(--attention); }
+
+/* ---------- Cartes de matière ---------- */
+
+.hebdo-matieres {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
+  gap: var(--esp-4);
+  align-items: start;
+}
+
+.hebdo-matiere__chemin {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hebdo-matiere__nom {
+  margin: var(--esp-1) 0 var(--esp-4);
+  padding-bottom: var(--esp-3);
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  border-bottom: 1px solid var(--bord-discret);
+}
+
+/* ---------- Une réserve (TD, TP ou annales) ---------- */
+
+.hebdo-reserve { margin-bottom: var(--esp-4); }
+.hebdo-reserve:last-child { margin-bottom: 0; }
+
+.hebdo-reserve__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-2);
+}
+.hebdo-reserve__intitule { font-size: var(--texte-sm); font-weight: var(--graisse-forte); color: var(--texte-fort); }
+
+.hebdo-reserve__compte {
+  margin-top: 2px;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.hebdo-reserve__compte b {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-normal);
+}
+.hebdo-reserve__manque { color: var(--danger); }
+.hebdo-reserve__ok { color: var(--succes); font-size: var(--texte-sm); white-space: nowrap; }
+
+/* ============================================================
+   Mise en situation professionnelle (stages & apprentissage)
+   ============================================================ */
+
+.stage-page { display: flex; flex-direction: column; gap: var(--esp-6); max-width: 1000px; }
+
+.stage-formulaire {
+  display: flex;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-top: var(--esp-4);
+}
+.stage-formulaire > div { flex: 1 1 180px; }
+.stage-formulaire > div.est-etroit { flex: 0 1 130px; }
+
+.stage-liste { display: flex; flex-direction: column; gap: var(--esp-4); }
+
+.stage-carte { position: relative; }
+
+.stage-carte__entete {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-5);
+  padding-right: var(--esp-6);
+}
+.stage-carte__identite { flex: 1; min-width: 0; }
+.stage-carte__titre { margin: 0; font-size: var(--texte-lg); font-weight: var(--graisse-forte); color: var(--texte-fort); }
+.stage-carte__employeur { margin-top: var(--esp-1); font-size: var(--texte-sm); color: var(--texte-doux); }
+
+.stage-carte__fermer {
+  position: absolute;
+  top: var(--esp-3);
+  right: var(--esp-3);
+}
+
+.stage-progression { margin-bottom: var(--esp-5); }
+.stage-progression__chiffres {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-2);
+  font-size: var(--texte-sm);
+  color: var(--texte-doux);
+}
+.stage-progression__chiffres strong {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-fort);
+}
+.stage-progression__atteint { color: var(--succes); margin-left: var(--esp-2); }
+
+.stage-actions {
+  display: flex;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.stage-compteur { display: flex; gap: var(--esp-2); align-items: center; }
+.stage-compteur input {
+  width: 84px;
+  text-align: center;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.stage-interruption {
+  display: flex;
+  gap: var(--esp-3);
+  align-items: center;
+  flex-wrap: wrap;
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--danger-voile);
+  border: 1px solid var(--danger);
+  border-radius: var(--rayon-md);
+}
+.stage-interruption__etat { font-size: var(--texte-sm); font-weight: var(--graisse-forte); color: var(--danger); }

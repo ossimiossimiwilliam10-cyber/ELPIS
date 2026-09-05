@@ -22,9 +22,6 @@ Stocke les réglages de l'application (préférences utilisateur, profil d'étud
   "profil": {
     "fatigueChronique": false,
     "chronobiologie": "morning_lark"
-  },
-  "deepseek": {
-    "model": "deepseek-chat"
   }
 }
 ```

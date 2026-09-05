@@ -101,7 +101,7 @@
 |---------|-----------|-------------|
 | `extract_pdf.py` | 📜 Script | Extraction de texte depuis les PDFs uploadés |
 | `.editorconfig` | 🔧 Config | Configuration de style d'édition (indentation, charset, fin de ligne) |
-| `.env.example` | 🔧 Config | Exemple de fichier d'environnement (DEEPSEEK_API_KEY, ADMIN_PASSWORD) |
+| `.env.example` | 🔧 Config | Exemple de fichier d'environnement (ADMIN_PASSWORD seul) |
 | `.github/workflows/agent_audit.yml` | 🏗️ Infra | GitHub Action — audit cloud cron horaire avec auto-commit |
 | `.github/workflows/ci.yml` | 🏗️ Infra | GitHub Action — CI : tests à chaque push/PR |
 
@@ -112,7 +112,11 @@
 | Fichier | Catégorie | Description |
 |---------|-----------|-------------|
 | `interface/bridge/server.js` | 🌉 Backend | Serveur Express — Helmet, CORS, rate limiting, 10 routes API, sert le build React |
-| `interface/bridge/aiAdapter.js` | 🌉 Backend | Adaptateur DeepSeek — callDeepSeek(), buildAIContext(), system prompt |
+| `interface/bridge/moteur/stockage.js` | 🌉 Backend | Registre de source du moteur — SQLite (PC) ou documents (téléphone) |
+| `interface/web/src/moteur/sourceLocale.js` | 🖥️ Frontend | Branche le moteur sur les documents de l'appareil |
+| `interface/web/src/moteur/rapportLocal.js` | 🖥️ Frontend | Programme du jour calculé sur le téléphone |
+| `interface/web/src/utils/liaison.js` | 🖥️ Frontend | Sonde de liaison avec le PC (bouton Synchroniser) |
+| `interface/bridge/moteur/repetiteur/` | 🌉 Backend | Le Répétiteur — connaissances.js, intentions.js, reponses.js, reglement.js, consulter() |
 | `interface/bridge/mongoAdapter.js` | 🌉 Backend | Stub MongoDB — désactivé, ELPIS 100% local |
 | `interface/bridge/package.json` | 🔧 Config | Dépendances backend (Express 5, better-sqlite3, Helmet, Zod 4) |
 | `interface/bridge/db/setup.js` | 🌉 Backend | Initialisation SQLite — better-sqlite3, WAL, 7 tables |
@@ -131,7 +135,7 @@
 | `interface/bridge/moteur/telemetry.js` | ⚙️ Moteur | Télémétrie — log sessions et actions |
 | `interface/bridge/moteur/utils.js` | ⚙️ Moteur | Utilitaires dates — normalisation ISO, DD-MM-YYYY → YYYY-MM-DD |
 | `interface/bridge/routes/anki.js` | 🌉 Backend | Route Anki — GET/POST /api/anki/* |
-| `interface/bridge/routes/chat.js` | 🌉 Backend | Route Chat — GET/POST/DELETE /api/chat (DeepSeek) |
+| `interface/bridge/routes/chat.js` | 🌉 Backend | Route du Répétiteur — GET/POST/DELETE /api/chat (calcul local) |
 | `interface/bridge/routes/config.js` | 🌉 Backend | Route Config — GET/POST /api/config |
 | `interface/bridge/routes/cours.js` | 🌉 Backend | Route Cours — GET/POST /api/cours |
 | `interface/bridge/routes/historique.js` | 🌉 Backend | Route Historique — GET/POST /api/historique |
@@ -141,7 +145,8 @@
 | `interface/bridge/routes/system.js` | 🌉 Backend | Route Système — upload PDF, shutdown, audit |
 | `interface/bridge/routes/telemetry.js` | 🌉 Backend | Route Télémétrie — POST /api/telemetry/* |
 | `interface/bridge/services/auditAgent.js` | 🌉 Backend | Lanceur agent Python — spawn agent_audit/main.py |
-| `interface/bridge/tests/aiAdapter.test.js` | 🧪 Test | Tests adaptateur DeepSeek |
+| `interface/bridge/tests/repetiteur.test.js` | 🧪 Test | Le Répétiteur — intentions, chiffres, aveu d'incompréhension |
+| `interface/bridge/tests/repetiteurEtendu.test.js` | 🧪 Test | Le Répétiteur — absences, épreuves, ambiguïté, garde « demain », règlement |
 | `interface/bridge/tests/config.test.js` | 🧪 Test | Tests validation config |
 | `interface/bridge/tests/cours.test.js` | 🧪 Test | Tests gestion cours |
 | `interface/bridge/tests/intelligence.test.js` | 🧪 Test | Tests intelligence (45 scénarios burnout paramétrés) |
@@ -176,7 +181,7 @@
 | `interface/web/src/Sidebar.jsx` | 🖥️ Frontend | Navigation latérale — 3 groupes, badge tâches, streak |
 | `interface/web/src/StatistiquesPage.jsx` | 🖥️ Frontend | Stats et performances — Recharts, KPIs, projections |
 | `interface/web/src/ToastProvider.jsx` | 🖥️ Frontend | Système notifications toast — contexte React |
-| `interface/web/src/components/AICoachSidebar.jsx` | 🖥️ Frontend | Coach IA — panneau chat DeepSeek |
+| `interface/web/src/components/Repetiteur.jsx` | 🖥️ Frontend | Le Répétiteur — panneau de questions/réponses, calcul local |
 | `interface/web/src/components/AuditDashboard.jsx` | 🖥️ Frontend | Dashboard d'audit — anomalies agent Python |
 | `interface/web/src/components/BackgroundMusicPlayer.jsx` | 🖥️ Frontend | Lecteur musique adaptatif — calm/motivational |
 | `interface/web/src/components/DisclaimerModal.jsx` | 🖥️ Frontend | Modal conditions d'utilisation |

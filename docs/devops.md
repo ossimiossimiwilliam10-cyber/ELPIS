@@ -17,7 +17,7 @@ Le projet utilise GitHub Actions pour garantir la qualité du code.
 - **Action** : Lance le Système Immunitaire (`python agent_audit/main.py --once`), qui scanne le dépôt, corrige les bugs, fait un `git commit` et push les corrections directement sur GitHub.
 
 ### En Local (Windows)
-- Le développeur peut lancer le script `start_elpis.bat` ou `Lancer ELPIS.vbs` pour démarrer simultanément le frontend (Vite) et l'agent d'audit en arrière-plan.
+- Le développeur peut lancer `Lancer ELPIS.vbs` (ou le raccourci ELPIS du bureau) : le lanceur démarre le moteur sans console, attend la réponse de `/api/health` et ouvre l'application en fenêtre autonome.
 - L'agent local fait des vérifications régulières. S'il corrige un fichier, il s'assure d'ajouter uniquement ce fichier, de commiter, et de pusher sans perturber le travail en cours du développeur.
 
 ## 3. Backups et File System

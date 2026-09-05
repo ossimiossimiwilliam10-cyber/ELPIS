@@ -1,5 +1,12 @@
 {
   "appId": "com.elpis.app",
   "appName": "ELPIS",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
 }

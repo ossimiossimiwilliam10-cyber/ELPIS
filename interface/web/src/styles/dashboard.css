@@ -1,0 +1,410 @@
+/* ============================================================
+   Tableau de bord — la page d'accueil
+   ============================================================ */
+
+/* ---------- Bandeau de rappel ---------- */
+
+/* Le rappel d'inscription pédagogique s'affichait en rouge plein écran, avec
+   le même poids visuel qu'une erreur bloquante. C'est une échéance à ne pas
+   oublier, pas une panne : ton « attention », et une place mesurée. */
+.tdb-rappel {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-4);
+  flex-wrap: wrap;
+  padding: var(--esp-4) var(--esp-5);
+  background: var(--attention-voile);
+  border: 1px solid var(--attention);
+  border-radius: var(--rayon-lg);
+  margin-bottom: var(--esp-5);
+}
+.tdb-rappel__texte { flex: 1; min-width: 260px; font-size: var(--texte-sm); color: var(--texte-normal); }
+.tdb-rappel__texte strong { color: var(--texte-fort); }
+
+/* ---------- Barre d'actions ---------- */
+
+.tdb-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-5);
+}
+
+.tdb-menu { position: relative; }
+
+.tdb-menu__panneau {
+  position: absolute;
+  top: calc(100% + var(--esp-2));
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  padding: var(--esp-2);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-normal);
+  border-radius: var(--rayon-md);
+  box-shadow: var(--ombre-3);
+}
+
+.tdb-menu__item {
+  padding: var(--esp-2) var(--esp-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--rayon-sm);
+  color: var(--texte-normal);
+  font-family: inherit;
+  font-size: var(--texte-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.tdb-menu__item:hover { background: var(--surface-2); color: var(--texte-fort); }
+.tdb-menu__item:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* ---------- Progression de la journée ---------- */
+
+.tdb-progression {
+  padding: var(--esp-4);
+  background: var(--surface-2);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-md);
+  margin-bottom: var(--esp-5);
+}
+
+.tdb-progression__chiffres {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-3);
+  font-size: var(--texte-sm);
+  color: var(--texte-doux);
+}
+.tdb-progression__chiffres strong {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-fort);
+}
+
+/* Ce qui est estimé plutôt que mesuré : dit, mais discrètement. */
+.tdb-progression__note {
+  margin: var(--esp-3) 0 0;
+  font-size: var(--texte-xs, 0.78rem);
+  line-height: 1.45;
+  color: var(--texte-doux);
+}
+
+/* ---------- Charge du jour ---------- */
+
+.tdb-charge__entete {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-4);
+}
+.tdb-charge__entete h2 { margin: 0; }
+
+.tdb-charge__mesures {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-2);
+  font-size: var(--texte-sm);
+  color: var(--texte-doux);
+}
+.tdb-charge__mesures strong {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-fort);
+}
+
+.tdb-charge__verdict {
+  margin-top: var(--esp-4);
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: var(--rayon-md);
+  border-left: 3px solid var(--liseré);
+  background: var(--fond);
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}
+.tdb-charge__verdict strong { color: var(--texte-fort); }
+.tdb-charge__verdict--tenable { --liseré: var(--succes); --fond: var(--succes-voile); }
+.tdb-charge__verdict--surcharge { --liseré: var(--danger); --fond: var(--danger-voile); }
+
+/* ---------- Pied de page ---------- */
+
+.tdb-pied {
+  margin-top: var(--esp-8);
+  padding: var(--esp-5) 0 var(--esp-4);
+  border-top: 1px solid var(--bord-discret);
+  text-align: center;
+}
+
+.tdb-pied button {
+  background: transparent;
+  border: none;
+  color: var(--texte-doux);
+  font-family: inherit;
+  font-size: var(--texte-xs);
+  cursor: pointer;
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--rayon-sm);
+}
+.tdb-pied button:hover { color: var(--texte-normal); background: var(--surface-1); }
+
+/* ---------- Squelette de chargement ---------- */
+
+.tdb-squelette { display: flex; flex-direction: column; gap: var(--esp-5); padding: var(--esp-5) 0; }
+.tdb-squelette__ligne { display: flex; gap: var(--esp-5); flex-wrap: wrap; }
+.tdb-squelette__mesure { display: flex; flex-direction: column; align-items: center; gap: var(--esp-2); }
+
+/* ============================================================
+   Session du jour
+   ============================================================ */
+
+.session-page { display: flex; flex-direction: column; gap: var(--esp-5); }
+
+.session-entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+}
+.session-entete__reste { font-size: var(--texte-sm); color: var(--texte-doux); }
+
+/* ---------- Bandeau de progression ---------- */
+
+.session-avancement {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-5);
+  padding: var(--esp-5);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-lg);
+}
+.session-avancement__etat {
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.session-avancement__etat.est-terminee { color: var(--succes); }
+.session-avancement__detail { margin-top: var(--esp-1); font-size: var(--texte-sm); color: var(--texte-doux); }
+
+/* ---------- Alerte de fatigue ---------- */
+
+.session-fatigue {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-4);
+  flex-wrap: wrap;
+  padding: var(--esp-4) var(--esp-5);
+  background: var(--attention-voile);
+  border: 1px solid var(--attention);
+  border-radius: var(--rayon-lg);
+}
+.session-fatigue__corps { flex: 1; min-width: 240px; }
+.session-fatigue__titre { font-size: var(--texte-md); font-weight: var(--graisse-forte); color: var(--attention); }
+.session-fatigue__texte { margin-top: var(--esp-1); font-size: var(--texte-sm); color: var(--texte-normal); }
+
+/* ---------- Fil des exercices ---------- */
+
+.session-fil { display: flex; flex-direction: column; gap: var(--esp-3); position: relative; }
+.session-fil__element { position: relative; padding-left: 30px; }
+
+.session-chargement { display: flex; justify-content: center; padding: var(--esp-8); }
+
+/* ---------- Constats du planificateur ---------- */
+
+.constats { display: flex; flex-direction: column; gap: var(--esp-3); margin-top: var(--esp-4); }
+
+.constat {
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: var(--rayon-md);
+  border-left: 3px solid var(--teinte);
+  background: var(--voile);
+}
+.constat--danger    { --teinte: var(--danger);    --voile: var(--danger-voile); }
+.constat--attention { --teinte: var(--attention); --voile: var(--attention-voile); }
+.constat--info      { --teinte: var(--info);      --voile: var(--info-voile); }
+.constat--succes    { --teinte: var(--succes);    --voile: var(--succes-voile); }
+.constat--accent    { --teinte: var(--accent);    --voile: var(--accent-voile); }
+
+.constat__titre {
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--teinte);
+  margin-bottom: var(--esp-1);
+}
+.constat__corps { font-size: var(--texte-sm); color: var(--texte-normal); }
+.constat__corps strong { color: var(--texte-fort); }
+.constat__ligne { margin-top: var(--esp-2); }
+.constat__ligne:first-child { margin-top: 0; }
+
+.constat__etiquettes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin-top: var(--esp-2);
+}
+
+/* ---------- Progression par paliers ---------- */
+
+.prog-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-1);
+}
+
+.prog-corps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: var(--esp-4);
+  margin-top: var(--esp-4);
+}
+
+.prog-semaine, .prog-palier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  background: var(--surface-2);
+  border-radius: var(--rayon-md);
+}
+
+.prog-semaine__entete { display: flex; align-items: baseline; justify-content: space-between; gap: var(--esp-2); }
+.prog-semaine__titre { font-size: var(--texte-sm); font-weight: var(--graisse-forte); color: var(--texte-fort); }
+.prog-semaine__compte {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-sm);
+  color: var(--texte-doux);
+}
+.prog-semaine__compte.est-tenue { color: var(--succes); font-weight: var(--graisse-forte); }
+.prog-semaine__aide { font-size: var(--texte-xs); color: var(--texte-doux); }
+
+.prog-palier { border-left: 3px solid var(--accent); }
+.prog-palier.est-complete { border-left-color: var(--succes); }
+.prog-palier__rang {
+  font-size: var(--texte-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: var(--graisse-forte);
+  color: var(--accent-clair);
+}
+.prog-palier__titre { font-size: var(--texte-md); font-weight: var(--graisse-forte); color: var(--texte-fort); }
+.prog-palier__critere { font-size: var(--texte-xs); color: var(--texte-doux); }
+.prog-palier__mesure {
+  align-self: flex-end;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+
+.prog-budget {
+  margin-top: var(--esp-4);
+  padding-top: var(--esp-3);
+  border-top: 1px solid var(--bord-discret);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.prog-budget strong { color: var(--texte-normal); font-variant-numeric: tabular-nums; }
+
+/* ---------- Vitesse en conditions d'examen ---------- */
+
+.vitesse-liste { display: flex; flex-direction: column; gap: var(--esp-3); margin-top: var(--esp-4); }
+
+.vitesse-ligne {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--surface-2);
+  border-radius: var(--rayon-md);
+  border-left: 3px solid var(--teinte, var(--bord-net));
+}
+.vitesse-ligne.est-critique { --teinte: var(--danger); }
+.vitesse-ligne.est-juste { --teinte: var(--attention); }
+.vitesse-ligne.est-confortable { --teinte: var(--succes); }
+
+.vitesse-ligne__identite {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+}
+.vitesse-ligne__nom {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+/* Un diagnostic tiré d'une seule mesure est rendu, mais présenté comme tel. */
+.vitesse-ligne__reserve { font-size: var(--texte-xs); font-style: italic; color: var(--texte-doux); }
+
+.vitesse-ligne__mesure { font-size: var(--texte-xs); color: var(--texte-doux); }
+.vitesse-ligne__mesure b {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-normal);
+}
+
+.vitesse-verdict {
+  margin-top: var(--esp-4);
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--attention-voile);
+  border-left: 3px solid var(--attention);
+  border-radius: var(--rayon-md);
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}
+
+/* ---------- Couverture du programme ---------- */
+
+.couv-liste { display: flex; flex-direction: column; gap: var(--esp-3); margin-top: var(--esp-4); }
+
+.couv-ligne {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--surface-2);
+  border-radius: var(--rayon-md);
+  border-left: 3px solid var(--teinte, var(--bord-net));
+}
+.couv-ligne.est-hors-delai { --teinte: var(--danger); }
+.couv-ligne.est-tendu { --teinte: var(--attention); }
+
+.couv-ligne__identite { display: flex; align-items: center; gap: var(--esp-2); flex-wrap: wrap; }
+.couv-ligne__nom {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.couv-ligne__mesure { font-size: var(--texte-xs); color: var(--texte-doux); }
+.couv-ligne__mesure b {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--texte-normal);
+}
+
+.couv-verdict {
+  margin-top: var(--esp-4);
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--danger-voile);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--rayon-md);
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}

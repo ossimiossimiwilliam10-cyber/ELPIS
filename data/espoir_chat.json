@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "Bonjour "
+  },
+  {
+    "role": "assistant",
+    "content": "Bonjour. La rentrée est dans 3 jours, le 7 septembre 2026. Ton cursus est en place — 19 matières, 11 UE — mais aucun chapitre n’y figure encore. Demande-moi « qu’est-ce qui manque ? » et je te dis par quoi commencer."
+  }
+]

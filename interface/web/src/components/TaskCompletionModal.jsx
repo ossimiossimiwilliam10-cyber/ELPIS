@@ -2,19 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { parseTimeInput } from '../utils/timeParser';
+import { RETENTION, DIFFICULTY_LEVELS } from '../constants';
 
-const CM_SCORE_LABELS = [
-  { value: 1, label: 'Échec', short: '1', color: '#ef4444', desc: 'Oubli total (Again)' },
-  { value: 2, label: 'Difficile', short: '2', color: '#f59e0b', desc: 'Avec effort (Hard)' },
-  { value: 3, label: 'Bon', short: '3', color: '#3b82f6', desc: 'Correct (Good)' },
-  { value: 4, label: 'Facile', short: '4', color: '#10b981', desc: 'Sans effort (Easy)' },
-];
-
-const DIFFICULTY_LABELS = [
-  { value: 'Difficile', label: 'Difficile', color: '#ef4444' },
-  { value: 'Moyen', label: 'Moyen', color: '#f59e0b' },
-  { value: 'Facile', label: 'Facile', color: '#10b981' },
-];
 
 /**
  * Modale affichée lors de la complétion d'une tâche depuis le Dashboard.
@@ -24,6 +13,7 @@ export default function TaskCompletionModal({ isOpen, onClose, onSubmit, taskTit
   const [minutes, setMinutes] = useState(defaultMinutes || 30);
   const [score, setScore] = useState(null); // Used for CM (FSRS score 1-4)
   const [difficulte, setDifficulte] = useState(null); // Used for TD/TP/ANNALE
+  const [note, setNote] = useState(''); // Used for ANNALE (note /20)
   const overlayRef = useRef(null);
 
   useEffect(() => {
@@ -31,19 +21,23 @@ export default function TaskCompletionModal({ isOpen, onClose, onSubmit, taskTit
       setMinutes(defaultMinutes || 30);
       setScore(null);
       setDifficulte(null);
+      setNote('');
     }
   }, [isOpen, defaultMinutes]);
 
   const handleSubmit = useCallback(() => {
     if (taskType === 'CM' && score === null) return; // Validation require for CM
-    
+
+    const noteParsee = note === '' ? undefined : parseFloat(note);
+
     onSubmit({
       minutes: parseTimeInput(minutes) || 1,
       sm2Score: score, // Only for CM
       difficulte: difficulte,
+      note: Number.isFinite(noteParsee) ? noteParsee : undefined, // Only for ANNALE
     });
     onClose();
-  }, [taskType, score, minutes, difficulte, onSubmit, onClose]);
+  }, [taskType, score, minutes, difficulte, note, onSubmit, onClose]);
 
   // Handle Enter to submit, Escape to close
   useEffect(() => {
@@ -153,32 +147,67 @@ export default function TaskCompletionModal({ isOpen, onClose, onSubmit, taskTit
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.7rem', color: 'var(--text-primary)', fontSize: '0.95rem' }}>
                   🧠 Niveau de rétention
                 </label>
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between' }}>
-                  {CM_SCORE_LABELS.map((s) => (
+                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between' }} role="group" aria-label="Niveau de rétention">
+                  {RETENTION.map(({ note: valeur, libelle, couleur, aide }) => (
                     <button
-                      key={s.value}
-                      onClick={() => setScore(s.value)}
-                      title={s.desc}
+                      key={valeur}
+                      onClick={() => setScore(valeur)}
+                      title={aide}
+                      aria-pressed={score === valeur}
                       style={{
                         flex: 1,
                         padding: '0.7rem 0.3rem',
-                        background: score === s.value ? `${s.color}33` : 'var(--bg-tertiary)',
-                        border: score === s.value ? `2px solid ${s.color}` : '2px solid transparent',
+                        background: score === valeur ? 'var(--surface-2)' : 'var(--bg-tertiary)',
+                        border: score === valeur ? `2px solid ${couleur}` : '2px solid transparent',
                         borderRadius: '10px',
-                        color: score === s.value ? s.color : 'var(--text-secondary)',
-                        fontWeight: score === s.value ? 'bold' : 'normal',
+                        color: score === valeur ? couleur : 'var(--text-secondary)',
+                        fontWeight: score === valeur ? 'bold' : 'normal',
                         cursor: 'pointer',
                         transition: 'all 0.15s',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         gap: '0.2rem',
+                        fontFamily: 'inherit',
                       }}
                     >
-                      <span style={{ fontSize: '1.3rem' }}>{s.short}</span>
-                      <span style={{ fontSize: '0.7rem', opacity: 0.8 }}>{s.label}</span>
+                      <span style={{ fontSize: '1.3rem' }}>{valeur}</span>
+                      <span style={{ fontSize: '0.7rem', opacity: 0.9 }}>{libelle}</span>
                     </button>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Note obtenue (Annales) — alimente la règle d'urgence de l'orchestrateur */}
+            {taskType === 'ANNALE' && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label htmlFor="note-annale" style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '0.95rem' }}>
+                  📊 Note obtenue (optionnel)
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    id="note-annale"
+                    type="number"
+                    min="0"
+                    max="20"
+                    step="0.5"
+                    value={note}
+                    placeholder="ex: 14"
+                    onChange={(e) => setNote(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem',
+                      paddingRight: '3rem',
+                      background: 'var(--bg-primary)',
+                      border: '1px solid var(--bg-tertiary)',
+                      borderRadius: '8px',
+                      color: 'var(--text-primary)',
+                      fontSize: '1.1rem',
+                      textAlign: 'center',
+                    }}
+                  />
+                  <span style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }}>/20</span>
                 </div>
               </div>
             )}
@@ -189,27 +218,32 @@ export default function TaskCompletionModal({ isOpen, onClose, onSubmit, taskTit
                 <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.7rem', color: 'var(--text-primary)', fontSize: '0.95rem' }}>
                   📈 Difficulté ressentie (Optionnel)
                 </label>
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between' }}>
-                  {DIFFICULTY_LABELS.map((s) => (
+                <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'space-between' }} role="group" aria-label="Difficulté ressentie">
+                  {DIFFICULTY_LEVELS.map(({ key, label, title }) => (
                     <button
-                      key={s.value}
-                      onClick={() => setDifficulte(s.value === difficulte ? null : s.value)} // Toggle
+                      key={key}
+                      onClick={() => setDifficulte(key === difficulte ? null : key)}
+                      title={title}
+                      aria-label={title}
+                      aria-pressed={difficulte === key}
                       style={{
                         flex: 1,
-                        padding: '0.6rem 0.3rem',
-                        background: difficulte === s.value ? `${s.color}33` : 'var(--bg-tertiary)',
-                        border: difficulte === s.value ? `2px solid ${s.color}` : '2px solid transparent',
+                        padding: '0.6rem 0.2rem',
+                        background: difficulte === key ? 'var(--surface-2)' : 'var(--bg-tertiary)',
+                        border: difficulte === key ? '2px solid var(--accent)' : '2px solid transparent',
                         borderRadius: '10px',
-                        color: difficulte === s.value ? s.color : 'var(--text-secondary)',
-                        fontWeight: difficulte === s.value ? 'bold' : 'normal',
+                        color: 'var(--text-secondary)',
                         cursor: 'pointer',
                         transition: 'all 0.15s',
                         display: 'flex',
-                        justifyContent: 'center',
+                        flexDirection: 'column',
                         alignItems: 'center',
+                        gap: '0.15rem',
+                        fontFamily: 'inherit',
                       }}
                     >
-                      <span style={{ fontSize: '0.85rem' }}>{s.label}</span>
+                      <span aria-hidden="true" style={{ fontSize: '1rem' }}>{label}</span>
+                      <span style={{ fontSize: '0.65rem', opacity: 0.9 }}>{title}</span>
                     </button>
                   ))}
                 </div>
@@ -237,7 +271,9 @@ export default function TaskCompletionModal({ isOpen, onClose, onSubmit, taskTit
                 disabled={isSubmitDisabled}
                 style={{
                   padding: '0.6rem 1.5rem',
-                  background: isSubmitDisabled ? 'var(--bg-tertiary)' : 'var(--accent-primary)',
+                  // Le blanc sur --accent ne donnait que 3,68 de contraste ;
+                  // --accent-fort le porte à 5,17, comme .el-bouton--primaire.
+                  background: isSubmitDisabled ? 'var(--bg-tertiary)' : 'var(--accent-fort)',
                   border: 'none',
                   borderRadius: '8px',
                   color: isSubmitDisabled ? 'var(--text-tertiary)' : '#fff',

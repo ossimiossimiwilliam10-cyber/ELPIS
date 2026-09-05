@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { loadHistorique, saveHistorique, clearHistorique } = require('../moteur/historique');
 const { historiqueSchema } = require('../moteur/schemas');
+const { controleVersion, incrementerVersion } = require('../moteur/versions');
+
+// Annonce la version courante en lecture, refuse une ecriture fondee sur
+// une version perimee. Voir moteur/versions.js.
+router.use(controleVersion('historique', loadHistorique));
 
 // GET history
 router.get('/', (req, res, next) => {
@@ -29,7 +34,7 @@ router.post('/', (req, res, next) => {
       return res.status(500).json({ error: "Erreur sauvegarde historique." });
     }
     global.dbVersion = (global.dbVersion || 0) + 1;
-    res.json({ success: true, message: "Historique mis à jour." });
+    res.json({ success: true, message: "Historique mis à jour.", version: incrementerVersion('historique') });
   } catch (err) {
     next(err);
   }
@@ -42,7 +47,7 @@ router.post('/clear', (req, res, next) => {
     if (!success) {
       return res.status(500).json({ error: "Erreur lors de la suppression de l'historique." });
     }
-    res.json({ message: "Historique vidé" });
+    res.json({ message: "Historique vidé", version: incrementerVersion('historique') });
   } catch (err) {
     next(err);
   }

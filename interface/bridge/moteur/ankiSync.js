@@ -272,19 +272,38 @@ async function syncAnkiRetention(subjects = [], days = 365) {
           // Construire la query avec le nom exact du deck
           const deckQuery = `rated:${days} deck:"${match.deckName}"`;
 
+          /*
+           * Ces deux requêtes échouaient en silence, et leur silence mentait.
+           *
+           * La première : un deck illisible rendait `sTotal = 0`, c'est-à-dire
+           * exactement ce que rend un deck réellement sans carte révisée. La
+           * seconde est pire encore : sans réponse, `sFailed` vaut 0, donc
+           * aucune carte ratée, donc 100 % de rétention — une requête refusée
+           * se présentait comme un sans-faute.
+           *
+           * On distingue donc les deux cas. Une lecture qui échoue est
+           * signalée et la matière est écartée du calcul, plutôt que d'y
+           * entrer avec des chiffres flatteurs.
+           */
           let subjAll = [];
+          let lectureEchouee = false;
           try {
             subjAll = await invokeAnkiConnect('findCards', { query: deckQuery });
-          } catch (_) {
-            // Le deck peut ne pas exister ou la query peut échouer
+          } catch (e) {
+            lectureEchouee = true;
+            console.error(`AnkiConnect : deck "${match.deckName}" illisible :`, e.message);
           }
 
           const subjFailedQuery = `rated:${days}:1 deck:"${match.deckName}"`;
           let subjFailed = [];
           try {
             subjFailed = await invokeAnkiConnect('findCards', { query: subjFailedQuery });
-          } catch (_) {
-            // Certaines versions d'AnkiConnect ne supportent pas rated:X:Y avec deck
+          } catch (e) {
+            // Certaines versions d'AnkiConnect ne gèrent pas `rated:X:Y` avec
+            // un deck. On ne peut alors pas compter les échecs, donc pas
+            // établir de rétention : mieux vaut ne rien annoncer.
+            lectureEchouee = true;
+            console.error(`AnkiConnect : échecs du deck "${match.deckName}" illisibles :`, e.message);
           }
 
           const sTotal = subjAll && subjAll.length ? subjAll.length : 0;
@@ -293,10 +312,11 @@ async function syncAnkiRetention(subjects = [], days = 365) {
           return {
             subject: subjectName,
             matchedDeck: match.deckName,
-            matchMethod: match.matchMethod,
+            matchMethod: lectureEchouee ? 'lecture-echouee' : match.matchMethod,
             sTotal,
             sFailed,
-            isUnmatched: sTotal === 0
+            lectureEchouee,
+            isUnmatched: lectureEchouee || sTotal === 0
           };
         } catch (e) {
           console.error(`AnkiConnect Error for subject ${subject.name || subject}:`, e.message);
@@ -307,12 +327,12 @@ async function syncAnkiRetention(subjects = [], days = 365) {
       const batchResults = await Promise.all(batchPromises);
       for (const result of batchResults) {
         if (!result) continue;
-        const { subject, matchedDeck, matchMethod, sTotal, sFailed, isUnmatched } = result;
+        const { subject, matchedDeck, matchMethod, sTotal, sFailed, isUnmatched, lectureEchouee } = result;
 
-        deckMappings.push({ subject, matchedDeck, matchMethod });
+        deckMappings.push({ subject, matchedDeck, matchMethod, lectureEchouee: Boolean(lectureEchouee) });
 
         if (isUnmatched) {
-          unmatchedSubjects.push({ subject, matchMethod });
+          unmatchedSubjects.push({ subject, matchMethod, lectureEchouee: Boolean(lectureEchouee) });
           continue;
         }
 

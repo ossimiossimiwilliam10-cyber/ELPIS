@@ -15,13 +15,22 @@ let toastId = 0;
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
-  const addToast = useCallback((message, type = 'info', duration = 4000) => {
+  /**
+   * @param {object} [action] bouton facultatif : `{ libelle, onAction }`.
+   *   C'est par lui que passe « Annuler » : proposer la réparation à l'endroit
+   *   et au moment où l'on constate l'erreur vaut mieux que de laisser
+   *   chercher, dans un menu, une commande dont on ignore l'existence.
+   */
+  const addToast = useCallback((message, type = 'info', duration = 4000, action = null) => {
     const id = ++toastId;
-    setToasts(prev => [...prev, { id, message, type }]);
-    if (duration > 0) {
+    setToasts(prev => [...prev, { id, message, type, action }]);
+    // Une notification porteuse d'une action reste plus longtemps : il faut le
+    // temps de lire, de comprendre qu'on s'est trompé, puis de viser.
+    const delai = duration > 0 && action ? Math.max(duration, 8000) : duration;
+    if (delai > 0) {
       setTimeout(() => {
         setToasts(prev => prev.filter(t => t.id !== id));
-      }, duration);
+      }, delai);
     }
     return id;
   }, []);
@@ -31,10 +40,10 @@ export function ToastProvider({ children }) {
   }, []);
 
   const toast = {
-    success: (msg, dur) => addToast(msg, 'success', dur),
-    error: (msg, dur) => addToast(msg, 'error', dur || 6000),
-    info: (msg, dur) => addToast(msg, 'info', dur),
-    warning: (msg, dur) => addToast(msg, 'warning', dur),
+    success: (msg, dur, action) => addToast(msg, 'success', dur, action),
+    error: (msg, dur, action) => addToast(msg, 'error', dur || 6000, action),
+    info: (msg, dur, action) => addToast(msg, 'info', dur, action),
+    warning: (msg, dur, action) => addToast(msg, 'warning', dur, action),
   };
 
   // Fix: useCallback can't wrap an object directly. Provide via value.
@@ -62,8 +71,24 @@ export function ToastProvider({ children }) {
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               onClick={() => removeToast(t.id)}
             >
-              <span className="toast-icon">{icons[t.type]}</span>
+              <span className="toast-icon" aria-hidden="true">{icons[t.type]}</span>
               <span className="toast-message">{t.message}</span>
+              {t.action && (
+                <button
+                  type="button"
+                  className="toast-action"
+                  onClick={(e) => {
+                    // Le corps de la notification la referme : sans cela, le
+                    // clic sur l'action la déclencherait et la fermerait dans
+                    // le même geste, sans que le résultat soit annonçable.
+                    e.stopPropagation();
+                    t.action.onAction?.();
+                    removeToast(t.id);
+                  }}
+                >
+                  {t.action.libelle}
+                </button>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>

@@ -1,0 +1,150 @@
+/* ============================================================
+   Liste des tâches du jour
+   ============================================================ */
+
+.liste-taches {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  margin-top: var(--esp-4);
+  /* Hauteur bornée à l'écran, libérée à l'impression (voir la règle @media print). */
+  max-height: 460px;
+  overflow-y: auto;
+  padding-right: var(--esp-2);
+}
+
+.tache {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  /* Le liseré porte la couleur du type d'activité : on lit la composition
+     d'une journée sans lire les libellés. */
+  border-left: 3px solid var(--liseré, var(--accent));
+  border-radius: var(--rayon-md);
+  transition: border-color var(--duree-vive) var(--courbe),
+              box-shadow var(--duree-vive) var(--courbe);
+}
+.tache:hover { border-color: var(--bord-net); }
+
+/* Pendant le déplacement, la ligne se détache du fond. */
+.tache.est-saisie {
+  box-shadow: var(--ombre-3);
+  border-color: var(--accent);
+}
+
+.tache__rang {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border-radius: var(--rayon-sm);
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-doux);
+}
+
+.tache__corps { flex: 1; min-width: 0; }
+
+.tache__titre {
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  line-height: var(--interligne-serre);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tache__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  margin-top: var(--esp-1);
+}
+
+.tache__matiere { font-size: var(--texte-sm); color: var(--texte-doux); }
+
+.tache__moment {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  padding: 0.1rem var(--esp-2);
+  background: var(--surface-2);
+  border-radius: var(--rayon-full);
+}
+
+.tache__motifs {
+  margin-top: var(--esp-2);
+  font-size: var(--texte-xs);
+  color: var(--accent-clair);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tache__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-shrink: 0;
+}
+
+.tache__duree {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  padding: var(--esp-1) var(--esp-2);
+  background: var(--surface-2);
+  border-radius: var(--rayon-sm);
+  white-space: nowrap;
+}
+
+.tache__valider { min-width: 72px; }
+
+/* Sur petit écran, les actions passent sous le contenu plutôt que de le
+   comprimer jusqu'à l'illisible. */
+@media (max-width: 640px) {
+  .tache { flex-wrap: wrap; }
+  .tache__corps { flex-basis: calc(100% - 40px); }
+  .tache__actions { width: 100%; justify-content: flex-end; }
+  .tache__titre { white-space: normal; }
+}
+
+/* À l'impression, la liste se déroule entièrement : bornée à 460 px, seules
+   les premières tâches sortaient sur la feuille. */
+@media print {
+  .liste-taches { max-height: none; overflow: visible; }
+  .tache { break-inside: avoid; }
+  .tache__actions { display: none; }
+}
+
+/* ============================================================
+   Progression par matière (tableau de bord)
+   ============================================================ */
+
+.progression-matieres {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: var(--esp-4);
+}
+
+.progression-matiere__nom {
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.progression-matiere__valeur {
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  flex-shrink: 0;
+}

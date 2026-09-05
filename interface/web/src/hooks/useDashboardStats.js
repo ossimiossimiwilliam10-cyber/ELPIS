@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import useStore from '../store';
-import { getTodayStr } from '../utils/dateUtils';
+import { getTodayStr, isFromToday } from '../utils/dateUtils';
 
 /**
  * Hook pour les statistiques du Dashboard.
@@ -71,7 +71,7 @@ export function useDashboardStats() {
   const tempsTravailleToday = useMemo(() => {
     if (!historique) return 0;
     return historique
-      .filter(h => h.date === todayStr && h.dureeMinutes)
+      .filter(h => h.dureeMinutes && isFromToday(h, todayStr))
       .reduce((sum, h) => sum + h.dureeMinutes, 0);
   }, [historique, todayStr]);
 

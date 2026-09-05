@@ -1,0 +1,311 @@
+/* ============================================================
+   Langues — pratique régulière hors cursus
+   ============================================================
+
+   La page se lit en deux temps : l'en-tête d'une langue dit où l'on en est,
+   les trois volets disent quoi faire. Le volet proposé du jour est le seul mis
+   en avant : sans cette hiérarchie, trois panneaux identiques laissent le
+   choix — et le choix, répété chaque jour, finit par coûter plus cher que la
+   séance elle-même.
+   ============================================================ */
+
+.langues-page { display: flex; flex-direction: column; gap: var(--esp-6); }
+
+/* ---------- En-tête d'une langue ---------- */
+
+.langue-carte { display: flex; flex-direction: column; gap: var(--esp-4); }
+
+.langue-carte--inactive { opacity: 0.55; }
+
+.langue-entete {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+}
+
+.langue-entete__drapeau {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.langue-entete__nom {
+  margin: 0;
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+
+.langue-entete__cadence {
+  font-size: var(--texte-sm);
+  color: var(--texte-doux);
+}
+
+/* ---------- Régularité tenue ---------- */
+
+.langue-regularite {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+  min-width: 180px;
+}
+
+.langue-regularite__ligne {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+
+/* ---------- Volets ---------- */
+
+.langue-volets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--esp-3);
+  align-items: stretch;
+}
+
+.langue-volet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-md);
+  background: var(--surface-2);
+}
+
+/* Le volet du jour : c'est celui que l'orchestrateur a retenu. */
+.langue-volet--propose {
+  border-color: var(--type-langue);
+  background: var(--type-langue-voile);
+}
+
+/* Un volet sans lien ni deck n'ouvre rien : le dire vaut mieux que
+   d'afficher un bouton inerte. */
+.langue-volet--vide { opacity: 0.6; }
+
+.langue-volet__entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--esp-2);
+}
+
+.langue-volet__titre {
+  margin: 0;
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+
+.langue-volet__meta {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  line-height: var(--interligne-normal);
+}
+
+.langue-volet__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  margin-top: auto;
+}
+
+/* ---------- Réglages ---------- */
+
+.langue-reglages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+}
+
+.langue-reglages__groupe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding-top: var(--esp-3);
+  border-top: 1px solid var(--bord-discret);
+}
+
+.langue-reglages__legende {
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.langue-reglages__paire {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: var(--esp-3);
+}
+
+/* ---------- Choix du drapeau ---------- */
+
+.selecteur-drapeau {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+
+/*
+ * Une grille qui défile verticalement plutôt qu'une bande horizontale : à la
+ * souris, un défilement latéral se manœuvre mal, et la molette tombe juste ici.
+ */
+.selecteur-drapeau__grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: var(--esp-2);
+  max-height: 172px;
+  overflow-y: auto;
+  padding: var(--esp-2);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-md);
+  background: var(--fond-creux, transparent);
+}
+
+.selecteur-drapeau__choix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--rayon-sm, 6px);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.selecteur-drapeau__choix:hover {
+  background: var(--fond-survol, rgba(127, 127, 127, 0.14));
+}
+
+.selecteur-drapeau__choix:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.selecteur-drapeau__choix--actif {
+  border-color: var(--accent);
+  background: var(--fond-survol, rgba(127, 127, 127, 0.14));
+}
+
+/* ---------- Cartes générées, avant envoi dans Anki ---------- */
+
+.langue-apercu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.langue-apercu__carte {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: var(--esp-3);
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--rayon-sm);
+  background: var(--surface-2);
+  font-size: var(--texte-sm);
+}
+
+.langue-apercu__recto { font-weight: var(--graisse-forte); color: var(--texte-fort); }
+.langue-apercu__verso { color: var(--texte-doux); }
+
+/* ---------- Repere de niveau ---------- */
+
+.langue-niveau {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+  min-width: 150px;
+}
+
+.langue-niveau__code {
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-lourde);
+  color: var(--type-langue);
+  line-height: 1;
+}
+
+/* Marque discrete d'un niveau impose plutot qu'estime. */
+.langue-niveau__marque {
+  margin-left: 0.15em;
+  color: var(--texte-doux);
+}
+
+.langue-niveau__detail {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+
+/* ---------- Liste d'adresses nommees ---------- */
+
+.langue-liens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+}
+
+.langue-liens__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+
+.langue-liens__entree {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--rayon-sm);
+  background: var(--surface-2);
+}
+
+.langue-liens__nom {
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  font-size: var(--texte-sm);
+}
+
+/* L'adresse d'un fil de discussion est longue et sans interet visuel :
+   elle sert a lever un doute, pas a etre lue. */
+.langue-liens__url {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.langue-liens__ajout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  gap: var(--esp-3);
+  align-items: end;
+}
+
+@media (max-width: 640px) {
+  .langue-liens__ajout { grid-template-columns: 1fr; }
+}
+
+/* ---------- Consigne copiable ---------- */
+
+.langue-consigne {
+  width: 100%;
+  resize: vertical;
+  font-family: var(--police-mono);
+  font-size: var(--texte-xs);
+  line-height: var(--interligne-normal);
+}

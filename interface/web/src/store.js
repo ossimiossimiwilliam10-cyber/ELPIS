@@ -1,6 +1,5 @@
 /**
  * @typedef {object} ElpisConfig
- * @property {number} [targetGrade]
  * @property {number} [currentStreak]
  * @property {number} [bestStreak]
  * @property {string} [lastActiveDate]
@@ -42,10 +41,16 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import debounce from 'lodash/debounce';
-import { getDb, syncFromBackend } from './database';
+import { getDb, synchroniser, enregistrerCollection } from './database';
+import {
+  PILE_VIDE, empiler, annuler as depiler, retablir as repiler,
+  peutAnnuler, peutRetablir, prochaineAnnulation,
+} from './utils/annulation';
 
 // API base URL
 import { getApiUrl } from './utils/apiConfig';
+import { estApplicationNative } from './utils/apiConfig';
+import { calculerRapportLocal } from './moteur/rapportLocal';
 import { fetchWithRetry, fetchFireAndForget } from './utils/fetchWithRetry';
 import logger from './utils/logger';
 
@@ -57,74 +62,69 @@ const handleOfflineError = (type, error) => {
   window.dispatchEvent(new Event('elpis_offline_status_changed'));
 };
 
-// Auto-save functions using debounce
-const debouncedSaveConfig = debounce(async (config, get) => {
-  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
-  if (!navigator.onLine) return handleOfflineError('config', new Error('Offline'));
+/*
+ * Un seul rafraîchissement du rapport, quel que soit le nombre de collections
+ * enregistrées.
+ *
+ * Chaque enregistrement déclenchait le sien. Au démarrage, config, cours,
+ * historique et projets partent à 500 ms d’intervalle : quatre requêtes
+ * successives, et quatre recalculs complets côté serveur — FSRS, urgences
+ * d'examen, charge cognitive, fatigue. Les fusionner à la volée ne suffisait
+ * pas, elles ne se chevauchent pas ; il faut les regrouper dans le temps.
+ */
+const rafraichirRapport = debounce((get) => {
+  if (get) get().fetchOrchestrator();
+}, 400);
+
+/**
+ * Enregistrement différé d'une collection.
+ *
+ * Les quatre sauvegardes ne différaient que par leur route et leur clé de
+ * journal. Les réunir n'est pas qu'une économie de lignes : le passage par
+ * `enregistrerCollection` — qui annonce la version et refusionne en cas de
+ * refus — devait sinon être répété quatre fois, et c'est précisément le genre
+ * de règle qu'on oublie d'appliquer à la quatrième copie.
+ */
+const enregistrementDiffere = (nom) => debounce(async (data, get) => {
+  if (get && get().error) return logger.warn("Sauvegarde annulée : le store n'a pas pu s'initialiser.");
+  if (!navigator.onLine) return handleOfflineError(nom, new Error('Hors ligne'));
   try {
-    const apiBase = getApiUrl();
-    const res = await fetchWithRetry(`${apiBase}/config`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    });
-    if (!res.ok) throw new Error('API Error');
-    if (get) get().fetchOrchestrator();
+    const resultat = await enregistrerCollection(nom, data);
+    if (resultat.refusionne) {
+      // La fusion réécrit RxDB ; les souscriptions installées par `initData`
+      // répercutent le résultat dans le store sans qu'on ait à le relire.
+      logger.warn(`[sync] ${nom} : écriture concurrente, fusion appliquée.`);
+    }
+    rafraichirRapport(get);
   } catch (e) {
-    handleOfflineError('config', e);
+    handleOfflineError(nom, e);
   }
 }, 500);
 
-const debouncedSaveCours = debounce(async (coursConfig, get) => {
-  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
-  if (!navigator.onLine) return handleOfflineError('cours', new Error('Offline'));
-  try {
-    const apiBase = getApiUrl();
-    const res = await fetchWithRetry(`${apiBase}/cours`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(coursConfig)
-    });
-    if (!res.ok) throw new Error('API Error');
-    if (get) get().fetchOrchestrator();
-  } catch (e) {
-    handleOfflineError('cours', e);
-  }
-}, 500);
+/** Requête de rapport en vol, partagée par les appels concurrents identiques. */
+let requeteOrchestrateur = null;
+let cleOrchestrateur = null;
 
-const debouncedSaveHistorique = debounce(async (historique, get) => {
-  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
-  if (!navigator.onLine) return handleOfflineError('historique', new Error('Offline'));
-  try {
-    const apiBase = getApiUrl();
-    const res = await fetchWithRetry(`${apiBase}/historique`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(historique)
-    });
-    if (!res.ok) throw new Error('API Error');
-    if (get) get().fetchOrchestrator();
-  } catch (e) {
-    handleOfflineError('historique', e);
-  }
-}, 500);
+/**
+ * Deux appels rapprochés au même rapport n'en font qu'un.
+ *
+ * Le chargement en émet deux à moins de cent millisecondes d'écart — la fin de
+ * l'initialisation, puis la réconciliation de démarrage — auxquels s'ajoute
+ * celui de la page affichée. Ils ne se chevauchent pas toujours, donc le
+ * partage de promesse ne suffit pas. Une fenêtre courte les regroupe sans
+ * masquer un rafraîchissement voulu : passé ce délai, tout appel repart.
+ */
+const FENETRE_RAPPORT_MS = 250;
+let dernierRapportA = 0;
+let dernierRapportCle = null;
 
-const debouncedSaveProjets = debounce(async (projets, get) => {
-  if (get && get().error) return logger.warn("Save aborted: Store initialization failed.");
-  if (!navigator.onLine) return handleOfflineError('projets', new Error('Offline'));
-  try {
-    const apiBase = getApiUrl();
-    const res = await fetchWithRetry(`${apiBase}/projets`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(projets)
-    });
-    if (!res.ok) throw new Error('API Error');
-    if (get) get().fetchOrchestrator();
-  } catch (e) {
-    handleOfflineError('projets', e);
-  }
-}, 500);
+const debouncedSaveConfig = enregistrementDiffere('config');
+
+const debouncedSaveCours = enregistrementDiffere('cours');
+
+const debouncedSaveHistorique = enregistrementDiffere('historique');
+
+const debouncedSaveProjets = enregistrementDiffere('projets');
 
 // Helper to write to RxDB
 const writeToDb = async (collectionName, data) => {
@@ -183,8 +183,49 @@ const useStore = create(immer((set, get) => ({
   setForcedTask: (task) => set({ forcedTask: task }),
 
   // --- ORCHESTRATOR FETCH (global, used by all pages) ---
+  /*
+   * Une seule requête à la fois pour un même paramétrage.
+   *
+   * Chaque collection enregistrée déclenche un rafraîchissement du rapport, et
+   * il y en a quatre : config, cours, historique, projets. Au démarrage, quatre
+   * requêtes identiques partaient donc en quelques millisecondes, et le serveur
+   * recalculait quatre fois le même programme — FSRS, urgences d’examen, charge
+   * cognitive, fatigue. Les appels concurrents partagent désormais la même
+   * promesse ; celui qui arrive pendant qu’un autre vole obtient son résultat
+   * sans relancer le calcul.
+   */
   fetchOrchestrator: async (params = {}) => {
     const { extraTime = 0, fillGap = false } = params;
+    const cle = `${extraTime}|${fillGap}`;
+    if (requeteOrchestrateur && cleOrchestrateur === cle) return requeteOrchestrateur;
+    if (dernierRapportCle === cle && Date.now() - dernierRapportA < FENETRE_RAPPORT_MS) return;
+
+    /*
+     * Sur le téléphone, le programme du jour se calcule ici.
+     *
+     * L'appareil embarque le moteur — les mêmes fichiers que le PC, alimentés
+     * par ses propres documents — et n'a donc plus besoin de demander quoi que
+     * ce soit pour savoir quoi réviser. C'était la dernière dépendance qui
+     * rendait l'application inutilisable PC éteint.
+     *
+     * Le PC, lui, garde la voie serveur : elle est éprouvée, elle bénéficie du
+     * cache de l'orchestrateur, et surtout elle sait interroger Anki, ce que le
+     * navigateur du téléphone ne peut pas faire.
+     */
+    if (estApplicationNative()) {
+      const rapport = calculerRapportLocal({ extraTime, fillGap });
+      set({
+        orchestratorData: rapport,
+        intelligence: rapport.intelligence || null,
+        pendingTasksCount: rapport.tachesDuJour?.length || 0,
+      });
+      dernierRapportA = Date.now();
+      dernierRapportCle = cle;
+      return rapport;
+    }
+
+    cleOrchestrateur = cle;
+    requeteOrchestrateur = (async () => {
     try {
       const apiBase = getApiUrl();
       const res = await fetchWithRetry(`${apiBase}/orchestrateur?extraTime=${extraTime}&fillGap=${fillGap}`);
@@ -195,11 +236,38 @@ const useStore = create(immer((set, get) => ({
           intelligence: data.intelligence || null,
           pendingTasksCount: data.tachesDuJour?.length || 0
         });
+      } else {
+        // Sans cette trace, un serveur qui répond 500 laissait `orchestratorData`
+        // à null et les pages tournaient indéfiniment sur leur écran de chargement.
+        logger.error("Orchestrateur : réponse invalide", res.status);
+        set({ orchestratorData: { error: `HTTP ${res.status}` } });
       }
     } catch (e) {
       logger.error("Failed to fetch orchestrator", e);
+      set({ orchestratorData: { error: e?.message || 'NETWORK_ERROR' } });
     }
+    })().finally(() => {
+      requeteOrchestrateur = null;
+      cleOrchestrateur = null;
+      dernierRapportA = Date.now();
+      dernierRapportCle = cle;
+    });
+
+    return requeteOrchestrateur;
   },
+
+  /**
+   * Décompte une tâche du jour qui vient d'être validée.
+   *
+   * `pendingTasksCount` n'était rafraîchi que par `fetchOrchestrator`. Terminer
+   * toutes ses tâches ne déverrouillait donc ni « Avance & Bonus » ni « Projets »
+   * et laissait le badge de la barre latérale allumé jusqu'au rechargement complet
+   * de l'application. La décompte local prend effet immédiatement ; le prochain
+   * rapport de l'orchestrateur fait ensuite autorité.
+   */
+  notifyTaskCompleted: () => set(state => {
+    state.pendingTasksCount = Math.max(0, (state.pendingTasksCount || 0) - 1);
+  }),
 
   // --- CHRONO STATE MOVED TO useChronoStore TO PREVENT RE-RENDERS ---
 
@@ -207,16 +275,40 @@ const useStore = create(immer((set, get) => ({
     await get().fetchOrchestrator({ extraTime: 0, fillGap: false });
   },
 
+  /** Compte rendu de la dernière réconciliation, pour que l'interface puisse le dire. */
+  dernierBilanSync: null,
+
+  /**
+   * Relance une réconciliation avec le serveur.
+   *
+   * Appelée au retour du réseau et depuis la Configuration. C'est le seul
+   * moment où le travail accumulé hors ligne rejoint l'autre appareil, d'où
+   * l'intérêt de pouvoir la déclencher soi-même plutôt que d'attendre le
+   * prochain démarrage.
+   */
+  resynchroniser: async () => {
+    if (!navigator.onLine) return { collections: [], conflits: [], erreurs: [{ collection: 'reseau', message: 'Hors ligne' }] };
+    try {
+      const db = await getDb();
+      const bilan = await synchroniser(db);
+      set(state => { state.dernierBilanSync = bilan; });
+      if (bilan.erreurs.length === 0) {
+        localStorage.removeItem('elpis_offline_pending_sync');
+        window.dispatchEvent(new Event('elpis_offline_status_changed'));
+      }
+      await get().fetchOrchestrator();
+      return bilan;
+    } catch (e) {
+      logger.error('Réconciliation impossible', e);
+      return { collections: [], conflits: [], erreurs: [{ collection: 'sync', message: e?.message || String(e) }] };
+    }
+  },
+
   // Fetch all initial data
   initData: async () => {
     set({ loading: true, error: null });
     try {
       const db = await getDb();
-
-      // Au premier lancement ou mode online, synchroniser depuis le serveur
-      if (navigator.onLine) {
-        await syncFromBackend(db);
-      }
 
       // Initialiser l'état depuis RxDB
       const configDoc = await db.config.findOne('main').exec();
@@ -231,6 +323,34 @@ const useStore = create(immer((set, get) => ({
         state.projets = projDoc?.data || [];
         state.loading = false;
       });
+
+      /*
+       * La réconciliation part maintenant *après* l'affichage, et sans être
+       * attendue.
+       *
+       * Elle bloquait le premier rendu. Sur un serveur joignable, cela ne se
+       * voyait pas ; sur un serveur absent — le cas normal d'un téléphone hors
+       * du réseau — chaque collection épuisait ses trois tentatives de quinze
+       * secondes, l'une après l'autre, et l'application restait sur son écran
+       * de chargement plusieurs minutes avant d'afficher des données qu'elle
+       * avait pourtant déjà en local.
+       *
+       * C'est le principe même d'une application qui fonctionne hors ligne :
+       * l'interface s'appuie sur la copie locale, et le réseau ne fait que la
+       * rattraper. Les souscriptions RxDB installées juste après répercuteront
+       * le résultat de la fusion dès qu'il arrivera.
+       */
+      if (navigator.onLine) {
+        synchroniser(db)
+          .then(bilan => {
+            if (bilan.conflits.length > 0) {
+              logger.warn(`[sync] ${bilan.conflits.length} arbitrage(s) au démarrage.`);
+            }
+            set(state => { state.dernierBilanSync = bilan; });
+            get().fetchOrchestrator();
+          })
+          .catch(e => logger.error('Réconciliation au démarrage', e));
+      }
 
       // Souscrire aux modifications de RxDB pour mise à jour en temps réel
       // Nettoyer les anciennes souscriptions avant d'en créer de nouvelles
@@ -261,18 +381,95 @@ const useStore = create(immer((set, get) => ({
   },
 
   // Update config state and trigger auto-save
-  setConfig: (newConfig) => set(state => {
-    state.config = newConfig;
-    writeToDb('config', newConfig);
-    debouncedSaveConfig(newConfig, get);
+  /**
+   * Pile d'annulation. Voir `utils/annulation.js` pour le raisonnement.
+   *
+   * Seuls les trois setters passent par elle. La réconciliation, elle, écrit
+   * directement dans RxDB : ce que l'autre appareil a fait n'est pas un geste
+   * de celui-ci, et pouvoir « annuler » le travail de son PC depuis son
+   * téléphone n'aurait aucun sens.
+   */
+  pileAnnulation: PILE_VIDE,
+
+  /**
+   * Applique un état retenu par la pile, sans le réenregistrer.
+   *
+   * Passer par les setters normaux garantit que l'annulation emprunte
+   * exactement le même chemin qu'une modification ordinaire : écriture locale,
+   * puis sauvegarde et synchronisation. Une annulation n'est pas un cas
+   * particulier — c'est une modification comme une autre, qui se propage à
+   * l'autre appareil de la même façon.
+   */
+  _appliquer: (collection, etat) => {
+    const options = { silencieux: true };
+    if (collection === 'config') get().setConfig(etat, options);
+    else if (collection === 'cours') get().setCoursConfig(etat, options);
+    else if (collection === 'projets') get().setProjets(etat, options);
+  },
+
+  /** Défait le dernier geste. Rend son libellé, ou null s'il n'y avait rien. */
+  annulerDernierGeste: () => {
+    const { pile, geste, etat } = depiler(get().pileAnnulation);
+    if (!geste) return null;
+    set(state => { state.pileAnnulation = pile; });
+    get()._appliquer(geste.collection, etat);
+    return geste.libelle;
+  },
+
+  /** Refait le dernier geste annulé. */
+  retablirDernierGeste: () => {
+    const { pile, geste, etat } = repiler(get().pileAnnulation);
+    if (!geste) return null;
+    set(state => { state.pileAnnulation = pile; });
+    get()._appliquer(geste.collection, etat);
+    return geste.libelle;
+  },
+
+  /** Ce que l'interface a besoin de savoir pour proposer l'annulation. */
+  etatAnnulation: () => ({
+    peutAnnuler: peutAnnuler(get().pileAnnulation),
+    peutRetablir: peutRetablir(get().pileAnnulation),
+    dernierGeste: prochaineAnnulation(get().pileAnnulation)?.libelle || null,
   }),
 
+  /** Mémorise un geste avant de l'appliquer. `silencieux` en dispense. */
+  _memoriser: (collection, avant, apres, libelle, silencieux) => {
+    if (silencieux) return;
+    set(state => {
+      state.pileAnnulation = empiler(state.pileAnnulation, {
+        collection, avant, apres, libelle, date: new Date().toISOString(),
+      });
+    });
+  },
+
+  setConfig: (newConfig, options = {}) => {
+    get()._memoriser('config', get().config, newConfig, options.libelle || 'Réglage modifié', options.silencieux);
+    set(state => {
+      state.config = newConfig;
+    });
+    writeToDb('config', newConfig);
+    debouncedSaveConfig(newConfig, get);
+  },
+
+  /**
+   * Remplace tout l'historique.
+   * Nécessaire à la remise à zéro : sans cette action, les séances passées
+   * survivaient à la « suppression totale ».
+   */
+  setHistorique: (newHistorique) => {
+    const liste = Array.isArray(newHistorique) ? newHistorique : [];
+    set(state => { state.historique = liste; });
+    writeToDb('historique', liste);
+    debouncedSaveHistorique(liste, get);
+  },
+
   // Update projets state and save
-  setProjets: (newProjets) => set(state => {
-    state.projets = newProjets;
+  setProjets: (newProjets, options = {}) => {
+    get()._memoriser('projets', get().projets, newProjets, options.libelle || 'Projets modifiés', options.silencieux);
+    set(state => { state.projets = newProjets; });
     writeToDb('projets', newProjets);
     debouncedSaveProjets(newProjets, get);
-  }),
+  },
 
   activateRestDay: async () => {
     const config = get().config;
@@ -408,7 +605,8 @@ const useStore = create(immer((set, get) => ({
   },
 
   // Update cours state and trigger auto-save
-  setCoursConfig: (newCoursConfig) => {
+  setCoursConfig: (newCoursConfig, options = {}) => {
+    get()._memoriser('cours', get().coursConfig, newCoursConfig, options.libelle || 'Cursus modifié', options.silencieux);
     set(state => { state.coursConfig = newCoursConfig; });
     writeToDb('cours', newCoursConfig);
     debouncedSaveCours(newCoursConfig, get);
@@ -611,29 +809,21 @@ useChronoStore.subscribe((state) => {
   }
 });
 
-// Initialiser le listener réseau pour la synchronisation
+/**
+ * Retour du réseau : on réconcilie, on n'impose pas.
+ *
+ * Ce point renvoyait les quatre collections de l'appareil au serveur, en bloc.
+ * Sur un poste unique, cela réparait une sauvegarde manquée ; avec un second
+ * appareil, cela effaçait purement et simplement le travail fait ailleurs
+ * pendant la coupure — le trajet en train écrasant la matinée au bureau, ou
+ * l'inverse. La réconciliation garde les deux.
+ */
 if (typeof window !== 'undefined') {
   window.addEventListener('online', async () => {
     window.dispatchEvent(new Event('elpis_offline_status_changed'));
-    if (localStorage.getItem('elpis_offline_pending_sync') === 'true') {
-      const state = useStore.getState();
-
-      // Forcer la synchronisation de toutes les données locales vers le serveur
-      // Since debouncedSave... are debounced, we can just call them.
-      // Wait, we need to access the store methods or fetch directly.
-      // But debouncedSaveConfig is not exported. We can just do a fetch here.
-      try {
-        const apiBase = getApiUrl();
-        await Promise.all([
-          fetchWithRetry(`${apiBase}/config`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.config) }),
-          fetchWithRetry(`${apiBase}/cours`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.coursConfig) }),
-          fetchWithRetry(`${apiBase}/historique`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.historique) }),
-          fetchWithRetry(`${apiBase}/projets`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.projets) })
-        ]);
-        localStorage.removeItem('elpis_offline_pending_sync');
-      } catch (e) {
-        logger.error('Offline sync failed again', e);
-      }
+    const bilan = await useStore.getState().resynchroniser();
+    if (bilan?.conflits?.length) {
+      logger.warn(`[sync] retour en ligne : ${bilan.conflits.length} arbitrage(s).`);
     }
   });
 

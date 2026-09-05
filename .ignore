@@ -1,0 +1,7 @@
+# Fichiers écartés des recherches de code (ripgrep, éditeurs).
+# Le bundle Android compilé contient une copie minifiée de toute l'interface :
+# sans cette liste, chaque recherche remonte deux fois le même code, une fois
+# lisible et une fois illisible.
+interface/web/android/app/build/
+interface/web/dist/
+Sauvegarde Elpîs/

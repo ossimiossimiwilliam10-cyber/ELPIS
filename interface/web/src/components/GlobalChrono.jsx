@@ -13,6 +13,12 @@ export default function GlobalChrono() {
   const { prompt, isOpen, config, handleConfirm, handleCancel } = useInputModal();
 
   const [isVisible, setIsVisible] = useState(true);
+  // Détecté une fois : un appareil sans survol doit montrer les contrôles.
+  const [estTactile] = useState(
+    () => typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(hover: none)').matches
+  );
   const [pipWindow, setPipWindow] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const saveLockRef = useRef(false);
@@ -79,7 +85,7 @@ export default function GlobalChrono() {
 
   const openPip = async () => {
     if (!('documentPictureInPicture' in window)) {
-      alert("Votre navigateur ne supporte pas le mode Picture-in-Picture pour les documents (Essayez Google Chrome).");
+      alert("Ton navigateur ne gère pas l'affichage en vignette pour les documents. Google Chrome le permet.");
       return;
     }
     try {
@@ -434,9 +440,11 @@ export default function GlobalChrono() {
         </div>
       </div>
 
-      {/* Action buttons (visible on hover or always on touch) */}
+      {/* Boutons d'action : au survol, au focus clavier, et en permanence sur
+          écran tactile — il n'y a pas de survol au doigt, si bien que
+          « Réinitialiser » et « Terminer » étaient inatteignables sur Android. */}
       <AnimatePresence>
-        {isHovered && (
+        {(isHovered || estTactile) && (
           <motion.div
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: 'auto' }}

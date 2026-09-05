@@ -29,6 +29,13 @@ describe('Orchestrateur - Extreme Coverage', () => {
     vi.setSystemTime(new Date('2026-06-21T12:00:00Z')); // Dimanche 21 Juin 2026
 
     db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
+
+    // L'horloge est figée au dimanche 21 juin 2026, or studyStartDate vaut 07-09-2026
+    // par défaut : la règle « week-end en phase de préparation » renverrait un
+    // REPOS_OPTIONNEL avant tout calcul de charge. On place donc le début des études
+    // dans le passé — ces tests mesurent l'ordonnancement, pas la phase de préparation.
+    // saveConfig fusionne avec l'existant : les saveConfig des tests la conservent.
+    saveConfig({ studyStartDate: '01-01-2020' });
   });
 
   afterEach(() => {
@@ -105,7 +112,9 @@ describe('Orchestrateur - Extreme Coverage', () => {
   });
 
   test('Branch: Annales Unlocking & Synergy Prep Boost', () => {
-    saveConfig({ maxStudyHoursPerDay: 8 });
+    // enableTD et enableAnnales valent false par défaut : sans ces drapeaux, ni TD ni
+    // annale n'entre jamais dans le planning et le test ne mesurerait rien.
+    saveConfig({ maxStudyHoursPerDay: 8, enableTD: true, enableAnnales: true });
     const crs = getBaseCours();
     crs.licences[0].semestres[0].ues[0].matieres[0].evaluations = [{ date: '2026-07-01' }]; // ~10 days
     crs.licences[0].semestres[0].ues[0].matieres[0].listeAnnales.push({ titre: 'ANN_URGENT', difficulte: 'difficile' });

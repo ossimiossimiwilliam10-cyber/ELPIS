@@ -33,19 +33,35 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
+      // La feuille de Google Fonts était bloquée : la police Inter, sur
+      // laquelle toute la typographie est réglée, n'a jamais chargé et
+      // l'application s'affichait dans la police système.
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      // `blob:` : le lecteur affiche les images depuis la copie locale.
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
       connectSrc: ["'self'", "https:", "http:"],
       fontSrc: ["'self'", "https:", "data:"],
-      mediaSrc: ["'self'", "data:", "blob:"]
+      mediaSrc: ["'self'", "data:", "blob:"],
+      // Le lecteur de documents fait tourner pdf.js dans un worker, parfois créé
+      // depuis un blob. Sans directive explicite, `worker-src` retombe sur
+      // `script-src` — qui ne couvre pas `blob:`, et le rendu échouerait sans
+      // message clair.
+      workerSrc: ["'self'", "blob:"],
+      // Le PDF est affiché depuis une copie locale, donc depuis un blob.
+      objectSrc: ["'self'", "blob:"],
+      frameSrc: ["'self'", "blob:"]
     }
   }
 }));
 
 // Middleware: CORS
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`, 'http://localhost', 'capacitor://localhost'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', `http://localhost:${PORT}`, 'http://localhost', 'capacitor://localhost', 'https://localhost'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  // Sans cette exposition, le client ne peut pas lire la version de collection
+  // renvoyée en lecture : la fusion écrirait alors à l'aveugle.
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Elpis-Version'],
+  exposedHeaders: ['X-Elpis-Version']
 }));
 
 // Middleware: Parsing
@@ -72,15 +88,28 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
-// Middleware: Rate Limiting strict pour l'API chat (coûteuse en tokens IA)
+/*
+ * Le coach ne coûte plus rien : il calcule ses réponses sur les tables locales.
+ * Le plafond de dix requêtes par minute avait été posé quand chaque phrase
+ * partait chez un fournisseur facturé au jeton ; l'y laisser reviendrait à
+ * brider une conversation qui ne consomme qu'un accès disque. Une borne reste
+ * utile — une boucle côté client ne doit pas saturer le serveur — mais elle
+ * peut être large.
+ */
 const chatLimiter = rateLimit({
-  windowMs: 60 * 1000,       // 1 minute
-  max: 10,                    // 10 requêtes par minute
+  windowMs: 60 * 1000,
+  max: 120,
   message: { error: "Trop de requêtes sur /api/chat. Attendez avant de réessayer." },
   standardHeaders: true,
   legacyHeaders: false,
 });
 app.use('/api/chat', chatLimiter);
+
+/*
+ * Il n'y a pas de second plafond : plus rien dans ELPIS n'appelle de service
+ * extérieur. Composer une consigne de vocabulaire est un assemblage de chaînes,
+ * au même titre qu'une réponse du coach.
+ */
 
 // Middleware: Désactiver le cache API (Safari iOS PWA fix)
 app.use('/api/', (req, res, next) => {
@@ -131,11 +160,28 @@ app.use('/api/config', require('./routes/config'));
 app.use('/api/cours', require('./routes/cours'));
 app.use('/api/projets', require('./routes/projets'));
 app.use('/api/historique', require('./routes/historique'));
+app.use('/api/langues', require('./routes/langues'));
 app.use('/api/orchestrateur', require('./routes/orchestrateur'));
 app.use('/api/telemetry', require('./routes/telemetry'));
 app.use('/api/music', require('./routes/music'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api', require('./routes/system'));
+
+/**
+ * Versions de toutes les collections.
+ *
+ * Un appareil qui se réveille peut ainsi savoir en une requête ce qui a bougé,
+ * au lieu de rapatrier quatre documents pour découvrir qu'aucun n'a changé —
+ * ce qui compte quand le réseau est celui d'un téléphone.
+ */
+app.get('/api/versions', (req, res, next) => {
+  try {
+    const { toutesLesVersions } = require('./moteur/versions');
+    res.json({ success: true, versions: toutesLesVersions() });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // --- Healthcheck ---
 // Require db at module level to avoid lazy-load failures

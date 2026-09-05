@@ -1,5 +1,26 @@
 import { motion, AnimatePresence } from 'framer-motion';
 
+/**
+ * Écran d'accueil du premier lancement.
+ *
+ * Il s'appelait « Protocole d'Utilisation », s'ouvrait sur un panneau
+ * d'avertissement et vouvoyait — alors que tout le reste de l'application
+ * tutoie. Trois travers s'y ajoutaient :
+ *
+ *   - il décrivait une architecture qui n'existe plus : un cloud Render, un
+ *     iPhone, et l'instruction de « demander à l'IA de faire un Commit & Push »
+ *     après avoir ajouté un PDF. Rien de tout cela n'est vrai depuis que la
+ *     synchronisation se fait d'appareil à appareil ;
+ *   - il exigeait un engagement — « je m'engage à jouer le jeu » — avant même
+ *     d'avoir rien montré ;
+ *   - il expliquait le fonctionnement du logiciel, alors que la seule chose
+ *     qu'un nouvel arrivant a besoin de comprendre au premier écran est
+ *     *pourquoi* son honnêteté conditionne tout le reste.
+ *
+ * Ce qui subsiste tient en une idée : la répétition espacée ne fonctionne que
+ * si l'auto-évaluation est sincère. Le reste s'apprend en s'en servant, et les
+ * bulles d'aide sont là pour ça.
+ */
 export default function DisclaimerModal({ onClose }) {
   return (
     <AnimatePresence>
@@ -11,50 +32,65 @@ export default function DisclaimerModal({ onClose }) {
       >
         <motion.div
           className="disclaimer-content card glass-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="accueil-titre"
           initial={{ y: 50, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 }}
         >
           <div className="disclaimer-header">
-            <span className="disclaimer-icon">⚠️</span>
-            <h2>Protocole d'Utilisation ELPIS</h2>
+            <h2 id="accueil-titre">Bienvenue dans ELPIS</h2>
+            <p className="disclaimer-accroche">
+              ELPIS décide chaque jour de ce que tu dois réviser, à partir de ce que
+              tu as réellement retenu. Une seule chose lui est indispensable.
+            </p>
           </div>
 
           <div className="disclaimer-body custom-scrollbar-y">
+            <div className="disclaimer-section">
+              <h3>Ton évaluation doit être sincère</h3>
+              <p>
+                Après chaque révision, tu indiques si le cours était <em>oublié</em>,
+                <em> difficile</em>, <em>correct</em> ou <em>évident</em>. Cette réponse
+                n'est pas une note : c'est la mesure sur laquelle l'algorithme calcule
+                le moment où tu seras sur le point d'oublier.
+              </p>
+              <p>
+                Se surévaluer ne fait pas gagner de temps — cela repousse la révision
+                au-delà de l'oubli, et le cours est à réapprendre depuis le début.
+                Répondre <em>oublié</em> quand c'est le cas fait revenir la notion
+                plus tôt : c'est plus court, pas plus long.
+              </p>
+            </div>
 
             <div className="disclaimer-section">
-              <h3>1. L'Algorithme est Roi (FSRS) 🧠</h3>
+              <h3>La régularité prime sur la durée</h3>
               <p>
-                ELPIS repose sur la <strong>répétition espacée</strong>. L'algorithme calcule le moment précis où vous êtes sur le point d'oublier une information pour vous la faire réviser.
+                Vingt minutes chaque jour valent mieux que trois heures le dimanche.
+                Le calendrier des révisions se recalcule en continu ; si tu prends du
+                retard, ELPIS réorganise plutôt que d'accumuler.
               </p>
-              <ul className="disclaimer-list">
-                <li><strong>Soyez 100% honnête :</strong> Lors de l'évaluation (À revoir, Difficile, Bien, Parfait), ne trichez jamais. Si vous avez oublié, cliquez sur "À revoir".</li>
-                <li><strong>Respectez le planning :</strong> Faites vos sessions tous les jours. L'algorithme perd de son efficacité si vous accumulez trop de retard.</li>
-                <li><strong>Faites confiance au système :</strong> Ne révisez pas "en avance" sans raison, laissez ELPIS optimiser votre temps.</li>
-              </ul>
             </div>
 
             <div className="disclaimer-section">
-              <h3>2. Gestion des PDFs & Synchronisation (PC vs iPhone) 💻📱</h3>
+              <h3>Rien n'est définitif</h3>
               <p>
-                L'application fonctionne en réseau entre votre ordinateur et le cloud (Render).
+                Chaque élément se renomme et se supprime, et <kbd>Ctrl</kbd> +
+                <kbd>Z</kbd> annule la dernière action. Explore sans crainte
+                d'abîmer quelque chose.
               </p>
-              <ul className="disclaimer-list">
-                <li><strong>Travaillez sur PC :</strong> Pour ajouter de nouveaux cours, uploader des PDFs ou configurer vos matières, privilégiez <strong>toujours l'ordinateur</strong> (en local).</li>
-                <li><strong>Poussez les mises à jour :</strong> N'oubliez pas de demander à l'IA de faire un <strong>"Commit & Push"</strong> après avoir ajouté des PDFs locaux. Sans cela, ils n'apparaîtront jamais sur la version en ligne.</li>
-                <li><strong>iPhone pour l'action :</strong> Gardez l'iPhone pour vos sessions de révision, lire vos PDFs déjà synchronisés, et valider vos tâches quotidiennes.</li>
-              </ul>
             </div>
 
-            <div className="disclaimer-alert">
-              En respectant ces deux règles simples, vous garantissez l'efficacité de vos révisions et la stabilité de votre bibliothèque.
-            </div>
-
+            <p className="disclaimer-aide">
+              Les repères marqués d'un <span aria-hidden="true">ℹ️</span> expliquent
+              chaque indicateur. Reviens-y quand un chiffre te surprend.
+            </p>
           </div>
 
           <div className="disclaimer-footer">
             <button className="btn-primary disclaimer-btn" onClick={onClose}>
-              J'ai compris, je m'engage à jouer le jeu 🚀
+              Commencer
             </button>
           </div>
         </motion.div>

@@ -145,11 +145,58 @@ router.post('/upload/pdf', (req, res, next) => {
   });
 });
 
+/**
+ * Chemin absolu d'un document, ou `null` si le nom demandé sort du dossier.
+ *
+ * Express décode les paramètres avant de les livrer : un `%2F` encodé arrivait
+ * sous forme de séparateur, et `path.join` sortait alors du dossier des
+ * documents. Une requête vers `..%2F..%2Fdata%2Felpis.sqlite` servait la base
+ * de données entière à qui atteint le bridge — le téléphone, mais aussi tout ce
+ * qui partage le réseau ou le tailnet.
+ */
+function cheminDocumentSur(filename) {
+  if (typeof filename !== 'string' || filename.trim() === '') return null;
+  const racine = path.resolve(DOCUMENTS_DIR);
+  const cible = path.resolve(racine, filename);
+  if (cible !== racine && !cible.startsWith(racine + path.sep)) return null;
+  return cible;
+}
+
+/**
+ * Taille de chaque document, pour annoncer le poids d'une copie hors ligne
+ * avant de la lancer.
+ *
+ * Sans ce chiffre, l'application proposait de copier « tes documents » sans
+ * dire que cela pouvait représenter plusieurs centaines de mégaoctets — le
+ * genre de bouton qu'on ne presse pas deux fois.
+ */
+router.get('/documents-tailles', (req, res, next) => {
+  try {
+    if (!fs.existsSync(DOCUMENTS_DIR)) return res.json({ success: true, tailles: {} });
+    const tailles = {};
+    for (const nom of fs.readdirSync(DOCUMENTS_DIR)) {
+      const complet = path.join(DOCUMENTS_DIR, nom);
+      try {
+        const infos = fs.statSync(complet);
+        if (infos.isFile()) tailles[nom] = infos.size;
+      } catch {
+        /* Un fichier disparu entre le listage et la mesure n'est pas une erreur. */
+      }
+    }
+    res.json({ success: true, tailles });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get('/documents/:filename', (req, res, next) => {
   try {
-    const filename = req.params.filename;
-    const localPath = path.join(DOCUMENTS_DIR, filename);
-    if (fs.existsSync(localPath)) {
+    const localPath = cheminDocumentSur(req.params.filename);
+    if (!localPath) {
+      return res.status(400).json({ error: "Nom de fichier invalide" });
+    }
+
+    if (fs.existsSync(localPath) && fs.statSync(localPath).isFile()) {
       return res.sendFile(localPath);
     }
     res.status(404).json({ error: "Fichier non trouvé" });
@@ -194,3 +241,5 @@ router.get('/audit', (req, res, next) => {
 });
 
 module.exports = router;
+module.exports.cheminDocumentSur = cheminDocumentSur;
+module.exports.DOCUMENTS_DIR = DOCUMENTS_DIR;

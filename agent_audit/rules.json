@@ -232,7 +232,7 @@
             ],
             "multi_line": false,
             "file_pattern": "\\.(js|jsx|ts|tsx)$",
-            "exclude_pattern": "(server|mongoAdapter|aiAdapter|test|spec|setupTests|config|vite\\.config|playwright\\.config|eslint)\\.(js|jsx|ts)$",
+            "exclude_pattern": "(server|mongoAdapter|test|spec|setupTests|config|vite\\.config|playwright\\.config|eslint)\\.(js|jsx|ts)$",
             "auto_fix_strategy": "delete_line_or_comment",
             "fix_confidence": 70,
             "false_positive_risk": "medium",

@@ -1,0 +1,320 @@
+/* ============================================================
+   Bulletin & notes
+   ============================================================ */
+
+/* ---------- Bandeau de moyenne générale ---------- */
+
+.bulletin-bandeau {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-5);
+  flex-wrap: wrap;
+  padding: var(--esp-5);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-lg);
+  margin-bottom: var(--esp-5);
+}
+
+.bulletin-bandeau__principal { flex: 1; min-width: 240px; }
+
+.bulletin-bandeau__moyenne {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-3xl);
+  font-weight: var(--graisse-lourde);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.bulletin-bandeau__moyenne.est-acquise { color: var(--succes); }
+.bulletin-bandeau__moyenne.est-insuffisante { color: var(--danger); }
+.bulletin-bandeau__sur { font-size: var(--texte-lg); color: var(--texte-doux); font-weight: var(--graisse-normale); }
+
+.bulletin-bandeau__mesures {
+  display: flex;
+  gap: var(--esp-5);
+  flex-wrap: wrap;
+}
+
+.bulletin-mesure { text-align: right; min-width: 92px; }
+.bulletin-mesure b {
+  display: block;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  line-height: 1;
+}
+.bulletin-mesure span {
+  display: block;
+  margin-top: var(--esp-1);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+
+.bulletin-jury {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.bulletin-jury input {
+  width: 64px;
+  min-height: 32px;
+  padding: 2px var(--esp-2);
+  text-align: center;
+  font-family: var(--police-mono);
+}
+
+/* ---------- Semestres ---------- */
+
+.bulletin-semestres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-5);
+}
+
+.bulletin-semestre {
+  padding: var(--esp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-md);
+  text-align: center;
+}
+.bulletin-semestre__nom { font-size: var(--texte-xs); color: var(--texte-doux); }
+.bulletin-semestre__valeur {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-forte);
+  margin-top: var(--esp-1);
+}
+.bulletin-semestre__valeur.est-acquise { color: var(--succes); }
+.bulletin-semestre__valeur.est-insuffisante { color: var(--danger); }
+.bulletin-semestre__valeur.est-vide { color: var(--texte-doux); }
+
+/* ---------- UE ---------- */
+
+.bulletin-ue {
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-lg);
+  overflow: hidden;
+  margin-bottom: var(--esp-4);
+}
+
+.bulletin-ue__entete {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  padding: var(--esp-4) var(--esp-5);
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duree-vive) var(--courbe);
+}
+.bulletin-ue__entete:hover { background: var(--surface-2); }
+.bulletin-ue__entete:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.bulletin-ue__identite { flex: 1; min-width: 0; }
+.bulletin-ue__semestre {
+  font-size: var(--texte-xs);
+  color: var(--accent-clair);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: var(--graisse-forte);
+}
+.bulletin-ue__nom {
+  margin: var(--esp-1) 0 0;
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+
+.bulletin-ue__moyenne {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--graisse-forte);
+  white-space: nowrap;
+}
+.bulletin-ue__moyenne.est-acquise { color: var(--succes); }
+.bulletin-ue__moyenne.est-insuffisante { color: var(--danger); }
+.bulletin-ue__moyenne.est-vide { color: var(--texte-doux); font-weight: var(--graisse-normale); }
+
+.bulletin-ue__chevron { color: var(--texte-doux); font-size: var(--texte-sm); }
+
+.bulletin-ue__corps {
+  padding: var(--esp-5);
+  border-top: 1px solid var(--bord-discret);
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+}
+
+/* Bandeau des UE définitivement acquises. */
+.bulletin-ue__capitalisee {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--succes-voile);
+  border: 1px solid var(--succes);
+  border-radius: var(--rayon-md);
+}
+
+/*
+ * Moyenne provisoire : l'UE n'a pas encore assez de notes pour que sa moyenne
+ * se lise comme un résultat. Ton informatif, pas alarmant — rien à corriger,
+ * il manque simplement des épreuves. D'où le voile bleu plutôt qu'ambre.
+ */
+.bulletin-ue__provisoire {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-4);
+  margin-bottom: var(--esp-4);
+  background: var(--info-voile);
+  border: 1px solid var(--info);
+  border-radius: var(--rayon-md);
+}
+
+.bulletin-ue__provisoire-icone {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--info);
+}
+
+/* ---------- Matière ---------- */
+
+.bulletin-matiere {
+  padding: var(--esp-4);
+  background: var(--surface-2);
+  border-radius: var(--rayon-md);
+  border-left: 3px solid var(--accent);
+}
+.bulletin-matiere.est-dispensee { opacity: 0.6; }
+
+.bulletin-matiere__entete {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-3);
+}
+.bulletin-matiere__nom {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.bulletin-matiere__moyenne {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+
+.bulletin-evaluations {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: var(--esp-3);
+}
+
+/* ---------- Évaluation ---------- */
+
+.evaluation {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-sm);
+}
+.evaluation.est-verrouillee { opacity: 0.75; }
+/* Le règlement interdit qu'une note pèse plus de la moitié d'une UE. */
+.evaluation.est-hors-regle { border-color: var(--danger); }
+
+.evaluation__alerte {
+  position: absolute;
+  top: calc(-1 * var(--esp-2));
+  left: var(--esp-2);
+  padding: 1px var(--esp-2);
+  background: var(--danger);
+  color: #fff;
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  border-radius: var(--rayon-sm);
+}
+
+.evaluation__retirer {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: none;
+  border: none;
+  color: var(--texte-doux);
+  cursor: pointer;
+  font-size: var(--texte-md);
+  line-height: 1;
+  padding: var(--esp-1);
+}
+.evaluation__retirer:hover { color: var(--danger); }
+
+.evaluation__nom { padding-right: var(--esp-4); }
+
+.evaluation__reglages {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+
+.evaluation__note {
+  width: 100%;
+  text-align: center;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+}
+
+.evaluation__statut {
+  width: 100%;
+  padding: var(--esp-2);
+  border-radius: var(--rayon-sm);
+  text-align: center;
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+}
+.evaluation__statut--excuse { background: var(--info-voile); color: var(--info); border: 1px dashed var(--info); }
+.evaluation__statut--defaillant { background: var(--danger-voile); color: var(--danger); border: 1px dashed var(--danger); }
+
+.evaluation__ajouter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96px;
+  background: transparent;
+  border: 1px dashed var(--bord-normal);
+  border-radius: var(--rayon-sm);
+  color: var(--texte-doux);
+  font-family: inherit;
+  font-size: var(--texte-sm);
+  cursor: pointer;
+  transition: border-color var(--duree-vive) var(--courbe), color var(--duree-vive) var(--courbe);
+}
+.evaluation__ajouter:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-clair); }
+.evaluation__ajouter:disabled { opacity: 0.35; cursor: not-allowed; }

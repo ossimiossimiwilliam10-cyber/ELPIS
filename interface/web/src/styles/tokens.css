@@ -1,0 +1,321 @@
+/* ============================================================
+   ELPIS — Jetons de conception
+   ============================================================
+
+   Source unique des couleurs, espacements, rayons et typographies.
+
+   Trois principes :
+
+   1. SÉMANTIQUE AVANT VALEUR. On écrit `var(--surface-2)`, jamais `#1E293B`.
+      L'audit de départ relevait 250 couleurs écrites en dur dans les composants :
+      elles ne suivaient aucun des quatre thèmes horaires, si bien qu'au coucher
+      du soleil le fond changeait mais pas les cartes posées dessus.
+
+   2. ÉCHELLES COURTES. Quatre rayons, huit espacements, sept tailles de texte.
+      L'audit trouvait douze rayons différents (3px, 4px, 6px, 8px, 10px, 12px,
+      14px, 16px, 20px, 24px, 50px, 50%) — assez pour que rien ne s'aligne.
+
+   3. UNE COULEUR PAR TYPE D'ACTIVITÉ. Cours, TD, TP, annales et révisions
+      gardent la même teinte partout dans l'application : c'est ce qui permet de
+      lire un planning d'un coup d'œil sans lire les libellés.
+   ============================================================ */
+
+:root {
+  /* ---------- Palette de base ---------- */
+  --bleu-50:  #EFF6FF;
+  --bleu-300: #93C5FD;
+  --bleu-400: #60A5FA;
+  --bleu-500: #3B82F6;
+  --bleu-600: #2563EB;
+  --bleu-700: #1D4ED8;
+
+  --vert-400: #34D399;
+  --vert-500: #10B981;
+  --vert-600: #059669;
+
+  --ambre-400: #FBBF24;
+  --ambre-500: #F59E0B;
+  --ambre-600: #D97706;
+
+  --rouge-400: #F87171;
+  --rouge-500: #EF4444;
+  --rouge-600: #DC2626;
+
+  --violet-400: #C084FC;
+  --violet-500: #A855F7;
+
+  --cyan-400:  #22D3EE;
+  /* Ajouté avec le module Langues : le principe « une couleur par type
+     d'activité » impose une teinte propre, et les six autres étaient prises. */
+  --rose-400:  #F472B6;
+  --ardoise-50:  #F8FAFC;
+  --ardoise-200: #E2E8F0;
+  --ardoise-400: #94A3B8;
+  /* Ardoise éclaircie pour le texte secondaire : #94A3B8 tombait à 4,46 de
+     contraste sur --surface-2, juste sous le seuil lisible de 4,5. */
+  --ardoise-350: #A3B0C2;
+  --ardoise-500: #64748B;
+  --ardoise-700: #334155;
+  --ardoise-800: #1E293B;
+  --ardoise-900: #0F172A;
+
+  /* ---------- Surfaces (profondeur croissante) ---------- */
+  --surface-0: var(--ardoise-900);  /* fond de page */
+  --surface-1: var(--ardoise-800);  /* cartes */
+  --surface-2: var(--ardoise-700);  /* éléments imbriqués */
+  --surface-3: #475569;             /* survol, éléments actifs */
+
+  /* ---------- Texte ---------- */
+  --texte-fort:   var(--ardoise-50);
+  --texte-normal: var(--ardoise-200);
+  --texte-doux:   var(--ardoise-350);
+  --texte-inverse: var(--ardoise-900);
+
+  /* ---------- Bordures ---------- */
+  --bord-discret: rgba(148, 163, 184, 0.14);
+  --bord-normal:  rgba(148, 163, 184, 0.26);
+  --bord-net:     rgba(148, 163, 184, 0.45);
+
+  /* ---------- Voiles ----------
+     Rehauts posés sur la surface courante pour la détacher légèrement.
+     Sur fond sombre on éclaircit, sur fond clair on assombrit : un voile blanc
+     écrit en dur devenait invisible en thème clair — blanc sur blanc — et
+     c'est ce qui rendait la barre latérale et les en-têtes illisibles. */
+  --voile-faible: rgba(255, 255, 255, 0.04);
+  --voile-moyen:  rgba(255, 255, 255, 0.08);
+  --voile-fort:   rgba(255, 255, 255, 0.14);
+
+  /* Renfoncement : champs de saisie, puits, zones en retrait. Contrairement au
+     voile, il assombrit dans les deux thèmes — c'est ce qui donne la sensation
+     de creux. */
+  --creux: rgba(0, 0, 0, 0.20);
+
+  /* ---------- Accent ---------- */
+  --accent:        var(--bleu-500);
+  --accent-fort:   var(--bleu-600);
+  --accent-clair:  var(--bleu-400);
+  --accent-voile:  rgba(59, 130, 246, 0.14);
+  --accent-halo:   rgba(59, 130, 246, 0.38);
+
+  /* ---------- États ---------- */
+  --succes:        var(--vert-500);
+  --succes-voile:  rgba(16, 185, 129, 0.14);
+  --attention:     var(--ambre-500);
+  --attention-voile: rgba(245, 158, 11, 0.14);
+  --danger:        var(--rouge-500);
+  --danger-voile:  rgba(239, 68, 68, 0.14);
+  --info:          var(--bleu-400);
+  --info-voile:    rgba(96, 165, 250, 0.14);
+
+  /* ---------- Couleurs par type d'activité ----------
+     Un même cours garde sa teinte du planning au bulletin. */
+  --type-cm:      var(--bleu-500);
+  --type-cm-voile: rgba(59, 130, 246, 0.13);
+  --type-td:      var(--vert-400);
+  --type-td-voile: rgba(52, 211, 153, 0.13);
+  --type-tp:      var(--ambre-400);
+  --type-tp-voile: rgba(251, 191, 36, 0.13);
+  --type-annale:  var(--rouge-500);
+  --type-annale-voile: rgba(239, 68, 68, 0.13);
+  /* Le violet 500 ne donnait que 3,76 de contraste sur les surfaces sombres :
+     lisible en aplat, pas en texte de pastille. */
+  --type-anki:    var(--violet-400);
+  --type-anki-voile: rgba(168, 85, 247, 0.13);
+  --type-projet:  var(--cyan-400);
+  --type-projet-voile: rgba(34, 211, 238, 0.13);
+  --type-langue:  var(--rose-400);
+  --type-langue-voile: rgba(244, 114, 182, 0.13);
+
+  /* ---------- Espacements (base 4) ---------- */
+  --esp-1: 0.25rem;  /*  4px */
+  --esp-2: 0.5rem;   /*  8px */
+  --esp-3: 0.75rem;  /* 12px */
+  --esp-4: 1rem;     /* 16px */
+  --esp-5: 1.5rem;   /* 24px */
+  --esp-6: 2rem;     /* 32px */
+  --esp-7: 3rem;     /* 48px */
+  --esp-8: 4rem;     /* 64px */
+
+  /* ---------- Rayons ---------- */
+  --rayon-sm:   6px;
+  --rayon-md:   10px;
+  --rayon-lg:   16px;
+  --rayon-full: 999px;
+
+  /* ---------- Typographie ---------- */
+  --police: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --police-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  --texte-xs:  0.75rem;   /* 12px — mentions, méta */
+  --texte-sm:  0.875rem;  /* 14px — texte secondaire */
+  --texte-md:  1rem;      /* 16px — corps */
+  --texte-lg:  1.125rem;  /* 18px — sous-titres */
+  --texte-xl:  1.5rem;    /* 24px — titres de section */
+  --texte-2xl: 2rem;      /* 32px — titres de page */
+  --texte-3xl: 2.5rem;    /* 40px — chiffres clés */
+
+  --graisse-normale: 400;
+  --graisse-moyenne: 500;
+  --graisse-forte:   600;
+  --graisse-lourde:  700;
+
+  --interligne-serre: 1.2;
+  --interligne-normal: 1.55;
+
+  /* ---------- Élévations ---------- */
+  --ombre-1: 0 1px 2px rgba(0, 0, 0, 0.18);
+  --ombre-2: 0 4px 12px rgba(0, 0, 0, 0.22);
+  --ombre-3: 0 12px 32px rgba(0, 0, 0, 0.3);
+  --ombre-focus: 0 0 0 3px var(--accent-halo);
+
+  /* ---------- Mouvement ----------
+     Trois durées seulement : réaction immédiate, transition, entrée. */
+  --duree-vive:   120ms;
+  --duree-douce:  240ms;
+  --duree-ample:  400ms;
+  --courbe: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   THÈMES HORAIRES
+   Le fond suit la lumière du jour ; les accents restent stables
+   pour que les repères de couleur s'apprennent une fois pour toutes.
+   ============================================================ */
+
+:root.theme-morning {
+  --surface-0: #0C1A30;
+  --surface-1: #142744;
+  --surface-2: #1E3A61;
+  --surface-3: #2A4E7E;
+}
+
+:root.theme-afternoon {
+  --surface-0: #0A1929;
+  --surface-1: #11283F;
+  --surface-2: #173A5E;
+  --surface-3: #1F4C79;
+}
+
+:root.theme-evening {
+  --surface-0: #17102B;
+  --surface-1: #241840;
+  --surface-2: #35225C;
+  --surface-3: #452C78;
+  --accent-voile: rgba(168, 85, 247, 0.12);
+}
+
+/* Nuit : noir véritable, économe sur écran OLED et reposant à la lecture. */
+:root.theme-night {
+  --surface-0: #000000;
+  --surface-1: #0C0C0F;
+  --surface-2: #17171C;
+  --surface-3: #23232B;
+  --texte-fort: #E8EAED;
+  --texte-normal: #C3C7CE;
+  --bord-discret: rgba(148, 163, 184, 0.1);
+  --accent-halo: rgba(59, 130, 246, 0.22);
+  --ombre-2: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --ombre-3: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+:root.light {
+  --surface-0: #F8FAFC;
+  --surface-1: #FFFFFF;
+  --surface-2: #F1F5F9;
+  --surface-3: #E2E8F0;
+
+  --texte-fort:   var(--ardoise-900);
+  --texte-normal: var(--ardoise-700);
+  --texte-doux:   var(--ardoise-500);
+  --texte-inverse: #FFFFFF;
+
+  --bord-discret: rgba(15, 23, 42, 0.08);
+  --bord-normal:  rgba(15, 23, 42, 0.14);
+  --bord-net:     rgba(15, 23, 42, 0.28);
+
+  /* Sur fond clair, le voile assombrit au lieu d'éclaircir. */
+  --voile-faible: rgba(15, 23, 42, 0.035);
+  --voile-moyen:  rgba(15, 23, 42, 0.06);
+  --voile-fort:   rgba(15, 23, 42, 0.10);
+  --creux:        rgba(15, 23, 42, 0.05);
+
+  --accent:      var(--bleu-600);
+  --accent-fort: var(--bleu-700);
+  --accent-clair: var(--bleu-500);
+  --accent-voile: rgba(37, 99, 235, 0.1);
+
+  --succes:    var(--vert-600);
+  --attention: var(--ambre-600);
+  --danger:    var(--rouge-600);
+
+  --type-td: var(--vert-600);
+  --type-tp: var(--ambre-600);
+
+  --ombre-1: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ombre-2: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --ombre-3: 0 12px 32px rgba(15, 23, 42, 0.12);
+
+  color-scheme: light;
+}
+
+/* ============================================================
+   PONTS DE COMPATIBILITÉ
+   Les anciens noms restent valides le temps de la migration des
+   pages, pour qu'aucun écran ne se retrouve sans couleur.
+   ============================================================ */
+:root {
+  --bg-primary: var(--surface-0);
+  --bg-secondary: var(--surface-1);
+  --bg-tertiary: var(--surface-2);
+  --text-primary: var(--texte-fort);
+  --text-secondary: var(--texte-doux);
+  --text-tertiary: var(--texte-doux);
+  --text-muted: var(--texte-doux);
+  --accent-primary: var(--accent);
+  --accent-hover: var(--accent-fort);
+  --accent-secondary: var(--violet-500);
+  --accent-glow: var(--accent-halo);
+  --accent-blue: var(--type-cm);
+  --accent-teal: var(--type-projet);
+  --accent-orange: var(--ambre-500);
+  --accent-red: var(--type-annale);
+  --accent-yellow: var(--type-tp);
+  --accent-primary-rgb: 59, 130, 246;
+  --success-color: var(--succes);
+  --success-glow: var(--succes-voile);
+  --danger-color: var(--danger);
+  --danger-glow: var(--danger-voile);
+  --warning-color: var(--attention);
+  --error: var(--danger);
+  --error-color: var(--danger);
+  --success: var(--succes);
+  --warning: var(--attention);
+  --border-color: var(--bord-normal);
+  --glass-border: var(--bord-discret);
+  --shadow-color: rgba(0, 0, 0, 0.35);
+  --gradient-primary: linear-gradient(135deg, var(--accent) 0%, var(--violet-500) 100%);
+  --radius-sm: var(--rayon-sm);
+  --radius-md: var(--rayon-md);
+  --radius-lg: var(--rayon-lg);
+  --shadow-sm: var(--ombre-1);
+  --shadow-md: var(--ombre-2);
+  --shadow-lg: var(--ombre-3);
+  --transition-fast: var(--duree-vive) var(--courbe);
+  --transition-normal: var(--duree-douce) var(--courbe);
+  --transition-slow: var(--duree-ample) var(--courbe);
+}
+
+/* Respect des préférences système : aucune animation imposée. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duree-vive: 0ms;
+    --duree-douce: 0ms;
+    --duree-ample: 0ms;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

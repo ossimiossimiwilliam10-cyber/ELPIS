@@ -27,6 +27,10 @@ function getDayOfWeekString() {
 }
 
 const { normalizeDateStr, parseDateLocal } = require('./utils');
+const { construireProjections, construireCarteProjections } = require('./projection');
+const { construireVelocites } = require('./velocite');
+const { construireChargeCognitive } = require('./chargeCognitive');
+const { evaluerFatigue } = require('./burnout');
 function isSemesterArchived(s) {
   if (s.archived) return true;
   if (s.dateFin) {
@@ -90,18 +94,46 @@ function sampleStdDev(values) {
 // AXE 0 : getMatiereAverage (utilitaire partagé)
 // ---------------------------------------------------------------------------
 
+/*
+ * Le statut de l'épreuve était ignoré ici, alors que le bulletin s'en sert.
+ * Deux matières identiques donnaient donc deux moyennes différentes selon
+ * l'écran consulté : une absence justifiée ayant gardé sa note comptait dans
+ * le moteur (14 devenait 9) et pas dans le bulletin ; une défaillance passait
+ * pour une simple épreuve à venir, quand le bulletin affichait DEF.
+ *
+ * Le moteur rend un nombre — il alimente des calculs de priorité — et ne peut
+ * donc pas porter le sentinel DEF du bulletin. Il applique la même règle de
+ * comptage et signale la défaillance à part, à charge des appelants d'en tirer
+ * les conséquences. Deux autres endroits filtraient déjà ainsi
+ * (`couverture.js` et `buildProjectedScoreDetailMap`) : c'est cette
+ * fonction-ci qui était l'exception.
+ */
 function getMatiereAverage(matiere) {
   if (!matiere || !matiere.evaluations || !Array.isArray(matiere.evaluations)) return null;
   let totalScore = 0;
   let totalCoef = 0;
+  let defaillant = false;
   matiere.evaluations.forEach(ev => {
+    // Neutralisée : elle ne compte pas, même si une note y traîne encore.
+    if (ev.statut === 'excuse') return;
+    if (ev.statut === 'defaillant') { defaillant = true; return; }
     if (ev.note !== null && ev.note !== undefined && !isNaN(ev.note)) {
       const c = ev.coefficient || 1;
       totalScore += ev.note * c;
       totalCoef += c;
     }
   });
-  return totalCoef > 0 ? { avg: totalScore / totalCoef, evaluatedCoef: totalCoef } : null;
+  // Pas de moyenne calculable : on rend `null` comme avant. Attribuer un 0 à
+  // une matière uniquement défaillante ferait entrer un chiffre inventé dans
+  // les calculs de priorité ; la défaillance se lit avec `matiereDefaillante`.
+  if (totalCoef <= 0) return null;
+  return { avg: totalScore / totalCoef, evaluatedCoef: totalCoef, defaillant };
+}
+
+/** Une matière est défaillante dès qu'une de ses épreuves l'est (règlement, art. « défaillance »). */
+function matiereDefaillante(matiere) {
+  if (!matiere || !Array.isArray(matiere.evaluations)) return false;
+  return matiere.evaluations.some(ev => ev?.statut === 'defaillant');
 }
 
 // ---------------------------------------------------------------------------
@@ -120,25 +152,46 @@ function buildCompensationMap(crs) {
       for (const ue of (s.ues || [])) {
         let ueSumWeight = 0;
         let ueSumNotes = 0;
+        let ueDefaillante = false;
         for (const m of (ue.matieres || [])) {
+          if (m.dispense) continue;
+          if (matiereDefaillante(m)) ueDefaillante = true;
           const result = getMatiereAverage(m);
           if (result) {
-            const coef = m.coefficient || 1;
+            // `m.coefficient || 1` transformait un coefficient 0 en 1 : une
+            // matière explicitement hors barème pesait autant qu'une autre.
+            const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
+            if (!Number.isFinite(coef) || coef <= 0) continue;
             ueSumWeight += coef;
             ueSumNotes += result.avg * coef;
           }
         }
         const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
-        ueData.push({ ue, ueAvg, ueSumWeight, ueSumNotes });
+        const ects = Number(ue.ects) > 0 ? Number(ue.ects) : 0;
+        ueData.push({ ue, ueAvg, ueSumWeight, ueSumNotes, ects, defaillante: ueDefaillante });
       }
 
+      /*
+       * Le semestre se pondérait par la somme des coefficients de matières de
+       * chaque UE, ce qui n'est pas la règle : le règlement pondère les UE par
+       * des coefficients « proportionnels à leur valeur en ECTS ». Une UE à 3
+       * ECTS composée de deux matières pesait ainsi autant que la totalité
+       * d'une UE à 9 ECTS, et la compensation calculée ici s'écartait de celle
+       * qu'affiche le bulletin.
+       *
+       * On repasse donc aux ECTS, avec repli sur la pondération précédente si
+       * aucune UE du semestre n'a d'ECTS renseignés — un cursus incomplet ne
+       * doit pas perdre sa compensation.
+       */
+      const totalECTS = ueData.reduce(
+        (acc, ud) => acc + (ud.ueAvg !== null && !ud.ue.dispense ? ud.ects : 0), 0);
       let semSumWeight = 0;
       let semSumNotes = 0;
       ueData.forEach(ud => {
-        if (ud.ueAvg !== null) {
-          semSumWeight += ud.ueSumWeight;
-          semSumNotes += ud.ueSumNotes;
-        }
+        if (ud.ueAvg === null || ud.ue.dispense) return;
+        const poids = totalECTS > 0 ? ud.ects : ud.ueSumWeight;
+        semSumWeight += poids;
+        semSumNotes += ud.ueAvg * poids;
       });
       const semAvg = semSumWeight > 0 ? semSumNotes / semSumWeight : null;
 
@@ -148,7 +201,11 @@ function buildCompensationMap(crs) {
             map[m.nom.toLowerCase().trim()] = {
               // NOTE: Compensation vérifiée au niveau semestriel (UE < 10 compensée si sem >= 10).
               // La compensation annuelle (S1+S2)/2 est gérée par getCapitalisedUEs dans scoring.js.
-              compensable: ud.ueAvg < 10 && semAvg >= 10,
+              // Une défaillance bloque la compensation « quels que soient les
+              // autres résultats » (règlement des études) : annoncer une UE
+              // rattrapée alors qu'elle ne l'est pas ferait déprioriser à tort.
+              compensable: !ud.defaillante && ud.ueAvg < 10 && semAvg >= 10,
+              defaillante: ud.defaillante,
               ueAvg: ud.ueAvg,
               semestreAvg: semAvg,
               deficit: ud.ueAvg < 10 ? 10 - ud.ueAvg : 0
@@ -198,474 +255,68 @@ function buildRemainingWeightMap(crs) {
 // AXE 10 : Study Velocity (EMA + Ebbinghaus + Forecast)
 // ---------------------------------------------------------------------------
 
+/**
+ * Vitesse d'apprentissage par matière — délègue au module `velocite`.
+ *
+ * L'implémentation d'origine tenait sur cent quarante lignes et jugeait la
+ * maîtrise sur `easeFactor`, un vestige de SM-2, tout en ré-estimant par
+ * heuristique une stabilité que les cartes FSRS fournissent exactement. Le
+ * calcul est désormais isolé et testé pour lui-même.
+ */
 function buildVelocityMap(crs, historique, cfg = {}) {
-  const map = {};
-  if (!historique || historique.length === 0) return map;
-
-  const histByMatiere = {};
-  historique.forEach(h => {
-    if (!h.matiere) return;
-    if (!histByMatiere[h.matiere]) histByMatiere[h.matiere] = [];
-    histByMatiere[h.matiere].push(h);
-  });
-
-  if (!crs || !crs.licences) return map;
-
-  const now = Date.now();
-
-  for (const l of (crs.licences || [])) {
-    if (l.archived) continue;
-    for (const s of (l.semestres || [])) {
-      if (isSemesterArchived(s)) continue;
-      for (const ue of (s.ues || [])) {
-        for (const m of (ue.matieres || [])) {
-          const mHist = histByMatiere[m.nom] || [];
-          const cmSessions = mHist
-            .filter(h => h.type === 'CM')
-            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-          // --- EMA pour la durée des sessions ---
-          let totalMinutes = 0;
-          let emaMinutes = null;
-          const alpha = 0.3;
-
-          mHist.forEach(h => {
-            let mins = h.dureeMinutes || 30;
-            totalMinutes += mins;
-          });
-
-          cmSessions.forEach(h => {
-            let mins = h.dureeMinutes || 30;
-            if (emaMinutes === null) {
-              emaMinutes = mins;
-            } else {
-              emaMinutes = (mins * alpha) + (emaMinutes * (1 - alpha));
-            }
-          });
-
-          // --- Maîtrise des CM ---
-          const masteredCMs = (m.listeCM || [])
-            .filter(cm => cm.easeFactor && cm.easeFactor >= 2.5 && (cm.repetitions || 0) > 0).length;
-          const totalCMs = (m.listeCM || []).length;
-
-          let avgSessionsToMaster = null;
-          if (masteredCMs > 0 && cmSessions.length > 0) {
-            avgSessionsToMaster = cmSessions.length / masteredCMs;
-          }
-
-          const avgMinutesPerSession = emaMinutes !== null ? emaMinutes : 60;
-
-          // --- COURBE D'EBBINGHAUS : estimation de la stabilité mémoire ---
-          // R = e^(-t / S)  où S = stabilité (en jours)
-          // On estime S à partir des easeFactors Anki moyens
-          let stabilityS = 7; // défaut : 7 jours
-          const easeFactors = (m.listeCM || [])
-            .map(cm => cm.easeFactor)
-            .filter(ef => ef && ef > 0);
-          if (easeFactors.length > 0) {
-            const avgEF = easeFactors.reduce((a, b) => a + b, 0) / easeFactors.length;
-            // Conversion heuristique : EF 2.5 ~ S=7j, EF 3.0 ~ S=21j
-            stabilityS = Math.round(7 * Math.exp((avgEF - 2.5) * 1.5));
-            stabilityS = Math.max(1, Math.min(365, stabilityS));
-          }
-
-          // Rétention estimée depuis la dernière révision
-          let lastRevisionTs = 0;
-          (m.listeCM || []).forEach(cm => {
-            if (cm.derniereRevision) {
-              const ts = parseDateLocal(normalizeDateStr(cm.derniereRevision)).getTime();
-              if (ts > lastRevisionTs) lastRevisionTs = ts;
-            }
-          });
-          const daysSinceLastRevision = lastRevisionTs > 0
-            ? (now - lastRevisionTs) / (1000 * 60 * 60 * 24)
-            : 999;
-          const estimatedRetention = Math.exp(-daysSinceLastRevision / stabilityS);
-
-          // --- FORECAST : date de maîtrise estimée ---
-          const unmasteredCMs = totalCMs - masteredCMs;
-          const estimatedRemainingMinutes = unmasteredCMs * (avgSessionsToMaster || 3) * avgMinutesPerSession;
-          let forecastMasteryDate = null;
-          if (unmasteredCMs > 0 && avgSessionsToMaster && avgMinutesPerSession) {
-            // On suppose qu'on peut faire ~1 session CM par jour d'étude
-            const dailyStudyCapacity = cfg.maxStudyHoursPerDay
-              ? (cfg.maxStudyHoursPerDay * 60 * 0.3) // ~30% du temps dispo pour les CM
-              : 120;
-            const estimatedDays = Math.ceil(
-              (unmasteredCMs * avgSessionsToMaster * avgMinutesPerSession) / dailyStudyCapacity
-            );
-            const forecastDate = new Date(now + estimatedDays * 24 * 3600 * 1000);
-            forecastMasteryDate = forecastDate.toISOString().split('T')[0];
-          }
-
-          // --- VELOCITY TREND : accélération ou décélération ? ---
-          let velocityTrend = 'stable';
-          if (cmSessions.length >= 3) {
-            const xs = cmSessions.map((_, i) => i); // index de session
-            const ys = cmSessions.map(h => h.dureeMinutes || 30);
-            const reg = linearRegression(xs, ys);
-            if (reg.slope < -2 && reg.rSquared > 0.3) velocityTrend = 'accelerating';
-            else if (reg.slope > 2 && reg.rSquared > 0.3) velocityTrend = 'decelerating';
-          }
-
-          // --- LEARNING EFFICIENCY RATIO ---
-          const isSlowLearner = avgSessionsToMaster !== null && avgSessionsToMaster > 4;
-          const learningEfficiency = totalCMs > 0
-            ? masteredCMs / Math.max(1, cmSessions.length)
-            : null;
-
-          map[m.nom.toLowerCase().trim()] = {
-            avgSessionsToMaster,
-            avgMinutesPerSession,
-            isSlowLearner,
-            masteredCMs,
-            totalCMs,
-            estimatedRemainingMinutes,
-            totalStudyMinutes: totalMinutes,
-            // Nouvelles métriques v3
-            stabilityDays: stabilityS,
-            estimatedRetention: parseFloat(estimatedRetention.toFixed(2)),
-            forecastMasteryDate,
-            velocityTrend,
-            learningEfficiency: learningEfficiency !== null ? parseFloat(learningEfficiency.toFixed(3)) : null
-          };
-        }
-      }
-    }
-  }
-  return map;
+  return construireVelocites(crs, historique, cfg);
 }
 
 // ---------------------------------------------------------------------------
 // AXE 12 : Anti-Burnout Guardian
 // ---------------------------------------------------------------------------
 
+/**
+ * Veille anti-épuisement — délègue au module `burnout`.
+ *
+ * L'implémentation d'origine divisait toujours la charge par sept jours, même
+ * pour un compte ouvert la veille, et ses signaux s'excluaient mutuellement :
+ * une série longue masquait des séances nocturnes pourtant plus faciles à
+ * corriger.
+ */
 function detectBurnoutRisk(cfg, historique) {
-  const restDays = cfg.restDays || [];
-
-  const today = new Date();
-  today.setHours(today.getHours() - 4);
-
-  let daysWithoutRest = 0;
-  for (let i = 0; i < 30; i++) {
-    const checkDate = new Date(today);
-    checkDate.setDate(checkDate.getDate() - i);
-    const dateStr = checkDate.getFullYear() + '-' + String(checkDate.getMonth() + 1).padStart(2, '0') + '-' + String(checkDate.getDate()).padStart(2, '0');
-
-    if (restDays.includes(dateStr)) break;
-
-    const workedThatDay = (historique || []).some(h => {
-      if (!h.timestamp) return false;
-      const hDate = new Date(h.timestamp);
-      hDate.setHours(hDate.getHours() - 4);
-      return hDate.getFullYear() + '-' + String(hDate.getMonth() + 1).padStart(2, '0') + '-' + String(hDate.getDate()).padStart(2, '0') === dateStr;
-    });
-
-    if (!workedThatDay && i > 0) break;
-
-    daysWithoutRest++;
-  }
-
-  const sevenDaysAgo = new Date(today);
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const recentHist = (historique || []).filter(h => h.timestamp && new Date(h.timestamp) >= sevenDaysAgo);
-  const totalRecentMinutes = recentHist.reduce((acc, h) => {
-    let mins = h.dureeMinutes;
-    if (mins == null || isNaN(mins)) {
-      if (h.type === 'ANKI') mins = cfg.defaultDurationAnki || 30;
-      else if (h.type === 'CM') mins = cfg.defaultDurationRevCM || 30;
-      else if (h.type === 'TD') mins = cfg.defaultDurationTD || 20;
-      else if (h.type === 'TP') mins = cfg.defaultDurationTP_Etape1 || 45;
-      else if (h.type === 'ANNALE') mins = cfg.defaultDurationAnnales || 60;
-      else mins = 30;
-    }
-    return acc + mins;
-  }, 0);
-  const avgDailyMinutes = totalRecentMinutes / 7;
-
-  const bedtimeHour = cfg.bedtime ? parseInt(cfg.bedtime.split(':')[0]) : 23;
-  const lateSessionCount = recentHist.filter(h => {
-    if (!h.timestamp) return false;
-    const hour = new Date(h.timestamp).getHours();
-    return hour >= bedtimeHour || hour < 4;
-  }).length;
-
-  let riskLevel = 'none';
-  let shouldForceRest = false;
-  let reason = '';
-
-  if ((daysWithoutRest >= 14 && avgDailyMinutes > 360) || daysWithoutRest >= 21) {
-    riskLevel = 'high';
-    shouldForceRest = true;
-    if (daysWithoutRest >= 21) {
-      reason = `${daysWithoutRest} jours consécutifs sans aucun repos. Repos forcé pour éviter l'épuisement.`;
-    } else {
-      reason = `${daysWithoutRest} jours sans repos et ${Math.round(avgDailyMinutes / 60)}h/jour en moyenne. Repos forcé.`;
-    }
-  } else if (daysWithoutRest >= 10 || avgDailyMinutes > 480) {
-    riskLevel = 'medium';
-    reason = `${daysWithoutRest} jours consécutifs. Pense à prendre un Joker bientôt.`;
-  } else if (lateSessionCount >= 3) {
-    riskLevel = 'low';
-    reason = `${lateSessionCount} sessions tardives cette semaine. Ton sommeil est crucial.`;
-  }
-
-  return { riskLevel, shouldForceRest, reason, daysWithoutRest, avgDailyMinutes, lateSessionCount };
+  return evaluerFatigue(cfg, historique);
 }
 
 // ---------------------------------------------------------------------------
 // AXE 11 : Projected Score Map (compatibilité ascendante — retourne un nombre)
 // ---------------------------------------------------------------------------
 
+/**
+ * Projection de note par matière — délègue au module `projection`.
+ *
+ * L'implémentation d'origine vivait ici sur cent cinquante lignes et enchaînait
+ * trois mélanges successifs des mêmes grandeurs. Le calcul est désormais isolé
+ * et testé pour lui-même ; ces deux fonctions ne gardent que la signature
+ * attendue par l'orchestrateur et par le front.
+ */
 function buildProjectedScoreMap(crs, velocityMap, ankiStats = null) {
-  const detail = buildProjectedScoreDetailMap(crs, velocityMap, ankiStats);
-  const map = {};
-  for (const [key, val] of Object.entries(detail)) {
-    map[key] = val.projected;
-  }
-  return map;
+  return construireCarteProjections(crs, velocityMap, ankiStats);
 }
 
-/**
- * AXE 11b : Carte de projection détaillée avec intervalles de confiance,
- * tendance, et détection d'anomalies.
- */
+/** Projection détaillée : valeur, intervalle de confiance, tendance, anomalies. */
 function buildProjectedScoreDetailMap(crs, velocityMap, ankiStats = null) {
-  const map = {};
-  if (!crs || !crs.licences) return map;
-
-  for (const l of crs.licences) {
-    if (l.archived) continue;
-    for (const s of (l.semestres || [])) {
-      if (isSemesterArchived(s)) continue;
-      for (const u of (s.ues || [])) {
-        for (const m of (u.matieres || [])) {
-
-          // ---- Collecte des notes horodatées ----
-          const gradeSeries = []; // { value, timestamp, source }
-
-          if (m.evaluations) {
-            m.evaluations.forEach(e => {
-              if (e.note !== undefined && e.note !== null && e.note !== '' && !isNaN(parseFloat(e.note))) {
-                const ts = e.date
-                  ? parseDateLocal(normalizeDateStr(e.date)).getTime()
-                  : Date.now();
-                gradeSeries.push({
-                  value: parseFloat(e.note),
-                  timestamp: isNaN(ts) ? Date.now() : ts,
-                  coefficient: e.coefficient || 1,
-                  source: 'evaluation'
-                });
-              }
-            });
-          }
-
-          if (m.listeAnnales) {
-            m.listeAnnales.forEach(a => {
-              if (a.nombrePratiques > 0 && a.derniereNote !== undefined && a.derniereNote !== null && a.derniereNote !== '' && !isNaN(parseFloat(a.derniereNote))) {
-                const ts = a.dernierePratique
-                  ? parseDateLocal(normalizeDateStr(a.dernierePratique)).getTime()
-                  : Date.now();
-                gradeSeries.push({
-                  value: parseFloat(a.derniereNote),
-                  timestamp: isNaN(ts) ? Date.now() : ts,
-                  coefficient: 1,
-                  source: 'annale'
-                });
-              }
-            });
-          }
-
-          gradeSeries.sort((a, b) => a.timestamp - b.timestamp);
-
-          // ---- Moyenne pondérée par récence ----
-          const values = gradeSeries.map(g => g.value);
-          const timestamps = gradeSeries.map(g => g.timestamp);
-          const rwResult = recencyWeightedMean(values, timestamps, 60);
-          const baseScore = rwResult.mean !== null ? rwResult.mean : 10;
-
-          // ---- Régression linéaire (trend) ----
-          let trend = 0;
-          let trendSignificant = false;
-          const anomalyFlags = [];
-
-          if (gradeSeries.length >= 3) {
-            const xs = gradeSeries.map((g, i) => (g.timestamp - gradeSeries[0].timestamp) / (24 * 3600 * 1000));
-            const ys = gradeSeries.map(g => g.value);
-            const reg = linearRegression(xs, ys);
-            trend = reg.slope; // points par jour
-            trendSignificant = reg.rSquared > 0.3;
-
-            // Détection d'anomalies : toute note à plus de 2 écarts-types de la régression
-            const yPred = xs.map(x => reg.intercept + reg.slope * x);
-            const residuals = ys.map((y, i) => y - yPred[i]);
-            const residStd = sampleStdDev(residuals);
-            if (residStd > 0) {
-              gradeSeries.forEach((g, i) => {
-                const z = Math.abs(residuals[i]) / residStd;
-                if (z > 2.0) {
-                  anomalyFlags.push({
-                    value: g.value,
-                    source: g.source,
-                    zScore: parseFloat(z.toFixed(2)),
-                    date: new Date(g.timestamp).toISOString().split('T')[0]
-                  });
-                }
-              });
-            }
-          }
-
-          // ---- Intervalle de confiance (95%) ----
-          let confidenceInterval = 0;
-          if (gradeSeries.length >= 2) {
-            const stdErr = sampleStdDev(values) / Math.sqrt(values.length);
-            confidenceInterval = 1.96 * stdErr; // t-distribution approx pour n≥2
-          }
-
-          // ---- Modificateurs maîtrise & pratique ----
-          const vData = velocityMap ? velocityMap[m.nom.toLowerCase().trim()] : null;
-          let masteryRatio = 0.5;
-          if (vData && vData.totalCMs > 0) {
-            masteryRatio = vData.masteredCMs / vData.totalCMs;
-          }
-
-          let practiceCount = 0;
-          if (m.listeAnnales) practiceCount += m.listeAnnales.filter(a => (a.nombrePratiques || 0) > 0).length * 5;
-          if (m.listeTD) practiceCount += m.listeTD.filter(t => (t.nombrePratiques || 0) > 0).length;
-
-          // ---- Blend Bayésien (Ajusté suite à calibration empirique) ----
-          // Prior : baseScore avec précision augmentée
-          // Likelihood : masteryRatio * 20 avec précision plus fine
-          const priorMean = baseScore;
-          const priorPrecision = 1.0 + gradeSeries.length * 0.5; // Adaptatif : plus d'évaluations = plus de précision
-          const likelihoodPrecision = 1.5 * masteryRatio + 0.5; // Réduit pour éviter une surestimation de la simple "lecture" des CM
-          const posteriorMean = (priorPrecision * priorMean + likelihoodPrecision * (masteryRatio * 20))
-            / (priorPrecision + likelihoodPrecision);
-
-          // Projection composite (plus proche du posterior pur)
-          let projected = posteriorMean * 0.7 + baseScore * 0.2 + (masteryRatio * 20) * 0.1;
-
-          // Bonus de pratique
-          projected += Math.min(2, practiceCount * 0.10); // Ajusté à la baisse pour éviter débordement
-
-          // Intégration de la rétention FSRS d'Anki (Bonus de 40%)
-          if (ankiStats && ankiStats.retentionBySubject && ankiStats.retentionBySubject[m.nom] !== undefined) {
-              const fsrsRatio = ankiStats.retentionBySubject[m.nom] / 100;
-              // Le FSRS remplace 40% de la projection car c'est la véritable trace mémorielle
-              projected = (projected * 0.6) + (fsrsRatio * 20) * 0.4;
-          }
-
-          // Projection de tendance (sur 30 jours max)
-
-                    const trendWindowDays = 30;
-          if (trendSignificant) {
-
-            projected += trend * trendWindowDays * 0.5;
-          }
-
-          projected = Math.max(0, Math.min(20, projected));
-
-          map[m.nom.toLowerCase().trim()] = {
-            projected: parseFloat(projected.toFixed(1)),
-            ci_lower: parseFloat(Math.max(0, projected - confidenceInterval).toFixed(1)),
-            ci_upper: parseFloat(Math.min(20, projected + confidenceInterval).toFixed(1)),
-            confidenceInterval: parseFloat(confidenceInterval.toFixed(1)),
-            trend: parseFloat(trend.toFixed(3)),
-            trendSignificant,
-            sampleSize: gradeSeries.length,
-            baseScore: parseFloat(baseScore.toFixed(1)),
-            masteryRatio: parseFloat(masteryRatio.toFixed(2)),
-            anomalyFlags: anomalyFlags.length > 0 ? anomalyFlags : undefined
-          };
-        }
-      }
-    }
-  }
-  return map;
+  return construireProjections(crs, velocityMap, ankiStats);
 }
 
 // ---------------------------------------------------------------------------
 // AXE 6 : Cognitive Load Map (K-Means 1D)
 // ---------------------------------------------------------------------------
 
+/**
+ * Charge cognitive par matière — délègue au module `chargeCognitive`.
+ *
+ * L'implémentation d'origine triait ses valeurs numériques par ordre
+ * alphabétique — le comportement de `sort` sans comparateur — et s'appuyait sur
+ * le facteur de facilité SM-2 plutôt que sur la difficulté FSRS.
+ */
 function buildCognitiveLoadMap(crs) {
-  const map = {};
-  if (!crs || !crs.licences) return map;
-
-  const allEF = [];
-  const matieresRef = [];
-
-  for (const l of (crs.licences || [])) {
-    if (l.archived) continue;
-    for (const s of (l.semestres || [])) {
-      if (isSemesterArchived(s)) continue;
-      for (const ue of (s.ues || [])) {
-        for (const m of (ue.matieres || [])) {
-          let totalEF = 0;
-          let count = 0;
-          (m.listeCM || []).forEach(cm => {
-            if (cm.easeFactor) {
-              totalEF += cm.easeFactor;
-              count++;
-            }
-          });
-          const avgEF = count > 0 ? totalEF / count : 2.5;
-          allEF.push(avgEF);
-          matieresRef.push({ nom: m.nom, avgEF });
-        }
-      }
-    }
-  }
-
-  if (allEF.length >= 3) {
-    allEF.sort();
-    let cHeavy = allEF[0];
-    let cMedium = allEF[Math.floor(allEF.length / 2)];
-    let cLight = allEF[allEF.length - 1];
-
-    for (let iter = 0; iter < 5; iter++) {
-      let sumH = 0, countH = 0;
-      let sumM = 0, countM = 0;
-      let sumL = 0, countL = 0;
-
-      allEF.forEach(val => {
-        const dH = Math.abs(val - cHeavy);
-        const dM = Math.abs(val - cMedium);
-        const dL = Math.abs(val - cLight);
-        const minD = Math.min(dH, dM, dL);
-
-        if (minD === dH) { sumH += val; countH++; }
-        else if (minD === dM) { sumM += val; countM++; }
-        else { sumL += val; countL++; }
-      });
-
-      if (countH > 0) cHeavy = sumH / countH;
-      if (countM > 0) cMedium = sumM / countM;
-      if (countL > 0) cLight = sumL / countL;
-    }
-
-    matieresRef.forEach(m => {
-      const dH = Math.abs(m.avgEF - cHeavy);
-      const dM = Math.abs(m.avgEF - cMedium);
-      const dL = Math.abs(m.avgEF - cLight);
-      const minD = Math.min(dH, dM, dL);
-
-      let cognitiveLoad = 'medium';
-      if (minD === dH) cognitiveLoad = 'heavy';
-      else if (minD === dL) cognitiveLoad = 'light';
-
-      map[m.nom.toLowerCase().trim()] = { cognitiveLoad, avgEaseFactor: m.avgEF };
-    });
-  } else {
-    matieresRef.forEach(m => {
-      let cognitiveLoad = 'medium';
-      if (m.avgEF < 2.0) cognitiveLoad = 'heavy';
-      else if (m.avgEF > 3.0) cognitiveLoad = 'light';
-      map[m.nom.toLowerCase().trim()] = { cognitiveLoad, avgEaseFactor: m.avgEF };
-    });
-  }
-
-  return map;
+  return construireChargeCognitive(crs);
 }
 
 // ---------------------------------------------------------------------------
@@ -695,6 +346,14 @@ function buildExamUrgencyMap(crs) {
           if (subj.evaluations && Array.isArray(subj.evaluations)) {
             for (const ev of subj.evaluations) {
               if (!ev.date) continue;
+              // Une épreuve déjà notée n'est plus une échéance : sa date
+              // continuait pourtant de rendre la matière urgente, au détriment
+              // des matières dont l'examen approche vraiment.
+              if (ev.note !== undefined && ev.note !== null && ev.note !== ''
+                  && !isNaN(parseFloat(ev.note))) continue;
+              // Une absence déclarée clôt l'épreuve, avec ou sans note.
+              if (ev.statut === 'defaillant' || ev.statut === 'excuse') continue;
+
               const normDate = normalizeDateStr(ev.date);
               const evalDate = parseDateLocal(normDate);
               if (isNaN(evalDate.getTime())) continue;
@@ -703,24 +362,39 @@ function buildExamUrgencyMap(crs) {
             }
           }
 
+          /*
+           * Faute d'épreuve datée, on retombe sur la fin du semestre. C'est une
+           * borne raisonnable — rien ne s'évalue après — mais ce n'est pas une
+           * date d'examen, et la traiter comme telle mentait de deux façons :
+           * passé la mi-novembre, les dix-neuf matières du semestre auraient
+           * toutes annoncé « Examen à venir » le même jour, et le multiplicateur
+           * serait monté jusqu'à 3 pour toutes à la fois — une urgence uniforme
+           * ne hiérarchise rien.
+           *
+           * La borne est donc conservée mais marquée `estimee`, et les
+           * consommateurs n'en tirent ni urgence ni affirmation.
+           */
+          let estimee = false;
           if (minDays === Infinity && s.dateFin) {
             const df = parseDateLocal(normalizeDateStr(s.dateFin));
             if (!isNaN(df.getTime())) {
               const diffDays = Math.ceil((df - today) / (1000 * 60 * 60 * 24));
-              if (diffDays >= 0) minDays = diffDays;
+              if (diffDays >= 0) { minDays = diffDays; estimee = true; }
             }
           }
 
           if (minDays === Infinity) continue;
 
           let multiplier = 1.0;
-          if (minDays <= 3) multiplier = 3.0;
-          else if (minDays <= 7) multiplier = 2.0;
-          else if (minDays <= 21) multiplier = 1.5;
-          else if (minDays <= 30) multiplier = 1.2;
+          if (!estimee) {
+            if (minDays <= 3) multiplier = 3.0;
+            else if (minDays <= 7) multiplier = 2.0;
+            else if (minDays <= 21) multiplier = 1.5;
+            else if (minDays <= 30) multiplier = 1.2;
+          }
 
           const key = subj.nom.toLowerCase().trim();
-          map[key] = { multiplier, daysToExam: minDays };
+          map[key] = { multiplier, daysToExam: minDays, estimee };
         }
       }
     }
@@ -765,7 +439,9 @@ function buildTimeOptimizationMap(historique, cfg = {}) {
     const hour = new Date(h.timestamp).getHours();
     if (hour >= 0 && hour < 24) {
       hourBuckets[hour]++;
-      hourDurations[hour] += h.dureeMinutes || 30;
+      // `|| 30` faisait valoir une demi-heure à une durée nulle déclarée, et
+      // ignorait les réglages de l'étudiant — `cfg` était reçu puis jamais lu.
+      hourDurations[hour] += dureeSeanceForecast(h, cfg);
       totalSessions++;
     }
   });
@@ -802,27 +478,33 @@ function buildTimeOptimizationMap(historique, cfg = {}) {
   map.peakStart = bestStart;
   map.peakEnd = (bestStart + 6) % 24;
 
-  // Fenêtres optimales selon le chronotype
-  if (map.chronotype === 'morning_lark') {
-    map.optimalWindows = {
-      heavy:  { start: map.peakStart, end: Math.min(map.peakStart + 3, 12) },
-      medium: { start: map.peakStart + 3, end: Math.min(map.peakStart + 5, 16) },
-      light:  { start: 16, end: 21 }
-    };
-  } else if (map.chronotype === 'night_owl') {
-    map.optimalWindows = {
-      heavy:  { start: 14, end: 18 },
-      medium: { start: 18, end: 21 },
-      light:  { start: 10, end: 14 }
-    };
-  } else {
-    // intermediate : standard
-    map.optimalWindows = {
-      heavy:  { start: 8, end: 12 },
-      medium: { start: 13, end: 17 },
-      light:  { start: 17, end: 21 }
-    };
-  }
+  /*
+   * Les fenêtres suivent le pic mesuré, et non un gabarit.
+   *
+   * La fonction calculait honnêtement les six heures les plus chargées de
+   * l'étudiant — puis jetait ce résultat. Pour le chronotype « intermédiaire »,
+   * qui couvre presque tout le monde, les fenêtres étaient écrites en dur : 8 h
+   * pour le travail lourd, 17 h pour le léger. Un étudiant dont le pic réel est
+   * 10 h–16 h se voyait donc servir ses matières difficiles à 8 h, une heure où
+   * il avait cumulé une heure de travail en un mois, et classées « légères » à
+   * 17 h, sa deuxième heure la plus chargée. La mesure existait, elle ne
+   * servait à rien : c'est le genre de fonction qui donne l'apparence de
+   * s'adapter sans s'adapter.
+   *
+   * Le chronotype reste publié, comme description ; il ne choisit plus les
+   * horaires. L'ordonnanceur compare `currentHour` à des bornes simples
+   * (`>= start && < end`) : elles restent donc crois-santes et dans la journée.
+   */
+  const fenetre = (debut, duree) => {
+    const start = Math.max(0, Math.min(23, Math.round(debut)));
+    return { start, end: Math.max(start + 1, Math.min(24, start + duree)) };
+  };
+
+  map.optimalWindows = {
+    heavy:  fenetre(map.peakStart, 3),
+    medium: fenetre(map.peakStart + 3, 3),
+    light:  fenetre(Math.min(map.peakStart + 6, 20), 4),
+  };
 
   return map;
 }
@@ -945,6 +627,26 @@ function buildSynergyMap(crs) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Durée d'une séance pour la prévision, avec le repli propre à son type.
+ *
+ * `h.dureeMinutes || 30` transformait une durée nulle déclarée en trente
+ * minutes, et appliquait le même trente à tous les types. Le paramètre `cfg`
+ * était par ailleurs accepté puis ignoré : les réglages de durée de l'étudiant
+ * ne servaient nulle part ici, alors que l'orchestrateur s'en sert pour la même
+ * mesure. Les deux comptent désormais pareil.
+ */
+function dureeSeanceForecast(h, cfg = {}) {
+  const min = Number(h.dureeMinutes);
+  if (Number.isFinite(min) && min >= 0) return min;
+  if (h.type === 'ANKI') return cfg.defaultDurationAnki || 30;
+  if (h.type === 'CM') return cfg.defaultDurationRevCM || 30;
+  if (h.type === 'TD') return cfg.defaultDurationTD || 20;
+  if (h.type === 'TP') return cfg.defaultDurationTP_Etape1 || 45;
+  if (h.type === 'ANNALE') return cfg.defaultDurationAnnales || 60;
+  return 30;
+}
+
+/**
  * Prédit la charge de travail quotidienne pour les 7 prochains jours
  * en utilisant un lissage exponentiel (Holt-Winters simplifié).
  *
@@ -963,41 +665,94 @@ function buildWorkloadForecast(historique, cfg = {}) {
     const dateStr = d.getFullYear() + '-' +
       String(d.getMonth() + 1).padStart(2, '0') + '-' +
       String(d.getDate()).padStart(2, '0');
-    const mins = h.dureeMinutes || 30;
+    const mins = dureeSeanceForecast(h, cfg);
     dailyMinutes[dateStr] = (dailyMinutes[dateStr] || 0) + mins;
   });
 
-  const sortedDates = Object.keys(dailyMinutes).sort();
+  const joursTravailles = Object.keys(dailyMinutes).sort();
+  if (joursTravailles.length < 3) return forecast;
+
+  /*
+   * Les jours sans travail étaient absents de la série.
+   *
+   * `dailyMinutes` ne contenait que les jours où quelque chose avait été fait,
+   * et le lissage tournait sur cette suite tassée — puis son résultat était
+   * étiqueté sur des jours de calendrier, J+1 à J+7. Les deux axes ne parlaient
+   * pas de la même chose. Qui travaillait trois heures un samedi sur sept se
+   * voyait annoncer 180 minutes pour chacun des sept jours suivants : 21 h
+   * prévues pour une semaine qui en vaut 3, sept fois trop. Et qui s'arrêtait
+   * dix jours après une bonne semaine gardait sa prévision intacte, tirée de
+   * données mortes.
+   *
+   * La série court désormais du premier jour travaillé jusqu'à aujourd'hui,
+   * jour par jour, les jours vides valant zéro — puisqu'ils valent zéro.
+   */
+  const sortedDates = [];
+  const curseur = parseDateLocal(joursTravailles[0]);
+  const finSerie = new Date();
+  finSerie.setHours(finSerie.getHours() - 4);
+  finSerie.setHours(0, 0, 0, 0);
+  while (curseur <= finSerie && sortedDates.length < 400) {
+    const cle = curseur.getFullYear() + '-' +
+      String(curseur.getMonth() + 1).padStart(2, '0') + '-' +
+      String(curseur.getDate()).padStart(2, '0');
+    if (dailyMinutes[cle] === undefined) dailyMinutes[cle] = 0;
+    sortedDates.push(cle);
+    curseur.setDate(curseur.getDate() + 1);
+  }
   if (sortedDates.length < 3) return forecast;
 
   const values = sortedDates.map(d => dailyMinutes[d]);
 
-  // Lissage exponentiel simple (niveau) + tendance
-  const alpha = 0.3; // niveau
-  const beta = 0.1;  // tendance
+  /*
+   * Ce que cette fonction estime, et comment.
+   *
+   * Elle annonçait un niveau plat, issu d'un lissage exponentiel, appliqué tel
+   * quel aux sept jours à venir. Une semaine d'étude n'est pourtant pas plate :
+   * elle a des jours de cours, des jours creux et un week-end. Sur un rythme de
+   * cinq jours à deux heures, la même valeur était annoncée le samedi et le
+   * mardi, et le total de la semaine se trompait d'un facteur deux — dans un
+   * sens ou dans l'autre selon l'endroit où la série s'arrêtait. L'en-tête
+   * promettait pourtant « Holt-Winters », c'est-à-dire une méthode saisonnière :
+   * il n'y avait pas de saison.
+   *
+   * Chaque jour à venir est désormais estimé par la moyenne des mêmes jours de
+   * semaine déjà observés — zéros compris, ce sont eux qui portent
+   * l'information du week-end. Cette moyenne est pondérée par la fraîcheur, avec
+   * la même décroissance que le reste du module : sans quoi dix jours d'arrêt
+   * après une bonne semaine continuaient d'annoncer une heure et demie par jour,
+   * tirée de données mortes. Faute d'assez d'observations pour un jour donné, on
+   * retombe sur la moyenne générale plutôt que d'inventer une habitude.
+   *
+   * Le lissage exponentiel a été retiré : la pondération par fraîcheur suit déjà
+   * la dérive, et lui ajouter une tendance revenait à compter deux fois la même
+   * baisse.
+   */
+  const OBSERVATIONS_MINIMALES = 2;
+  const DEMI_VIE_CHARGE_J = 21;
 
-  let level = values[0];
-  let trend = 0;
+  const parJourSemaine = [[], [], [], [], [], [], []];
+  const horodatages = [];
+  sortedDates.forEach((cle, i) => {
+    const d = parseDateLocal(cle);
+    if (!d || Number.isNaN(d.getTime())) return;
+    horodatages.push(d.getTime());
+    parJourSemaine[d.getDay()].push({ valeur: values[i], t: d.getTime() });
+  });
 
-  for (let i = 1; i < values.length; i++) {
-    const oldLevel = level;
-    level = alpha * values[i] + (1 - alpha) * (level + trend);
-    trend = beta * (level - oldLevel) + (1 - beta) * trend;
-  }
+  const moyenneFraiche = (echantillon) => {
+    if (!echantillon.length) return null;
+    const { mean } = recencyWeightedMean(
+      echantillon.map(x => x.valeur),
+      echantillon.map(x => x.t),
+      DEMI_VIE_CHARGE_J
+    );
+    return Number.isFinite(mean) ? mean : null;
+  };
 
-  // Écart-type des résidus pour l'intervalle de confiance
-  const fitted = [];
-  let l = values[0], t = 0;
-  for (let i = 0; i < values.length; i++) {
-    if (i > 0) {
-      const oldL = l;
-      l = alpha * values[i] + (1 - alpha) * (l + t);
-      t = beta * (l - oldL) + (1 - beta) * t;
-    }
-    fitted.push(l);
-  }
-  const residuals = values.slice(1).map((v, i) => v - fitted[i]);
-  const residStd = sampleStdDev(residuals);
+  const globale = recencyWeightedMean(values, horodatages, DEMI_VIE_CHARGE_J);
+  const moyenneGlobale = Number.isFinite(globale.mean) ? globale.mean : 0;
+  const dispersionGlobale = sampleStdDev(values);
 
   // Projection sur 7 jours
   const today = new Date();
@@ -1010,14 +765,31 @@ function buildWorkloadForecast(historique, cfg = {}) {
       String(forecastDate.getMonth() + 1).padStart(2, '0') + '-' +
       String(forecastDate.getDate()).padStart(2, '0');
 
-    const forecastVal = level + trend * day;
-    const ci = 1.96 * residStd * Math.sqrt(day); // l'incertitude augmente avec l'horizon
+    const observes = parJourSemaine[forecastDate.getDay()];
+    const assez = observes.length >= OBSERVATIONS_MINIMALES;
+    const propre = assez ? moyenneFraiche(observes) : null;
+    const forecastVal = Math.max(0, propre === null ? moyenneGlobale : propre);
+
+    /*
+     * Un intervalle de largeur nulle affirmerait une certitude que cette
+     * estimation ne possède pas : trois jours identiques suffisaient à annoncer
+     * « 60 min, entre 60 et 60 », à 95 %. On plancherise donc la dispersion à un
+     * quart de la valeur annoncée, et l'intervalle s'élargit avec l'horizon.
+     */
+    const dispersion = assez ? sampleStdDev(observes.map(x => x.valeur)) : dispersionGlobale;
+    const ecartType = Math.max(dispersion, 0.25 * Math.max(forecastVal, moyenneGlobale));
+    const ci = 1.96 * ecartType * Math.sqrt(day);
 
     forecast.push({
       date: dateStr,
-      forecastMinutes: Math.round(Math.max(0, forecastVal)),
+      forecastMinutes: Math.round(forecastVal),
       ci_lower: Math.round(Math.max(0, forecastVal - ci)),
-      ci_upper: Math.round(Math.max(0, forecastVal + ci))
+      ci_upper: Math.round(Math.max(0, forecastVal + ci)),
+      // De quoi permettre à un écran de refuser d'afficher une estimation trop
+      // maigre : jours de calendrier observés, et observations de ce jour-là.
+      joursObserves: values.length,
+      observationsCeJour: observes.length,
+      saisonnier: assez
     });
   }
 
@@ -1044,10 +816,12 @@ function detectAnomalyZScore(values, newValue) {
 // ---------------------------------------------------------------------------
 
 module.exports = {
+  isSemesterArchived,
   DAYS_OF_WEEK,
   getTodayString,
   getDayOfWeekString,
   getMatiereAverage,
+  matiereDefaillante,
   buildCompensationMap,
   buildRemainingWeightMap,
   buildVelocityMap,

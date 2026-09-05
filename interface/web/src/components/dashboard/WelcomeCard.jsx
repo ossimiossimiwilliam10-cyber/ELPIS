@@ -5,15 +5,23 @@ import CircularProgress from '../CircularProgress';
 /**
  * Carte d'accueil du Dashboard — salutation, KPIs, progression.
  */
-export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyHours, tempsRequisMin, globalPercent, config, tempsTravailleToday }) {
+export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyHours, tempsRequisMin, globalPercent, config, tempsTravailleToday, cursusSansContenu }) {
   return (
     <div className="welcome-card">
       <div>
         <h2>{greeting} ! 👋</h2>
+        {/*
+          Zéro tâche recouvre deux situations opposées : tout est fait, ou rien
+          n'a encore été saisi. L'écran félicitait dans les deux cas — le jour de
+          la rentrée, avec un cursus encore sans contenu, il annonçait une
+          journée accomplie qui n'avait jamais existé.
+        */}
         <p>
           {orderedTaches.length > 0
             ? `Tu as encore ${orderedTaches.length} objectif${orderedTaches.length > 1 ? 's' : ''} à accomplir aujourd'hui.`
-            : "Tu as tout terminé pour aujourd'hui. Bravo ! Pourquoi ne pas avancer sur tes projets persos ou lancer une Activité Libre ?"}
+            : cursusSansContenu
+              ? "Tes matières sont en place, mais aucun cours n'y figure encore. Ajoute tes premiers chapitres et le programme du jour se construira tout seul."
+              : "Tu as tout terminé pour aujourd'hui. Bravo ! Pourquoi ne pas avancer sur tes projets persos ou lancer une Activité Libre ?"}
         </p>
       </div>
       <div className="welcome-stats">
@@ -21,7 +29,7 @@ export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyH
           <div className="welcome-stat-value" style={{color: 'var(--success-color)'}}>{recommendedDailyHours}h</div>
           <div className="welcome-stat-label">
             <InfoTooltip content="Calculé dynamiquement par le moteur de charge selon tes coefficients et les jours restants avant l'examen.">
-              Cible IA <span style={{fontSize:'0.8rem'}}>ℹ️</span>
+              Cible du jour <span style={{fontSize:'0.8rem'}}>ℹ️</span>
             </InfoTooltip>
           </div>
         </div>
@@ -30,7 +38,7 @@ export default function WelcomeCard({ greeting, orderedTaches, recommendedDailyH
           <div className="welcome-stat-label">Tâches</div>
         </div>
         <div className="welcome-stat">
-          <div className="welcome-stat-value" style={{color: 'var(--primary-color)'}}>{Math.round((tempsTravailleToday || 0) / 60 * 10) / 10}h</div>
+          <div className="welcome-stat-value" style={{ color: 'var(--accent-clair)' }}>{Math.round((tempsTravailleToday || 0) / 60 * 10) / 10}h</div>
           <div className="welcome-stat-label">
             <InfoTooltip content="Temps déjà travaillé aujourd'hui.">
               Travaillé <span style={{fontSize:'0.8rem'}}>ℹ️</span>

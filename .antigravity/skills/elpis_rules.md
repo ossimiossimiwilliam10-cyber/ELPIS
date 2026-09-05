@@ -30,23 +30,26 @@ Ce fichier sert de "Skill File" (Context Memory) pour Antigravity (ou tout autre
 *   Ne jamais inclure de styles inline bruts si une classe utilitaire ou un composant existe.
 *   **Saisie du Temps (Smart Time Parsing)** : Ne jamais utiliser un simple `parseInt` pour les inputs de durée. Toujours utiliser une fonction robuste capable de convertir les formats complexes (ex: "35:44", "35m44s", "35.5") en décimales (ex: 35.73) pour conserver la précision.
 
-## 5. Frontière IA vs Algorithme (Le Coach Virtuel)
+## 5. Frontière IA vs Algorithme (Le Répétiteur)
 *   **Cœur 100% Algorithmique :** L'IA ne doit **JAMAIS** être utilisée pour des tâches complexes de fond (configuration, déblocage de tâches, calcul de FSRS, orchestration). Le moteur doit rester purement mathématique et déterministe.
-*   **L'IA comme "Façade" (Coach) :** L'IA doit agir exclusivement comme un "Petit Agent" flottant dans l'interface (à l'image du chronomètre global). Son unique rôle est de lire les résultats algorithmiques et de formuler des commentaires contextuels et d'encouragement au fil de la journée.
+*   **Le Répétiteur est local (plus d'IA distante) :** il lit les tables et calcule ses réponses (`moteur/repetiteur/`). Il n'appelle aucun service extérieur et n'invente aucun chiffre : ce qu'il ne sait pas traiter, il le dit. Son rôle reste celui d'une façade flottante — il lit les résultats algorithmiques, il ne les modifie pas.
+*   **Trois interdits, à respecter dans toute réponse nouvelle :** ne jamais présenter un zéro issu d'une absence de mesure comme un zéro constaté ; ne jamais choisir entre deux matières homonymes (demander laquelle) ; ne jamais conclure à partir du règlement — on cite, la scolarité tranche.
 
 > **Directive d'Initialisation :** À chaque début de session complexe, relis ce fichier ainsi que l'`algorithm_evaluation.md` pour te re-contextualiser immédiatement au niveau "Élite".
 
 ## 6. Sécurité et Configuration Externe
-*   **Pas de Hardcoding :** Les clés API, les URLs de services externes et **les noms des modèles IA** (ex: `deepseek-chat`) ne doivent JAMAIS être codés en dur dans les fichiers source (ex: `aiAdapter.js`).
+*   **Aucun service extérieur :** ELPIS n'appelle plus aucune API distante, et ne doit pas recommencer. Toute fonction nouvelle se calcule en local ; si elle exige une génération de texte, on prépare une consigne que l'utilisateur porte lui-même dans la fenêtre de son choix (voir `moteur/vocabulaire.js`).
 *   **Utilisation de `.env` :** Toute configuration variable doit être injectée via `process.env`. Le code doit toujours prévoir une valeur par défaut cohérente (fallback) si la variable d'environnement facultative n'est pas fournie.
 
-## 7. Prompt Engineering (Règles d'or pour l'IA)
-*   **Ancrage Temporel :** Ne jamais laisser un LLM deviner la date ou l'heure. Il faut TOUJOURS injecter `new Date().toLocaleString()` dans le *System Prompt* pour éviter les hallucinations temporelles.
-*   **Concision :** Pour les interfaces de type "Chat" (comme la Sidebar), le prompt doit explicitement brider la verbosité du modèle (ex: "Réponds en 2 ou 3 phrases maximum"). Un chat n'est pas un rapport.
-*   **Choix du Modèle :** Toujours privilégier les modèles de pointe (versions "Pro", "V4", etc.) pour garantir la meilleure qualité de raisonnement du coach, en mettant à jour la variable `DEEPSEEK_MODEL` dans le `.env`.
+## 7. Appels à un modèle de langue (usage résiduel)
+Le seul appel distant qui subsiste est la génération de cartes de vocabulaire (onglet Langues), déclenchée à la main. Tout le reste — Coach compris — se calcule en local.
+*   **Ancrage Temporel :** ne jamais laisser un modèle deviner la date ; si une tâche future en dépend, injecter l'horodatage explicitement.
+*   **Concision :** un prompt de chat doit brider la verbosité (2 ou 3 phrases). Un chat n'est pas un rapport.
+*   **Dégradation propre :** une dépendance absente (Anki fermé, PC injoignable depuis le téléphone) ne doit jamais faire taire l'application : elle doit dire ce qui manque, jamais laisser croire à un résultat vide.
 
 ## 8. Mémoire Absolue (Omniscience)
-*   **Omniscience du Coach (No Truncation) :** Ne **JAMAIS** tronquer ou filtrer l'historique FSRS envoyé à l'IA. Le coach doit avoir accès à l'intégralité du fichier JSON brut, depuis le premier jour. Les modèles "Pro" ont une fenêtre de contexte suffisante (>128k tokens) pour digérer des années de données et fournir un coaching parfaitement personnalisé.
+*   **Omniscience du Coach :** le Coach interroge directement les tables SQLite — cursus, notes, historique complet, config, projets — et le rapport de l'orchestrateur, c'est-à-dire la même source que l'écran d'accueil. Il ne peut donc pas dire autre chose que ce que l'étudiant voit. Aucune troncature : il n'y a plus de fenêtre de contexte à ménager, puisqu'il n'y a plus d'envoi.
+*   **Corollaire :** un chiffre affiché par le Coach doit être calculé, jamais formulé « au mieux ». Ce qui manque vaut `null`, et la réponse le dit.
 
 ## 9. Ton et Vocabulaire (Copywriting)
 *   **Tutoiement respectueux :** Toujours tutoyer l'utilisateur ("ton historique", "tes révisions") de façon motivante et claire, sans jamais être familier ou infantilisant (niveau étudiant universitaire L2).

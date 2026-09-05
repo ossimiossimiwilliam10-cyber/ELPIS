@@ -1,0 +1,81 @@
+/* ============================================================
+   Mes vidéos — collection de ressources par matière
+   ============================================================ */
+
+.videos-page { display: flex; flex-direction: column; gap: var(--esp-6); }
+
+.videos-formulaire {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: var(--esp-3);
+  align-items: end;
+  margin-top: var(--esp-4);
+}
+
+/* ---------- Groupe de matière ---------- */
+
+.videos-groupe { display: flex; flex-direction: column; gap: var(--esp-3); }
+
+.videos-groupe__titre {
+  display: flex;
+  align-items: baseline;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin: 0;
+  padding-bottom: var(--esp-2);
+  border-bottom: 1px solid var(--bord-discret);
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--accent-clair);
+}
+/* Une matière supprimée du cursus laisse ses vidéos orphelines : mieux vaut le
+   dire que de les laisser sous un intitulé devenu trompeur. */
+.videos-groupe__titre.est-orpheline { color: var(--texte-doux); }
+
+.videos-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: var(--esp-3);
+  align-items: start;
+}
+
+/* ---------- Carte vidéo ---------- */
+
+.video-carte { display: flex; flex-direction: column; height: 100%; }
+
+.video-carte__vignette {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--rayon-sm);
+  margin-bottom: var(--esp-3);
+  background: var(--surface-2);
+}
+
+.video-carte__repli {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-1);
+  color: var(--texte-doux);
+  font-size: var(--texte-xs);
+}
+.video-carte__repli span:first-child { font-size: var(--texte-2xl); }
+
+.video-carte__titre {
+  margin: 0 0 var(--esp-1);
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.video-carte__date { font-size: var(--texte-xs); color: var(--texte-doux); margin-bottom: var(--esp-3); }
+
+.video-carte__actions {
+  display: flex;
+  gap: var(--esp-2);
+  margin-top: auto;
+}
+.video-carte__actions .el-bouton--primaire { flex: 1; text-decoration: none; }
+
+.video-carte__edition { display: flex; flex-direction: column; gap: var(--esp-2); }

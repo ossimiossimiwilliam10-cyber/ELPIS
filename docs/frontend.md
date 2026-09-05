@@ -35,7 +35,7 @@ interface/web/src/
 │   ├── InputModal.jsx       # Remplace window.prompt()
 │   ├── GlobalChrono.jsx     # Chronomètre flottant (PiP)
 │   ├── TaskCompletionModal.jsx
-│   ├── AICoachSidebar.jsx
+│   ├── Repetiteur.jsx
 │   └── ...
 ├── hooks/
 │   ├── useTaskCompletion.js # Logique CM/FSRS partagée

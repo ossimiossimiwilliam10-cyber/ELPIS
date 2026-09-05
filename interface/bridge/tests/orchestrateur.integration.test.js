@@ -1,18 +1,27 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
 import { genererRapportQuotidien } from '../moteur/orchestrateur';
 const { db } = require('../db/setup');
 import { saveConfig } from '../moteur/config';
 import { saveCours } from '../moteur/cours';
 import { saveHistorique } from '../moteur/historique';
 
+// Horloge figée : le planning dépend du temps restant avant le coucher et des fenêtres
+// de chronotype. Sans cela, la suite passe le matin et échoue le soir.
+// Seul Date est simulé, pour ne pas perturber les I/O de better-sqlite3.
+const CLOCK = new Date('2026-09-16T08:00:00');
+vi.useFakeTimers({ toFake: ['Date'] });
+vi.setSystemTime(CLOCK);
+
 beforeAll(() => {
   db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
 
   // Create a config that will NOT trigger burnout or rest
+  // Repos anciens uniquement : un repos daté d'hier ferait basculer le rapport en
+  // REPOS_OPTIONNEL et viderait le planning, ce que ces tests ne cherchent pas à mesurer.
   const days = [];
   for (let i = 0; i < 5; i++) {
     const d = new Date();
-    d.setDate(d.getDate() - (i + 1));
+    d.setDate(d.getDate() - (i + 3));
     days.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
   }
 
@@ -44,6 +53,7 @@ beforeAll(() => {
 
 afterAll(() => {
   db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
+  vi.useRealTimers();
 });
 
 // â”€â”€ Scenarios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

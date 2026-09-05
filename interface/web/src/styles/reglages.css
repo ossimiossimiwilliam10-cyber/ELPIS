@@ -1,0 +1,65 @@
+/* ============================================================
+   Réglages
+   ============================================================ */
+
+.cfg-page { display: flex; flex-direction: column; gap: var(--esp-6); }
+
+/* ---------- Chiffres du cursus ---------- */
+
+.cfg-mesures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(110px, 100%), 1fr));
+  gap: var(--esp-3);
+}
+
+.cfg-mesure {
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-top: 2px solid var(--teinte, var(--accent));
+  border-radius: var(--rayon-md);
+  text-align: center;
+}
+.cfg-mesure__valeur {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-lourde);
+  color: var(--teinte, var(--texte-fort));
+  line-height: 1.1;
+}
+.cfg-mesure__libelle { margin-top: var(--esp-1); font-size: var(--texte-xs); color: var(--texte-doux); }
+
+/* ---------- Valeurs en regard d'un curseur ---------- */
+
+.cfg-valeur {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.cfg-valeur--succes { color: var(--succes); }
+
+.cfg-duo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: var(--esp-3);
+}
+
+/* Les blocs de réglage portent leur teinte via une variable, plus par un
+   hexadécimal recopié dans le JSX. */
+.config-field-bordered { border-left: 3px solid var(--teinte, var(--accent)); }
+.duration-item { border-left: 3px solid var(--teinte, var(--accent)); }
+
+.config-action-card { border-top: 2px solid var(--teinte, var(--accent)); }
+.cfg-action--succes { --teinte: var(--succes); }
+.cfg-action--danger { --teinte: var(--danger); }
+.cfg-action--accent { --teinte: var(--accent); }
+
+.config-action-buttons {
+  display: flex;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-top: var(--esp-4);
+}

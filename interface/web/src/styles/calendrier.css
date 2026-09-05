@@ -1,0 +1,132 @@
+/* ============================================================
+   Calendrier — projection des semaines à venir
+   ============================================================ */
+
+.cal-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  max-width: 1200px;
+  height: calc(100vh - 4rem);
+}
+
+.cal-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+}
+
+.cal-navigation {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  padding: var(--esp-1) var(--esp-2);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-md);
+}
+.cal-navigation__position {
+  min-width: 120px;
+  text-align: center;
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Grille ---------- */
+
+.cal-grille {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-lg);
+}
+
+.cal-jours {
+  display: flex;
+  border-bottom: 1px solid var(--bord-normal);
+  background: var(--surface-2);
+}
+.cal-jours__marge { width: 56px; flex-shrink: 0; border-right: 1px solid var(--bord-discret); }
+
+.cal-jour {
+  flex: 1;
+  min-width: 0;
+  padding: var(--esp-3) var(--esp-1);
+  text-align: center;
+  border-right: 1px solid var(--bord-discret);
+}
+.cal-jour:last-child { border-right: none; }
+.cal-jour__nom { font-size: var(--texte-sm); font-weight: var(--graisse-forte); color: var(--texte-fort); }
+.cal-jour__date { margin-top: 2px; font-size: var(--texte-xs); color: var(--texte-doux); font-variant-numeric: tabular-nums; }
+
+.cal-corps { flex: 1; overflow-y: auto; position: relative; }
+.cal-toile { display: flex; position: relative; }
+
+.cal-heures {
+  width: 56px;
+  flex-shrink: 0;
+  position: relative;
+  border-right: 1px solid var(--bord-discret);
+  background: var(--surface-2);
+}
+.cal-heure {
+  position: absolute;
+  width: 100%;
+  padding-right: var(--esp-2);
+  text-align: right;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-colonne { flex: 1; min-width: 0; position: relative; border-right: 1px solid var(--bord-discret); }
+.cal-colonne:last-child { border-right: none; }
+.cal-ligne { position: absolute; width: 100%; border-bottom: 1px solid var(--bord-discret); opacity: 0.5; }
+
+/* ---------- Créneau ---------- */
+
+.cal-creneau {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  padding: 3px 5px;
+  overflow: hidden;
+  border-radius: var(--rayon-sm);
+  border: 1px solid var(--bord-discret);
+  border-left: 3px solid var(--teinte);
+  background: color-mix(in srgb, var(--teinte) 16%, var(--surface-1));
+  font-size: var(--texte-xs);
+  cursor: pointer;
+  transition: transform var(--duree-vive) var(--courbe), box-shadow var(--duree-vive) var(--courbe);
+}
+.cal-creneau:hover {
+  transform: scale(1.02);
+  z-index: 10;
+  box-shadow: var(--ombre-2);
+}
+.cal-creneau__matiere {
+  font-weight: var(--graisse-forte);
+  color: var(--teinte);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-creneau__intitule {
+  color: var(--texte-doux);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cal-creneau__horaire {
+  margin-top: 2px;
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}

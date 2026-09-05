@@ -60,7 +60,10 @@ describe('Orchestrateur - genererRapportQuotidien', () => {
     expect(r).toHaveProperty('tempsRequisMin');
     expect(r).toHaveProperty('tempsDispoMin');
     expect(r.tachesDuJour).toBeInstanceOf(Array);
-    expect(['OK', 'SURCHARGE', 'REPOS']).toContain(r.statut);
+    // REPOS_OPTIONNEL manquait : le rapport le renvoie notamment les week-ends de
+    // la phase de préparation, si bien que ce test échouait selon le jour où on
+    // le lançait.
+    expect(['OK', 'SURCHARGE', 'REPOS', 'REPOS_OPTIONNEL']).toContain(r.statut);
   });
 
   test('extraTimeMin changes tempsDispoMin behavior', () => {

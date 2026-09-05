@@ -1,52 +1,41 @@
+@import './styles/tokens.css';
+@import './styles/primitives.css';
+@import './styles/bibliotheque.css';
+@import './styles/taches.css';
+@import './styles/exercice.css';
+@import './styles/bulletin.css';
+@import './styles/statistiques.css';
+@import './styles/dashboard.css';
+@import './styles/hebdo.css';
+@import './styles/videos.css';
+@import './styles/absences.css';
+@import './styles/calendrier.css';
+@import './styles/visionneuse.css';
+@import './styles/projets.css';
+@import './styles/classement.css';
+@import './styles/reglages.css';
+@import './styles/rappel.css';
+@import './styles/langues.css';
+
 /* ============================================
-   ELPIS — Design System
+   ELPIS — Feuille de style principale
+   Les couleurs, espacements et rayons vivent dans styles/tokens.css.
    ============================================ */
 
-/* === RESET & GLOBAL === */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
 :root {
-  /* Palette de couleurs Premium Dark Mode (Default / Morning: 06h-12h) */
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --bg-tertiary: #334155;
-
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-
-  --accent-primary: #3B82F6;
-  --accent-glow: rgba(59, 130, 246, 0.5);
-
-  --success-color: #10B981;
-  --success-glow: rgba(16, 185, 129, 0.4);
-  --danger-color: #EF4444;
-  --danger-glow: rgba(239, 68, 68, 0.4);
-  --warning-color: #F59E0B;
-  --accent-hover: #2563EB;
-
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.2);
-
-  --transition-fast: 0.15s ease;
-  --transition-normal: 0.25s ease;
-  --transition-slow: 0.5s ease;
-
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: var(--police);
+  line-height: var(--interligne-normal);
+  font-weight: var(--graisse-normale);
 
   color-scheme: dark;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--surface-0);
+  color: var(--texte-fort);
 
-  /* Smooth transition for dynamic themes */
+  /* Fondu lors du passage d'un thème horaire au suivant. */
   transition: background-color 0.8s ease, color 0.8s ease;
 
   font-synthesis: none;
@@ -55,63 +44,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* === DYNAMIC THEMES === */
-:root.theme-morning {
-  /* 06h-12h: Fresh, slightly warmer/brighter slate for morning energy */
-  --bg-primary: #0C1A30;
-  --bg-secondary: #172D4D;
-  --bg-tertiary: #234370;
-}
-
-:root.theme-afternoon {
-  /* 12h-18h: Deeper teal/cyan tint for focus */
-  --bg-primary: #0A1929;
-  --bg-secondary: #132F4C;
-  --bg-tertiary: #173A5E;
-}
-
-:root.theme-evening {
-  /* 18h-22h: Sunset vibes, deep indigo */
-  --bg-primary: #17102B;
-  --bg-secondary: #2D1B4E;
-  --bg-tertiary: #3F2373;
-}
-
-:root.theme-night {
-  /* 22h-06h: OLED Pitch Black for true eye rest & battery save */
-  --bg-primary: #000000;
-  --bg-secondary: #0A0A0A;
-  --bg-tertiary: #141414;
-  --text-primary: #E2E8F0;
-  --accent-glow: rgba(59, 130, 246, 0.2);
-}
+:root.light { color-scheme: light; }
 
 :root, body, #root, .app-layout, .sidebar, .glass-panel, .task-card {
   transition: background-color 0.8s ease, border-color 0.8s ease, box-shadow 0.8s ease;
-}
-
-
-:root.light {
-  --bg-primary: #F8FAFC;
-  --bg-secondary: #F1F5F9;
-  --bg-tertiary: #E2E8F0;
-
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-
-  --accent-primary: #2563EB;
-  --accent-glow: rgba(37, 99, 235, 0.3);
-
-  --success-color: #059669;
-  --success-glow: rgba(5, 150, 105, 0.4);
-  --danger-color: #DC2626;
-  --danger-glow: rgba(220, 38, 38, 0.4);
-  --warning-color: #D97706;
-  --accent-hover: #1D4ED8;
-
-  color-scheme: light;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
 }
 
 body {
@@ -192,13 +128,22 @@ body {
     margin-left: 0;
     padding: 1.5rem;
     padding-top: 4.5rem; /* Espace pour le header mobile */
-    padding-bottom: 5rem; /* Espace pour le GlobalChrono */
+    /* Chronomètre global, puis la pile de boutons flottants : le coach
+       culmine à 152 px du bas, les 5 rem précédents ne suffisaient pas et le
+       dernier bloc de chaque page restait masqué. */
+    padding-bottom: 11rem;
     height: auto;
     min-height: 100vh;
   }
 }
 
-@media (max-width: 1024px) {
+/* Tablette : la barre latérale reste affichée, seul l'espacement se resserre.
+   Ce bloc suivait celui des 768 px sans borne inférieure : à égalité de
+   spécificité, le dernier écrit gagnait, si bien qu'un téléphone se voyait
+   rendre la marge de 260 px de la barre latérale — pour une largeur utile de
+   moins de 400 px, le contenu partait hors de l'écran. C'est ce qui rendait
+   l'application illisible sur Android. */
+@media (min-width: 769px) and (max-width: 1024px) {
   .main-content {
     margin-left: 260px;
     padding: 1.5rem 2rem;
@@ -215,7 +160,7 @@ body {
   top: 0;
   left: 0;
   z-index: 100;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--bord-discret);
   background: linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.85) 40%, rgba(10, 15, 30, 0.9) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -245,7 +190,7 @@ body {
   gap: 0.15rem;
   padding-bottom: 1.2rem;
   margin-bottom: 0.8rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--bord-discret);
 }
 
 .sidebar-nav-group:last-child {
@@ -283,14 +228,17 @@ body {
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--voile-faible);
   color: var(--text-primary);
   transform: translateX(4px);
 }
 
 .sidebar-link.active {
   background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.08) 100%);
-  color: var(--accent-primary);
+  /* Le bleu 500 sur le voile bleu de l'onglet actif ne donnait que 4,29 de
+     contraste : c'est l'entrée qu'on doit justement pouvoir repérer d'un coup
+     d'œil. Le bleu 400 la porte à 5,2. */
+  color: var(--accent-clair);
   border-left: 3px solid var(--accent-primary);
   border-radius: 4px 8px 8px 4px;
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.1), inset 0 0 20px rgba(59, 130, 246, 0.03);
@@ -301,6 +249,17 @@ body {
 }
 
 @media (max-width: 768px) {
+  /*
+   * La barre porte les classes `sidebar` et `glass-panel`, et la seconde impose
+   * un fond à 60 % d’opacité. Sur ordinateur elle est posée à côté du contenu :
+   * la translucidité y est un effet voulu. Sur mobile c’est un tiroir par-dessus
+   * la page, et le tableau de bord transparaissait nettement derrière les
+   * entrées de menu. Il faut la même spécificité pour la surcharger.
+   */
+  .sidebar.glass-panel {
+    background: var(--surface-1);
+  }
+
   .sidebar {
     width: 280px;
     height: 100vh;
@@ -312,10 +271,15 @@ body {
     flex-direction: column;
     padding: 2rem 1.5rem;
     justify-content: flex-start;
-    background: rgba(15, 23, 42, 0.98);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    /*
+     * Tiroir opaque, sans dépendre du flou d’arrière-plan : le WebView Android
+     * ne l’applique pas, et les 2 % de transparence restants suffisaient à
+     * laisser le tableau de bord transparaître nettement derrière les entrées
+     * de menu. Sur ordinateur la barre est à côté du contenu, pas par-dessus :
+     * la translucidité y reste sans conséquence.
+     */
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
+    border-right: 1px solid var(--bord-discret);
     border-top: none;
     overflow-y: auto;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -368,17 +332,15 @@ body {
     left: 0;
     width: 100%;
     height: 60px;
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: var(--surface-0);
     z-index: 9000;
     padding: 0 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--bord-discret);
   }
 
   :root.light .mobile-header {
-    background: rgba(248, 250, 252, 0.9);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: var(--surface-0);
+    border-bottom: 1px solid var(--bord-discret);
   }
 
   .mobile-header-title {
@@ -425,7 +387,7 @@ body {
 .sidebar-footer {
   margin-top: auto;
   padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--bord-discret);
 }
 
 .system-status {
@@ -478,7 +440,7 @@ h1 {
   text-align: center;
   color: var(--text-primary);
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 2px solid var(--bord-discret);
 }
 
 /* Sidebar h1 keeps the gradient */
@@ -497,7 +459,7 @@ h1 {
 /* === CARDS & GLASS PANELS === */
 .card {
   background-color: var(--bg-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--bord-discret);
   border-left: 3px solid;
   border-image: linear-gradient(to bottom, rgba(59, 130, 246, 0.5), rgba(168, 85, 247, 0.3)) 1;
   border-radius: var(--radius-lg);
@@ -532,7 +494,37 @@ h1 {
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--bord-discret);
+}
+
+/* ---------- Surfaces peintes en dur, et leur variante claire ----------
+
+   Ces trois surfaces posent une couleur littérale au lieu d'un jeton. En thème
+   sombre cela ne se voyait pas ; en thème clair, elles restaient sombres tandis
+   que leurs textes passaient au sombre eux aussi — la barre latérale, présente
+   sur tous les écrans, devenait illisible.
+
+   La correction de fond serait de les faire reposer sur `--surface-*`. En
+   attendant, ces règles rendent le thème clair praticable. */
+
+:root.light .sidebar {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--surface-0) 100%);
+  border-right: 1px solid var(--bord-discret);
+}
+
+:root.light .sidebar-nav-group {
+  border-bottom-color: var(--bord-discret);
+}
+
+:root.light .toast {
+  background: var(--surface-1);
+  border: 1px solid var(--bord-normal);
+  color: var(--texte-fort);
+}
+
+:root.light .task-card {
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
 }
 
 :root.light .card {
@@ -576,7 +568,7 @@ h1 {
 
 .nav-tab:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--voile-faible);
 }
 
 .nav-tab.active {
@@ -648,7 +640,7 @@ button:active:not(:disabled),
 
 /* === INPUTS === */
 input[type="text"], input[type="number"], input[type="date"], input[type="time"], select {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--creux);
   border: 1px solid var(--bg-tertiary);
   color: var(--text-primary);
   padding: 0.6rem 1rem;
@@ -713,7 +705,7 @@ button:focus-visible,
   gap: 0.3rem;
 }
 .welcome-stat-streak {
-  border-left: 1px solid rgba(255,255,255,0.1);
+  border-left: 1px solid var(--bord-discret);
   padding-left: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -733,6 +725,21 @@ button:focus-visible,
 }
 
 @media (max-width: 768px) {
+  /*
+   * La carte restait en rangée sous 768 px : seuls les indicateurs avaient une
+   * règle mobile, pas la carte. La salutation se retrouvait écrasée dans une
+   * colonne résiduelle — « Tu as encore / 5 objectifs à / accomplir /
+   * aujourd'hui. » sur quatre lignes de trois mots — pendant que les six
+   * indicateurs s'enchevêtraient autour. Sur un téléphone, les deux blocs
+   * doivent se superposer.
+   */
+  .welcome-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
   .welcome-stats {
     flex-wrap: wrap;
     gap: 1rem;
@@ -748,7 +755,7 @@ button:focus-visible,
   .welcome-stat-streak {
     flex: 1 1 100%;
     border-left: none;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid var(--bord-discret);
     padding-left: 0;
     padding-top: 1rem;
   }
@@ -868,7 +875,7 @@ button:focus-visible,
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--bord-discret);
   padding-top: 2rem;
 }
 
@@ -900,6 +907,26 @@ button:focus-visible,
   body { background: white !important; color: black !important; }
   .card, .glass-panel { box-shadow: none !important; border: 1px solid #ccc !important; background: white !important; color: black !important; }
   * { color: black !important; }
+
+  /* Éléments flottants : hors-sujet sur une feuille imprimée. */
+  .mobile-header,
+  .mobile-overlay,
+  .modal-overlay,
+  .global-chrono,
+  .ai-coach-sidebar,
+  .background-music-player,
+  [role="dialog"],
+  [role="alertdialog"],
+  [role="menu"] { display: none !important; }
+
+  /* Les listes de tâches défilent à l'écran : tout doit apparaître au papier. */
+  .todo-list { max-height: none !important; overflow: visible !important; }
+
+  /* Éviter qu'une carte soit coupée entre deux pages. */
+  .card, .glass-panel { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Les liens d'ancrage internes n'ont pas d'intérêt imprimés. */
+  a[href^="#"]::after { content: ""; }
 }
 
 /* === COURS PAGE — Tabs & Accordions === */
@@ -909,7 +936,7 @@ button:focus-visible,
   overflow-x: auto;
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--bord-discret);
   scrollbar-width: thin;
 }
 
@@ -937,7 +964,7 @@ button:focus-visible,
 
 .tab-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--voile-faible);
 }
 
 .tab-btn.active {
@@ -971,7 +998,7 @@ button:focus-visible,
 }
 
 .ue-accordion-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--voile-moyen);
 }
 
 .ue-accordion-btn.open {
@@ -1054,6 +1081,27 @@ button:focus-visible,
   flex: 1;
   color: var(--text-primary);
 }
+
+/* Action portée par une notification — « Annuler », le plus souvent.
+   Elle doit se distinguer nettement du texte : la notification entière est
+   cliquable pour la fermer, et rien ne signalerait sinon qu'une partie fait
+   autre chose. */
+.toast-action {
+  flex-shrink: 0;
+  padding: var(--esp-1) var(--esp-3);
+  border: 1px solid var(--accent);
+  border-radius: var(--rayon-sm);
+  background: transparent;
+  color: var(--accent-clair);
+  font-family: inherit;
+  font-size: var(--texte-sm);
+  font-weight: var(--graisse-forte);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.toast-action:hover { background: var(--accent-voile); }
+.toast-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 @media (max-width: 768px) {
   .toast-container {
@@ -1163,9 +1211,9 @@ button:focus-visible,
   gap: 1.5rem;
   margin-bottom: 2rem;
   padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--voile-faible);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bord-discret);
 }
 
 .progress-header-bar {
@@ -1200,7 +1248,7 @@ button:focus-visible,
 
 .filter-pill:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--voile-moyen);
 }
 
 .filter-pill.active {
@@ -1218,13 +1266,13 @@ button:focus-visible,
   padding: 1.5rem;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bord-discret);
 }
 
 .profile-stat-card {
   text-align: center;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--voile-faible);
   border-radius: var(--radius-md);
 }
 
@@ -1258,8 +1306,8 @@ button:focus-visible,
 .todo-item {
   word-break: break-word;
   overflow-wrap: break-word;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--voile-faible);
+  border: 1px solid var(--bord-discret);
   border-radius: 12px;
   padding: 1rem 1.2rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1271,7 +1319,7 @@ button:focus-visible,
 }
 .todo-item:hover {
   transform: translateY(-3px) scale(1.01);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--voile-moyen);
   border-color: rgba(59, 130, 246, 0.3);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(59, 130, 246, 0.1) inset;
 }
@@ -1377,7 +1425,7 @@ button:focus-visible,
   padding: 3rem 2rem;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05));
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bord-discret);
   box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
   position: relative;
   overflow: hidden;
@@ -1562,24 +1610,51 @@ button:focus-visible,
 .disclaimer-header {
   padding: 2rem 2rem 1.5rem;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), transparent);
+  border-bottom: 1px solid var(--bord-discret);
+  /* Fond opaque : le corps défile en dessous, et un dégradé laissait voir le
+     texte à travers l'en-tête — l'écran paraissait inachevé. */
+  background: var(--surface-1);
+  flex-shrink: 0;
 }
 
+/* Le titre portait un dégradé orange-rouge, hérité du temps où cet écran était
+   un avertissement. C'est un accueil : il prend les couleurs de la marque. */
 .disclaimer-header h2 {
   margin: 0;
   font-size: 1.8rem;
-  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  background: linear-gradient(135deg, var(--bleu-400), var(--violet-400));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.disclaimer-icon {
-  font-size: 3rem;
-  display: block;
-  margin-bottom: 0.5rem;
-  filter: drop-shadow(0 4px 6px rgba(245, 158, 11, 0.4));
+/* Une phrase sous le titre : ce que fait l'application, avant tout détail. */
+.disclaimer-accroche {
+  margin: var(--esp-3) auto 0;
+  max-width: 46ch;
+  color: var(--texte-doux);
+  font-size: var(--texte-sm);
+  line-height: var(--interligne-normal);
+}
+
+/* Renvoi vers l'aide contextuelle, discret : c'est un recours, pas une consigne. */
+.disclaimer-aide {
+  margin-top: var(--esp-5);
+  padding-top: var(--esp-4);
+  border-top: 1px solid var(--bord-discret);
+  color: var(--texte-doux);
+  font-size: var(--texte-sm);
+  text-align: center;
+}
+
+.disclaimer-body kbd {
+  padding: 1px 6px;
+  margin: 0 2px;
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-sm);
+  background: var(--surface-2);
+  font-family: var(--police-mono);
+  font-size: 0.85em;
 }
 
 .disclaimer-body {
@@ -1609,49 +1684,15 @@ button:focus-visible,
   margin-bottom: 1rem;
 }
 
-.disclaimer-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
 
-.disclaimer-list li {
-  position: relative;
-  padding-left: 1.5rem;
-  margin-bottom: 0.8rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
 
-.disclaimer-list li::before {
-  content: "•";
-  color: var(--accent-primary);
-  font-weight: bold;
-  font-size: 1.5rem;
-  position: absolute;
-  left: 0;
-  top: -4px;
-}
 
-.disclaimer-list li strong {
-  color: var(--text-primary);
-}
 
-.disclaimer-alert {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  color: var(--success-color);
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: 500;
-  margin-top: 1rem;
-}
 
 .disclaimer-footer {
   padding: 1.5rem 2rem;
-  background: rgba(15, 23, 42, 0.5);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-0);
+  border-top: 1px solid var(--bord-discret);
   display: flex;
   justify-content: center;
 }
@@ -1660,9 +1701,8 @@ button:focus-visible,
   width: 100%;
   font-size: 1.1rem;
   padding: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, var(--bleu-500), var(--violet-500));
   border: none;
 }
 
@@ -1692,7 +1732,7 @@ button:focus-visible,
 .kpi-card:hover {
   transform: scale(1.06);
   box-shadow: 0 4px 20px rgba(59, 130, 246, 0.12);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--voile-faible);
 }
 
 @keyframes fadeInUp {
@@ -1749,7 +1789,7 @@ button:focus-visible,
 }
 
 .config-field {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--creux);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
@@ -1809,7 +1849,7 @@ button:focus-visible,
 }
 
 .config-field-bordered {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--creux);
   padding: 1rem;
   border-radius: 8px;
   border-left: 3px solid #3b82f6;
@@ -1858,7 +1898,7 @@ button:focus-visible,
 }
 
 .duration-item {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--creux);
   padding: 0.75rem;
   border-radius: 8px;
 }
@@ -1981,4 +2021,61 @@ button:focus-visible,
   .kpi-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+/* ---------------------------------------------------------------------------
+   Voyant de liaison avec le PC
+
+   Un bouton grisé sans explication est une impasse : on ne sait pas s'il faut
+   brancher le câble, allumer le PC ou corriger l'adresse. Le voyant porte la
+   réponse, et sa couleur se lit d'un coup d'œil sans avoir à la lire.
+--------------------------------------------------------------------------- */
+.cfg-liaison {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.75rem 0 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--bg-tertiary);
+  background: var(--bg-primary);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.cfg-liaison__voyant {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin-top: 0.35rem;
+  border-radius: 50%;
+  background: var(--text-secondary);
+}
+
+.cfg-liaison--joignable {
+  border-color: color-mix(in srgb, var(--success-color) 45%, transparent);
+  color: var(--text-primary);
+}
+.cfg-liaison--joignable .cfg-liaison__voyant {
+  background: var(--success-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success-color) 22%, transparent);
+}
+
+.cfg-liaison--absent .cfg-liaison__voyant,
+.cfg-liaison--non-configure .cfg-liaison__voyant {
+  background: var(--attention, #f59e0b);
+}
+
+/* Pendant la première sonde, le voyant respire plutôt que de mentir en vert. */
+.cfg-liaison--inconnu .cfg-liaison__voyant {
+  animation: cfg-liaison-attente 1.2s ease-in-out infinite;
+}
+
+@keyframes cfg-liaison-attente {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfg-liaison--inconnu .cfg-liaison__voyant { animation: none; opacity: 0.6; }
 }

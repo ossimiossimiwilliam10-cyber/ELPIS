@@ -1,12 +1,11 @@
 const { db } = require('../db/setup');
+const { sourceCourante } = require('./stockage');
 
 const DEFAULT_CONFIG = {
   studyStartDate: "07-09-2026",
   bedtime: "23:00",
   wakeUpTime: "07:00",
   maxStudyHoursPerDay: 8,
-  targetGrade: 14,
-  targetRank: 10,
   summerStudyHoursCompleted: 0,
   maxSubjectsPerDay: 3,
   studyBlockDurationMinutes: 50,
@@ -35,8 +34,18 @@ const DEFAULT_CONFIG = {
   restDays: [],
   skippedRestDays: [],
   dernierePratiqueAnki: "",
-  enableTD: false,
-  enableAnnales: false
+  // TD et annales entrent dans le planning dès le premier lancement : les exercices
+  // saisis doivent être planifiables sans réglage préalable.
+  enableTD: true,
+  enableAnnales: true,
+  // Langues étudiées hors cursus. Aucune n'est fournie d'office : c'est à
+  // l'utilisateur de déclarer celles qu'il apprend, et il peut en ajouter
+  // autant qu'il veut. Voir moteur/langues.js pour la forme d'une entrée.
+  langues: [],
+  // Séances de langue proposées dans une même journée. Au-delà de une, une
+  // journée chargée se remplit de tâches courtes au détriment du travail de
+  // fond.
+  maxLanguesParJour: 1
 };
 
 function validateConfigSchema(data) {
@@ -46,7 +55,6 @@ function validateConfigSchema(data) {
   }
   const numChecks = [
     ['maxStudyHoursPerDay', 0, 24],
-    ['targetGrade', 0, 20],
     ['defaultDurationNewCM', 5, 600],
     ['defaultDurationRevCM', 5, 600],
   ];
@@ -72,12 +80,48 @@ function validateConfigSchema(data) {
     console.error('[VALIDATION] Config : "skippedRestDays" doit être un tableau.');
     return false;
   }
+  if (data.langues !== undefined && !Array.isArray(data.langues)) {
+    console.error('[VALIDATION] Config : "langues" doit être un tableau.');
+    return false;
+  }
   return true;
 }
 
+/*
+ * Réglages retirés, qu'on refuse de laisser revenir.
+ *
+ * `targetGrade` et `targetRank` déclaraient une moyenne et un rang visés, d'un
+ * modèle remplacé par le régime hebdomadaire d'`objectifs.js`. Les effacer de la
+ * base ne suffit pas : un appareil qui n'a pas encore synchronisé garde l'ancien
+ * objet en mémoire et le repousserait au premier échange. On les retire donc à
+ * chaque écriture, ce qui rend leur retour impossible.
+ */
+const CLES_RETIREES = ['targetGrade', 'targetRank'];
+
 function sanitize(c) {
+  for (const cle of CLES_RETIREES) delete c[cle];
+
+  /*
+   * Une seule capacité, deux noms.
+   *
+   * `capaciteQuotidienneH` est le champ que règle l'interface — le seul, dans
+   * tout ConfigPage. `maxStudyHoursPerDay` est l'ancien nom, qu'aucun écran
+   * n'expose mais que lisent encore l'ordonnanceur, le simulateur, la vélocité
+   * et le Répétiteur. Rien ne les reliait : porter le curseur de 5 à 6 h
+   * changeait le budget des objectifs sans allonger d'une minute la journée
+   * planifiée, et le Répétiteur continuait d'annoncer l'ancienne valeur comme
+   * si c'était le réglage. Les deux coïncidaient jusqu'ici par hasard.
+   *
+   * Le champ réglable fait donc foi, et l'ancien s'aligne sur lui à chaque
+   * lecture comme à chaque écriture. Les valeurs de repli, elles, restaient
+   * incohérentes du simple au triple (8 h ici, 2,5 h dans `objectifs.js`) ;
+   * l'alignement les rend inatteignables ensemble.
+   */
+  const capaciteDeclaree = Number(c.capaciteQuotidienneH);
+  if (Number.isFinite(capaciteDeclaree) && capaciteDeclaree > 0) {
+    c.maxStudyHoursPerDay = capaciteDeclaree;
+  }
   c.maxStudyHoursPerDay = Math.max(0, Math.min(24, c.maxStudyHoursPerDay ?? 8));
-  c.targetGrade = Math.max(0, Math.min(20, c.targetGrade ?? 14));
   c.summerStudyHoursCompleted = Math.max(0, c.summerStudyHoursCompleted ?? 0);
   c.maxSubjectsPerDay = Math.max(1, c.maxSubjectsPerDay ?? 3);
   c.studyBlockDurationMinutes = Math.max(10, Math.min(240, c.studyBlockDurationMinutes ?? 50));
@@ -107,11 +151,32 @@ function sanitize(c) {
   if (!Array.isArray(c.fixedCommitments)) c.fixedCommitments = [];
   if (!Array.isArray(c.restDays)) c.restDays = [];
   if (!Array.isArray(c.skippedRestDays)) c.skippedRestDays = [];
+  if (!Array.isArray(c.langues)) c.langues = [];
+  c.maxLanguesParJour = Math.max(0, Math.min(5, c.maxLanguesParJour ?? 1));
 
   return c;
 }
 
 function loadConfig() {
+  /*
+   * Sur le téléphone, la configuration vient de la copie RxDB. On lui applique
+   * exactement la même normalisation qu'à la voie SQLite — fusion avec les
+   * valeurs par défaut, `sanitize`, retrait des clés abandonnées. C'est cette
+   * symétrie qui garantit que les deux appareils calculent sur les mêmes
+   * valeurs ; l'omettre suffirait à les faire diverger en silence.
+   */
+  const source = sourceCourante();
+  if (source) {
+    try {
+      const brut = source.lireConfig();
+      if (!brut || typeof brut !== 'object') return { ...DEFAULT_CONFIG };
+      return sanitize({ ...DEFAULT_CONFIG, ...brut });
+    } catch (err) {
+      console.error('Erreur lecture config (source externe):', err.message);
+      return { ...DEFAULT_CONFIG };
+    }
+  }
+
   try {
     const row = db.prepare('SELECT value FROM config WHERE key = ?').get('main');
     if (!row) return { ...DEFAULT_CONFIG };
@@ -130,6 +195,19 @@ function loadConfig() {
 }
 
 function saveConfig(config) {
+  const source = sourceCourante();
+  if (source) {
+    try {
+      const cleaned = sanitize({ ...loadConfig(), ...config });
+      if (!validateConfigSchema(cleaned)) return false;
+      source.ecrireConfig(cleaned);
+      return true;
+    } catch (err) {
+      console.error('Erreur sauvegarde config (source externe):', err.message);
+      return false;
+    }
+  }
+
   try {
     const existing = loadConfig();
     const merged = { ...existing, ...config };
@@ -150,6 +228,7 @@ function saveConfig(config) {
 
 module.exports = {
   DEFAULT_CONFIG,
+  CLES_RETIREES,
   validateConfigSchema,
   sanitize,
   loadConfig,

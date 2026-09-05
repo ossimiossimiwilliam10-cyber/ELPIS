@@ -265,6 +265,67 @@ describe('getCapitalisedUEs', () => {
     expect(result).toBeInstanceOf(Set);
   });
 
+  /*
+   * getMatiereAverage n'est pas interceptée par le mock du haut de fichier :
+   * scoring.js la charge en CommonJS (`require('./intelligence')`), hors du
+   * registre de mocks ESM. Ces tests utilisent donc de vraies évaluations, ce
+   * qui les rend de toute façon plus fidèles.
+   */
+  const ueAvec = (nom, matieres) => ({ nom, ects: 6, matieres });
+  const mat = (nom, note, coefficient) => ({ nom, coefficient, evaluations: [{ note, coefficient: 1 }] });
+
+  /*
+   * La capitalisation est prononcée par le jury en fin d'année. Le critère
+   * précédent — au moins trois notes conformes au règlement — était trop
+   * faible : trois notes sont le minimum exigé de l'université, pas la preuve
+   * que l'évaluation est close. Sur un cursus garni de trois notes par matière
+   * en cours de semestre, les cinq UE passaient capitalisées dès le mois
+   * d'août et disparaissaient entièrement du planning, examens à venir.
+   */
+  const semestreFini = (ues) => ({ nom: 'S3', dateFin: '2020-01-15', ues });
+  const semestreEnCours = (ues) => ({ nom: 'S3', dateFin: '2099-01-15', ues });
+
+  it('ne capitalise rien tant que le semestre est en cours', () => {
+    const ue = {
+      nom: 'UE1', ects: 6,
+      matieres: [{ nom: 'Analyse', coefficient: 2, evaluations: [{ note: 15 }, { note: 14 }, { note: 16 }] }],
+    };
+    expect(getCapitalisedUEs({ semestres: [semestreEnCours([ue]), {}] }).has('UE1')).toBe(false);
+  });
+
+  it('capitalise une UE validée une fois le semestre terminé', () => {
+    const ue = {
+      nom: 'UE1', ects: 6,
+      matieres: [{ nom: 'Analyse', coefficient: 2, evaluations: [{ note: 12 }, { note: 12 }, { note: 12 }] }],
+    };
+    expect(getCapitalisedUEs({ semestres: [semestreFini([ue]), {}] }).has('UE1')).toBe(true);
+  });
+
+  it('capitalise une UE que tu as déclarée acquise, même en cours de semestre', () => {
+    // Les années précédentes se saisissent souvent sans le détail des épreuves.
+    const ue = { nom: 'UE1', ects: 6, acquise: true, matieres: [] };
+    expect(getCapitalisedUEs({ semestres: [semestreEnCours([ue]), {}] }).has('UE1')).toBe(true);
+  });
+  it("ne capitalise pas une UE sous la moyenne à cause d'une matière de coefficient nul", () => {
+    /*
+     * Une matière de coefficient 0 voyait sa moyenne s'ajouter entièrement à
+     * celle de l'UE. Une UE réellement à 8/20 accompagnée d'un sport noté 18
+     * était calculée à 26/20, donc déclarée capitalisée — et ELPIS cessait
+     * définitivement d'en planifier les révisions, juste avant les partiels.
+     */
+    const licence = { semestres: [semestreFini([ueAvec('UE1', [mat('Analyse', 8, 2), mat('Sport', 18, 0)])]), {}] };
+    expect(getCapitalisedUEs(licence).has('UE1')).toBe(false);
+  });
+
+  it('capitalise une UE réellement au-dessus de la moyenne', () => {
+    // Contrôle : la correction ne doit pas empêcher une capitalisation légitime.
+    // Trois notes équilibrées, moyenne à 12 : évaluation achevée et validée.
+    const ue = {
+      nom: 'UE1', ects: 6,
+      matieres: [{ nom: 'Analyse', coefficient: 2, evaluations: [{ note: 12 }, { note: 12 }, { note: 12 }] }],
+    };
+    expect(getCapitalisedUEs({ semestres: [semestreFini([ue]), {}] }).has('UE1')).toBe(true);
+  });
   it('devrait capitaliser une UE acquise explicitement', () => {
     const licence = {
       semestres: [

@@ -37,10 +37,13 @@ Si une commande ne fonctionne pas, il faut installer le logiciel correspondant.
 ## 3. Démarrer ELPIS en 2 minutes
 
 ### Option la plus simple
-Dans la racine du projet, double-clique sur :
-- [start_elpis.bat](../start_elpis.bat) pour lancer ELPIS sous Windows.
+Double-clique sur le raccourci **ELPIS** du bureau, ou sur
+[Lancer ELPIS.vbs](../Lancer%20ELPIS.vbs) à la racine du projet.
 
-Le programme démarre ensuite le serveur et ouvre l'interface dans le navigateur.
+Un écran de démarrage s'affiche le temps que le moteur ouvre sa base, puis
+l'application apparaît dans sa propre fenêtre. Aucun terminal ne s'ouvre.
+ELPIS reste ensuite dans la zone de notification, en bas à droite de l'écran :
+c'est par là qu'on le rouvre ou qu'on l'arrête.
 
 ### Option manuelle
 Si tu préfères le faire toi-même :
@@ -79,7 +82,7 @@ Si tu débutes, commence par ceux-ci :
 - [GLOSSAIRE.md](GLOSSAIRE.md) : 60+ termes expliqués simplement.
 - [interface/bridge/server.js](../interface/bridge/server.js) : point central du backend.
 - [interface/bridge/moteur](../interface/bridge/moteur) : logique d'ordonnancement et d'intelligence.
-- [start_elpis.bat](../start_elpis.bat) : lanceur Windows.
+- [outils/lanceur/ELPIS.ps1](../outils/lanceur/ELPIS.ps1) : le lanceur Windows.
 
 ## 6. Ce que tu verras quand l'application démarre
 

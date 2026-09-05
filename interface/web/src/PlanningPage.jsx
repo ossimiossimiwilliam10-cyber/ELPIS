@@ -1,22 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import useStore from './store';
+import { getApiUrl } from './utils/apiConfig';
+import { dateCalendaire } from './utils/dateUtils';
+import { Bouton, Carte, EtatVide, TitrePage, Texte, couleurType } from './components/ui';
+
+/** Plage horaire affichée par défaut. Elle s'élargit si des créneaux débordent. */
+const HEURE_DEBUT_DEFAUT = 7;
+const HEURE_FIN_DEFAUT = 23;
+const HAUTEUR_HEURE = 60; // px par heure (1 px par minute)
+
+const JOURS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+const enHeure = (min) => {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+};
+
+/** Date locale à partir de « AAAA-MM-JJ », sans passer par le fuseau UTC. */
+
 
 export default function PlanningPage() {
+  const setActiveTab = useStore(s => s.setActiveTab);
   const [weeks, setWeeks] = useState([]);
   const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchSimulation();
-  }, []);
-
-  const fetchSimulation = async () => {
+  const fetchSimulation = useCallback(async () => {
     try {
       setLoading(true);
-      const url = `http://localhost:3001/api/orchestrateur/simulation`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Erreur lors du chargement de la simulation');
+      setError(null);
+      // L'adresse était figée sur localhost : la page ne pouvait pas fonctionner
+      // depuis l'application Android ni depuis un autre appareil du réseau.
+      const res = await fetch(`${getApiUrl()}/orchestrateur/simulation`);
+      if (!res.ok) throw new Error(`Le serveur a répondu ${res.status}`);
       const data = await res.json();
       setWeeks(data.weeks || []);
     } catch (err) {
@@ -24,144 +42,158 @@ export default function PlanningPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  if (loading) return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Génération du calendrier...</div>;
-  if (error) return <div style={{ padding: '2rem', color: 'var(--accent-red)' }}>Erreur: {error}</div>;
-  if (!weeks || weeks.length === 0) return <div style={{ padding: '2rem', color: 'var(--text-secondary)' }}>Aucune donnée de simulation.</div>;
+  useEffect(() => { fetchSimulation(); }, [fetchSimulation]);
 
-  const currentWeek = weeks[currentWeekIndex];
+  // Un index conservé au-delà de la dernière semaine faisait tomber la page.
+  const semaineIndex = Math.min(currentWeekIndex, Math.max(0, weeks.length - 1));
+  const currentWeek = weeks[semaineIndex];
 
-  // Plage horaire affichée: 07h à 23h (16 heures)
-  const START_HOUR = 7;
-  const END_HOUR = 23;
-  const HOUR_HEIGHT = 60; // px par heure (1px par minute)
+  // Une tâche planifiée avant 7 h ou après 23 h était purement escamotée : la
+  // plage s'ajuste désormais au contenu réel de la semaine.
+  const [heureDebut, heureFin] = useMemo(() => {
+    const creneaux = (currentWeek?.days || []).flatMap(d => d.slots || []);
+    if (creneaux.length === 0) return [HEURE_DEBUT_DEFAUT, HEURE_FIN_DEFAUT];
 
-  const formatMinToTime = (min) => {
-    const h = Math.floor(min / 60);
-    const m = min % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-  };
+    const premier = Math.min(...creneaux.map(s => Math.floor(s.startMin / 60)));
+    const dernier = Math.max(...creneaux.map(s => Math.ceil((s.startMin + s.duree) / 60)));
+    return [
+      Math.max(0, Math.min(HEURE_DEBUT_DEFAUT, premier)),
+      Math.min(24, Math.max(HEURE_FIN_DEFAUT, dernier)),
+    ];
+  }, [currentWeek]);
 
-  const getTaskColor = (type) => {
-    switch (type) {
-      case 'CM': return 'var(--accent-blue)';
-      case 'TD': return 'var(--accent-orange)';
-      case 'TP': return 'var(--accent-teal)';
-      case 'ANNALE': return 'var(--accent-red)';
-      case 'REVISION': return 'var(--accent-yellow)';
-      default: return 'var(--bg-secondary)';
-    }
-  };
+  if (loading) {
+    return (
+      <div className="session-chargement">
+        <div className="loading-spinner" role="status" aria-label="Génération du calendrier" />
+      </div>
+    );
+  }
 
-  const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+  if (error) {
+    return (
+      <Carte>
+        <EtatVide
+          icone="📡"
+          titre="Calendrier indisponible"
+          texte={error}
+          actions={<Bouton variante="primaire" grand onClick={fetchSimulation}>Réessayer</Bouton>}
+        />
+      </Carte>
+    );
+  }
+
+  if (!weeks || weeks.length === 0) {
+    return (
+      <Carte>
+        <EtatVide
+          icone="🗓️"
+          titre="Rien à planifier pour l'instant"
+          texte="Le calendrier projette tes cours et exercices sur les semaines à venir. Ajoute-les dans la Bibliothèque pour le voir se remplir."
+          actions={
+            <Bouton variante="primaire" grand onClick={() => setActiveTab('cours')}>
+              Ouvrir la Bibliothèque
+            </Bouton>
+          }
+        />
+      </Carte>
+    );
+  }
+
+  const hauteurTotale = (heureFin - heureDebut) * HAUTEUR_HEURE;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 4rem)' }}>
-      {/* Header & Navigation */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+    <div className="cal-page">
+      <div className="cal-entete">
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--text-primary)', margin: '0 0 0.5rem 0' }}>Calendrier (ADE) 🗓️</h1>
-          <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Emploi du temps déterministe (Forward-Scheduling)</p>
+          <TitrePage>Calendrier</TitrePage>
+          <Texte doux petit>
+            Projection de tes séances sur les prochaines semaines, à partir de tes
+            disponibilités et de tes échéances.
+          </Texte>
         </div>
-        
-        <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.5rem 1rem', borderRadius: '8px' }}>
-          <button 
-            className="btn-secondary"
-            style={{ padding: '0.25rem 0.75rem', fontSize: '0.9rem' }}
-            onClick={() => setCurrentWeekIndex(Math.max(0, currentWeekIndex - 1))}
-            disabled={currentWeekIndex === 0}
+
+        <div className="cal-navigation">
+          <Bouton
+            variante="fantome"
+            onClick={() => setCurrentWeekIndex(Math.max(0, semaineIndex - 1))}
+            disabled={semaineIndex === 0}
+            aria-label="Semaine précédente"
           >
-            ◀ Préc
-          </button>
-          <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', width: '100px', textAlign: 'center' }}>
-            Semaine {currentWeek.weekIndex + 1}
-          </div>
-          <button 
-            className="btn-secondary"
-            style={{ padding: '0.25rem 0.75rem', fontSize: '0.9rem' }}
-            onClick={() => setCurrentWeekIndex(Math.min(weeks.length - 1, currentWeekIndex + 1))}
-            disabled={currentWeekIndex === weeks.length - 1}
+            ◀
+          </Bouton>
+          <span className="cal-navigation__position">
+            Semaine {(currentWeek.weekIndex ?? semaineIndex) + 1} / {weeks.length}
+          </span>
+          <Bouton
+            variante="fantome"
+            onClick={() => setCurrentWeekIndex(Math.min(weeks.length - 1, semaineIndex + 1))}
+            disabled={semaineIndex === weeks.length - 1}
+            aria-label="Semaine suivante"
           >
-            Suiv ▶
-          </button>
+            ▶
+          </Bouton>
         </div>
       </div>
 
-      {/* Calendar Grid Container */}
-      <div className="glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', borderRadius: '12px' }}>
-        
-        {/* Header des Jours */}
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
-          <div style={{ width: '60px', flexShrink: 0, borderRight: '1px solid var(--border-color)' }}></div>
+      <div className="cal-grille">
+        <div className="cal-jours">
+          <div className="cal-jours__marge" />
           {currentWeek.days.map((day, i) => (
-            <div key={i} style={{ flex: 1, textAlign: 'center', padding: '0.75rem 0', borderRight: i < 6 ? '1px solid var(--border-color)' : 'none' }}>
-              <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{jours[i]}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{new Date(day.date).toLocaleDateString('fr-FR')}</div>
+            <div key={day.date || i} className="cal-jour">
+              <div className="cal-jour__nom">{JOURS[i]}</div>
+              <div className="cal-jour__date">
+                {/* Sans date exploitable, mieux vaut ne rien afficher que
+                    « Invalid Date » : le nom du jour reste, lui, correct. */}
+                {dateCalendaire(day.date)?.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) ?? ''}
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Body du Calendrier avec défilement vertical */}
-        <div className="custom-scrollbar" style={{ flex: 1, overflowY: 'auto', position: 'relative', backgroundColor: 'rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', height: `${(END_HOUR - START_HOUR) * HOUR_HEIGHT}px`, position: 'relative' }}>
-            
-            {/* Colonne des heures (Axe Y) */}
-            <div style={{ width: '60px', flexShrink: 0, borderRight: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.2)', position: 'relative' }}>
-              {Array.from({ length: END_HOUR - START_HOUR + 1 }).map((_, i) => (
-                <div key={i} style={{ position: 'absolute', width: '100%', textAlign: 'right', paddingRight: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', top: `${i * HOUR_HEIGHT - 8}px` }}>
-                  {START_HOUR + i}:00
+        <div className="cal-corps custom-scrollbar">
+          <div className="cal-toile" style={{ height: `${hauteurTotale}px` }}>
+            <div className="cal-heures">
+              {Array.from({ length: heureFin - heureDebut + 1 }).map((_, i) => (
+                <div key={i} className="cal-heure" style={{ top: `${i * HAUTEUR_HEURE - 8}px` }}>
+                  {heureDebut + i}h
                 </div>
               ))}
             </div>
 
-            {/* Grille des Jours (Axe X) */}
             {currentWeek.days.map((day, dIndex) => (
-              <div key={dIndex} style={{ flex: 1, borderRight: dIndex < 6 ? '1px solid var(--border-color)' : 'none', position: 'relative' }}>
-                {/* Lignes horizontales de la grille */}
-                {Array.from({ length: END_HOUR - START_HOUR }).map((_, i) => (
-                  <div key={i} style={{ position: 'absolute', width: '100%', borderBottom: '1px solid var(--border-color)', opacity: 0.2, top: `${(i + 1) * HOUR_HEIGHT}px` }}></div>
+              <div key={day.date || dIndex} className="cal-colonne">
+                {Array.from({ length: heureFin - heureDebut }).map((_, i) => (
+                  <div key={i} className="cal-ligne" style={{ top: `${(i + 1) * HAUTEUR_HEURE}px` }} />
                 ))}
 
-                {/* Tâches (Créneaux) */}
                 {day.slots.map((slot, sIndex) => {
-                  const top = (slot.startMin - (START_HOUR * 60)) * (HOUR_HEIGHT / 60);
-                  const height = slot.duree * (HOUR_HEIGHT / 60);
-                  const color = getTaskColor(slot.type);
+                  const haut = (slot.startMin - heureDebut * 60) * (HAUTEUR_HEURE / 60);
+                  const hauteur = slot.duree * (HAUTEUR_HEURE / 60);
+                  if (haut < 0 || haut > hauteurTotale) return null;
 
-                  if (top < 0 || top > (END_HOUR - START_HOUR) * HOUR_HEIGHT) return null;
+                  const fin = enHeure(slot.startMin + slot.duree);
+                  const debut = enHeure(slot.startMin);
 
                   return (
-                    <div 
-                      key={sIndex} 
-                      className="calendar-slot"
+                    <div
+                      key={`${slot.startMin}-${sIndex}`}
+                      className="cal-creneau"
+                      // Même couleur que partout ailleurs : le calendrier peignait
+                      // les TD en orange et les TP en turquoise, alors que le reste
+                      // de l'application les montre en vert et en ambre.
                       style={{
-                        position: 'absolute',
-                        left: '4px',
-                        right: '4px',
-                        borderRadius: '4px',
-                        padding: '4px',
-                        fontSize: '0.75rem',
-                        overflow: 'hidden',
-                        top: `${top}px`,
-                        height: `${Math.max(20, height)}px`,
-                        backgroundColor: `color-mix(in srgb, ${color} 20%, transparent)`,
-                        borderLeft: `3px solid ${color}`,
-                        borderTop: '1px solid rgba(255,255,255,0.1)',
-                        borderRight: '1px solid rgba(255,255,255,0.1)',
-                        borderBottom: '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer',
-                        transition: 'transform 0.1s ease-out, box-shadow 0.1s ease-out'
+                        top: `${haut}px`,
+                        height: `${Math.max(20, hauteur)}px`,
+                        '--teinte': couleurType(slot.type),
                       }}
-                      title={`${formatMinToTime(slot.startMin)} - ${formatMinToTime(slot.startMin + slot.duree)} | ${slot.titre}`}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.zIndex = 10; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = 1; e.currentTarget.style.boxShadow = 'none'; }}
+                      title={`${debut} – ${fin} · ${slot.titre}`}
                     >
-                      <div style={{ fontWeight: 'bold', color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.matiere}</div>
-                      <div style={{ color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.type} - {slot.titre}</div>
-                      {height > 35 && (
-                        <div style={{ marginTop: '2px', opacity: 0.7, fontSize: '0.7rem' }}>{formatMinToTime(slot.startMin)} - {formatMinToTime(slot.startMin + slot.duree)}</div>
-                      )}
+                      <div className="cal-creneau__matiere">{slot.matiere}</div>
+                      <div className="cal-creneau__intitule">{slot.type} · {slot.titre}</div>
+                      {hauteur > 38 && <div className="cal-creneau__horaire">{debut} – {fin}</div>}
                     </div>
                   );
                 })}

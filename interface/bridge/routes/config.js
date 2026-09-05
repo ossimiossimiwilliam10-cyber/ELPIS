@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { loadConfig, saveConfig, validateConfigSchema } = require('../moteur/config');
+const { controleVersion, incrementerVersion } = require('../moteur/versions');
+
+// Annonce la version courante en lecture, refuse une ecriture fondee sur
+// une version perimee. Voir moteur/versions.js.
+router.use(controleVersion('config', loadConfig));
 
 // GET current config
 router.get('/', (req, res, next) => {
@@ -25,7 +30,7 @@ router.post('/', (req, res, next) => {
       return res.status(500).json({ error: "Erreur sauvegarde configuration." });
     }
     global.dbVersion = (global.dbVersion || 0) + 1;
-    res.json({ success: true, message: "Configuration mise à jour." });
+    res.json({ success: true, message: "Configuration mise à jour.", version: incrementerVersion('config') });
   } catch (err) {
     next(err);
   }
@@ -44,7 +49,7 @@ router.post('/skip-rest', (req, res, next) => {
       saveConfig(cfg);
       global.dbVersion = (global.dbVersion || 0) + 1;
     }
-    res.json({ success: true, message: "Jour de repos ignoré." });
+    res.json({ success: true, message: "Jour de repos ignoré.", version: incrementerVersion('config') });
   } catch (err) {
     next(err);
   }

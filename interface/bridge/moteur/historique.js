@@ -1,7 +1,19 @@
 const { db } = require('../db/setup');
+const { sourceCourante } = require('./stockage');
 const crypto = require('crypto');
 
 function loadHistorique() {
+  const source = sourceCourante();
+  if (source) {
+    try {
+      const brut = source.lireHistorique();
+      return Array.isArray(brut) ? brut : [];
+    } catch (err) {
+      console.error('Erreur lecture historique (source externe):', err.message);
+      return [];
+    }
+  }
+
   try {
     const rows = db.prepare('SELECT * FROM historique ORDER BY timestamp ASC').all();
     return rows.map(r => ({
@@ -20,6 +32,18 @@ function loadHistorique() {
 }
 
 function saveHistorique(historiqueData) {
+  const source = sourceCourante();
+  if (source) {
+    try {
+      if (!Array.isArray(historiqueData)) return false;
+      source.ecrireHistorique(historiqueData);
+      return true;
+    } catch (err) {
+      console.error('Erreur sauvegarde historique (source externe):', err.message);
+      return false;
+    }
+  }
+
   try {
     const trimmed = historiqueData.length > 10000 ? historiqueData.slice(historiqueData.length - 10000) : historiqueData;
 
@@ -34,7 +58,10 @@ function saveHistorique(historiqueData) {
           entry.matiere || '',
           entry.action || null,
           entry.timestamp || new Date().toISOString(),
-          entry.dureeMinutes || null
+          // `||` convertissait une durée de 0 en null, que le moteur de charge
+          // relit ensuite comme 30 minutes par défaut. Une séance mesurée à zéro
+          // devenait donc une demi-heure de travail.
+          entry.dureeMinutes ?? null
         );
       }
     });

@@ -1,0 +1,142 @@
+/* ============================================================
+   Projets personnels
+   ============================================================ */
+
+.proj-page { display: flex; flex-direction: column; gap: var(--esp-5); }
+
+.proj-entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-4);
+  flex-wrap: wrap;
+}
+
+.proj-total {
+  padding: var(--esp-3) var(--esp-4);
+  min-width: 160px;
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-md);
+  text-align: right;
+}
+.proj-total__valeur {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-lourde);
+  color: var(--type-projet);
+  line-height: 1.1;
+}
+.proj-total__libelle { margin-top: var(--esp-1); font-size: var(--texte-xs); color: var(--texte-doux); }
+
+.proj-creation { display: flex; gap: var(--esp-3); flex-wrap: wrap; margin-top: var(--esp-4); }
+.proj-creation__nom { flex: 2 1 220px; }
+.proj-creation__date { flex: 1 1 150px; }
+
+.proj-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: var(--esp-4);
+  align-items: start;
+}
+
+/* ---------- Carte projet ---------- */
+
+.proj-carte__entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-3);
+}
+.proj-carte__identite { flex: 1; min-width: 0; }
+.proj-carte__titre {
+  margin: 0;
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  overflow-wrap: anywhere;
+}
+.proj-carte__echeance {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  margin-top: var(--esp-1);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.proj-carte__echeance input {
+  min-height: 28px;
+  padding: 2px var(--esp-2);
+  font-size: var(--texte-xs);
+  width: auto;
+}
+
+.proj-carte__avancement {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-4);
+}
+.proj-carte__avancement > :first-child { flex: 1; }
+.proj-carte__pourcent {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  min-width: 34px;
+  text-align: right;
+}
+
+/* ---------- Phases ---------- */
+
+.proj-phases { display: flex; flex-direction: column; gap: var(--esp-2); margin-bottom: var(--esp-3); }
+
+.proj-phase {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-2) var(--esp-3);
+  background: var(--surface-2);
+  border-radius: var(--rayon-sm);
+}
+.proj-phase.est-faite { background: var(--succes-voile); }
+/* Une phase dont la précédente n'est pas finie ne peut pas être entamée. */
+.proj-phase.est-bloquee { opacity: 0.5; }
+
+.proj-phase input[type='checkbox'] { width: 17px; height: 17px; cursor: pointer; accent-color: var(--succes); }
+.proj-phase__nom { flex: 1; min-width: 0; font-size: var(--texte-sm); color: var(--texte-normal); }
+.proj-phase.est-faite .proj-phase__nom { text-decoration: line-through; color: var(--texte-doux); }
+
+.proj-ajout-phase { display: flex; gap: var(--esp-2); margin-bottom: var(--esp-3); }
+.proj-ajout-phase input { flex: 1; }
+
+.proj-carte__actions { display: flex; flex-direction: column; gap: var(--esp-2); }
+
+/* ============================================================
+   Avance & bonus
+   ============================================================ */
+
+.avance-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+  max-width: 720px;
+}
+
+/* Titre du projet et son action de renommage sur la meme ligne.
+   Le titre etait seul : le nom d'un projet ne pouvait pas etre corrige, il
+   fallait supprimer le projet entier — avec ses phases et son avancement. */
+.proj-carte__ligne-titre {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-width: 0;
+}
+
+.proj-carte__ligne-titre .proj-carte__titre {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

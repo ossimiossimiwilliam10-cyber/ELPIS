@@ -1,226 +1,338 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useId } from 'react';
+import { motion } from 'framer-motion';
 import useStore from './store';
 import { useToast } from './ToastProvider';
-import { motion } from 'framer-motion';
+import ConfirmModal from './components/ConfirmModal';
+import {
+  joursRestantsPourJustifier, estHorsDelai, exigeJustificatif, synthetiser, trierParDate,
+} from './utils/absences';
+import {
+  Bouton, Carte, Champ, EtatVide, Espace, Modale, Pastille, Rang, Selection, TitrePage, Texte,
+} from './components/ui';
+
+/** Identifiant robuste, y compris pour deux déclarations dans la même milliseconde. */
+const nouvelId = () =>
+  (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.round(Math.random() * 1e6)}`);
+
+const TYPES = [
+  { valeur: 'TP', libelle: 'Travaux pratiques (TP)' },
+  { valeur: 'TD', libelle: 'Travaux dirigés (TD)' },
+  { valeur: 'CM', libelle: 'Cours magistral (CM)' },
+  { valeur: 'Langue', libelle: 'Cours de langue (CRL)' },
+];
+
+/** Conséquence propre à chaque type d'enseignement. */
+const CONSEQUENCES = {
+  TP: { texte: 'Justificatif obligatoire pour les TP — sanction possible au titre des MECC.', ton: 'danger', forte: true },
+  CM: { texte: 'Justificatif attendu pour les CM soumis au contrôle d\'assiduité.', ton: 'attention', forte: true },
+  Langue: { texte: 'Présence stricte au CRL : une absence injustifiée vaut zéro.', ton: 'danger', forte: true },
+  TD: { texte: 'Justificatif non requis par la scolarité, sauf modalités particulières.', ton: 'succes', forte: false },
+};
+
+const STATUTS = ['Non Justifié', 'En Attente', 'Justifié', 'Dispensé'];
+const LIBELLE_STATUT = {
+  'Non Justifié': 'Non justifié',
+  'En Attente': 'En attente de validation',
+  'Justifié': 'Justifié',
+  'Dispensé': 'Dispensé',
+};
+
+/** Une case de la synthèse d'assiduité. */
+const Compteur = ({ valeur, libelle, ton }) => (
+  <div className="abs-compteur">
+    <div className={`abs-compteur__valeur${ton ? ` est-${ton}` : ''}`}>{valeur}</div>
+    <div className="abs-compteur__libelle">{libelle}</div>
+  </div>
+);
 
 export default function AbsencesPage() {
-  const { config, setConfig } = useStore();
+  const { config, setConfig, coursConfig } = useStore();
   const { addToast } = useToast();
+  const champId = useId();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ date: '', matiere: '', type: 'TP', statut: 'Non Justifié', notes: '' });
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  /**
+   * Identifiant de l'absence en cours de modification, ou null pour une
+   * déclaration neuve.
+   *
+   * Seul le statut pouvait être changé après coup : une date ou une matière
+   * saisie de travers obligeait à supprimer puis tout ressaisir — et l'erreur
+   * comptait entre-temps dans le bilan d'assiduité, qui conditionne l'accès aux
+   * examens. Le formulaire de déclaration sert donc aussi à corriger.
+   */
+  const [enEdition, setEnEdition] = useState(null);
 
   const absences = useMemo(() => config?.absences || [], [config]);
+  const absencesTriees = useMemo(() => trierParDate(absences), [absences]);
+  const bilan = useMemo(() => synthetiser(absences), [absences]);
+
+  /** Matières du cursus, proposées en autocomplétion. */
+  const matieres = useMemo(() => {
+    const noms = new Set();
+    coursConfig?.licences?.forEach(l => {
+      l.semestres?.forEach(s => {
+        s.ues?.forEach(u => {
+          u.matieres?.forEach(m => {
+            if (m.nom) noms.add(m.nom);
+          });
+        });
+      });
+    });
+    return Array.from(noms).sort((a, b) => a.localeCompare(b, 'fr'));
+  }, [coursConfig]);
+
+  const FORMULAIRE_VIDE = { date: '', matiere: '', type: 'TP', statut: 'Non Justifié', notes: '' };
+
+  const fermerFormulaire = () => {
+    setShowModal(false);
+    setEnEdition(null);
+    setFormData(FORMULAIRE_VIDE);
+  };
+
+  /** Ouvre le formulaire sur une absence existante, pour la corriger. */
+  const modifierAbsence = (absence) => {
+    setFormData({
+      date: absence.date || '', matiere: absence.matiere || '',
+      type: absence.type || 'TP', statut: absence.statut || 'Non Justifié',
+      notes: absence.notes || '',
+    });
+    setEnEdition(absence.id);
+    setShowModal(true);
+  };
 
   const handleAddAbsence = (e) => {
     e.preventDefault();
-    if (!formData.date || !formData.matiere) {
-      addToast('Veuillez remplir la date et la matière', 'error');
+    const matiere = formData.matiere.trim();
+    if (!formData.date || !matiere) {
+      addToast('Renseigne la date et la matière.', 'error');
       return;
     }
-    
-    const newAbsence = { ...formData, id: Date.now().toString() };
-    const newAbsences = [...absences, newAbsence];
-    
-    setConfig({ ...config, absences: newAbsences });
-    setShowModal(false);
-    setFormData({ date: '', matiere: '', type: 'TP', statut: 'Non Justifié', notes: '' });
-    addToast('Absence enregistrée', 'success');
+
+    const absencesMaj = enEdition
+      ? absences.map(a => (a.id === enEdition ? { ...a, ...formData, matiere } : a))
+      : [...absences, { ...formData, matiere, id: nouvelId() }];
+
+    setConfig({ ...config, absences: absencesMaj }, {
+      libelle: enEdition ? "Modification d'une absence" : "Déclaration d'une absence",
+    });
+    addToast(enEdition ? 'Absence corrigée' : 'Absence enregistrée', 'success');
+    fermerFormulaire();
   };
 
-  const deleteAbsence = (id) => {
-    if (window.confirm('Supprimer cette absence de l\'historique ?')) {
-      const newAbsences = absences.filter(a => a.id !== id);
-      setConfig({ ...config, absences: newAbsences });
-      addToast('Absence supprimée', 'info');
-    }
+  const handleConfirmDelete = () => {
+    if (!deleteConfirm) return;
+    setConfig({ ...config, absences: absences.filter(a => a.id !== deleteConfirm.id) });
+    addToast('Absence supprimée', 'info');
+    setDeleteConfirm(null);
   };
 
   const updateStatus = (id, newStatus) => {
-    const newAbsences = absences.map(a => a.id === id ? { ...a, statut: newStatus } : a);
-    setConfig({ ...config, absences: newAbsences });
+    setConfig({ ...config, absences: absences.map(a => (a.id === id ? { ...a, statut: newStatus } : a)) });
   };
 
-  const calculateDaysLeft = (dateStr) => {
-    const absenceDate = new Date(dateStr);
-    const today = new Date();
-    const diffTime = today - absenceDate;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    return 7 - diffDays;
+  const formaterDate = (dateStr) => {
+    const [a, m, j] = String(dateStr || '').split('-').map(Number);
+    if (!Number.isFinite(a)) return dateStr || '—';
+    return new Date(a, m - 1, j).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   };
+
+  const consequenceSaisie = CONSEQUENCES[formData.type];
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', color: 'var(--text-primary)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <div className="abs-page">
+      <Rang entre>
         <div>
-          <h1 style={{ fontSize: '2.5rem', margin: 0, color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '2rem' }}>📅</span> Gestionnaire d'Absences
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-            Suivi des justificatifs et règles d'assiduité.
-          </p>
+          <TitrePage>Mes absences</TitrePage>
+          <Texte doux petit>Justificatifs à fournir, délais restants et règles d'assiduité.</Texte>
         </div>
-        <button 
-          onClick={() => setShowModal(true)}
-          style={{ background: 'var(--accent-primary)', color: 'white', border: 'none', padding: '0.8rem 1.5rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-          + Déclarer une absence
-        </button>
+        <Espace />
+        <Bouton variante="primaire" onClick={() => setShowModal(true)}>
+          Déclarer une absence
+        </Bouton>
+      </Rang>
+
+      {/* Règle propre à la licence de physique, absente du régime général et
+          facile à ignorer : elle rend une absence au rattrapage irrattrapable. */}
+      <div className="abs-derogation">
+        <strong>Attention, règle propre à la licence de physique.</strong> Une absence
+        à une épreuve de substitution ou de rattrapage n'ouvre droit à aucune nouvelle
+        épreuve : justifiée, elle vaut <strong>0/20</strong> ; injustifiée sur une épreuve
+        avec convocation, elle entraîne la <strong>défaillance</strong>.
       </div>
 
-      <div style={{ display: 'grid', gap: '1rem' }}>
-        {absences.length === 0 ? (
-          <div className="card glass-panel" style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
-            <p>Aucune absence déclarée pour l'instant.</p>
-            <p style={{ fontSize: '0.9rem' }}>Votre assiduité est parfaite.</p>
-          </div>
+      {/* Synthèse : l'information la plus utile de la page était absente — il
+          fallait parcourir toutes les cartes pour savoir ce qui restait à faire. */}
+      {bilan.total > 0 && (
+        <div className="abs-bilan">
+          <Compteur valeur={bilan.total} libelle="Absences" />
+          <Compteur valeur={bilan.aJustifier} libelle="À justifier" ton="attention" />
+          <Compteur valeur={bilan.horsDelai} libelle="Hors délai" ton="danger" />
+          <Compteur valeur={bilan.enAttente} libelle="En attente" ton="info" />
+          <Compteur valeur={bilan.justifiees} libelle="Régularisées" ton="succes" />
+        </div>
+      )}
+
+      <div className="abs-liste">
+        {absencesTriees.length === 0 ? (
+          <Carte>
+            <EtatVide
+              icone="✅"
+              titre="Aucune absence déclarée"
+              texte="Ton assiduité est parfaite. Déclare une absence dès qu'elle survient : le compte à rebours du justificatif démarre ce jour-là."
+            />
+          </Carte>
         ) : (
-          absences.map(absence => {
-            const daysLeft = calculateDaysLeft(absence.date);
-            const isLate = daysLeft < 0 && absence.statut === 'Non Justifié';
-            const requiresJustif = absence.type === 'TP' || absence.type === 'Langue' || absence.type === 'CM';
-            
+          absencesTriees.map(absence => {
+            const joursRestants = joursRestantsPourJustifier(absence.date);
+            const horsDelai = estHorsDelai(absence);
+            const justificatifRequis = exigeJustificatif(absence.type);
+            const regularisee = absence.statut === 'Justifié' || absence.statut === 'Dispensé';
+            const consequence = CONSEQUENCES[absence.type];
+
             return (
-              <motion.div 
-                key={absence.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="card glass-panel" 
-                style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  borderLeft: `4px solid ${absence.statut === 'Justifié' || absence.statut === 'Dispensé' ? 'var(--success)' : (isLate ? 'var(--error)' : 'var(--warning)')}`
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '0.3rem' }}>
-                    {absence.matiere} 
-                    <span style={{ fontSize: '0.8rem', background: 'var(--bg-tertiary)', padding: '0.2rem 0.5rem', borderRadius: '4px', marginLeft: '0.5rem' }}>
-                      {absence.type}
-                    </span>
+              <motion.div key={absence.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+                <Carte
+                  className={`abs-carte${regularisee ? ' est-regularisee' : horsDelai ? ' est-hors-delai' : ''}`}
+                >
+                  <div className="abs-carte__identite">
+                    <div className="abs-carte__matiere">
+                      {absence.matiere}
+                      <Pastille>{absence.type}</Pastille>
+                    </div>
+                    <div className="abs-carte__date">{formaterDate(absence.date)}</div>
+
+                    {consequence && (
+                      <div
+                        className={`abs-carte__regle${consequence.forte ? ' est-forte' : ''}`}
+                        style={{ '--ton': `var(--${consequence.ton})` }}
+                      >
+                        {consequence.texte}
+                      </div>
+                    )}
+
+                    {/* Le motif était saisi puis jamais affiché nulle part. */}
+                    {absence.notes && <div className="abs-carte__motif">{absence.notes}</div>}
                   </div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                    Date : {new Date(absence.date).toLocaleDateString()}
+
+                  <div className="abs-carte__suivi">
+                    <select
+                      className={`el-champ${regularisee ? ' est-regularisee' : ''}`}
+                      value={absence.statut}
+                      onChange={(e) => updateStatus(absence.id, e.target.value)}
+                      aria-label={`Statut de l'absence en ${absence.matiere}`}
+                    >
+                      {STATUTS.map(s => <option key={s} value={s}>{LIBELLE_STATUT[s]}</option>)}
+                    </select>
+
+                    {absence.statut === 'Non Justifié' && justificatifRequis && joursRestants !== null && (
+                      <div className={`abs-carte__delai${horsDelai ? ' est-depasse' : ''}`}>
+                        {horsDelai
+                          ? `Délai dépassé de ${Math.abs(joursRestants)} jour${Math.abs(joursRestants) > 1 ? 's' : ''}`
+                          : joursRestants === 0
+                            ? 'Dernier jour pour justifier'
+                            : `Encore ${joursRestants} jour${joursRestants > 1 ? 's' : ''} pour justifier`}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className="el-lien"
+                      onClick={() => modifierAbsence(absence)}
+                      aria-label={`Modifier l'absence en ${absence.matiere} du ${formaterDate(absence.date)}`}
+                    >
+                      Modifier
+                    </button>
+
+                    <button
+                      type="button"
+                      className="el-lien"
+                      onClick={() => setDeleteConfirm({ id: absence.id, matiere: absence.matiere, date: absence.date })}
+                      aria-label={`Supprimer l'absence en ${absence.matiere}`}
+                    >
+                      Supprimer
+                    </button>
                   </div>
-                  
-                  {absence.type === 'TP' && (
-                    <div style={{ color: 'var(--error)', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                      ⚠️ Justificatif obligatoire pour les TPs (risque de sanction MECC).
-                    </div>
-                  )}
-                  {absence.type === 'TD' && (
-                    <div style={{ color: 'var(--success)', fontSize: '0.85rem' }}>
-                      ✅ Justificatif non requis pour la scolarité (sauf modalités spécifiques).
-                    </div>
-                  )}
-                  {absence.type === 'Langue' && (
-                    <div style={{ color: 'var(--error)', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                      ⚠️ La présence au CRL est stricte. Absence = note 0 si injustifiée.
-                    </div>
-                  )}
-                </div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-                  <select 
-                    value={absence.statut}
-                    onChange={(e) => updateStatus(absence.id, e.target.value)}
-                    style={{ 
-                      padding: '0.5rem', 
-                      borderRadius: '6px', 
-                      background: 'var(--bg-primary)', 
-                      color: absence.statut === 'Justifié' ? 'var(--success)' : 'white',
-                      border: '1px solid var(--border-color)',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    <option value="Non Justifié">Non Justifié</option>
-                    <option value="En Attente">En Attente de validation</option>
-                    <option value="Justifié">✅ Justifié</option>
-                    <option value="Dispensé">🎓 Dispensé</option>
-                  </select>
-                  
-                  {absence.statut === 'Non Justifié' && requiresJustif && (
-                    <div style={{ fontSize: '0.85rem', color: isLate ? 'var(--error)' : 'var(--warning)', fontWeight: 'bold' }}>
-                      {isLate ? 'Délai de 7 jours dépassé !' : `Il vous reste ${daysLeft} jour(s) pour justifier.`}
-                    </div>
-                  )}
-                  
-                  <button onClick={() => deleteAbsence(absence.id)} style={{ background: 'transparent', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: '0.8rem', marginTop: '0.5rem', textDecoration: 'underline' }}>
-                    Supprimer
-                  </button>
-                </div>
+                </Carte>
               </motion.div>
             );
           })
         )}
       </div>
 
-      {showModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-          <div className="card glass-panel" style={{ width: '100%', maxWidth: '500px', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)' }}>
-            <h2 style={{ marginTop: 0, marginBottom: '1.5rem', color: 'var(--accent-primary)' }}>Déclarer une absence</h2>
-            <form onSubmit={handleAddAbsence} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Date de l'absence *</label>
-                <input 
-                  type="date" 
-                  required
-                  value={formData.date}
-                  onChange={e => setFormData({...formData, date: e.target.value})}
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--border-color)' }}
-                />
-              </div>
+      <Modale ouverte={showModal} onFermer={fermerFormulaire} titre={enEdition ? "Corriger une absence" : "Déclarer une absence"}>
+        <form onSubmit={handleAddAbsence} className="abs-formulaire">
+          <Champ
+            id={`${champId}-date`}
+            label="Date de l'absence"
+            type="date"
+            required
+            value={formData.date}
+            onChange={e => setFormData({ ...formData, date: e.target.value })}
+          />
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Matière concernée *</label>
-                <input 
-                  type="text" 
-                  placeholder="Ex: Programmation C, Mécanique..."
-                  required
-                  value={formData.matiere}
-                  onChange={e => setFormData({...formData, matiere: e.target.value})}
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--border-color)' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Type d'enseignement</label>
-                <select 
-                  value={formData.type}
-                  onChange={e => setFormData({...formData, type: e.target.value})}
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--border-color)' }}
-                >
-                  <option value="TP">Travaux Pratiques (TP)</option>
-                  <option value="TD">Travaux Dirigés (TD)</option>
-                  <option value="CM">Cours Magistral (CM)</option>
-                  <option value="Langue">Cours de Langue (CRL)</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Notes additionnelles</label>
-                <textarea 
-                  placeholder="Motif de l'absence (maladie, transport...)"
-                  rows={3}
-                  value={formData.notes}
-                  onChange={e => setFormData({...formData, notes: e.target.value})}
-                  style={{ width: '100%', padding: '0.8rem', borderRadius: '6px', background: 'var(--bg-primary)', color: 'white', border: '1px solid var(--border-color)', resize: 'vertical' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ flex: 1, padding: '0.8rem', background: 'var(--bg-tertiary)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
-                  Annuler
-                </button>
-                <button type="submit" style={{ flex: 1, padding: '0.8rem', background: 'var(--accent-primary)', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  Enregistrer
-                </button>
-              </div>
-            </form>
+          <div>
+            <Champ
+              id={`${champId}-matiere`}
+              label="Matière concernée"
+              type="text"
+              required
+              // Saisie libre, mais adossée au cursus : une matière écrite
+              // différemment à chaque fois rend le suivi inexploitable.
+              list={`${champId}-matieres`}
+              placeholder="Programmation C, Mécanique…"
+              value={formData.matiere}
+              onChange={e => setFormData({ ...formData, matiere: e.target.value })}
+            />
+            <datalist id={`${champId}-matieres`}>
+              {matieres.map(m => <option key={m} value={m} />)}
+            </datalist>
           </div>
-        </div>
-      )}
+
+          <div>
+            <Selection
+              id={`${champId}-type`}
+              label="Type d'enseignement"
+              value={formData.type}
+              onChange={e => setFormData({ ...formData, type: e.target.value })}
+            >
+              {TYPES.map(t => <option key={t.valeur} value={t.valeur}>{t.libelle}</option>)}
+            </Selection>
+            {consequenceSaisie && (
+              <div className="abs-formulaire__consequence" style={{ '--ton': `var(--${consequenceSaisie.ton})` }}>
+                {consequenceSaisie.texte}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="el-etiquette" htmlFor={`${champId}-notes`}>Motif (facultatif)</label>
+            <textarea
+              id={`${champId}-notes`}
+              className="el-champ"
+              placeholder="Maladie, transport, convocation…"
+              rows={3}
+              value={formData.notes}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
+            />
+          </div>
+
+          <div className="abs-formulaire__actions">
+            <Bouton onClick={fermerFormulaire}>Annuler</Bouton>
+            <Bouton variante="primaire" type="submit">Enregistrer</Bouton>
+          </div>
+        </form>
+      </Modale>
+
+      <ConfirmModal
+        isOpen={deleteConfirm !== null}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirm(null)}
+        title="Supprimer l'absence"
+        message={deleteConfirm ? `Supprimer l'absence en ${deleteConfirm.matiere} du ${formaterDate(deleteConfirm.date)} ?` : ''}
+        confirmLabel="Supprimer"
+        danger
+      />
     </div>
   );
 }

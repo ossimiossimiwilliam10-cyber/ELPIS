@@ -26,8 +26,11 @@ export default function EditableLabel({ value, onRename, placeholder, style }) {
         onClick={handleRename}
         style={{background:'transparent', border:'none', cursor:'pointer', fontSize:'0.9rem', padding:'0.2rem', flexShrink: 0}}
         title="Renommer"
+        // Sans libellé explicite, le bouton s'annonçait « ✏️ » : le contenu prime
+        // sur l'attribut `title` dans le calcul du nom accessible.
+        aria-label={value ? `Renommer « ${value} »` : 'Renommer'}
       >
-        ✏️
+        <span aria-hidden="true">✏️</span>
       </button>
       <InputModal
         isOpen={isOpen}

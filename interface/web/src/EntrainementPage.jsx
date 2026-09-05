@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { produce } from 'immer';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -8,53 +8,23 @@ import { useToast } from './ToastProvider';
 import { evaluateFSRS, migrateToFSRSCard, Rating } from './fsrsEngine';
 import ExerciceCard from './components/cours/ExerciceCard';
 import { getTodayStr } from './utils/dateUtils';
+import { getApiUrl } from './utils/apiConfig';
+import { buildTaskKey } from './utils/taskKey';
+import { dureeValidation, moyenneGlissante, difficulteDepuisNote } from './utils/completion';
+import CircularProgress from './components/CircularProgress';
+import { Bouton, Carte, EtatVide, Jauge, Rang, TitrePage } from './components/ui';
 
-const CircularProgress = ({ percent, size = 64, strokeWidth = 6 }) => {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percent / 100) * circumference;
+const pluriel = (n, singulier, plurielMot = `${singulier}s`) => (n > 1 ? plurielMot : singulier);
 
-  return (
-    <div className="circular-progress" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="circular-progress-circle">
-        <circle
-          className="circular-progress-bg"
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-        />
-        <motion.circle
-          className="circular-progress-fill"
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
-        />
-      </svg>
-      <div className="circular-progress-text" style={{ fontSize: size * 0.25 }}>
-        <motion.span
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          {percent}%
-        </motion.span>
-      </div>
-    </div>
-  );
-};
+/** Identifiant d'un exercice affiché, stable d'un rendu à l'autre. */
+export const cleExercice = (exo) =>
+  exo?.id || buildTaskKey({ type: exo?.type, matiere: exo?.matiereNom, titre: exo?.titre });
 
 function EntrainementPage() {
-  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, dailyFillGap, setDailyFillGap, intelligence, orchestratorData, fetchOrchestrator } = useStore();
+  const { coursConfig, setCoursConfig, addHistoriqueEntry, config, setConfig, dailyFillGap, setDailyFillGap, intelligence, orchestratorData, fetchOrchestrator, notifyTaskCompleted } = useStore();
   const { resetGlobalChrono } = useChronoStore();
   const { toast } = useToast();
   const [fatigueCounter, setFatigueCounter] = useState(0);
-
 
   const [configLocal, setConfigLocal] = useState(() => {
     if (coursConfig && coursConfig.licences) return JSON.parse(JSON.stringify(coursConfig));
@@ -64,6 +34,12 @@ function EntrainementPage() {
   const [tachesOrchestrateur, setTachesOrchestrateur] = useState(null);
   const [tempsDejaTravaille, setTempsDejaTravaille] = useState(0);
   const [tempsDispoMin, setTempsDispoMin] = useState(0);
+  // Tâches sans ancrage dans le cursus (mémoire de stage, activité libre) : elles n'ont
+  // pas de `dernierePratique` à inspecter, on mémorise donc localement ce qui a été validé.
+  const [validees, setValidees] = useState(() => new Set());
+  // Verrou synchrone : un second clic arrive avant que React n'ait propagé l'état,
+  // ce qui créait deux entrées d'historique pour un seul exercice.
+  const validationEnCours = useRef(new Set());
 
   useEffect(() => {
     const store = useStore.getState();
@@ -76,36 +52,38 @@ function EntrainementPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dailyFillGap]);
 
-  const [prevOrchestratorData, setPrevOrchestratorData] = useState(null);
+  // Un ref plutôt qu'un state : mémoriser la valeur précédente ne doit pas
+  // déclencher de rendu supplémentaire.
+  const prevOrchestratorData = useRef(null);
   useEffect(() => {
-    if (orchestratorData && orchestratorData !== prevOrchestratorData) {
-      setPrevOrchestratorData(orchestratorData);
+    if (orchestratorData && orchestratorData !== prevOrchestratorData.current) {
+      prevOrchestratorData.current = orchestratorData;
       if (orchestratorData.tachesDuJour) {
         setTachesOrchestrateur(orchestratorData.tachesDuJour);
       }
       setTempsDejaTravaille(orchestratorData.tempsDejaTravailleMin || 0);
       setTempsDispoMin(orchestratorData.tempsDispoMin || 0);
     }
-  }, [orchestratorData, prevOrchestratorData]);
+  }, [orchestratorData]);
 
-  // Resynchroniser le state local quand le parent change
-  const [prevCoursConfig, setPrevCoursConfig] = useState(null);
+  // Resynchroniser l'état local quand le store change
+  const prevCoursConfig = useRef(null);
   useEffect(() => {
-    if (coursConfig && coursConfig !== prevCoursConfig) {
-      setPrevCoursConfig(coursConfig);
+    if (coursConfig && coursConfig !== prevCoursConfig.current) {
+      prevCoursConfig.current = coursConfig;
       if (coursConfig.licences) {
         setConfigLocal(coursConfig);
       }
     }
-  }, [coursConfig, prevCoursConfig]);
+  }, [coursConfig]);
 
-  // Filtered exercises directly matching the orchestrator (respecting orchestrator order)
+  // Exercices correspondant aux tâches de l'orchestrateur, dans son ordre.
   const strategicExercices = useMemo(() => {
     if (!tachesOrchestrateur || !configLocal.licences) return [];
 
-    let exosToReview = [];
+    const exosToReview = [];
 
-    // Pre-calculate a lookup map for faster access and to avoid nested loops per task
+    // Index préalable : évite de reparcourir tout le cursus pour chaque tâche.
     const exoMap = new Map();
     configLocal.licences.forEach((l, lIndex) => {
       l.semestres?.forEach((s, sIndex) => {
@@ -117,7 +95,7 @@ function EntrainementPage() {
                  const key = `${m.nom}-${type}-${ex.titre}`;
                  if (!exoMap.has(key)) exoMap.set(key, []);
                  exoMap.get(key).push({
-                   ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink
+                   ...ex, lIndex, sIndex, uIndex, mIndex, exIndex, type, matiereNom: m.nom, notebookLMLink: m.notebookLMLink, ankiDeckName: m.ankiDeckName
                  });
                });
             };
@@ -137,165 +115,211 @@ function EntrainementPage() {
            titre: t.titre,
            matiereNom: 'Routine',
            dureeMinutes: t.dureeMinutes,
+           raisons: t.raisons,
            id: 'anki_task'
         });
-      } else {
-        const key = `${t.matiere}-${t.type}-${t.titre}`;
-        const candidates = exoMap.get(key);
-        if (candidates && candidates.length > 0) {
-           // Prendre le premier candidat correspondant et le retirer de la map pour ne pas le dupliquer
-           const match = candidates.shift(); 
-           exosToReview.push(match);
-        }
+        return;
       }
+
+      const key = `${t.matiere}-${t.type}-${t.titre}`;
+      const candidates = exoMap.get(key);
+      if (candidates && candidates.length > 0) {
+        // Retirer le candidat retenu de la file pour ne pas le proposer deux fois.
+        const match = candidates.shift();
+        // Les motifs de planification viennent du rapport, pas du cursus : sans cette
+        // reprise, les badges « Examen proche », « Urgence note »… n'apparaissaient jamais.
+        exosToReview.push({
+          ...match,
+          raisons: t.raisons,
+          moment: t.moment,
+          dureeMinutes: t.dureeMinutes,
+          // Score borné et sa décomposition : permettent d'expliquer le rang.
+          priorite: t.priorite,
+          explication: t.explication,
+        });
+        return;
+      }
+
+      // Tâche planifiée sans exercice correspondant : mémoire de stage, activité
+      // libre, ou exercice renommé depuis la génération du rapport. Elle était
+      // purement et simplement ignorée — y compris le mémoire de substitution, que
+      // l'orchestrateur marque pourtant comme obligatoire et prioritaire.
+      exosToReview.push({
+        ...t,
+        matiereNom: t.matiere,
+        horsCursus: true,
+        id: t.id || buildTaskKey(t)
+      });
     });
 
     return exosToReview;
   }, [configLocal, tachesOrchestrateur]);
 
-  // Get unique matiere names for filter pills
   const matiereNames = useMemo(() => {
     const names = new Set();
     strategicExercices.forEach(ex => names.add(ex.matiereNom));
     return Array.from(names);
   }, [strategicExercices]);
 
-  // Remaining exercises
   const remainingExercises = useMemo(() => {
     const todayStr = getTodayStr();
     return strategicExercices.filter(exo => {
+      if (validees.has(cleExercice(exo))) return false;
+      if (exo.horsCursus) return true;
       if (exo.type === 'ANKI') return config?.dernierePratiqueAnki !== todayStr;
       if (exo.type === 'CM') return exo.derniereRevision !== todayStr;
       return exo.dernierePratique !== todayStr;
     });
-  }, [strategicExercices, config]);
+  }, [strategicExercices, config, validees]);
 
-  // Filtered exercises
   const exercicesDuJour = useMemo(() => {
     if (filterMatiere === 'all') return remainingExercises;
     return remainingExercises.filter(ex => ex.matiereNom === filterMatiere);
   }, [remainingExercises, filterMatiere]);
 
-  // Count total (including already completed today)
-  const totalExercisesToday = useMemo(() => {
-    let completedToday = 0;
+  // Progression de la session : ne porte que sur les tâches planifiées aujourd'hui.
+  // Comptabiliser tout le cursus faussait le chiffre — dix révisions bonus faisaient
+  // afficher « 67 % » alors qu'aucune tâche du jour n'était entamée.
+  const totalSession = strategicExercices.length;
+  const faitesSession = Math.max(0, totalSession - remainingExercises.length);
+  const progressPercent = totalSession > 0 ? Math.round((faitesSession / totalSession) * 100) : 0;
+
+  // Exercices travaillés aujourd'hui hors de la session planifiée (Avance & Bonus).
+  const bonusHorsSession = useMemo(() => {
     const todayStr = getTodayStr();
-
-    if (config?.dernierePratiqueAnki === todayStr) {
-      completedToday += 1;
-    }
-
+    let total = 0;
     configLocal.licences?.forEach(l => {
       l.semestres?.forEach(s => {
         s.ues?.forEach(u => {
           u.matieres?.forEach(m => {
-            if (m.listeTD) completedToday += m.listeTD.filter(td => td.dernierePratique === todayStr).length;
-            if (m.listeTP) completedToday += m.listeTP.filter(tp => tp.dernierePratique === todayStr).length;
-            if (m.listeAnnales) completedToday += m.listeAnnales.filter(a => a.dernierePratique === todayStr).length;
-            if (m.listeCM) completedToday += m.listeCM.filter(cm => cm.derniereRevision === todayStr).length;
+            total += (m.listeTD || []).filter(td => td.dernierePratique === todayStr).length;
+            total += (m.listeTP || []).filter(tp => tp.dernierePratique === todayStr).length;
+            total += (m.listeAnnales || []).filter(a => a.dernierePratique === todayStr).length;
+            total += (m.listeCM || []).filter(cm => cm.derniereRevision === todayStr).length;
           });
         });
       });
     });
-    return completedToday + remainingExercises.length;
-  }, [configLocal, config, remainingExercises]);
+    return Math.max(0, total - faitesSession);
+  }, [configLocal, faitesSession]);
+
+  /**
+   * Vérifie que les indices mémorisés pointent toujours sur l'exercice attendu.
+   * Le cursus peut avoir changé (autre onglet, resynchronisation) entre l'affichage
+   * de la carte et le clic : sans ce contrôle, `evaluateCM` et `suspendCM`
+   * déréférençaient `undefined` et faisaient tomber la page entière.
+   */
+  const localiserExercice = useCallback((exo, listeNom) => {
+    const matiere = configLocal.licences?.[exo.lIndex]?.semestres?.[exo.sIndex]?.ues?.[exo.uIndex]?.matieres?.[exo.mIndex];
+    const liste = matiere?.[listeNom];
+    if (!Array.isArray(liste) || !liste[exo.exIndex]) return null;
+    return matiere;
+  }, [configLocal]);
+
+  /** Empêche une double validation ; renvoie false si l'exercice est déjà en cours. */
+  const reserverValidation = (exo) => {
+    const cle = cleExercice(exo);
+    if (validationEnCours.current.has(cle)) return false;
+    validationEnCours.current.add(cle);
+    return true;
+  };
+  const libererValidation = (exo) => validationEnCours.current.delete(cleExercice(exo));
+
+  const lancerConfetti = (couleurs) => confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: couleurs
+  });
 
   const evaluateCM = (exo, score, elapsedMinutes = 0) => {
+    if (!reserverValidation(exo)) return;
+
+    if (!localiserExercice(exo, 'listeCM')) {
+      libererValidation(exo);
+      toast.error("Ce cours n'existe plus dans le cursus. Recharge la page.");
+      return;
+    }
+
     let finalJActuel = 0;
     let finalEaseFactor = 2.5;
-    let finalEffectiveMinutes = 0;
+    let dureeComptee = 0;
 
-    const newConf = produce(coursConfig, draft => {
+    // On part de `configLocal`, comme les autres validations. Partir de `coursConfig`
+    // faisait perdre la validation précédente lorsque deux exercices étaient enchaînés
+    // plus vite que l'aller-retour avec le store.
+    const newConf = produce(configLocal, draft => {
       const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
 
-    let finalScore = score;
+      // Capturé avant la mise à jour FSRS : `jActuel` est réécrit plus bas, si bien
+      // qu'un premier passage sur un cours neuf n'était jamais crédité de sa durée
+      // longue (defaultDurationNewCM) mais toujours de celle d'une simple révision.
+      const estNouveauCM = !cm.jActuel;
 
-    // --- PÉNALITÉ / BONUS TEMPOREL ---
-    if (elapsedMinutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
-      const ratio = elapsedMinutes / cm.tempsMoyen;
-      if (ratio > 1.5 && finalScore > 1) finalScore -= 1;
-      if (ratio > 2.0 && finalScore > 1) finalScore -= 1;
-      if (ratio < 0.5 && finalScore < 4) finalScore += 1;
-    }
+      let finalScore = score;
 
-    if (cm.derniereRevision) {
-      // Pour une éventuelle logique future basée sur actualDaysElapsed
-      // const todayStrLocal = getTodayStr();
-      // const revDate = new Date(cm.derniereRevision + 'T00:00:00');
-      // const nowDate = new Date(todayStrLocal + 'T00:00:00');
-      // actualDaysElapsed = Math.floor((nowDate - revDate) / (1000 * 60 * 60 * 24));
-    }
+      // --- PÉNALITÉ / BONUS TEMPOREL ---
+      if (elapsedMinutes > 0 && cm.tempsMoyen > 0 && (cm.nombreRevisionsTemps || 0) >= 1) {
+        const ratio = elapsedMinutes / cm.tempsMoyen;
+        if (ratio > 1.5 && finalScore > 1) finalScore -= 1;
+        if (ratio > 2.0 && finalScore > 1) finalScore -= 1;
+        if (ratio < 0.5 && finalScore < 4) finalScore += 1;
+      }
 
-    // AXE 9: Personalized Decay Multiplier
-    let personalizedDecayMultiplier = 1.0;
-    if (intelligence?.velocityMap && exo.matiereNom) {
-       const vData = intelligence.velocityMap[(exo.matiereNom || '').toLowerCase().trim()];
-       if (vData && vData.isSlowLearner) {
-          personalizedDecayMultiplier = 0.8; // Fragile subject -> retain more often
-       } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {
-          personalizedDecayMultiplier = 1.2; // Fast learner -> retain less often
-       }
-    }
+      // AXE 9 : décroissance personnalisée
+      let personalizedDecayMultiplier = 1.0;
+      if (intelligence?.velocityMap && exo.matiereNom) {
+         const vData = intelligence.velocityMap[(exo.matiereNom || '').toLowerCase().trim()];
+         if (vData && vData.isSlowLearner) {
+            personalizedDecayMultiplier = 0.8; // Matière fragile -> réviser plus souvent
+         } else if (vData && vData.avgSessionsToMaster && vData.avgSessionsToMaster <= 2) {
+            personalizedDecayMultiplier = 1.2; // Apprentissage rapide -> espacer
+         }
+      }
 
-    // AXE 7: Fatigue tracking
-    const expectedDuration = cm.jActuel === 0 ? (config?.defaultDurationNewCM || 120) : (config?.defaultDurationRevCM || 30);
-    if (finalScore <= 2 || (elapsedMinutes > 0 && elapsedMinutes > expectedDuration * 1.5)) {
-      setFatigueCounter(prev => prev + 1);
-    } else if (finalScore === 4) {
-      setFatigueCounter(0); // Good shape
-    }
+      // AXE 7 : suivi de la fatigue
+      const expectedDuration = dureeValidation(exo, 0, config, { estNouveauCM });
+      if (finalScore <= 2 || (elapsedMinutes > 0 && elapsedMinutes > expectedDuration * 1.5)) {
+        setFatigueCounter(prev => prev + 1);
+      } else if (finalScore === 4) {
+        setFatigueCounter(0);
+      }
 
-    // --- FSRS : Migration ou récupération de la carte ---
-    let fsrsCard = cm.fsrsCard ? { ...cm.fsrsCard } : migrateToFSRSCard(cm);
-    // Reconvertir les dates sérialisées (JSON → Date)
-    if (typeof fsrsCard.due === 'string') fsrsCard.due = new Date(fsrsCard.due);
-    if (typeof fsrsCard.last_review === 'string') fsrsCard.last_review = new Date(fsrsCard.last_review);
+      // --- FSRS : migration ou récupération de la carte ---
+      let fsrsCard = cm.fsrsCard ? { ...cm.fsrsCard } : migrateToFSRSCard(cm);
+      // Reconvertir les dates sérialisées (JSON → Date)
+      if (typeof fsrsCard.due === 'string') fsrsCard.due = new Date(fsrsCard.due);
+      if (typeof fsrsCard.last_review === 'string') fsrsCard.last_review = new Date(fsrsCard.last_review);
 
-    // Mapper le score ELPIS (1-4) vers le Rating FSRS
-    const ratingMap = { 1: Rating.Again, 2: Rating.Hard, 3: Rating.Good, 4: Rating.Easy };
-    const fsrsRating = ratingMap[finalScore] || Rating.Good;
+      const ratingMap = { 1: Rating.Again, 2: Rating.Hard, 3: Rating.Good, 4: Rating.Easy };
+      const fsrsRating = ratingMap[finalScore] || Rating.Good;
 
-    // Évaluation FSRS
-    const newCard = evaluateFSRS(fsrsCard, fsrsRating, personalizedDecayMultiplier);
+      const newCard = evaluateFSRS(fsrsCard, fsrsRating, personalizedDecayMultiplier);
 
-    // Stocker la carte FSRS complète pour les prochaines itérations
-    cm.fsrsCard = newCard;
+      cm.fsrsCard = newCard;
 
-    // Rétrocompatibilité : maintenir les champs SM-2 pour l'orchestrateur et le reste de l'app
-    cm.jActuel = newCard.scheduled_days || 1;
-    cm.easeFactor = (10 - newCard.difficulty) / 4 + 1.3; // Approximation EF depuis difficulty FSRS
-    cm.repetitions = newCard.reps;
-    cm.prochaineRevisionDate = newCard.due instanceof Date
-      ? newCard.due.toISOString().split('T')[0]
-      : new Date(newCard.due).toISOString().split('T')[0];
+      // Rétrocompatibilité : l'orchestrateur et le reste de l'app lisent encore SM-2.
+      cm.jActuel = newCard.scheduled_days || 1;
+      cm.easeFactor = (10 - newCard.difficulty) / 4 + 1.3;
+      cm.repetitions = newCard.reps;
+      cm.prochaineRevisionDate = newCard.due instanceof Date
+        ? newCard.due.toISOString().split('T')[0]
+        : new Date(newCard.due).toISOString().split('T')[0];
 
-    const today = getTodayStr();
-    cm.derniereRevision = today;
+      cm.derniereRevision = getTodayStr();
 
-    // Update tempsMoyen: use elapsedMinutes if > 0, otherwise use default duration
-    let effectiveMinutes = elapsedMinutes;
-    if (effectiveMinutes <= 0) {
-      effectiveMinutes = (cm.jActuel === 0) ? (config?.defaultDurationNewCM || 120) : (config?.defaultDurationRevCM || 30);
-    }
+      const effectiveMinutes = dureeValidation(exo, elapsedMinutes, config, { estNouveauCM });
 
-    const currentAvg = cm.tempsMoyen || 0;
-    const currentCount = cm.nombreRevisionsTemps || 0;
-    const weight = Math.min(currentCount, 4);
-    cm.tempsMoyen = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
-    cm.nombreRevisionsTemps = currentCount + 1;
+      cm.tempsMoyen = moyenneGlissante(cm.tempsMoyen, cm.nombreRevisionsTemps, effectiveMinutes);
+      cm.nombreRevisionsTemps = (cm.nombreRevisionsTemps || 0) + 1;
 
-    // Capturer les valeurs avant la fermeture du scope produce
-    finalJActuel = cm.jActuel;
-    finalEaseFactor = cm.easeFactor;
-    finalEffectiveMinutes = effectiveMinutes;
+      // Capturer les valeurs avant la fermeture du scope produce
+      finalJActuel = cm.jActuel;
+      finalEaseFactor = cm.easeFactor;
+      dureeComptee = effectiveMinutes;
     });
 
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#3b82f6', '#ffffff']
-    });
+    lancerConfetti(['#3b82f6', '#ffffff']);
 
     setConfigLocal(newConf);
     setCoursConfig(newConf);
@@ -304,122 +328,122 @@ function EntrainementPage() {
       titre: exo.titre,
       matiere: exo.matiereNom,
       action: `Révisé (J${finalJActuel})`,
-      dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30),
+      // Même durée que celle enregistrée dans l'exercice : l'historique et la
+      // progression du jour divergeaient de 90 min sur un cours neuf.
+      dureeMinutes: dureeComptee,
       easeFactor: finalEaseFactor
     });
-    setTempsDejaTravaille(prev => prev + finalEffectiveMinutes);
+    setTempsDejaTravaille(prev => prev + dureeComptee);
+    // Déverrouille « Avance & Bonus » et « Projets » sans attendre le prochain rapport.
+    notifyTaskCompleted?.();
   };
 
   const markAsDone = (exo, difficulte = "", elapsedMinutes = 0) => {
-    const todayStr = getTodayStr();
-    let effectiveMinutes = elapsedMinutes > 0 ? elapsedMinutes : (exo.tempsMoyen || 30);
+    if (!reserverValidation(exo)) return;
 
-    let actionLabel = 'Terminé';
+    const todayStr = getTodayStr();
 
     if (exo.type === 'ANKI') {
+      const dureeAnki = dureeValidation(exo, elapsedMinutes, config);
       setConfig({ ...config, dernierePratiqueAnki: todayStr });
       addHistoriqueEntry({
         type: 'ANKI',
         titre: exo.titre,
         matiere: exo.matiereNom,
         action: 'Terminé',
-        dureeMinutes: effectiveMinutes || (config.defaultDurationAnki || 30)
+        dureeMinutes: dureeAnki
       });
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#818CF8', '#34D399', '#FBBF24']
-      });
+      lancerConfetti(['#818CF8', '#34D399', '#FBBF24']);
       resetGlobalChrono();
-      setTempsDejaTravaille(prev => prev + effectiveMinutes);
-
+      setTempsDejaTravaille(prev => prev + dureeAnki);
+      notifyTaskCompleted?.();
       return;
     }
 
-    // Vérifier que les indices sont toujours valides (la config a pu changer)
-    const licence = configLocal.licences?.[exo.lIndex];
-    const semestre = licence?.semestres?.[exo.sIndex];
-    const ue = semestre?.ues?.[exo.uIndex];
-    const matiere = ue?.matieres?.[exo.mIndex];
-    if (!matiere) {
+    // Une séance de langue met aussi à jour le relevé de sa langue. Le moteur
+    // sait déjà lire l'historique pour la journée en cours, mais celui-ci est
+    // élagué à 10 000 entrées : le relevé, lui, ne se perd pas.
+    if (exo.type === 'LANGUE' && exo.volet) {
+      const langues = Array.isArray(config.langues) ? config.langues : [];
+      const cible = langues.find(l => l.id === exo.langueId || l.nom === exo.matiereNom);
+      if (cible) {
+        setConfig({
+          ...config,
+          langues: langues.map(l => (l === cible
+            ? { ...l, dernieresPratiques: { ...l.dernieresPratiques, [exo.volet]: todayStr } }
+            : l)),
+        });
+      }
+    }
+
+    // Tâche planifiée sans exercice dans le cursus : rien à mettre à jour côté
+    // cursus, on trace le travail et on la retire de la liste du jour.
+    if (exo.horsCursus) {
+      const duree = dureeValidation(exo, elapsedMinutes, config);
+      addHistoriqueEntry({
+        type: exo.type,
+        titre: exo.titre,
+        matiere: exo.matiereNom,
+        action: 'Terminé',
+        dureeMinutes: duree
+      });
+      setValidees(prev => new Set(prev).add(cleExercice(exo)));
+      lancerConfetti(['#a855f7', '#ffffff']);
+      resetGlobalChrono();
+      setTempsDejaTravaille(prev => prev + duree);
+      notifyTaskCompleted?.();
+      return;
+    }
+
+    const listeNom = exo.type === 'TD' ? 'listeTD' : exo.type === 'TP' ? 'listeTP' : 'listeAnnales';
+    if (!localiserExercice(exo, listeNom)) {
+      libererValidation(exo);
       toast.error("Configuration modifiée. Recharge la page.");
       return;
     }
 
-    const newConfig = produce(configLocal, draft => {
-      let targetList;
-      if (exo.type === 'TD') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTD;
-      else if (exo.type === 'TP') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeTP;
-      else if (exo.type === 'ANNALE') targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeAnnales;
+    let actionLabel = 'Terminé';
+    let dureeComptee = 0;
 
+    const newConfig = produce(configLocal, draft => {
+      const targetList = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex][listeNom];
       const currentExo = targetList[exo.exIndex];
       currentExo.dernierePratique = todayStr;
       currentExo.nombrePratiques = (currentExo.nombrePratiques || 0) + 1;
 
       if (exo.type === 'ANNALE' && difficulte !== "") {
-        // Pour les Annales, 'difficulte' contient en fait la note sur 20
+        // Pour les annales, `difficulte` transporte la note sur 20.
         const note = parseFloat(difficulte);
         if (!isNaN(note)) {
           currentExo.derniereNote = note;
           actionLabel = `Terminé (Note: ${note}/20)`;
-          if (note >= 18) currentExo.difficulte = 'tres_facile';
-          else if (note >= 15) currentExo.difficulte = 'facile';
-          else if (note >= 11) currentExo.difficulte = 'moyen';
-          else if (note >= 9) currentExo.difficulte = 'assez_difficile';
-          else currentExo.difficulte = 'difficile';
+          currentExo.difficulte = difficulteDepuisNote(note);
         }
       } else if (difficulte) {
         currentExo.difficulte = difficulte;
       }
 
-      let effectiveMinutes = elapsedMinutes;
-      if (effectiveMinutes <= 0) {
-        if (exo.type === 'TD') effectiveMinutes = config?.defaultDurationTD || 20;
-        else if (exo.type === 'TP') {
-          const stepIndex = (currentExo.nombrePratiques || 1) - 1;
-          const TP_STEP_DURATIONS = [
-            config?.defaultDurationTP_Etape1 || 45,
-            config?.defaultDurationTP_Etape2 || 180,
-            config?.defaultDurationTP_Etape3 || 90,
-            config?.defaultDurationTP_Etape4 || 30
-          ];
-          effectiveMinutes = TP_STEP_DURATIONS[stepIndex] || 30;
-        }
-        else if (exo.type === 'ANNALE') effectiveMinutes = config?.defaultDurationAnnales || 60;
-      }
+      const stepIndex = Math.max(0, (currentExo.nombrePratiques || 1) - 1);
+      const effectiveMinutes = dureeValidation(exo, elapsedMinutes, config, { etapeIndex: stepIndex });
+      dureeComptee = effectiveMinutes;
 
       if (exo.type === 'TP') {
-        const stepIndex = (currentExo.nombrePratiques || 1) - 1;
-        if (!currentExo.tempsMoyenEtapes) {
-          currentExo.tempsMoyenEtapes = [];
-        }
-        while(currentExo.tempsMoyenEtapes.length <= stepIndex) currentExo.tempsMoyenEtapes.push(null);
+        if (!currentExo.tempsMoyenEtapes) currentExo.tempsMoyenEtapes = [];
+        while (currentExo.tempsMoyenEtapes.length <= stepIndex) currentExo.tempsMoyenEtapes.push(null);
 
-        if (!currentExo.nombreRevisionsEtapes) {
-          currentExo.nombreRevisionsEtapes = [];
-        }
-        while(currentExo.nombreRevisionsEtapes.length <= stepIndex) currentExo.nombreRevisionsEtapes.push(0);
+        if (!currentExo.nombreRevisionsEtapes) currentExo.nombreRevisionsEtapes = [];
+        while (currentExo.nombreRevisionsEtapes.length <= stepIndex) currentExo.nombreRevisionsEtapes.push(0);
 
-        const currentAvg = currentExo.tempsMoyenEtapes[stepIndex] || 0;
         const currentCount = currentExo.nombreRevisionsEtapes[stepIndex] || 0;
-        const weight = Math.min(currentCount, 4);
-        currentExo.tempsMoyenEtapes[stepIndex] = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
+        currentExo.tempsMoyenEtapes[stepIndex] = moyenneGlissante(currentExo.tempsMoyenEtapes[stepIndex], currentCount, effectiveMinutes);
         currentExo.nombreRevisionsEtapes[stepIndex] = currentCount + 1;
       } else {
-        const currentAvg = currentExo.tempsMoyen || 0;
-        const currentCount = currentExo.nombreRevisionsTemps || 0;
-        const weight = Math.min(currentCount, 4);
-        currentExo.tempsMoyen = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
-        currentExo.nombreRevisionsTemps = currentCount + 1;
+        currentExo.tempsMoyen = moyenneGlissante(currentExo.tempsMoyen, currentExo.nombreRevisionsTemps, effectiveMinutes);
+        currentExo.nombreRevisionsTemps = (currentExo.nombreRevisionsTemps || 0) + 1;
       }
 
-      // AXE 7: Fatigue Tracking for TP/TD/Annales
-      let expectedDur = 30;
-      if (exo.type === 'TD') expectedDur = config?.defaultDurationTD || 20;
-      else if (exo.type === 'TP') expectedDur = config?.defaultDurationTP || 45;
-      else if (exo.type === 'ANNALE') expectedDur = config?.defaultDurationAnnales || 60;
-
+      // AXE 7 : suivi de la fatigue
+      const expectedDur = dureeValidation(exo, 0, config, { etapeIndex: stepIndex });
       if (difficulte === 'difficile' || (elapsedMinutes > 0 && elapsedMinutes > expectedDur * 1.5)) {
          setFatigueCounter(prev => prev + 1);
       } else if (difficulte === 'tres_facile') {
@@ -427,61 +451,55 @@ function EntrainementPage() {
       }
     });
 
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: exo.type === 'TD' ? ['#34D399', '#ffffff'] : exo.type === 'TP' ? ['#FBBF24', '#ffffff'] : ['#ef4444', '#ffffff']
-    });
+    lancerConfetti(
+      exo.type === 'TD' ? ['#34D399', '#ffffff'] :
+      exo.type === 'TP' ? ['#FBBF24', '#ffffff'] : ['#ef4444', '#ffffff']
+    );
 
     setConfigLocal(newConfig);
     setCoursConfig(newConfig);
-    let fallbackDuration = 30;
-    if (exo.type === 'TD') fallbackDuration = config?.defaultDurationTD || 20;
-    else if (exo.type === 'TP') fallbackDuration = config?.defaultDurationTP || 30;
-    else if (exo.type === 'ANNALE') fallbackDuration = config?.defaultDurationAnnales || 60;
-
-    // Find updated exo for history entry
-    const updatedExo = newConfig.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex][
-      exo.type === 'TD' ? 'listeTD' : exo.type === 'TP' ? 'listeTP' : 'listeAnnales'
-    ][exo.exIndex];
 
     addHistoriqueEntry({
       type: exo.type,
-      titre: updatedExo.titre,
+      titre: exo.titre,
       matiere: exo.matiereNom,
       action: actionLabel,
-      dureeMinutes: elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration
+      dureeMinutes: dureeComptee
     });
-    setTempsDejaTravaille(prev => prev + (elapsedMinutes > 0 ? elapsedMinutes : fallbackDuration));
+    setTempsDejaTravaille(prev => prev + dureeComptee);
+    // Déverrouille « Avance & Bonus » et « Projets » sans attendre le prochain rapport.
+    notifyTaskCompleted?.();
   };
 
-  // --- SUSPEND CM: Clôturer une séance partielle sans terminer le CM ---
+  // --- SUSPENDRE UN CM : clore une séance partielle sans terminer le cours ---
   const suspendCM = (exo, elapsedMinutes = 0) => {
-    const todayStr = getTodayStr();
+    if (!reserverValidation(exo)) return;
 
-    // Calcul de "demain" avec la logique Night Owl (-4h)
+    if (!localiserExercice(exo, 'listeCM')) {
+      libererValidation(exo);
+      toast.error("Ce cours n'existe plus dans le cursus. Recharge la page.");
+      return;
+    }
+
+    // « Demain » selon la logique Night Owl (journée décalée de 4 h)
     const now = new Date();
     now.setHours(now.getHours() - 4);
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.getFullYear() + '-' + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrow.getDate()).padStart(2, '0');
 
-    let effectiveMinutes = elapsedMinutes > 0 ? elapsedMinutes : (config?.defaultDurationRevCM || 30);
+    const effectiveMinutes = dureeValidation(exo, elapsedMinutes, config);
 
     const newConfig = produce(configLocal, draft => {
       const cm = draft.licences[exo.lIndex].semestres[exo.sIndex].ues[exo.uIndex].matieres[exo.mIndex].listeCM[exo.exIndex];
 
-      // Forcer la prochaine révision à demain — SANS toucher à l'état FSRS
+      // Reporter à demain SANS toucher à l'état FSRS : ni derniereRevision, ni
+      // jActuel, ni easeFactor, ni fsrsCard, ni repetitions.
       cm.prochaineRevisionDate = tomorrowStr;
-      // NE PAS modifier : derniereRevision, jActuel, easeFactor, fsrsCard, repetitions
 
-      // Enregistrer le temps passé dans tempsMoyen (même calcul que evaluateCM)
-      const currentAvg = cm.tempsMoyen || 0;
-      const currentCount = cm.nombreRevisionsTemps || 0;
-      const weight = Math.min(currentCount, 4);
-      cm.tempsMoyen = ((currentAvg * weight) + effectiveMinutes) / (weight + 1);
-      cm.nombreRevisionsTemps = currentCount + 1;
+      // Enregistrer le temps passé (même calcul que evaluateCM)
+      cm.tempsMoyen = moyenneGlissante(cm.tempsMoyen, cm.nombreRevisionsTemps, effectiveMinutes);
+      cm.nombreRevisionsTemps = (cm.nombreRevisionsTemps || 0) + 1;
     });
 
     setConfigLocal(newConfig);
@@ -495,14 +513,28 @@ function EntrainementPage() {
       dureeMinutes: effectiveMinutes
     });
 
+    // Une séance suspendue n'écrit pas `derniereRevision` : sans marquage local,
+    // la carte resterait affichée comme si rien ne s'était passé.
+    setValidees(prev => new Set(prev).add(cleExercice(exo)));
+
     resetGlobalChrono();
     setTempsDejaTravaille(prev => prev + effectiveMinutes);
+    notifyTaskCompleted?.();
     toast.success(`⏸️ Séance suspendue — "${exo.titre}" reviendra demain.`);
   };
-  // Progression : cible du jour - restants = déjà faits
-  const progressPercent = totalExercisesToday > 0
-    ? Math.round(((totalExercisesToday - remainingExercises.length) / totalExercisesToday) * 100)
-    : 0;
+
+  const ignorerAlerteFatigue = () => {
+    setFatigueCounter(0);
+    // Télémétrie : envoi opportuniste, un échec ne doit pas gêner l'utilisateur.
+    fetch(`${getApiUrl()}/telemetry/action`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        actionType: 'ignored_fatigue_alert',
+        taskContext: { fatigueCounter }
+      })
+    }).catch(e => logger.error("Erreur télémétrie:", e));
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, scale: 0.8 },
@@ -510,84 +542,241 @@ function EntrainementPage() {
     exit: { opacity: 0, scale: 0.8, x: -50, transition: { duration: 0.2 } }
   };
 
+  // --- Situations particulières, de la plus bloquante à la plus ordinaire ---
+  const enChargement = tachesOrchestrateur === null && !orchestratorData;
+  const statut = orchestratorData?.statut;
+  const enRepos = statut === 'REPOS' || statut === 'REPOS_OPTIONNEL';
+  const cursusVide = !configLocal.licences?.some(
+    l => l.semestres?.some(s => s.ues?.some(u => u.matieres?.length > 0))
+  );
+
+  const renderContenu = () => {
+    if (enChargement) {
+      return (
+        <div className="session-chargement">
+          <div className="loading-spinner" role="status" aria-label="Chargement de la session" />
+        </div>
+      );
+    }
+
+    if (orchestratorData?.error) {
+      return (
+        <Carte>
+          <EtatVide
+            icone="📡"
+            titre="Planificateur injoignable"
+            texte="Le serveur ELPIS n'a pas répondu. Vérifie qu'il est démarré, puis relance la recherche."
+            actions={
+              <Bouton variante="primaire" grand onClick={() => fetchOrchestrator({ fillGap: dailyFillGap, extraTime: 0 })}>
+                Réessayer
+              </Bouton>
+            }
+          />
+        </Carte>
+      );
+    }
+
+    // Un jour de repos affichait « Tout est terminé ! », ce qui laissait croire
+    // que le programme de la journée avait été accompli.
+    if (enRepos && remainingExercises.length === 0) {
+      return (
+        <Carte>
+          <EtatVide
+            icone="☕"
+            titre="Journée de repos"
+            texte={orchestratorData?.message || "Aucune séance n'est prévue aujourd'hui. La récupération fait partie du programme."}
+            actions={
+              <Bouton grand onClick={() => useStore.getState().setActiveTab('dashboard')}>
+                Retour à l'accueil
+              </Bouton>
+            }
+          />
+        </Carte>
+      );
+    }
+
+    // Premier lancement : aucun cours enregistré. Annoncer « Tout est terminé ! »
+    // à quelqu'un qui n'a encore rien saisi n'a aucun sens.
+    if (cursusVide && remainingExercises.length === 0) {
+      return (
+        <Carte>
+          <EtatVide
+            icone="📚"
+            titre="Aucun cours enregistré"
+            texte="Ajoute tes matières et tes cours dans la Bibliothèque : le planificateur construira ta première session dès qu'il aura de quoi travailler."
+            actions={
+              <Rang serre>
+                <Bouton variante="primaire" grand onClick={() => useStore.getState().setActiveTab('cours')}>
+                  Ouvrir la Bibliothèque
+                </Bouton>
+                <Bouton grand onClick={() => useStore.getState().setActiveTab('config')}>
+                  Régler mes disponibilités
+                </Bouton>
+              </Rang>
+            }
+          />
+        </Carte>
+      );
+    }
+
+    if (remainingExercises.length === 0) {
+      return (
+        <Carte>
+          <EtatVide
+            icone="🏆"
+            titre="Tout est terminé !"
+            texte="Tu as accompli toutes les tâches prévues aujourd'hui. Le reste de la journée t'appartient."
+            actions={
+              <Rang serre>
+                {!dailyFillGap && (
+                  <Bouton
+                    variante="primaire"
+                    grand
+                    onClick={() => {
+                      setDailyFillGap(true);
+                      toast.info('Recherche de tâches supplémentaires…');
+                    }}
+                  >
+                    Demander plus de tâches
+                  </Bouton>
+                )}
+                <Bouton grand onClick={() => useStore.getState().setActiveTab('revisions_avancees')}>
+                  Aller dans Avance & Bonus
+                </Bouton>
+              </Rang>
+            }
+          />
+        </Carte>
+      );
+    }
+
+    // Le filtre actif masque tout ce qui reste.
+    if (exercicesDuJour.length === 0) {
+      return (
+        <Carte>
+          <EtatVide
+            icone="🔍"
+            titre={`Rien à faire en ${filterMatiere}`}
+            texte={`Il reste ${remainingExercises.length} ${pluriel(remainingExercises.length, 'exercice')} dans les autres matières.`}
+            actions={
+              <Bouton variante="primaire" onClick={() => setFilterMatiere('all')}>
+                Voir tous les exercices
+              </Bouton>
+            }
+          />
+        </Carte>
+      );
+    }
+
+    return (
+      <div className="session-fil entrainement-timeline">
+        <AnimatePresence>
+          {exercicesDuJour.map((exo) => (
+            <motion.div
+              // Clé stable : y inclure l'index faisait remonter toutes les cartes
+              // suivantes à chaque validation, réinitialisant leur chronomètre.
+              key={cleExercice(exo)}
+              className="session-fil__element"
+              variants={itemVariants}
+              initial="hidden"
+              animate="show"
+              exit="exit"
+            >
+              <div className="timeline-connector" />
+              <div className="timeline-dot" />
+              <ExerciceCard
+                exo={exo}
+                matiereNom={exo.matiereNom}
+                notebookLMLink={exo.notebookLMLink}
+                onMarkAsDone={markAsDone}
+                onEvaluateCM={evaluateCM}
+                onSuspendCM={exo.horsCursus ? undefined : suspendCM}
+                ankiDeckName={exo.ankiDeckName}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
   return (
-    <div className="entrainement-page">
-      <div className="cours-header" style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem', flexWrap:'wrap', gap:'1rem'}}>
-        <div style={{display:'flex', alignItems:'center', gap:'1.5rem'}}>
-          <h2 style={{margin:0}}>Session du Jour</h2>
-        </div>
-        <span style={{color:'var(--text-secondary)'}}>{exercicesDuJour.length} exercice{exercicesDuJour.length > 1 ? 's' : ''} restant{exercicesDuJour.length > 1 ? 's' : ''}</span>
+    <div className="session-page entrainement-page">
+      <div className="session-entete">
+        <TitrePage>Session du jour</TitrePage>
+        <span className="session-entete__reste">
+          {remainingExercises.length} {pluriel(remainingExercises.length, 'exercice')} {pluriel(remainingExercises.length, 'restant')}
+        </span>
       </div>
 
-      {/* === PROGRESS BAR === */}
-      <div className="progress-header" style={{ display: 'flex', alignItems: 'center', gap: '2rem', padding: '1.5rem', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%)', borderRadius: '16px', border: '1px solid rgba(99, 102, 241, 0.12)' }}>
-        <CircularProgress percent={progressPercent} size={80} strokeWidth={8} />
-        <div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: progressPercent === 100 ? 'var(--success-color)' : 'var(--text-primary)' }}>
-            {progressPercent === 100 ? 'Session Terminée ! 🎉' : `${remainingExercises.length} exercice${remainingExercises.length > 1 ? 's' : ''} restant${remainingExercises.length > 1 ? 's' : ''}`}
-          </div>
-          <div style={{ color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
-            Tu as complété {totalExercisesToday - remainingExercises.length} sur {totalExercisesToday} tâches pour aujourd'hui.
+      {/* === Avancement de la session === */}
+      {totalSession > 0 && (
+        <div className="session-avancement">
+          <CircularProgress
+            percent={progressPercent}
+            size={80}
+            strokeWidth={8}
+            libelle="Progression de la session du jour"
+          />
+          <div>
+            <div className={`session-avancement__etat${progressPercent === 100 ? ' est-terminee' : ''}`}>
+              {progressPercent === 100
+                ? 'Session terminée'
+                : `${remainingExercises.length} ${pluriel(remainingExercises.length, 'exercice')} ${pluriel(remainingExercises.length, 'restant')}`}
+            </div>
+            <div className="session-avancement__detail">
+              {faitesSession} sur {totalSession} {pluriel(totalSession, 'tâche')} de la session du jour
+              {bonusHorsSession > 0 && ` · ${bonusHorsSession} en bonus`}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* === AXE 7: ALERTE FATIGUE === */}
+      {/* === Alerte de fatigue cognitive === */}
       <AnimatePresence>
         {fatigueCounter >= 3 && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            style={{ overflow: 'hidden', marginBottom: '1.5rem' }}
+            style={{ overflow: 'hidden' }}
           >
-            <div style={{ background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #f59e0b', padding: '1.2rem', borderRadius: '12px', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span style={{ fontSize: '2rem' }}>⚠️</span>
-              <div>
-                <strong style={{ fontSize: '1.1rem' }}>Fatigue Cognitive Détectée</strong>
-                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
-                  Tu as passé beaucoup de temps sur les derniers exercices ou cliqué répétitivement sur "Difficile".
-                  L'algorithme te conseille fortement de prendre une <strong>pause Pomodoro de 15 min</strong> ou de changer de matière (Interleaving).
+            <div role="alert" className="session-fatigue">
+              <div className="session-fatigue__corps">
+                <div className="session-fatigue__titre">Signes de fatigue</div>
+                <div className="session-fatigue__texte">
+                  Les derniers exercices ont pris plus de temps que d'habitude, ou tu les as
+                  jugés difficiles plusieurs fois de suite. Une pause de 15 minutes, ou un
+                  changement de matière, sera plus efficace que d'insister.
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  setFatigueCounter(0);
-                  // Envoi Télémétrie (Fire and forget)
-                  fetch(`${getApiUrl()}/telemetry/action`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      actionType: 'ignored_fatigue_alert',
-                      taskContext: { fatigueCounter }
-                    })
-                  }).catch(e => logger.error("Erreur télémétrie:", e));
-                }}
-                style={{ marginLeft: 'auto', background: 'transparent', border: '1px solid #f59e0b', color: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
-              >
-                Ignorer
-              </button>
+              <Bouton onClick={ignorerAlerteFatigue}>Ignorer</Bouton>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* === FILTER PILLS === */}
-      {matiereNames.length > 1 && (
+      {/* === Filtre par matière === */}
+      {matiereNames.length > 1 && remainingExercises.length > 0 && (
         <div className="filter-pills">
           <button
+            type="button"
             className={`filter-pill ${filterMatiere === 'all' ? 'active' : ''}`}
             onClick={() => setFilterMatiere('all')}
+            aria-pressed={filterMatiere === 'all'}
           >
             Tout ({remainingExercises.length})
           </button>
-          {matiereNames?.map(name => {
+          {matiereNames.map(name => {
             const count = remainingExercises.filter(e => e.matiereNom === name).length;
+            if (count === 0) return null;
             return (
               <button
+                type="button"
                 key={name}
                 className={`filter-pill ${filterMatiere === name ? 'active' : ''}`}
                 onClick={() => setFilterMatiere(name)}
+                aria-pressed={filterMatiere === name}
               >
                 {name} ({count})
               </button>
@@ -596,111 +785,27 @@ function EntrainementPage() {
         </div>
       )}
 
-      {/* PROGRESSION QUOTIDIENNE */}
+      {/* === Temps travaillé aujourd'hui === */}
       {tempsDispoMin > 0 && (
-        <div style={{ background: 'var(--bg-secondary)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--bg-tertiary)' }}>
-          <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)', fontSize: '1.1rem' }}>Progression de la Journée</h3>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            <span>{Math.floor(tempsDejaTravaille / 60)}h{String(tempsDejaTravaille % 60).padStart(2, '0')} travaillées</span>
-            <span>Objectif IA : {Math.floor(tempsDispoMin / 60)}h{String(tempsDispoMin % 60).padStart(2, '0')}</span>
+        <div className="tdb-progression">
+          <div className="tdb-progression__chiffres">
+            <span>
+              <strong>{Math.floor(tempsDejaTravaille / 60)}h{String(tempsDejaTravaille % 60).padStart(2, '0')}</strong> travaillées
+            </span>
+            <span>
+              objectif <strong>{Math.floor(tempsDispoMin / 60)}h{String(tempsDispoMin % 60).padStart(2, '0')}</strong>
+            </span>
           </div>
-          <div style={{ width: '100%', background: 'var(--bg-tertiary)', borderRadius: '10px', height: '12px', overflow: 'hidden' }}>
-            <div style={{
-              height: '100%',
-              background: tempsDejaTravaille >= tempsDispoMin ? 'var(--success-color)' : 'var(--accent-primary)',
-              width: `${Math.min(100, (tempsDejaTravaille / tempsDispoMin) * 100)}%`,
-              transition: 'width 0.5s ease-out'
-            }} />
-          </div>
+          <Jauge
+            valeur={tempsDejaTravaille}
+            max={tempsDispoMin}
+            ton={tempsDejaTravaille >= tempsDispoMin ? 'succes' : undefined}
+            libelle="Temps travaillé par rapport à l'objectif du jour"
+          />
         </div>
       )}
 
-      <AnimatePresence mode="wait">
-        {exercicesDuJour.length === 0 ? (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={remainingExercises.length === 0 ? "empty-state-container" : "card glass-panel"}
-            style={remainingExercises.length > 0 ? {textAlign:'center', padding:'3rem'} : {}}
-          >
-            {remainingExercises.length === 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '50vh', textAlign: 'center' }}>
-                {tachesOrchestrateur === null ? (
-                  <div className="loading-spinner"></div>
-                ) : (
-                  <>
-                    <div className="empty-state-icon">🏆</div>
-                    <h3 style={{color:'var(--success-color)', marginBottom: '0.5rem', fontSize:'1.8rem'}}>Tout est terminé !</h3>
-                    <p style={{color:'var(--text-secondary)', fontSize:'1.1rem'}}>Tu as accompli toutes les tâches demandées par le système. Repose-toi bien !</p>
-
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                        {!dailyFillGap && (
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                              setDailyFillGap(true);
-                              toast.info("Recherche de tâches supplémentaires en cours...");
-                            }}
-                            className="btn-primary"
-                            style={{ background: 'var(--accent-primary)', padding: '1rem 2rem', fontSize: '1.1rem' }}
-                          >
-                            🔥 Demander plus de tâches
-                          </motion.button>
-                        )}
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => useStore.getState().setActiveTab('revisions_avancees')}
-                          className="btn-secondary"
-                          style={{ padding: '1rem 2rem', fontSize: '1.1rem', background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
-                        >
-                          🎯 Aller dans Avance & Bonus
-                        </motion.button>
-                      </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <>
-                <div style={{fontSize: '3rem', marginBottom: '1rem'}}>🔍</div>
-                <h3>Aucun exercice pour "{filterMatiere}"</h3>
-                <p style={{color:'var(--text-secondary)'}}>
-                  Essaie un autre filtre ou clique sur "Tout" pour voir tous les exercices.
-                </p>
-              </>
-            )}
-          </motion.div>
-        ) : (
-          <div className="entrainement-timeline" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
-            <AnimatePresence>
-              {exercicesDuJour?.map((exo, index) => (
-                <motion.div
-                  key={`${exo.matiereNom}-${exo.titre}-${index}`}
-                  variants={itemVariants}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                  style={{ position: 'relative', paddingLeft: '30px' }}
-                >
-                  <div className="timeline-connector"></div>
-                  <div className="timeline-dot"></div>
-                  <ExerciceCard
-                    exo={exo}
-                    matiereNom={exo.matiereNom}
-                    notebookLMLink={exo.notebookLMLink}
-                    onMarkAsDone={(passedExo, difficulte, elapsedMinutes) => markAsDone(passedExo, difficulte, elapsedMinutes)}
-                    onEvaluateCM={(passedExo, score, elapsedMinutes) => evaluateCM(passedExo, score, elapsedMinutes)}
-                    onSuspendCM={(passedExo, elapsedMinutes) => suspendCM(passedExo, elapsedMinutes)}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        )}
-      </AnimatePresence>
+      {renderContenu()}
     </div>
   );
 }

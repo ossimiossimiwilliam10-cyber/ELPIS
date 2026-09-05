@@ -1,9 +1,18 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+import { describe, test, expect, beforeAll, afterAll, vi } from 'vitest';
 import { genererRapportQuotidien } from '../moteur/orchestrateur';
 const { db } = require('../db/setup');
 import { saveConfig } from '../moteur/config';
 import { saveCours } from '../moteur/cours';
 import { saveHistorique } from '../moteur/historique';
+
+// L'orchestrateur module son planning sur l'heure courante : temps restant avant le
+// coucher, fenêtres de chronotype, moment de la journée. Sans horloge figée, la suite
+// passe le matin et échoue le soir (plus assez de budget pour un CM de 120 min).
+// Seul Date est simulé, pour ne pas perturber les I/O de better-sqlite3.
+// Mercredi 8h00 : journée pleine, milieu de semaine, aucune règle de week-end.
+const CLOCK = new Date('2026-09-16T08:00:00');
+vi.useFakeTimers({ toFake: ['Date'] });
+vi.setSystemTime(CLOCK);
 
 beforeAll(() => {
   db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
@@ -11,7 +20,9 @@ beforeAll(() => {
   const days = [];
   for (let i = 0; i < 5; i++) {
     const d = new Date();
-    d.setDate(d.getDate() - (i + 1));
+    // Repos anciens uniquement : un repos daté d'hier basculerait le rapport en
+    // REPOS_OPTIONNEL et viderait le planning, faussant tout le stress test.
+    d.setDate(d.getDate() - (i + 3));
     days.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
   }
 
@@ -42,6 +53,7 @@ beforeAll(() => {
 
 afterAll(() => {
   db.exec('DELETE FROM exercices; DELETE FROM cours_cm; DELETE FROM matieres; DELETE FROM ues; DELETE FROM semestres; DELETE FROM licences; DELETE FROM historique; DELETE FROM config;');
+  vi.useRealTimers();
 });
 
 // â”€â”€ Scenarios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

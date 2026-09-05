@@ -1,0 +1,296 @@
+/* ============================================================
+   Carte d'exercice — la brique de la séance de travail
+   ============================================================ */
+
+.exercice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  padding: var(--esp-5);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  /* Le liseré supérieur porte la couleur du type d'activité. */
+  border-top: 3px solid var(--liseré, var(--accent));
+  border-radius: var(--rayon-lg);
+  box-shadow: var(--ombre-1);
+}
+
+/* ---------- En-tête ---------- */
+
+.exercice__entete {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+}
+
+.exercice__identite { flex: 1; min-width: 0; }
+
+.exercice__titre {
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  line-height: var(--interligne-serre);
+  margin: 0 0 var(--esp-2);
+  /* Deux lignes au plus : un intitulé fleuve ne doit pas repousser les actions
+     hors de l'écran. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.exercice__contexte {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+}
+
+.exercice__matiere { font-size: var(--texte-sm); color: var(--texte-doux); }
+
+.exercice__etat {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ---------- Chronomètre ---------- */
+
+.exercice__chrono {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-3);
+  background: var(--surface-2);
+  border-radius: var(--rayon-md);
+  flex-wrap: wrap;
+}
+
+.exercice__bouton-chrono {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--rayon-full);
+  background: var(--succes);
+  color: #fff;
+  font-size: var(--texte-md);
+  cursor: pointer;
+  transition: background var(--duree-vive) var(--courbe), transform var(--duree-vive) var(--courbe);
+}
+.exercice__bouton-chrono:hover { transform: scale(1.06); }
+.exercice__bouton-chrono.est-actif { background: var(--danger); }
+.exercice__bouton-chrono:focus-visible { outline: none; box-shadow: var(--ombre-focus); }
+
+/* Le temps écoulé est l'information centrale d'une séance : il se lit de loin. */
+.exercice__temps {
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-doux);
+  min-width: 5ch;
+}
+.exercice__temps.est-actif { color: var(--texte-fort); }
+
+.exercice__saisie {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  margin-left: auto;
+}
+.exercice__saisie input {
+  width: 68px;
+  text-align: center;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+}
+.exercice__saisie label { font-size: var(--texte-xs); color: var(--texte-doux); }
+
+/* ---------- Documents ---------- */
+
+.exercice__documents { display: flex; gap: var(--esp-2); flex-wrap: wrap; }
+
+/* ---------- Évaluation d'un cours ---------- */
+
+.exercice__retention {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--esp-2);
+}
+
+@media (max-width: 520px) {
+  .exercice__retention { grid-template-columns: repeat(2, 1fr); }
+}
+
+.retention {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--esp-3) var(--esp-2);
+  background: transparent;
+  border: 1px solid var(--retention-couleur);
+  border-radius: var(--rayon-md);
+  color: var(--retention-couleur);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--duree-vive) var(--courbe), transform var(--duree-vive) var(--courbe);
+  min-height: 56px;
+}
+.retention:hover { background: color-mix(in srgb, var(--retention-couleur) 14%, transparent); }
+.retention:active { transform: scale(0.97); }
+.retention:focus-visible { outline: none; box-shadow: var(--ombre-focus); }
+
+.retention__note {
+  font-family: var(--police-mono);
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-lourde);
+  line-height: 1;
+}
+/* Le libellé dit ce que le chiffre signifie : « Bien (3) » seul n'apprenait
+   rien à qui découvre l'échelle FSRS. */
+.retention__libelle {
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-moyenne);
+  opacity: 0.9;
+}
+
+/* ---------- Difficulté ressentie ---------- */
+
+/* Les boutons portaient leur seul libellé — « Difficile », « Facile » — sans
+   qu'on sache ce que le choix déclenche. Un intitulé et son aide les
+   rattachent à leur conséquence : la date du prochain passage. */
+.exercice__difficultes-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+}
+
+.exercice__difficultes-titre {
+  display: flex;
+  align-items: center;
+  font-size: var(--texte-xs);
+  font-weight: var(--graisse-forte);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.exercice__difficultes {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-1);
+  flex-wrap: wrap;
+}
+
+.difficulte {
+  padding: var(--esp-1) var(--esp-2);
+  background: transparent;
+  border: 1px solid var(--bord-normal);
+  border-radius: var(--rayon-full);
+  color: var(--texte-doux);
+  font-family: inherit;
+  font-size: var(--texte-xs);
+  cursor: pointer;
+  transition: border-color var(--duree-vive) var(--courbe), color var(--duree-vive) var(--courbe);
+  min-height: 32px;
+}
+.difficulte:hover { border-color: var(--accent); color: var(--accent-clair); }
+.difficulte:focus-visible { outline: none; box-shadow: var(--ombre-focus); }
+
+/* ---------- Actions ---------- */
+
+.exercice__actions { display: flex; gap: var(--esp-2); flex-wrap: wrap; align-items: center; }
+.exercice__actions .el-bouton--primaire { flex: 1; min-width: 140px; }
+
+.exercice__note-annale {
+  display: flex;
+  gap: var(--esp-2);
+  align-items: center;
+  width: 100%;
+}
+.exercice__note-annale input { flex: 1; max-width: 120px; text-align: center; }
+
+/* ============================================================
+   Ligne d'exercice éditable (Bibliothèque & Préparation hebdo)
+   ============================================================ */
+
+.exercice-ligne {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  min-width: 0;
+  margin-top: var(--esp-2);
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--rayon-sm);
+  border: 1px solid var(--liseré);
+  background: var(--voile);
+}
+.exercice-ligne--td     { --liseré: var(--type-td);     --voile: var(--type-td-voile); }
+.exercice-ligne--tp     { --liseré: var(--type-tp);     --voile: var(--type-tp-voile); }
+.exercice-ligne--annale { --liseré: var(--type-annale); --voile: var(--type-annale-voile); }
+
+.exercice-ligne__action {
+  flex-shrink: 0;
+  padding: var(--esp-1);
+  background: transparent;
+  border: none;
+  border-radius: var(--rayon-sm);
+  color: var(--texte-doux);
+  font-size: var(--texte-sm);
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity var(--duree-vive) var(--courbe), color var(--duree-vive) var(--courbe);
+}
+.exercice-ligne__action:hover { opacity: 1; }
+.exercice-ligne__action.est-actif { opacity: 1; }
+.exercice-ligne__action--danger:hover { color: var(--danger); }
+
+.exercice-ligne__corps {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+}
+
+.exercice-ligne__date {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.exercice-ligne__date input {
+  min-height: 28px;
+  padding: 2px var(--esp-2);
+  font-size: var(--texte-xs);
+  width: auto;
+}
+
+.exercice-ligne__difficulte {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--esp-1);
+}
+
+/* Consigne de l'étape en cours d'un TP : « Planification » seul ne dit pas
+   qu'il s'agit de simuler le TP en entier avant la séance. */
+.exercice__consigne {
+  padding: var(--esp-2) var(--esp-3);
+  margin-bottom: var(--esp-3);
+  background: var(--type-tp-voile);
+  border-left: 3px solid var(--type-tp);
+  border-radius: var(--rayon-sm);
+  font-size: var(--texte-sm);
+  color: var(--texte-normal);
+}

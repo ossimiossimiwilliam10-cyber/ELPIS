@@ -20,7 +20,6 @@ const ERROR_STATUS = {
   VALIDATION_ERROR: 400,
   NOT_FOUND: 404,
   RATE_LIMITED: 429,
-  AI_SERVICE_ERROR: 502,
   INTERNAL_ERROR: 500
 };
 
@@ -47,17 +46,6 @@ function globalErrorHandler(err, req, res, _next) {
       error: 'Données invalides',
       code: 'VALIDATION_ERROR',
       details: err.errors || err.message,
-      requestId
-    });
-    return;
-  }
-
-  // AI service errors
-  if (err.code === 'AI_SERVICE_ERROR' || err.name === 'DeepSeekError') {
-    res.status(502).json({
-      error: 'Service IA indisponible',
-      code: 'AI_SERVICE_ERROR',
-      message: err.message,
       requestId
     });
     return;

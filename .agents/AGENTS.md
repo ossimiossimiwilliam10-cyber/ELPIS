@@ -233,17 +233,17 @@ Cela permet de rÃƒÆ’Ã‚Â©compenser la rigueur quotidienne et pas seulement la per
 
 
 <RULE[workload_summer_study_awareness]>
-- **Prise en compte du travail en avance (Summer Study)** : Lors de l'implémentation de filtres d'historique basés sur une date de rentrée (studyStartDate), l'agent DOIT toujours inclure une condition pour comptabiliser le travail effectué en avance (ex: si la date d'entrée est inférieure à la date de rentrée officielle ET récente). Ne jamais écarter aveuglément l'historique sous prétexte que la rentrée n'a pas encore eu lieu.
+- **Prise en compte du travail en avance (Summer Study)** : Lors de l'implÃ©mentation de filtres d'historique basÃ©s sur une date de rentrÃ©e (studyStartDate), l'agent DOIT toujours inclure une condition pour comptabiliser le travail effectuÃ© en avance (ex: si la date d'entrÃ©e est infÃ©rieure Ã  la date de rentrÃ©e officielle ET rÃ©cente). Ne jamais Ã©carter aveuglÃ©ment l'historique sous prÃ©texte que la rentrÃ©e n'a pas encore eu lieu.
 </RULE[workload_summer_study_awareness]>
 
 
 <RULE[anki_dynamic_workload_split]>
-- **Répartition Intelligente du Temps Anki** : Lors de la complétion d'une tâche de type ANKI (Routine), le système DOIT interroger AnkiConnect en arrière-plan (/api/anki/today-stats) pour déterminer le volume de cartes révisées par matière le jour même. Le temps total alloué à la tâche (ex: 30 minutes) DOIT ensuite être proportionnellement divisé et ajouté à l'historique sous le nom exact des matières travaillées. Si AnkiConnect est inaccessible ou si aucune carte n'a été révisée, le système DOIT basculer sur l'enregistrement "Routine" par défaut (fallback).
+- **RÃ©partition Intelligente du Temps Anki** : Lors de la complÃ©tion d'une tÃ¢che de type ANKI (Routine), le systÃ¨me DOIT interroger AnkiConnect en arriÃ¨re-plan (/api/anki/today-stats) pour dÃ©terminer le volume de cartes rÃ©visÃ©es par matiÃ¨re le jour mÃªme. Le temps total allouÃ© Ã  la tÃ¢che (ex: 30 minutes) DOIT ensuite Ãªtre proportionnellement divisÃ© et ajoutÃ© Ã  l'historique sous le nom exact des matiÃ¨res travaillÃ©es. Si AnkiConnect est inaccessible ou si aucune carte n'a Ã©tÃ© rÃ©visÃ©e, le systÃ¨me DOIT basculer sur l'enregistrement "Routine" par dÃ©faut (fallback).
 </RULE[anki_dynamic_workload_split]>
 
 
 <RULE[phased_learning_progression]>
-- **Apprentissage par Phases (Théorie vs Pratique)** : Lors de la conception ou de la modification de planificateurs de tâches académiques, l'agent DOIT toujours prévoir des options permettant d'isoler la théorie de la pratique. Ne jamais imposer un mélange simultané de CM (Cours Magistraux), TD (Travaux Dirigés) et Annales. L'interface DOIT permettre à l'utilisateur de désactiver/activer ces modules de pratique afin de respecter une progression d'apprentissage logique (Phase 1: Théorie -> Phase 2: Pratique).
+- **Apprentissage par Phases (ThÃ©orie vs Pratique)** : Lors de la conception ou de la modification de planificateurs de tÃ¢ches acadÃ©miques, l'agent DOIT toujours prÃ©voir des options permettant d'isoler la thÃ©orie de la pratique. Ne jamais imposer un mÃ©lange simultanÃ© de CM (Cours Magistraux), TD (Travaux DirigÃ©s) et Annales. L'interface DOIT permettre Ã  l'utilisateur de dÃ©sactiver/activer ces modules de pratique afin de respecter une progression d'apprentissage logique (Phase 1: ThÃ©orie -> Phase 2: Pratique).
 </RULE[phased_learning_progression]>
 
 <RULE[preparation_phase_weekends]>
@@ -269,9 +269,9 @@ Cette routine garantit que l'application est toujours dÃ©ployable et que le trav
 </RULE[data_reset_server_shutdown]>
 
 <RULE[elpis_school_regulations]>
-- **Intégration du Règlement Universitaire** : Lorsqu'une règle de scolarité (règlement des études, MECC) est fournie (texte ou image), l'agent DOIT toujours considérer deux axes d'intégration pour ELPIS :
-  1. **Knowledge Base (IA)** : Mettre à jour data/reglement_etudes.md (ou similaire) pour que le Coach IA puisse conseiller l'étudiant avec exactitude.
-  2. **Features UI/Backend** : Réfléchir de manière proactive à la manière dont cette règle peut être codée dans l'application (ex: un minuteur, un tracker, une case "Dispensé", un avertissement d'absence) et proposer l'implémentation à l'utilisateur.
+- **IntÃ©gration du RÃ¨glement Universitaire** : Lorsqu'une rÃ¨gle de scolaritÃ© (rÃ¨glement des Ã©tudes, MECC) est fournie (texte ou image), l'agent DOIT toujours considÃ©rer deux axes d'intÃ©gration pour ELPIS :
+  1. **Knowledge Base (IA)** : Mettre Ã  jour data/reglement_etudes.md (ou similaire) pour que le Coach IA puisse conseiller l'Ã©tudiant avec exactitude.
+  2. **Features UI/Backend** : RÃ©flÃ©chir de maniÃ¨re proactive Ã  la maniÃ¨re dont cette rÃ¨gle peut Ãªtre codÃ©e dans l'application (ex: un minuteur, un tracker, une case "DispensÃ©", un avertissement d'absence) et proposer l'implÃ©mentation Ã  l'utilisateur.
 </RULE[elpis_school_regulations]>
 
 <RULE[systematic_documentation]>
@@ -315,3 +315,30 @@ Cette routine garantit que l'application est toujours dÃ©ployable et que le trav
   - Pour les CM : Toujours verifier cm.dateCM.
   - Pour les TD/TP : Toujours verifier td.datePrevue.
 </RULE[elpis_task_date_constraint]>
+
+<RULE[anki_task_isolation]>
+- **SÃ©paration de l'Ã‰valuation (Anki)** : Lors de la conception ou de la modification de l'interface utilisateur pour les sessions d'entraÃ®nement (ex: ExerciceCard), les tÃ¢ches de type ANKI ne doivent **jamais** exposer les contrÃ´les de difficultÃ© propres Ã  ELPIS (les boutons de difficultÃ© ou les boutons FSRS : Ã€ revoir, Difficile, Bien, Parfait). 
+- Anki gÃ¨re sa propre rÃ©pÃ©tition espacÃ©e. L'interface d'ELPIS pour une tÃ¢che Anki doit se limiter Ã  un bouton unique de validation (ex: "Fait") et un chronomÃ¨tre/input de temps pour tracker la durÃ©e de la session.
+</RULE[anki_task_isolation]>
+
+
+<RULE[offline_first_id_generation]>
+- **Tout Ã©lÃ©ment synchronisÃ© naÃ®t avec son identifiant.** Toute crÃ©ation cÃ´tÃ©
+  interface d'un objet qui entre dans un document synchronisÃ© â€” licence,
+  semestre, UE, matiÃ¨re, CM, TD, TP, annale, langue, lien, projet, phase,
+  vidÃ©o â€” doit poser son `id` au moment mÃªme de sa crÃ©ation, avec
+  `crypto.randomUUID()` et un repli si l'API manque. Ne jamais compter sur la
+  base pour l'attribuer Ã  l'Ã©criture : entre la crÃ©ation et l'Ã©criture, il y a
+  la synchronisation.
+- **Pourquoi** : `interface/web/src/utils/fusion.js` apparie les listes par
+  identifiant (`FORMES` dÃ©clare `{ type: 'liste', cle: 'id' }`). Un Ã©lÃ©ment sans
+  clÃ© ne peut pas Ãªtre appariÃ©. ConstatÃ© le 4 septembre 2026 : dix chapitres
+  saisis sur le PC revenaient Ã  six, sans message ni erreur â€” et comme le
+  rÃ©sultat de la fusion est rÃ©Ã©crit des deux cÃ´tÃ©s, la saisie Ã©tait perdue
+  partout.
+- **Filet, pas dispense** : la fusion conserve dÃ©sormais les Ã©lÃ©ments sans clÃ©
+  au lieu de les Ã©carter en silence, et le signale dans son compte rendu. Ce
+  filet couvre les donnÃ©es Ã©crites par une version antÃ©rieure ; il ne dispense
+  pas de la rÃ¨gle, car un Ã©lÃ©ment sans identifiant reste inappariable d'un
+  appareil Ã  l'autre.
+</RULE[offline_first_id_generation]>

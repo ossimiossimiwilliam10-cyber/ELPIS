@@ -34,14 +34,14 @@ export default function ProjectsWidget({ projets, pendingTasksCount }) {
           )) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
               <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Aucun projet en cours.</p>
-              <button 
+              {/* `--primary-color` n'a jamais été définie : ce bouton s'affichait
+                  en blanc sur fond transparent, donc illisible. */}
+              <button
+                type="button"
+                className="el-bouton el-bouton--primaire"
                 onClick={() => useStore.getState().setActiveTab('projets')}
-                style={{ 
-                  background: 'var(--primary-color)', color: 'white', border: 'none', 
-                  padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' 
-                }}
               >
-                + Créer un projet
+                Créer un projet
               </button>
             </div>
           )}

@@ -1,0 +1,503 @@
+/* ============================================================
+   Bibliothèque — arborescence et vignettes de matière
+   ============================================================ */
+
+/* ---------- Disposition générale ---------- */
+
+.bibliotheque {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: var(--esp-6);
+  align-items: start;
+}
+
+/* Sous 1024px, l'arborescence passe au-dessus du contenu et défile
+   horizontalement : une colonne de 240px ne laisse plus la place de lire. */
+@media (max-width: 1024px) {
+  .bibliotheque {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--esp-4);
+  }
+}
+
+/* ---------- Arborescence ---------- */
+
+.arbre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+  position: sticky;
+  top: var(--esp-4);
+  max-height: calc(100vh - var(--esp-8));
+  overflow-y: auto;
+  padding-right: var(--esp-2);
+}
+
+@media (max-width: 1024px) {
+  .arbre {
+    position: static;
+    max-height: none;
+    flex-direction: row;
+    gap: var(--esp-5);
+    overflow-x: auto;
+    padding-bottom: var(--esp-2);
+    border-bottom: 1px solid var(--bord-discret);
+  }
+  .arbre__section { min-width: 200px; }
+}
+
+.arbre__section { display: flex; flex-direction: column; gap: 2px; }
+.arbre__entete { margin-bottom: var(--esp-2); }
+
+/* ---------- Rang : un nœud et ses actions ----------
+   Le nœud était un bouton unique ; renommer et supprimer ne pouvaient donc pas
+   y tenir sans imbriquer des boutons, ce que le HTML interdit. Le rang les met
+   côte à côte. */
+.arbre__rang {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-1);
+}
+
+/* Les actions restent en retrait : l'arbre sert d'abord à naviguer, et deux
+   icônes par ligne allumées en permanence le rendraient illisible. Elles
+   apparaissent au survol, et toujours au clavier — sans quoi elles seraient
+   inatteignables sans souris. */
+.arbre__actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--duree-courte, 0.15s) ease;
+}
+
+.arbre__rang:hover .arbre__actions,
+.arbre__rang:focus-within .arbre__actions {
+  opacity: 1;
+}
+
+/* Sur écran tactile, il n'y a pas de survol : les actions y sont acquises. */
+@media (hover: none) {
+  .arbre__actions { opacity: 1; }
+}
+
+.arbre__noeud {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  width: 100%;
+  padding: var(--esp-2) var(--esp-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--rayon-sm);
+  color: var(--texte-doux);
+  font-family: inherit;
+  font-size: var(--texte-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duree-vive) var(--courbe), color var(--duree-vive) var(--courbe);
+  min-height: 36px;
+}
+.arbre__noeud:hover { background: var(--surface-2); color: var(--texte-fort); }
+.arbre__noeud:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.arbre__noeud.est-actif {
+  background: var(--accent-voile);
+  color: var(--accent-clair);
+  font-weight: var(--graisse-forte);
+}
+
+.arbre__noeud--licence { font-size: var(--texte-md); font-weight: var(--graisse-moyenne); }
+.arbre__noeud--ue { padding-left: var(--esp-5); font-size: var(--texte-sm); }
+
+.arbre__chevron { font-size: 0.65rem; opacity: 0.7; width: 10px; flex-shrink: 0; }
+
+.arbre__libelle {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Compteur discret aligné à droite, en chiffres de largeur fixe. */
+.arbre__compte {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  flex-shrink: 0;
+}
+.arbre__noeud.est-actif .arbre__compte { color: var(--accent-clair); }
+
+.arbre__mention { font-size: var(--texte-xs); opacity: 0.7; font-weight: var(--graisse-normale); }
+
+.arbre__enfants {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 var(--esp-2);
+  padding-left: var(--esp-2);
+  border-left: 1px solid var(--bord-discret);
+}
+
+.arbre__ajout {
+  align-self: flex-start;
+  padding: var(--esp-1) var(--esp-3);
+  margin-top: var(--esp-1);
+  background: transparent;
+  border: 1px dashed var(--bord-normal);
+  border-radius: var(--rayon-sm);
+  color: var(--texte-doux);
+  font-family: inherit;
+  font-size: var(--texte-xs);
+  cursor: pointer;
+  transition: border-color var(--duree-vive) var(--courbe), color var(--duree-vive) var(--courbe);
+}
+.arbre__ajout:hover { border-color: var(--accent); color: var(--accent-clair); }
+
+.arbre__vide {
+  padding: var(--esp-2) var(--esp-3);
+  margin: 0;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  font-style: italic;
+}
+
+/* ---------- Vignette de matière ---------- */
+
+.carte-matiere {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  width: 100%;
+  padding: var(--esp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--rayon-md);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--duree-vive) var(--courbe),
+              transform var(--duree-vive) var(--courbe),
+              box-shadow var(--duree-vive) var(--courbe);
+}
+.carte-matiere:hover {
+  border-color: var(--bord-net);
+  border-left-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--ombre-2);
+}
+.carte-matiere:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.carte-matiere__entete {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+}
+
+.carte-matiere__nom {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--texte-lg);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  line-height: var(--interligne-serre);
+}
+
+/* ---------- Effectifs par type ---------- */
+
+.carte-matiere__effectifs {
+  display: flex;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.carte-matiere__effectif b { font-weight: var(--graisse-forte); margin-right: 2px; }
+.carte-matiere__effectif.est-cm b     { color: var(--type-cm); }
+.carte-matiere__effectif.est-td b     { color: var(--type-td); }
+.carte-matiere__effectif.est-tp b     { color: var(--type-tp); }
+.carte-matiere__effectif.est-annale b { color: var(--type-annale); }
+
+/* ---------- Progression ---------- */
+
+.carte-matiere__progression {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+}
+.carte-matiere__progression .el-jauge { flex: 1; }
+.carte-matiere__pourcent {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+}
+
+/* ---------- Pied ---------- */
+
+.carte-matiere__pied {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  min-height: 20px;
+}
+
+.carte-matiere__moyenne {
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.carte-matiere__sur { font-size: var(--texte-xs); color: var(--texte-doux); font-weight: var(--graisse-normale); }
+
+.carte-matiere__revision {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  margin-left: auto;
+}
+.carte-matiere__revision.est-urgente { color: var(--attention); font-weight: var(--graisse-forte); }
+
+/* ---------- En-tête d'UE ---------- */
+
+.ue-entete {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--esp-4);
+  margin-bottom: var(--esp-5);
+  border-bottom: 1px solid var(--bord-discret);
+}
+.ue-entete__titre { flex: 1; min-width: 200px; }
+.ue-entete__chemin {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  margin-bottom: var(--esp-1);
+}
+.ue-entete__mesures {
+  display: flex;
+  gap: var(--esp-5);
+  align-items: center;
+}
+.ue-entete__mesure { text-align: right; }
+.ue-entete__mesure b {
+  display: block;
+  font-family: var(--police-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--texte-xl);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+  line-height: 1;
+}
+.ue-entete__mesure span {
+  display: block;
+  margin-top: var(--esp-1);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+
+/* ---------- Résultats de recherche ---------- */
+
+.recherche-resultats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+}
+
+.recherche-resultat {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  padding: var(--esp-3) var(--esp-4);
+  background: var(--surface-1);
+  border: 1px solid var(--bord-discret);
+  border-radius: var(--rayon-sm);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--duree-vive) var(--courbe), background var(--duree-vive) var(--courbe);
+}
+.recherche-resultat:hover { border-color: var(--accent); background: var(--surface-2); }
+.recherche-resultat:focus-visible { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+.recherche-resultat__titre {
+  flex: 1;
+  min-width: 0;
+  color: var(--texte-fort);
+  font-size: var(--texte-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recherche-resultat__chemin {
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Fiche détaillée d'une matière
+   ============================================================ */
+
+.fiche-matiere { display: flex; flex-direction: column; gap: var(--esp-5); }
+
+.fiche-matiere__entete {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--esp-4);
+  border-bottom: 1px solid var(--bord-discret);
+}
+
+.fiche-matiere__reglages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: var(--esp-4);
+}
+
+.fiche-matiere__synergies { display: flex; flex-direction: column; gap: var(--esp-2); }
+
+.synergie {
+  padding: var(--esp-1) var(--esp-3);
+  background: transparent;
+  border: 1px solid var(--bord-normal);
+  border-radius: var(--rayon-full);
+  color: var(--texte-doux);
+  font-family: inherit;
+  font-size: var(--texte-xs);
+  cursor: pointer;
+  transition: background var(--duree-vive) var(--courbe),
+              border-color var(--duree-vive) var(--courbe),
+              color var(--duree-vive) var(--courbe);
+  min-height: 30px;
+}
+.synergie:hover { border-color: var(--accent); color: var(--accent-clair); }
+.synergie.est-choisie {
+  background: var(--accent-voile);
+  border-color: var(--accent);
+  color: var(--accent-clair);
+  font-weight: var(--graisse-forte);
+}
+.synergie:focus-visible { outline: none; box-shadow: var(--ombre-focus); }
+
+/* ---------- Section d'exercices ---------- */
+
+.section-exercices {
+  padding-left: var(--esp-4);
+  /* Le liseré rappelle la couleur du type sur toute la hauteur de la section. */
+  border-left: 3px solid var(--liseré, var(--accent));
+}
+
+.section-exercices__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--esp-3);
+}
+
+.section-exercices__titre {
+  margin: 0;
+  font-size: var(--texte-md);
+  font-weight: var(--graisse-forte);
+  color: var(--texte-fort);
+}
+.section-exercices__compte { color: var(--liseré, var(--accent)); }
+
+.section-exercices__vide {
+  margin: 0;
+  font-size: var(--texte-sm);
+  color: var(--texte-doux);
+  font-style: italic;
+}
+
+.section-exercices__liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+
+/* ---------- Ligne d'exercice ---------- */
+
+.ligne-exercice {
+  padding: var(--esp-3);
+  background: var(--surface-2);
+  border-radius: var(--rayon-sm);
+}
+
+.ligne-exercice__principal {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-2);
+}
+
+.ligne-exercice__contenu {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+}
+
+.ligne-exercice__details {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  flex-wrap: wrap;
+}
+
+.ligne-exercice__date,
+.ligne-exercice__intervalle {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--texte-xs);
+  color: var(--texte-doux);
+}
+.ligne-exercice__date input { min-height: 30px; padding: 2px var(--esp-2); font-size: var(--texte-xs); }
+.ligne-exercice__intervalle input {
+  width: 56px;
+  min-height: 30px;
+  padding: 2px var(--esp-2);
+  text-align: center;
+  font-family: var(--police-mono);
+}
+
+/* ---------- Documents joints ---------- */
+
+.ligne-exercice__documents {
+  display: flex;
+  gap: var(--esp-2);
+  flex-wrap: wrap;
+  margin-top: var(--esp-2);
+  padding-left: var(--esp-6);
+}
+
+.document {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-1);
+  padding: 2px var(--esp-2);
+  background: var(--surface-1);
+  border-radius: var(--rayon-sm);
+  font-size: var(--texte-xs);
+}
+.document__lien { color: var(--accent-clair); text-decoration: none; }
+.document__lien:hover { text-decoration: underline; }
+.document__retirer {
+  background: none;
+  border: none;
+  color: var(--texte-doux);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: var(--texte-xs);
+}
+.document__retirer:hover { color: var(--danger); }

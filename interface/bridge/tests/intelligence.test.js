@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import {
+  getTodayString,
   buildExamUrgencyMap,
   detectBurnoutRisk,
   buildCompensationMap,
@@ -13,11 +14,20 @@ describe('Intelligence Engine - buildExamUrgencyMap (Axe 1)', () => {
     expect(buildExamUrgencyMap({ licences: [] })).toEqual({});
   });
 
-  const today = new Date();
+  /*
+   * Les échéances se comptent depuis la journée logique du moteur.
+   *
+   * `new Date()` conserve l'heure courante, et `toISOString()` la rend en UTC :
+   * entre minuit et 4 h du matin — la fenêtre que le décalage de nuit d'ELPIS
+   * rattache à la veille — l'écart valait un jour entier, et « Physique dans
+   * 7 jours » devenait 8. Ce test virait donc au rouge à 2 h du matin sans
+   * qu'aucune ligne du moteur n'ait changé.
+   */
   const generateDate = (offsetDays) => {
-    const d = new Date(today);
+    const [a, m, j] = getTodayString().split('-').map(Number);
+    const d = new Date(a, m - 1, j, 12, 0, 0);
     d.setDate(d.getDate() + offsetDays);
-    return d.toISOString().split('T')[0];
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
 
   test('calculates correct multipliers based on days to exam', () => {
@@ -57,7 +67,9 @@ describe('Intelligence Engine - buildExamUrgencyMap (Axe 1)', () => {
           ues: [{
             matieres: [{
               nom: 'Histoire',
-              evaluations: [{ date: evalDateStr, note: 10, coefficient: 1 }]
+              // Épreuve à venir, donc pas encore notée : une note ferme
+              // l'échéance et la matière sort du calcul d'urgence.
+              evaluations: [{ date: evalDateStr, coefficient: 1 }]
             }]
           }]
         }]

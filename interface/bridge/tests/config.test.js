@@ -20,16 +20,29 @@ describe('Config Module - DEFAULT_CONFIG', () => {
     expect(DEFAULT_CONFIG).toHaveProperty('bedtime');
     expect(DEFAULT_CONFIG).toHaveProperty('wakeUpTime');
     expect(DEFAULT_CONFIG).toHaveProperty('maxStudyHoursPerDay');
-    expect(DEFAULT_CONFIG).toHaveProperty('targetGrade');
     expect(DEFAULT_CONFIG).toHaveProperty('maxSubjectsPerDay');
     expect(DEFAULT_CONFIG).toHaveProperty('defaultDurationNewCM');
     expect(DEFAULT_CONFIG).toHaveProperty('dernierePratiqueAnki');
     expect(DEFAULT_CONFIG).toHaveProperty('antiEnnuiMultiplier');
   });
 
+  test('n’expose plus les objectifs de moyenne et de rang', () => {
+    // Deux réglages hérités d'un modèle abandonné : aucun calcul ne les lisait,
+    // aucun champ ne permettait de les modifier, et le seul endroit où ils
+    // réapparaissaient laissait croire à une cible qu'on aurait choisie.
+    expect(DEFAULT_CONFIG).not.toHaveProperty('targetGrade');
+    expect(DEFAULT_CONFIG).not.toHaveProperty('targetRank');
+    // Et surtout : un appareil non encore synchronisé les repousserait sans
+    // cela au premier échange. Toute écriture les retire.
+    expect(sanitize({ targetGrade: 25 })).not.toHaveProperty('targetGrade');
+    expect(sanitize({ targetRank: 3 })).not.toHaveProperty('targetRank');
+    saveConfig({ targetGrade: 18, targetRank: 1 });
+    expect(loadConfig()).not.toHaveProperty('targetGrade');
+    expect(loadConfig()).not.toHaveProperty('targetRank');
+  });
+
   test('has sensible default values', () => {
     expect(DEFAULT_CONFIG.maxStudyHoursPerDay).toBe(8);
-    expect(DEFAULT_CONFIG.targetGrade).toBe(14);
     expect(DEFAULT_CONFIG.defaultDurationNewCM).toBe(120);
     expect(DEFAULT_CONFIG.antiEnnuiMultiplier).toBe(2.0);
     expect(DEFAULT_CONFIG.dernierePratiqueAnki).toBe('');
@@ -57,17 +70,12 @@ describe('Config Module - validateConfigSchema', () => {
   });
 
   test('accepts valid config', () => {
-    expect(validateConfigSchema({ maxStudyHoursPerDay: 8, targetGrade: 14 })).toBe(true);
+    expect(validateConfigSchema({ maxStudyHoursPerDay: 8 })).toBe(true);
   });
 
   test('rejects out-of-range maxStudyHoursPerDay', () => {
     expect(validateConfigSchema({ maxStudyHoursPerDay: 25 })).toBe(false);
     expect(validateConfigSchema({ maxStudyHoursPerDay: -1 })).toBe(false);
-  });
-
-  test('rejects out-of-range targetGrade', () => {
-    expect(validateConfigSchema({ targetGrade: 21 })).toBe(false);
-    expect(validateConfigSchema({ targetGrade: -1 })).toBe(false);
   });
 
   test('rejects out-of-range defaultDurationNewCM', () => {
@@ -105,15 +113,9 @@ describe('Config Module - sanitize', () => {
     expect(cfg2.maxStudyHoursPerDay).toBe(0);
   });
 
-  test('clamps targetGrade to 0-20', () => {
-    const cfg = sanitize({ targetGrade: 25 });
-    expect(cfg.targetGrade).toBe(20);
-  });
-
   test('applies defaults for missing fields', () => {
     const cfg = sanitize({});
     expect(cfg.maxStudyHoursPerDay).toBe(8);
-    expect(cfg.targetGrade).toBe(14);
     expect(cfg.defaultDurationNewCM).toBe(120);
     expect(cfg.pomoWork).toBe(25);
     expect(cfg.pomoBreak).toBe(5);
@@ -176,34 +178,33 @@ describe('Config Module - loadConfig', () => {
   test('returns defaults when db is empty', () => {
     const cfg = loadConfig();
     expect(cfg.maxStudyHoursPerDay).toBe(8);
-    expect(cfg.targetGrade).toBe(14);
   });
 
   test('loads and merges with defaults', () => {
-    saveConfig({ targetGrade: 18 });
+    saveConfig({ maxSubjectsPerDay: 4 });
     const cfg = loadConfig();
-    expect(cfg.targetGrade).toBe(18);
+    expect(cfg.maxSubjectsPerDay).toBe(4);
     expect(cfg.maxStudyHoursPerDay).toBe(8); // from defaults
   });
 });
 
 describe('Config Module - saveConfig', () => {
   test('saves config to disk', () => {
-    const success = saveConfig({ targetGrade: 16 });
+    const success = saveConfig({ maxSubjectsPerDay: 2 });
     expect(success).toBe(true);
-    
+
     const loaded = loadConfig();
-    expect(loaded.targetGrade).toBe(16);
+    expect(loaded.maxSubjectsPerDay).toBe(2);
   });
 
   test('preserves existing fields on partial update', () => {
     // First save a full config
-    saveConfig({ targetGrade: 16, maxStudyHoursPerDay: 6 });
+    saveConfig({ maxSubjectsPerDay: 2, maxStudyHoursPerDay: 6 });
     // Then update only one field
-    saveConfig({ targetGrade: 18 });
-    
+    saveConfig({ maxSubjectsPerDay: 4 });
+
     const loaded = loadConfig();
-    expect(loaded.targetGrade).toBe(18);
+    expect(loaded.maxSubjectsPerDay).toBe(4);
     expect(loaded.maxStudyHoursPerDay).toBe(6); // preserved from previous save
   });
 

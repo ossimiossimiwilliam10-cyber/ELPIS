@@ -15,7 +15,7 @@
  *   - Flag anomalie intégré au scoring
  */
 
-const { getMatiereAverage } = require('./intelligence');
+const { getMatiereAverage, isSemesterArchived } = require('./intelligence');
 const { getRLMultiplier } = require('./rlEngine');
 
 // ---------------------------------------------------------------------------
@@ -215,7 +215,8 @@ function getSubjectExamBoost(matiere, examUrgencyMap) {
     baseBoost = Math.max(baseBoost, 2.0);
   }
 
-  return { boost: baseBoost * (1.0 + (coeff - 1) * 0.1), daysToExam };
+  // `estimee` remonte tel quel : la fin de semestre n'est pas une date d'épreuve.
+  return { boost: baseBoost * (1.0 + (coeff - 1) * 0.1), daysToExam, estimee: Boolean(boostData && boostData.estimee) };
 }
 
 // ---------------------------------------------------------------------------
@@ -280,13 +281,13 @@ function getCapitalisedUEs(licence) {
 
     const processSemester = (sem) => {
       if (!sem) return { avg: null, ues: [] };
+      const semestreTermine = isSemesterArchived(sem);
       let semSumECTS = 0;
       let semSumNotes = 0;
       const uesData = [];
       (sem.ues || []).forEach(ue => {
         let ueSumWeight = 0;
         let ueSumNotes = 0;
-        let ueBonus = 0;
         let isUeDispense = true;
         let hasMatieres = false;
         (ue.matieres || []).forEach(m => {
@@ -297,16 +298,20 @@ function getCapitalisedUEs(licence) {
           if (avgData !== null) {
             const avg = avgData.avg;
             const coef = m.coefficient !== undefined ? Number(m.coefficient) : 1;
-            if (coef === 0) ueBonus += avg;
-            else { ueSumWeight += coef; ueSumNotes += avg * coef; }
+            // Un coefficient nul, négatif ou illisible ne pondère rien : le
+            // règlement des études ne prévoit aucun bonus. Le traiter en bonus
+            // additif gonflait la moyenne de l'UE, qui pouvait alors franchir 10
+            // et être déclarée capitalisée à tort — ELPIS cessait d'en planifier
+            // les révisions. Même correction que dans utils/bulletin.js.
+            if (Number.isFinite(coef) && coef > 0) { ueSumWeight += coef; ueSumNotes += avg * coef; }
           }
         });
         if (!hasMatieres) isUeDispense = false;
         if (ue.acquise || ue.dispense) isUeDispense = true;
-        const ueAvg = ueSumWeight > 0 ? (ueSumNotes / ueSumWeight) + ueBonus : null;
+        const ueAvg = ueSumWeight > 0 ? ueSumNotes / ueSumWeight : null;
         const isUeValidated = (ueAvg !== null && ueAvg >= 10) || isUeDispense || ue.acquise;
         if (ueAvg !== null) { semSumNotes += ueAvg * (ue.ects || 0); semSumECTS += (ue.ects || 0); }
-        uesData.push({ nom: ue.nom, ueAvg, isUeValidated });
+        uesData.push({ nom: ue.nom, ueAvg, isUeValidated, ue, semestreTermine });
       });
       const avg = semSumECTS > 0 ? semSumNotes / semSumECTS : null;
       return { avg, ues: uesData };
@@ -317,15 +322,40 @@ function getCapitalisedUEs(licence) {
     let annualAvg = null;
     if (dataS1.avg !== null && dataS2.avg !== null) { annualAvg = (dataS1.avg + dataS2.avg) / 2; }
 
-    if (annualAvg !== null && annualAvg >= 10) {
-      dataS1.ues.forEach(u => capitalisedUEs.add(u.nom));
-      dataS2.ues.forEach(u => capitalisedUEs.add(u.nom));
-    } else {
-      if (dataS1.avg !== null && dataS1.avg >= 10) dataS1.ues.forEach(u => capitalisedUEs.add(u.nom));
-      else dataS1.ues.forEach(u => { if (u.isUeValidated) capitalisedUEs.add(u.nom); });
+    /*
+     * Une UE n'est capitalisée que si son évaluation est achevée, ou si tu l'as
+     * déclarée acquise toi-même (`ue.acquise`) — cas des années précédentes,
+     * saisies d'une seule moyenne récapitulative. Sans ce garde-fou, une
+     * moyenne provisoire au-dessus de 10 suffisait à retirer une UE du planning
+     * de révisions jusqu’à la fin du semestre.
+     */
+    /*
+     * Une UE n'est capitalisée que si son semestre est terminé, ou si tu l'as
+     * déclarée acquise toi-même.
+     *
+     * Le critère précédent — au moins trois notes conformes au règlement —
+     * était trop faible : trois notes sont le *minimum* exigé de l’université,
+     * pas la preuve que l'évaluation est close. Mesuré sur un cursus garni de
+     * trois notes par matière en cours de semestre, les cinq UE passaient
+     * capitalisées dès le mois d’août et disparaissaient entièrement du
+     * planning, examens encore à venir. La capitalisation est prononcée par le
+     * jury en fin d'année : c'est donc une question de calendrier, pas de
+     * volume de notes.
+     */
+    const capitaliser = (u) => {
+      if (u.ue && (u.ue.acquise || u.ue.dispense)) { capitalisedUEs.add(u.nom); return; }
+      if (u.semestreTermine) capitalisedUEs.add(u.nom);
+    };
 
-      if (dataS2.avg !== null && dataS2.avg >= 10) dataS2.ues.forEach(u => capitalisedUEs.add(u.nom));
-      else dataS2.ues.forEach(u => { if (u.isUeValidated) capitalisedUEs.add(u.nom); });
+    if (annualAvg !== null && annualAvg >= 10) {
+      dataS1.ues.forEach(capitaliser);
+      dataS2.ues.forEach(capitaliser);
+    } else {
+      if (dataS1.avg !== null && dataS1.avg >= 10) dataS1.ues.forEach(capitaliser);
+      else dataS1.ues.forEach(u => { if (u.isUeValidated) capitaliser(u); });
+
+      if (dataS2.avg !== null && dataS2.avg >= 10) dataS2.ues.forEach(capitaliser);
+      else dataS2.ues.forEach(u => { if (u.isUeValidated) capitaliser(u); });
     }
   }
   return capitalisedUEs;

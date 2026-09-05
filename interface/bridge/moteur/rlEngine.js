@@ -6,21 +6,44 @@
  * la note projetée (Bayésienne) après une session d'étude.
  */
 
-const fs = require('fs');
-const path = require('path');
+/*
+ * Le système de fichiers n'est atteint qu'au moment de s'en servir.
+ *
+ * Ce module fait partie du moteur, et le moteur tourne désormais aussi dans le
+ * navigateur du téléphone, où `fs` n'existe pas. Un `require('fs')` en tête de
+ * fichier suffirait à faire échouer la compilation de l'application entière,
+ * pour un module qui, sur ce terminal, ne servira jamais : l'état RL vit dans un
+ * fichier du PC.
+ *
+ * On le charge donc à la demande, et son absence n'est pas une panne — c'est la
+ * situation normale du téléphone, qui repart alors de l'état neutre.
+ */
+function accesFichiers() {
+  try {
+    // eslint-disable-next-line global-require
+    return { fs: require('fs'), path: require('path') };
+  } catch {
+    return null;
+  }
+}
 
-// Chemin par défaut du fichier de télémétrie RL
-const DEFAULT_RL_FILE = path.join(__dirname, '..', '..', 'data', 'espoir_telemetry_rl.json');
+function cheminParDefaut() {
+  const acces = accesFichiers();
+  if (!acces || typeof __dirname === 'undefined') return null;
+  return acces.path.join(__dirname, '..', '..', 'data', 'espoir_telemetry_rl.json');
+}
 
 /**
  * Charge l'état actuel du modèle RL depuis le disque.
  * @param {string} filePath - Chemin vers le fichier JSON (optionnel)
  * @returns {Object} - État RL { totalTrials: 0, subjects: { "maths": { qValue: 0, trials: 0 } } }
  */
-function loadRLState(filePath = DEFAULT_RL_FILE) {
+function loadRLState(filePath = undefined) {
   try {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, 'utf-8');
+    const acces = accesFichiers();
+    const chemin = filePath || cheminParDefaut();
+    if (acces && chemin && acces.fs.existsSync(chemin)) {
+      const data = acces.fs.readFileSync(chemin, 'utf-8');
       const state = JSON.parse(data);
       if (state && state.subjects) {
         return state;
@@ -41,14 +64,19 @@ function loadRLState(filePath = DEFAULT_RL_FILE) {
  * @param {Object} state - État RL à sauvegarder
  * @param {string} filePath - Chemin vers le fichier JSON (optionnel)
  */
-function saveRLState(state, filePath = DEFAULT_RL_FILE) {
+function saveRLState(state, filePath = undefined) {
   try {
-    // S'assurer que le dossier existe
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    const acces = accesFichiers();
+    const chemin = filePath || cheminParDefaut();
+    // Sans système de fichiers — cas du téléphone — il n'y a rien à écrire, et
+    // ce n'est pas une erreur : l'état RL appartient au PC.
+    if (!acces || !chemin) return;
+
+    const dir = acces.path.dirname(chemin);
+    if (!acces.fs.existsSync(dir)) {
+      acces.fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(filePath, JSON.stringify(state, null, 2), 'utf-8');
+    acces.fs.writeFileSync(chemin, JSON.stringify(state, null, 2), 'utf-8');
   } catch (error) {
     console.error("[RL] Erreur lors de la sauvegarde de l'état RL :", error.message);
   }
@@ -147,5 +175,5 @@ module.exports = {
   calculateUCBScore,
   updateQValues,
   getRLMultiplier,
-  DEFAULT_RL_FILE
+  cheminParDefaut,
 };

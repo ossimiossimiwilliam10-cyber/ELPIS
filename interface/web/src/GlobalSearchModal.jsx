@@ -108,7 +108,7 @@ function GlobalSearchModal() {
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Rechercher un cours, une note (Ctrl+K)..."
+              placeholder="Rechercher un cours, une matière, une note…"
               style={{
                 flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)',
                 fontSize: '1.2rem', outline: 'none'

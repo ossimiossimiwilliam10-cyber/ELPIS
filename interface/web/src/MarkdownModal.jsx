@@ -63,7 +63,7 @@ function MarkdownModal({ isOpen, onClose, initialValue, onSave, title }) {
                   border: 'none', color: 'var(--text-primary)', resize: 'none', fontFamily: 'monospace',
                   fontSize: '0.95rem'
                 }}
-                placeholder="Utilisez le Markdown (**, #, -, etc.)..."
+                placeholder="Tes notes. **gras**, # titre, - liste…"
               />
             ) : (
               <div style={{padding: '1rem', height: '400px', overflowY: 'auto', background: 'rgba(0,0,0,0.1)'}} className="markdown-preview">
